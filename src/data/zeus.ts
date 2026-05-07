@@ -14,6 +14,7 @@ export interface Operator {
   lider?: string;
   equipos?: string[];
   lastAssessmentDate?: string;
+  ato?: number;
 }
 
 export interface IPRow {
@@ -47,6 +48,9 @@ export interface AreaData {
   podio: Podium[];
   logros: string[];
   excelenciaEquipo: number;
+  bestTeam?: { name: string; avg: number; leader?: string };
+  worstTeam?: { name: string; avg: number; leader?: string };
+  teamRankings?: { name: string; avg: number; leader?: string }[];
   cumplimientoPorHora: { hora: string; cumplimiento: number }[];
 }
 
@@ -55,7 +59,7 @@ const baseHoras = ["06h", "07h", "08h", "09h", "10h", "11h", "12h", "13h"];
 export const cocimientos: AreaData = {
   team: "Guardianes Cerveceros",
   lema: "Pilar de Mantenimiento Autónomo · Cocimientos",
-  linea: "Línea Cocimientos 2 · Sala de Cocción",
+  linea: "Cocimientos 2 · Sala de Cocción",
   autonomia: 3.2,
   nivelLabel: "Nivel 3 — Mejora Autónoma",
   kpis: [
@@ -101,7 +105,7 @@ export const cocimientos: AreaData = {
 export const bloqueFrio: AreaData = {
   team: "Sensory Avengers",
   lema: "Pilar de Calidad · Bloque Frío",
-  linea: "Línea Bloque Frío · Bodega de Fermentación",
+  linea: "Bloque Frío · Bodega de Fermentación",
   autonomia: 3.6,
   nivelLabel: "Nivel 3 — Mejora Autónoma",
   kpis: [
@@ -142,6 +146,26 @@ export const bloqueFrio: AreaData = {
   ],
   excelenciaEquipo: 95,
   cumplimientoPorHora: baseHoras.map((h, i) => ({ hora: h, cumplimiento: [92, 94, 95, 96, 97, 95, 96, 95][i] })),
+};
+
+export const mantenimiento: AreaData = {
+  team: "Tech Guardians",
+  lema: "Pilar de Confiabilidad · Mantenimiento",
+  linea: "Área Mantenimiento · Brewery Maintenance",
+  autonomia: 0,
+  nivelLabel: "Evaluación de Autonomía",
+  kpis: [
+    { label: "MTBF", value: "142h", tone: "ok" },
+    { label: "MTTR", value: "1.2h", tone: "ok" },
+    { label: "PM Compliance", value: "98%", tone: "ok" },
+    { label: "Backlog", value: "12", tone: "warn" },
+  ],
+  operadores: [],
+  ips: [],
+  podio: [],
+  logros: [],
+  excelenciaEquipo: 0,
+  cumplimientoPorHora: baseHoras.map((h, i) => ({ hora: h, cumplimiento: [90, 92, 88, 95, 93, 91, 94, 92][i] })),
 };
 
 export const championColors: Record<ChampionKey, { bg: string; text: string; label: string }> = {

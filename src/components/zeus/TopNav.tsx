@@ -1,21 +1,12 @@
 import { useEffect, useState } from "react";
 import { Beer, Clock } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-export type AreaTab = "cocimientos" | "bloqueFrio";
+export type AreaTab = "general" | "cocimientos" | "bloqueFrio" | "mantenimiento";
 
 interface Props {
   tab: AreaTab;
   onTabChange: (t: AreaTab) => void;
-  shift: string;
-  onShiftChange: (s: string) => void;
 }
 
 function useClock() {
@@ -27,7 +18,7 @@ function useClock() {
   return now;
 }
 
-export function TopNav({ tab, onTabChange, shift, onShiftChange }: Props) {
+export function TopNav({ tab, onTabChange }: Props) {
   const now = useClock();
   const time = new Intl.DateTimeFormat("es-MX", {
     hour: "2-digit",
@@ -47,26 +38,23 @@ export function TopNav({ tab, onTabChange, shift, onShiftChange }: Props) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-20 bg-blue-900 text-white shadow-lg">
+    <header className="sticky top-0 z-50 bg-blue-900 text-white shadow-lg">
       <div className="flex h-16 items-center gap-6 px-6">
         {/* Brand */}
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-yellow-400 text-blue-900 shadow">
-            <Beer className="h-6 w-6" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg shadow bg-white overflow-hidden">
+            <img src="/logos/BREWMAN.jpeg" alt="BREWMAN" className="h-full w-full object-cover" />
           </div>
           <div className="leading-tight">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-yellow-400">
-              Proyecto ZEUS
-            </div>
-            <div className="text-base font-bold">Dashboard de Elaboración</div>
+            <div className="text-base font-bold">Dashboard de Autonomía</div>
           </div>
         </div>
 
         {/* Tabs */}
         <nav className="mx-auto flex items-center gap-1 rounded-full bg-blue-950/60 p-1 shadow-inner">
-          {(["cocimientos", "bloqueFrio"] as AreaTab[]).map((t) => {
+          {(["general", "cocimientos", "bloqueFrio", "mantenimiento"] as AreaTab[]).map((t) => {
             const active = tab === t;
-            const label = t === "cocimientos" ? "COCIMIENTOS" : "BLOQUE FRÍO";
+            const label = t === "general" ? "GENERAL" : t === "cocimientos" ? "COCIMIENTOS" : t === "bloqueFrio" ? "BLOQUE FRÍO" : "MANTENIMIENTO";
             return (
               <button
                 key={t}
@@ -97,19 +85,6 @@ export function TopNav({ tab, onTabChange, shift, onShiftChange }: Props) {
               </>
             )}
           </div>
-
-          <Select value={shift} onValueChange={onShiftChange}>
-            <SelectTrigger className="h-9 w-[130px] border-blue-700 bg-blue-800/60 text-sm text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Mañana">Turno Mañana</SelectItem>
-              <SelectItem value="Tarde">Turno Tarde</SelectItem>
-              <SelectItem value="Noche">Turno Noche</SelectItem>
-            </SelectContent>
-          </Select>
-
-
         </div>
       </div>
     </header>

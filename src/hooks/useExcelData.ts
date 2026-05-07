@@ -1,20 +1,23 @@
 import { useState, useEffect } from "react";
 import * as xlsx from "xlsx";
-import { Operator, ChampionKey, cocimientos as defaultCocimientos, bloqueFrio as defaultBloqueFrio, AreaData } from "@/data/zeus";
+import { Operator, ChampionKey, cocimientos as defaultCocimientos, bloqueFrio as defaultBloqueFrio, mantenimiento as defaultMantenimiento, AreaData } from "@/data/zeus";
 
 export function useExcelData() {
   const [cocimientos, setCocimientos] = useState<AreaData>(defaultCocimientos);
   const [bloqueFrio, setBloqueFrio] = useState<AreaData>(defaultBloqueFrio);
+  const [mantenimiento, setMantenimiento] = useState<AreaData>(defaultMantenimiento);
+  const [general, setGeneral] = useState<AreaData>({ ...defaultCocimientos, title: "Vista General", subtitle: "Toda la Planta" });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
+      const timestamp = new Date().getTime();
       try {
         const eaMap: Record<string, { equipo: string; lider: string }> = {};
         const championMap: Record<string, ChampionKey[]> = {};
 
         try {
-          const baseRes = await fetch("/0. BASE EQUIPOS AUTÓNOMOS CCZ (3).xlsx");
+          const baseRes = await fetch(`/0. BASE EQUIPOS AUTÓNOMOS CCZ (3).xlsx?t=${timestamp}`);
           const baseBuf = await baseRes.arrayBuffer();
           const baseWb = xlsx.read(baseBuf, { type: "array" });
           const baseRows = xlsx.utils.sheet_to_json(baseWb.Sheets["BD_ZAC_OFICIAL"]) as any[];
@@ -46,7 +49,7 @@ export function useExcelData() {
 
 
         try {
-          const eacRes = await fetch("/EAC.xlsx");
+          const eacRes = await fetch(`/EAC.xlsx?t=${timestamp}`);
           const eacBuf = await eacRes.arrayBuffer();
           const eacWb = xlsx.read(eacBuf, { type: "array" });
           const eacRows = xlsx.utils.sheet_to_json(eacWb.Sheets[eacWb.SheetNames[0]]) as any[];
@@ -63,7 +66,7 @@ export function useExcelData() {
         }
 
         try {
-          const eabfRes = await fetch("/EABF.xlsx");
+          const eabfRes = await fetch(`/EABF.xlsx?t=${timestamp}`);
           const eabfBuf = await eabfRes.arrayBuffer();
           const eabfWb = xlsx.read(eabfBuf, { type: "array" });
           const eabfRows = xlsx.utils.sheet_to_json(eabfWb.Sheets[eabfWb.SheetNames[0]]) as any[];
@@ -85,7 +88,7 @@ export function useExcelData() {
           console.error("Error loading EABF:", e);
         }
 
-        const response = await fetch("/DATOS.xlsx");
+        const response = await fetch(`/DATOS.xlsx?t=${timestamp}`);
         const arrayBuffer = await response.arrayBuffer();
         const workbook = xlsx.read(arrayBuffer, { type: "array" });
         const sheetName = workbook.SheetNames[0];
@@ -97,55 +100,59 @@ export function useExcelData() {
           const id = empMatch ? empMatch[1] : String(Math.random());
           const nombre = empMatch ? empMatch[2] : row["Employee"] || "Desconocido";
 
-          const basicCols = [
-            "Driver's License", "Safety", "Quality", "Environment", 
-            "Management", "People", "Maintenance", "Logistics", "Operation"
-          ];
+          // NEW COLUMN STRUCTURE FROM INSPECTION
+          const basicCols = ["Safety", "Quality", "Environment", "Management", "People", "Maintenance", "Logistics", "Operation"];
+          const intermediateCols = ["Safety_1", "Quality_1", "Environment_1", "Management_1", "People_1", "Maintenance_1", "Logistics_1", "Operation_1"];
+          const advancedCols = ["Safety_2", "Quality_2", "Environment_2", "Management_2", "People_2", "Maintenance_2", "Logistics_2", "Operation_2"];
+
+          const calculateAverage = (cols: string[]) => {
+            const values = cols.map(c => {
+              const val = row[c];
+              if (val === undefined || val === null || val === "-") return 0;
+              if (typeof val === "number") return val * 100; // Assuming 1 = 100%
+              if (val === "Certified" || val === "100%") return 100;
+              if (val === "Qualified" || val === "75%") return 75;
+              if (val === "In Training" || val === "50%") return 50;
+              if (val === "Novice" || val === "25%") return 25;
+              return 0;
+            });
+            return values.reduce((a, b) => a + b, 0) / cols.length;
+          };
+
+          const basico = calculateAverage(basicCols);
+          const intermedio = calculateAverage(intermediateCols);
+          const avanzado = calculateAverage(advancedCols);
           
-          let basicSum = 0;
-          let basicCount = 0;
-          for (const col of basicCols) {
-            if (row[col] !== undefined && row[col] !== "-") {
-              basicSum += Number(row[col]) || 0;
-              basicCount++;
-            }
+          // Use provided Autonomy Score if available, otherwise calculate
+          let autonomyScore = 0;
+          if (row["Autonomy Score"] !== undefined && typeof row["Autonomy Score"] === "number") {
+             autonomyScore = row["Autonomy Score"] * 100;
+          } else {
+             autonomyScore = (basico * 0.5) + (intermedio * 0.35) + (avanzado * 0.15);
           }
-          const basicoRaw = basicCount > 0 ? (basicSum / basicCount) * 100 : 0;
-          const basico = Number(basicoRaw.toFixed(2));
-          
-          const intermedioRaw = (Number(row["Intermediate Capabilities"]) || 0) * 100;
-          const intermedio = Number(intermedioRaw.toFixed(2));
-          
-          const avanzadoRaw = (Number(row["Advanced Capabilities"]) || 0) * 100;
-          const avanzado = Number(avanzadoRaw.toFixed(2));
 
-          const champions = championMap[id] || [];
-
-
-          const eaInfo = eaMap[id] || {};
-          const autonomyScore = Number((Number(row["Autonomy Score"]) || 0) * 100);
+          const eaData = eaMap[id] || { equipo: "Sin Equipo", lider: "No asignado" };
 
           return {
             id,
             nombre,
-            puesto: row["SKAP Position"] || "Operador",
-            basico,
-            intermedio,
-            avanzado,
-            champions,
-            equipoAutonomo: eaInfo.equipo,
-            lider: eaInfo.lider,
-            autonomyScore,
-            lastAssessmentDate: row["Assessment Date"] ? String(row["Assessment Date"]) : undefined
+            puesto: row["SKAP Position"] || row["Position"] || "Operador",
+            basico: Number(basico.toFixed(2)),
+            intermedio: Number(intermedio.toFixed(2)),
+            avanzado: Number(avanzado.toFixed(2)),
+            autonomyScore: Number(autonomyScore.toFixed(2)),
+            champions: championMap[id] || [],
+            equipoAutonomo: eaData.equipo,
+            lider: eaData.lider,
+            lastAssessmentDate: row["Assessment Date"] || row["Last Assessment Date"] || null,
+            ato: id === "32102191" ? 8 : 4
           };
         };
 
         const opsMap: Record<string, Operator & { autonomyScore: number, _count: number, _area: string }> = {};
 
         for (const row of rows) {
-          const area = row["Area"];
-          if (area !== "Warm Block" && area !== "Cold Block") continue;
-          
+          const area = row["Area"] || "";
           const parsed = parseOperator(row);
           const eqStr = row["SKAP Position"] ? String(row["SKAP Position"]) : "";
 
@@ -191,6 +198,7 @@ export function useExcelData() {
 
         const cocimientosOps: (Operator & { autonomyScore: number })[] = [];
         const bloqueFrioOps: (Operator & { autonomyScore: number })[] = [];
+        const mantenimientoOps: (Operator & { autonomyScore: number })[] = [];
 
         Object.values(opsMap).forEach(op => {
            op.basico = Number((op.basico / op._count).toFixed(2));
@@ -200,16 +208,23 @@ export function useExcelData() {
            
            if (op._area === "Warm Block") cocimientosOps.push(op);
            else if (op._area === "Cold Block") bloqueFrioOps.push(op);
+           else if (op._area === "Brewing Maintenance") {
+             if (op.equipoAutonomo === "Sin Equipo" || !op.equipoAutonomo) {
+               op.equipoAutonomo = "LOS NAHUALES";
+             }
+             mantenimientoOps.push(op);
+           }
         });
 
         cocimientosOps.sort((a, b) => b.autonomyScore - a.autonomyScore);
         bloqueFrioOps.sort((a, b) => b.autonomyScore - a.autonomyScore);
+        mantenimientoOps.sort((a, b) => b.autonomyScore - a.autonomyScore);
 
         const buildExcellence = (ops: (Operator & { autonomyScore: number })[]) => {
           if (ops.length === 0) return null;
           
           const sorted = [...ops].sort((a, b) => b.autonomyScore - a.autonomyScore);
-          const podio = sorted.slice(0, 3).map(op => ({
+          const podio = sorted.slice(0, 5).map(op => ({
             nombre: op.nombre,
             puesto: op.puesto,
             excelencia: Number(op.autonomyScore.toFixed(2)),
@@ -226,7 +241,30 @@ export function useExcelData() {
             `Top 1: ${podio[0]?.nombre || "N/A"} (${podio[0]?.excelencia || 0}%)`
           ];
 
-          return { podio, excelenciaEquipo, logros, autonomia };
+          const teamsMap: Record<string, { sum: number, count: number, leader: string }> = {};
+          ops.forEach(op => {
+            const team = op.equipoAutonomo || "Sin Equipo";
+            if (!teamsMap[team]) teamsMap[team] = { sum: 0, count: 0, leader: op.lider || "No asignado" };
+            teamsMap[team].sum += op.autonomyScore;
+            teamsMap[team].count += 1;
+            if (op.lider && teamsMap[team].leader === "No asignado") {
+              teamsMap[team].leader = op.lider;
+            }
+          });
+
+          const teamRankings = Object.entries(teamsMap)
+            .filter(([name]) => name !== "Sin Equipo")
+            .map(([name, data]) => ({
+              name,
+              avg: Number((data.sum / data.count).toFixed(2)),
+              leader: data.leader
+            }))
+            .sort((a, b) => b.avg - a.avg);
+
+          const bestTeam = teamRankings[0] || undefined;
+          const worstTeam = teamRankings[teamRankings.length - 1] || undefined;
+
+          return { podio, excelenciaEquipo, logros, autonomia, bestTeam, worstTeam, teamRankings };
         };
 
         const cocimientosExc = buildExcellence(cocimientosOps);
@@ -243,6 +281,22 @@ export function useExcelData() {
           ...(bloqueFrioExc ? bloqueFrioExc : {})
         }));
 
+        const mantenimientoExc = buildExcellence(mantenimientoOps);
+        setMantenimiento(prev => ({
+          ...prev,
+          operadores: mantenimientoOps.length > 0 ? mantenimientoOps : prev.operadores,
+          ...(mantenimientoExc ? mantenimientoExc : {})
+        }));
+
+        const allOps = [...cocimientosOps, ...bloqueFrioOps, ...mantenimientoOps]
+          .sort((a, b) => b.autonomyScore - a.autonomyScore);
+        const generalExc = buildExcellence(allOps);
+        setGeneral(prev => ({
+          ...prev,
+          operadores: allOps.length > 0 ? allOps : prev.operadores,
+          ...(generalExc ? generalExc : {})
+        }));
+
       } catch (e) {
         console.error("Error loading excel data:", e);
       } finally {
@@ -253,5 +307,5 @@ export function useExcelData() {
     loadData();
   }, []);
 
-  return { cocimientos, bloqueFrio, loading };
+  return { general, cocimientos, bloqueFrio, mantenimiento, loading };
 }

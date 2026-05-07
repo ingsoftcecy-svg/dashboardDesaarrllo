@@ -1,5 +1,6 @@
 import { AutonomyGauge } from "./AutonomyGauge";
 import { Target } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface Props {
   autonomia: number;
@@ -8,7 +9,13 @@ interface Props {
 
 export function AutonomyCard({ autonomia, nivelLabel }: Props) {
   return (
-    <section className="flex h-full flex-col rounded-xl border border-slate-200 bg-white shadow-md transition hover:shadow-lg">
+    <motion.section 
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={{ y: -5 }}
+      transition={{ delay: 0.1 }}
+      className="flex h-full flex-col rounded-xl border border-white/40 bg-white/70 backdrop-blur-md shadow-xl overflow-hidden"
+    >
       <header className="flex items-center gap-2 border-b border-slate-100 bg-gradient-to-r from-blue-900 to-blue-800 px-4 py-3 text-white">
         <Target className="h-5 w-5 text-yellow-400" />
         <div>
@@ -30,6 +37,6 @@ export function AutonomyCard({ autonomia, nivelLabel }: Props) {
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
