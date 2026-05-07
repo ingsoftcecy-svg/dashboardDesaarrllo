@@ -1,5 +1,5 @@
 export type SystemKey = "SAP" | "MES" | "ACADIA" | "WVD" | "MANGYVER";
-export type ChampionKey = "seguridad" | "calidad" | "ambiental" | "mantenimiento";
+export type ChampionKey = "seguridad" | "calidad" | "ambiental" | "mantenimiento" | "gestion" | "gente" | "logistica";
 export type Status = "ok" | "warn" | "fail";
 
 export interface Operator {
@@ -10,6 +10,10 @@ export interface Operator {
   intermedio: number;
   avanzado: number;
   champions: ChampionKey[];
+  equipoAutonomo?: string;
+  lider?: string;
+  equipos?: string[];
+  lastAssessmentDate?: string;
 }
 
 export interface IPRow {
@@ -28,6 +32,7 @@ export interface Podium {
   nombre: string;
   puesto: string;
   excelencia: number;
+  lider?: string;
 }
 
 export interface AreaData {
@@ -60,11 +65,11 @@ export const cocimientos: AreaData = {
     { label: "Incidentes", value: "0", tone: "ok" },
   ],
   operadores: [
-    { id: "1", nombre: "María Pérez", puesto: "Operador Senior", basico: 100, intermedio: 90, avanzado: 70, champions: ["seguridad", "calidad"] },
-    { id: "2", nombre: "Luis Ramírez", puesto: "Cocedor", basico: 100, intermedio: 85, avanzado: 60, champions: ["mantenimiento"] },
-    { id: "3", nombre: "Jorge Hernández", puesto: "Molinero", basico: 100, intermedio: 75, avanzado: 45, champions: ["ambiental"] },
-    { id: "4", nombre: "Ana Sánchez", puesto: "Tablerista", basico: 100, intermedio: 95, avanzado: 80, champions: ["calidad", "seguridad"] },
-    { id: "5", nombre: "Pedro Martínez", puesto: "Filtración", basico: 100, intermedio: 70, avanzado: 40, champions: ["mantenimiento", "ambiental"] },
+    { id: "1", nombre: "ALDO ADRIAN SIFUENTES", puesto: "Operador Senior", basico: 100, intermedio: 90, avanzado: 70, champions: ["seguridad", "calidad"] },
+    { id: "2", nombre: "JOSE LUIS CAZARES", puesto: "Cocedor", basico: 100, intermedio: 85, avanzado: 60, champions: ["mantenimiento"] },
+    { id: "3", nombre: "RAFAEL VERA", puesto: "Molinero", basico: 100, intermedio: 75, avanzado: 45, champions: ["ambiental"] },
+    { id: "4", nombre: "URIEL ESCOBEDO", puesto: "Tablerista", basico: 100, intermedio: 95, avanzado: 80, champions: ["calidad", "seguridad"] },
+    { id: "5", nombre: "VALERIA NATALY CASTAÑON", puesto: "Filtración", basico: 100, intermedio: 70, avanzado: 40, champions: ["mantenimiento", "ambiental"] },
     { id: "6", nombre: "Diana Rojas", puesto: "Operador Jr.", basico: 90, intermedio: 55, avanzado: 25, champions: [] },
     { id: "7", nombre: "Raúl Gómez", puesto: "Líder de Turno", basico: 100, intermedio: 100, avanzado: 90, champions: ["seguridad", "calidad", "mantenimiento"] },
     { id: "8", nombre: "Sofía Mendoza", puesto: "Operador", basico: 100, intermedio: 80, avanzado: 55, champions: ["ambiental"] },
@@ -80,8 +85,8 @@ export const cocimientos: AreaData = {
   ],
   podio: [
     { nombre: "Raúl Gómez", puesto: "Líder de Turno", excelencia: 98.5 },
-    { nombre: "Ana Sánchez", puesto: "Tablerista", excelencia: 96.2 },
-    { nombre: "María Pérez", puesto: "Operador Sr.", excelencia: 94.8 },
+    { nombre: "URIEL ESCOBEDO", puesto: "Tablerista", excelencia: 96.2 },
+    { nombre: "ALDO ADRIAN SIFUENTES", puesto: "Operador Sr.", excelencia: 94.8 },
   ],
   logros: [
     "5 días sin desviaciones de °Plato",
@@ -144,6 +149,9 @@ export const championColors: Record<ChampionKey, { bg: string; text: string; lab
   calidad: { bg: "bg-sky-100", text: "text-sky-700", label: "Calidad" },
   ambiental: { bg: "bg-green-100", text: "text-green-700", label: "Ambiental" },
   mantenimiento: { bg: "bg-orange-100", text: "text-orange-700", label: "Mantenimiento" },
+  gestion: { bg: "bg-purple-100", text: "text-purple-700", label: "Gestión" },
+  gente: { bg: "bg-pink-100", text: "text-pink-700", label: "Gente" },
+  logistica: { bg: "bg-slate-100", text: "text-slate-700", label: "Logística" },
 };
 
 export const systemColors: Record<SystemKey, string> = {

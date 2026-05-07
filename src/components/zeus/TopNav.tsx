@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Beer, Clock, User } from "lucide-react";
+import { Beer, Clock } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -41,6 +41,11 @@ export function TopNav({ tab, onTabChange, shift, onShiftChange }: Props) {
     month: "long",
   }).format(now);
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <header className="sticky top-0 z-20 bg-blue-900 text-white shadow-lg">
       <div className="flex h-16 items-center gap-6 px-6">
@@ -81,12 +86,16 @@ export function TopNav({ tab, onTabChange, shift, onShiftChange }: Props) {
 
         {/* Right cluster */}
         <div className="flex items-center gap-4">
-          <div className="hidden text-right md:block">
-            <div className="flex items-center justify-end gap-1.5 text-lg font-semibold tabular-nums">
-              <Clock className="h-4 w-4 text-yellow-400" />
-              {time}
-            </div>
-            <div className="text-[11px] capitalize text-blue-200">{date}</div>
+          <div className="hidden text-right md:block min-w-[120px]">
+            {mounted && (
+              <>
+                <div className="flex items-center justify-end gap-1.5 text-lg font-semibold tabular-nums">
+                  <Clock className="h-4 w-4 text-yellow-400" />
+                  {time}
+                </div>
+                <div className="text-[11px] capitalize text-blue-200">{date}</div>
+              </>
+            )}
           </div>
 
           <Select value={shift} onValueChange={onShiftChange}>
@@ -100,15 +109,7 @@ export function TopNav({ tab, onTabChange, shift, onShiftChange }: Props) {
             </SelectContent>
           </Select>
 
-          <div className="flex items-center gap-2 rounded-full bg-blue-800/60 py-1 pl-1 pr-3">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-400 text-blue-900">
-              <User className="h-4 w-4" />
-            </div>
-            <div className="leading-tight">
-              <div className="text-xs font-semibold">J. Hernández</div>
-              <div className="text-[10px] text-blue-200">Supervisor</div>
-            </div>
-          </div>
+
         </div>
       </div>
     </header>

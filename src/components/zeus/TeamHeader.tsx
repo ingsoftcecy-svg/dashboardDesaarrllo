@@ -45,19 +45,6 @@ export function TeamHeader({ area, shift }: { area: AreaData; shift: string }) {
               </div>
             ))}
           </div>
-
-          <div className="flex items-center gap-3 border-l border-slate-200 pl-6">
-            <AutonomyGauge value={area.autonomia} />
-            <div className="leading-tight">
-              <div className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-                Nivel de Autonomía
-              </div>
-              <div className="text-base font-bold text-blue-900">{area.nivelLabel}</div>
-              <div className="mt-1 inline-flex rounded-full bg-yellow-400/20 px-2 py-0.5 text-[10px] font-bold text-yellow-700">
-                META: 4.00
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>

@@ -2,10 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { TopNav, type AreaTab } from "@/components/zeus/TopNav";
 import { TeamHeader } from "@/components/zeus/TeamHeader";
-import { SkillMatrixCard } from "@/components/zeus/SkillMatrixCard";
-import { IPsTrackingCard } from "@/components/zeus/IPsTrackingCard";
+import { PhysicalBoard } from "@/components/zeus/PhysicalBoard";
+
 import { ExcellenceCard } from "@/components/zeus/ExcellenceCard";
-import { cocimientos, bloqueFrio } from "@/data/zeus";
+import { AutonomyCard } from "@/components/zeus/AutonomyCard";
+import { useExcelData } from "@/hooks/useExcelData";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -24,6 +25,8 @@ export const Route = createFileRoute("/")({
 function Index() {
   const [tab, setTab] = useState<AreaTab>("cocimientos");
   const [shift, setShift] = useState("Mañana");
+  const { cocimientos, bloqueFrio, loading } = useExcelData();
+  
   const area = tab === "cocimientos" ? cocimientos : bloqueFrio;
 
   return (
@@ -33,20 +36,23 @@ function Index() {
       <main className="flex flex-1 flex-col gap-4 p-4">
         <TeamHeader area={area} shift={shift} />
 
-        <div className="grid flex-1 grid-cols-1 gap-4 lg:grid-cols-12">
-          <div className="lg:col-span-3">
-            <SkillMatrixCard operadores={area.operadores} />
-          </div>
-          <div className="lg:col-span-6">
-            <IPsTrackingCard ips={area.ips} cumplimientoPorHora={area.cumplimientoPorHora} />
-          </div>
-          <div className="lg:col-span-3">
-            <ExcellenceCard
-              podio={area.podio}
-              logros={area.logros}
-              excelenciaEquipo={area.excelenciaEquipo}
-            />
-          </div>
+        {/* Top Cards: Excellence and Autonomy */}
+        <div className="grid flex-shrink-0 grid-cols-1 gap-4 lg:grid-cols-2 mb-2">
+          <ExcellenceCard
+            podio={area.podio}
+            logros={area.logros}
+            excelenciaEquipo={area.excelenciaEquipo}
+          />
+          <AutonomyCard
+            autonomia={area.autonomia}
+            nivelLabel={area.nivelLabel}
+          />
+        </div>
+
+        {/* Bottom Full-Width Table: Physical Board */}
+        <div className="mt-2 flex-1">
+          <h3 className="mb-3 text-lg font-bold text-slate-800">Matriz Multi-Skill y Autonomía (Board Físico)</h3>
+          <PhysicalBoard operadores={area.operadores as any} />
         </div>
       </main>
     </div>

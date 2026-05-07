@@ -1,6 +1,7 @@
 import { Trophy, Crown, Medal, Award, Sparkles } from "lucide-react";
 import type { Podium } from "@/data/zeus";
 import { ResponsiveContainer, RadialBarChart, RadialBar, PolarAngleAxis } from "recharts";
+import { cn, getLeaderColor } from "@/lib/utils";
 
 interface Props {
   podio: Podium[];
@@ -51,12 +52,19 @@ export function ExcellenceCard({ podio, logros, excelenciaEquipo }: Props) {
                 <div className="text-center text-[11px] font-semibold leading-tight text-slate-800">
                   {p.nombre}
                 </div>
-                <div className="text-[9px] text-slate-500">{p.puesto}</div>
+                <div className="text-center text-[9px] text-slate-500 line-clamp-1" title={p.puesto}>{p.puesto}</div>
+                {p.lider && (
+                  <div className="mt-1 flex justify-center">
+                    <div className={cn("px-1 py-0.5 text-[8px] font-bold uppercase rounded border text-center line-clamp-1", getLeaderColor(p.lider))} title={`Líder: ${p.lider}`}>
+                      Líder: {p.lider}
+                    </div>
+                  </div>
+                )}
                 <div
                   className={`mt-1 flex w-full flex-col items-center justify-end rounded-t-lg bg-gradient-to-b ${cfg.color} ${cfg.height} px-2 py-1 ${cfg.text} shadow-inner`}
                 >
-                  <span className="text-[10px] font-bold opacity-80">{cfg.label}</span>
-                  <span className="text-base font-bold">{p.excelencia}%</span>
+                  <span className="text-xl font-black drop-shadow-sm">{cfg.label}</span>
+                  <span className="text-sm font-bold opacity-90">{p.excelencia}%</span>
                 </div>
               </div>
             );
