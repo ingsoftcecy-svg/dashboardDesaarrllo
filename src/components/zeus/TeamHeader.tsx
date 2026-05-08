@@ -187,7 +187,7 @@ export function TeamHeader({ area }: { area: AreaData }) {
           <div className="flex-1 min-w-0 text-center">
             <div className="flex items-center justify-center gap-2 mb-1">
               <AlertCircle className="h-3.5 w-3.5 text-rose-600" />
-              <span className="text-[10px] font-black uppercase tracking-[0.15em] text-rose-600">Peor Equipo</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.15em] text-rose-600">Equipo Foco</span>
             </div>
             <h2 className="truncate text-xl font-black text-slate-800 uppercase leading-none mb-3">{area.worstTeam?.name || "N/A"}</h2>
             <div className="space-y-1">
