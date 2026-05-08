@@ -1,10 +1,41 @@
-import { Factory, Download, Medal, AlertCircle } from "lucide-react";
+import { Factory, Download, Medal, AlertCircle, Maximize, Minimize } from "lucide-react";
+import { useState, useEffect } from "react";
 import type { AreaData } from "@/data/zeus";
 import { cn } from "@/lib/utils";
 import { exportToPDF } from "@/lib/export";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
+function FullscreenButton() {
+  const [isFS, setIsFS] = useState(false);
+
+  useEffect(() => {
+    const handleFSChange = () => setIsFS(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", handleFSChange);
+    return () => document.removeEventListener("fullscreenchange", handleFSChange);
+  }, []);
+
+  const toggleFS = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  return (
+    <button
+      onClick={toggleFS}
+      className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-white transition-all hover:bg-slate-900 hover:scale-105 active:scale-95 shadow-md shadow-slate-900/20"
+      title={isFS ? "Salir de pantalla completa" : "Pantalla completa"}
+    >
+      {isFS ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+    </button>
+  );
+}
 
 export function TeamHeader({ area }: { area: AreaData }) {
   return (
@@ -123,13 +154,16 @@ export function TeamHeader({ area }: { area: AreaData }) {
             <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{area.linea}</div>
             <div className="text-sm font-black text-blue-900 uppercase tracking-tight">VISTA GLOBAL</div>
           </div>
-          <button
-            onClick={() => exportToPDF("dashboard-content", `Reporte_${area.team}`)}
-            className="mt-4 flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-[10px] font-black text-white transition-all hover:bg-blue-700 hover:scale-105 active:scale-95 shadow-md shadow-blue-600/20"
-          >
-            <Download className="h-3 w-3" />
-            PDF
-          </button>
+          <div className="mt-4 flex items-center gap-2">
+            <button
+              onClick={() => exportToPDF("dashboard-content", `Reporte_${area.team}`)}
+              className="flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-[10px] font-black text-white transition-all hover:bg-blue-700 hover:scale-105 active:scale-95 shadow-md shadow-blue-600/20"
+            >
+              <Download className="h-3 w-3" />
+              PDF
+            </button>
+            <FullscreenButton />
+          </div>
         </div>
 
         {/* WORST TEAM CARD */}

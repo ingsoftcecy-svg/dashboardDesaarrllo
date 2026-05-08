@@ -15,6 +15,7 @@ export function useExcelData() {
       try {
         const eaMap: Record<string, { equipo: string; lider: string }> = {};
         const championMap: Record<string, ChampionKey[]> = {};
+        const factorMap: Record<string, AreaData["autonomyFactors"]> = {};
 
         try {
           const baseRes = await fetch(`/0. BASE EQUIPOS AUTÓNOMOS CCZ (3).xlsx?t=${timestamp}`);
@@ -88,6 +89,68 @@ export function useExcelData() {
           console.error("Error loading EABF:", e);
         }
 
+        try {
+          const bpreRes = await fetch(`/BPRE.xlsx?t=${timestamp}`);
+          const bpreBuf = await bpreRes.arrayBuffer();
+          const bpreWb = xlsx.read(bpreBuf, { type: "array" });
+          const bpreRows = xlsx.utils.sheet_to_json(bpreWb.Sheets[bpreWb.SheetNames[0]]) as any[];
+          
+          for (const row of bpreRows) {
+            const rawArea = String(row["ÁREA"] || "").trim();
+            const rawNombre = String(row["NOMBRE"] || "").trim();
+            
+            // Determine area key
+            let areaKey = "";
+            const areaLower = rawArea.toLowerCase();
+            const nombreLower = rawNombre.toLowerCase();
+            const combined = (areaLower + " " + nombreLower).trim();
+
+            if (combined.includes("cocimientos")) areaKey = "Warm Block";
+            else if (combined.includes("bloque frio") || combined.includes("cuartos frios")) areaKey = "Cold Block";
+            else if (combined.includes("mantenimiento")) areaKey = "Brewing Maintenance";
+            
+            // Priority for General if it contains "promedio general" or similar
+            if (combined.includes("promedio general")) areaKey = "General";
+            else if (areaKey === "" && combined.includes("general")) areaKey = "General";
+
+            if (areaKey) {
+              // Helper to find column value by partial name match
+              const getVal = (keyword: string) => {
+                const colName = Object.keys(row).find(key => 
+                  key.toLowerCase().includes(keyword.toLowerCase())
+                );
+                if (!colName) return 0;
+                let val = row[colName];
+                if (typeof val === "string") {
+                  val = val.replace(",", ".");
+                }
+                const num = Number(val);
+                return isNaN(num) ? 0 : num;
+              };
+
+              const factors = {
+                dinamica: getVal("DINÁMICA") || getVal("DINAMICA"),
+                liderazgo: getVal("LIDERAZGO") || getVal("LIDERAZ"),
+                skap: getVal("SKAP"),
+                ato: getVal("ATO"),
+                seguridad: getVal("SEGURIDAD"),
+                quas: getVal("QUAS") || getVal("CALIDAD"),
+                multihab: getVal("MULTIHAB") || getVal("MULTIHA") || getVal("MULTI"),
+                vpo: getVal("VPO"),
+                solucionProb: getVal("SOLUCIÓN") || getVal("SOLUCION") || getVal("PROB"),
+                infraest: getVal("INFRAEST") || getVal("INFRAESTRUCTURA"),
+              };
+
+              // If it's a 'Promedio' row, it should overwrite any previous team-specific data for that area map
+              if (nombreLower.includes("promedio") || areaLower.includes("promedio") || !factorMap[areaKey]) {
+                factorMap[areaKey] = factors;
+              }
+            }
+          }
+        } catch (e) {
+          console.error("Error loading BPRE:", e);
+        }
+
         const response = await fetch(`/DATOS.xlsx?t=${timestamp}`);
         const arrayBuffer = await response.arrayBuffer();
         const workbook = xlsx.read(arrayBuffer, { type: "array" });
@@ -123,13 +186,8 @@ export function useExcelData() {
           const intermedio = calculateAverage(intermediateCols);
           const avanzado = calculateAverage(advancedCols);
           
-          // Use provided Autonomy Score if available, otherwise calculate
-          let autonomyScore = 0;
-          if (row["Autonomy Score"] !== undefined && typeof row["Autonomy Score"] === "number") {
-             autonomyScore = row["Autonomy Score"] * 100;
-          } else {
-             autonomyScore = (basico * 0.5) + (intermedio * 0.35) + (avanzado * 0.15);
-          }
+          // Calculate autonomy score based on weighted components
+          const autonomyScore = (basico * 0.5) + (intermedio * 0.35) + (avanzado * 0.15);
 
           const eaData = eaMap[id] || { equipo: "Sin Equipo", lider: "No asignado" };
 
@@ -145,7 +203,7 @@ export function useExcelData() {
             equipoAutonomo: eaData.equipo,
             lider: eaData.lider,
             lastAssessmentDate: row["Assessment Date"] || row["Last Assessment Date"] || null,
-            ato: id === "32102191" ? 8 : 4
+            ato: 4
           };
         };
 
@@ -220,7 +278,7 @@ export function useExcelData() {
         bloqueFrioOps.sort((a, b) => b.autonomyScore - a.autonomyScore);
         mantenimientoOps.sort((a, b) => b.autonomyScore - a.autonomyScore);
 
-        const buildExcellence = (ops: (Operator & { autonomyScore: number })[]) => {
+        const buildExcellence = (ops: (Operator & { autonomyScore: number })[], areaKey?: string) => {
           if (ops.length === 0) return null;
           
           const sorted = [...ops].sort((a, b) => b.autonomyScore - a.autonomyScore);
@@ -233,8 +291,13 @@ export function useExcelData() {
 
           const totalScore = ops.reduce((sum, op) => sum + op.autonomyScore, 0);
           const excelenciaEquipo = Number((totalScore / ops.length).toFixed(2));
-          const autonomia = Number(((excelenciaEquipo / 100) * 5).toFixed(2));
+          const autonomia = Number(((excelenciaEquipo / 100) * 4).toFixed(2));
           
+          let nivelLabel = "Nivel 1 — Inicial";
+          if (autonomia >= 3.5) nivelLabel = "Nivel 4 — Operación Autónoma";
+          else if (autonomia >= 2.5) nivelLabel = "Nivel 3 — Mejora Autónoma";
+          else if (autonomia >= 1.5) nivelLabel = "Nivel 2 — Mantenimiento Autónomo";
+
           const logros = [
             `${ops.filter(o => o.autonomyScore >= 80).length} operadores con autonomía ≥ 80%`,
             `Promedio de autonomía del equipo: ${excelenciaEquipo}%`,
@@ -264,24 +327,28 @@ export function useExcelData() {
           const bestTeam = teamRankings[0] || undefined;
           const worstTeam = teamRankings[teamRankings.length - 1] || undefined;
 
-          return { podio, excelenciaEquipo, logros, autonomia, bestTeam, worstTeam, teamRankings };
+          // Find factors for this area
+          const nameToLookup = areaKey || ops[0]?._area;
+          const autonomyFactors = factorMap[nameToLookup] || factorMap["General"] || undefined;
+
+          return { podio, excelenciaEquipo, logros, autonomia, nivelLabel, bestTeam, worstTeam, teamRankings, autonomyFactors };
         };
 
-        const cocimientosExc = buildExcellence(cocimientosOps);
+        const cocimientosExc = buildExcellence(cocimientosOps, "Warm Block");
         setCocimientos(prev => ({
           ...prev,
           operadores: cocimientosOps.length > 0 ? cocimientosOps : prev.operadores,
           ...(cocimientosExc ? cocimientosExc : {})
         }));
 
-        const bloqueFrioExc = buildExcellence(bloqueFrioOps);
+        const bloqueFrioExc = buildExcellence(bloqueFrioOps, "Cold Block");
         setBloqueFrio(prev => ({
           ...prev,
           operadores: bloqueFrioOps.length > 0 ? bloqueFrioOps : prev.operadores,
           ...(bloqueFrioExc ? bloqueFrioExc : {})
         }));
 
-        const mantenimientoExc = buildExcellence(mantenimientoOps);
+        const mantenimientoExc = buildExcellence(mantenimientoOps, "Brewing Maintenance");
         setMantenimiento(prev => ({
           ...prev,
           operadores: mantenimientoOps.length > 0 ? mantenimientoOps : prev.operadores,
@@ -290,7 +357,7 @@ export function useExcelData() {
 
         const allOps = [...cocimientosOps, ...bloqueFrioOps, ...mantenimientoOps]
           .sort((a, b) => b.autonomyScore - a.autonomyScore);
-        const generalExc = buildExcellence(allOps);
+        const generalExc = buildExcellence(allOps, "General");
         setGeneral(prev => ({
           ...prev,
           operadores: allOps.length > 0 ? allOps : prev.operadores,

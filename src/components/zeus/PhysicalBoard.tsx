@@ -143,6 +143,115 @@ function PreReqEditor({ operatorId, operatorName, teamName }: { operatorId: stri
   );
 }
 
+function IPMediator({ operatorId, operatorName }: { operatorId: string; operatorName: string }) {
+  const [globalIps, setGlobalIps] = useState<string[]>([]);
+  const [assigned, setAssigned] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Load global list
+    const unsubGlobal = onSnapshot(doc(db, "config", "ips"), (s) => {
+      if (s.exists()) setGlobalIps(s.data().list || []);
+    });
+    // Load operator assignments
+    const unsubOp = onSnapshot(doc(db, "operator_ips", operatorId), (s) => {
+      if (s.exists()) setAssigned(s.data().assigned || []);
+    });
+    return () => { unsubGlobal(); unsubOp(); };
+  }, [operatorId]);
+
+  const toggle = async (ip: string) => {
+    const next = assigned.includes(ip) ? assigned.filter(i => i !== ip) : [...assigned, ip];
+    setAssigned(next);
+    await setDoc(doc(db, "operator_ips", operatorId), { assigned: next, operatorName }, { merge: true });
+  };
+
+  const addGlobal = async (newIp: string) => {
+    const next = [...globalIps, newIp];
+    await setDoc(doc(db, "config", "ips"), { list: next });
+  };
+
+  const removeGlobal = async (ip: string) => {
+    const next = globalIps.filter(i => i !== ip);
+    await setDoc(doc(db, "config", "ips"), { list: next });
+  };
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex flex-wrap gap-1">
+        {assigned.map(ip => (
+          <div key={ip} className="rounded bg-sky-500 px-2 py-0.5 text-[9px] font-bold text-white shadow-sm flex items-center gap-1 group">
+            {ip}
+            <button onClick={() => toggle(ip)} className="hover:text-red-200">×</button>
+          </div>
+        ))}
+      </div>
+      
+      <Dialog>
+        <DialogTrigger asChild>
+          <button className="h-6 w-6 rounded-full bg-sky-50 text-sky-600 hover:bg-sky-100 flex items-center justify-center transition-colors shadow-sm border border-sky-200" title="Gestionar IPs">
+            <ClipboardList className="h-3.5 w-3.5" />
+          </button>
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+          <DialogTitle>Gestionar IPs - {operatorName}</DialogTitle>
+          <div className="space-y-4 py-4">
+            <div>
+              <h4 className="text-xs font-bold uppercase text-slate-400 mb-2">Seleccionar IPs para el operador</h4>
+              <div className="flex flex-wrap gap-2">
+                {globalIps.map(ip => (
+                  <button
+                    key={ip}
+                    onClick={() => toggle(ip)}
+                    className={cn(
+                      "px-2 py-1 rounded text-[10px] font-bold uppercase transition-all",
+                      assigned.includes(ip) ? "bg-[#1a4491] text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                    )}
+                  >
+                    {ip}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t pt-4">
+              <h4 className="text-xs font-bold uppercase text-slate-400 mb-2">Administrar Lista Global (Para todos)</h4>
+              <div className="flex gap-2 mb-3">
+                <input 
+                  type="text" 
+                  id="newIpInput"
+                  placeholder="Nueva IP..." 
+                  className="flex-1 text-xs border rounded px-2 py-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const input = e.currentTarget;
+                      if (input.value) { addGlobal(input.value); input.value = ''; }
+                    }
+                  }}
+                />
+                <button 
+                  onClick={() => {
+                    const input = document.getElementById('newIpInput') as HTMLInputElement;
+                    if (input.value) { addGlobal(input.value); input.value = ''; }
+                  }}
+                  className="bg-green-600 text-white text-[10px] px-2 py-1 rounded font-bold"
+                >AÑADIR</button>
+              </div>
+              <div className="space-y-1">
+                {globalIps.map(ip => (
+                  <div key={ip} className="flex items-center justify-between bg-slate-50 p-1.5 rounded text-[10px] font-medium">
+                    {ip}
+                    <button onClick={() => removeGlobal(ip)} className="text-red-500 hover:text-red-700 font-bold">ELIMINAR</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 export function PhysicalBoard({ operadores }: { operadores: (Operator & { autonomyScore: number })[] }) {
   const [search, setSearch] = useState("");
 
@@ -194,7 +303,7 @@ export function PhysicalBoard({ operadores }: { operadores: (Operator & { autono
         </thead>
         <tbody>
           {filtered.map(({ op, originalIdx }, visIdx) => {
-            const auto5 = ((op.autonomyScore / 100) * 5).toFixed(2);
+            const auto5 = ((op.autonomyScore / 100) * 4).toFixed(2);
             
             let isExpired = false;
             if (op.lastAssessmentDate) {
@@ -421,20 +530,7 @@ export function PhysicalBoard({ operadores }: { operadores: (Operator & { autono
 
                 {/* 6. IPs ASIGNADOS */}
                 <td className="border-b border-r border-slate-200/50 p-2 align-middle">
-                  <div className="flex flex-col gap-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="w-20 text-[9px] font-bold text-slate-500">PRODUCTIVIDAD</span>
-                      <div className="flex-1 rounded bg-sky-500 px-2 py-1 text-[10px] font-bold text-white shadow-sm truncate">
-                        Consumo de energía / OEE
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="w-20 text-[9px] font-bold text-slate-500">CALIDAD</span>
-                      <div className="flex-1 rounded bg-sky-500 px-2 py-1 text-[10px] font-bold text-white shadow-sm truncate">
-                        Control de variables
-                      </div>
-                    </div>
-                  </div>
+                  <IPMediator operatorId={op.id} operatorName={op.nombre} />
                 </td>
 
                 {/* 7. PRE REQUISITOS */}

@@ -52,6 +52,18 @@ export interface AreaData {
   worstTeam?: { name: string; avg: number; leader?: string };
   teamRankings?: { name: string; avg: number; leader?: string }[];
   cumplimientoPorHora: { hora: string; cumplimiento: number }[];
+  autonomyFactors?: {
+    dinamica: number;
+    liderazgo: number;
+    skap: number;
+    ato: number;
+    seguridad: number;
+    quas: number;
+    multihab: number;
+    vpo: number;
+    solucionProb: number;
+    infraest: number;
+  };
 }
 
 const baseHoras = ["06h", "07h", "08h", "09h", "10h", "11h", "12h", "13h"];
@@ -100,6 +112,18 @@ export const cocimientos: AreaData = {
   ],
   excelenciaEquipo: 92,
   cumplimientoPorHora: baseHoras.map((h, i) => ({ hora: h, cumplimiento: [88, 90, 93, 95, 92, 91, 94, 92][i] })),
+  autonomyFactors: {
+    dinamica: 4.0,
+    liderazgo: 4.0,
+    skap: 2.3,
+    ato: 2.1,
+    seguridad: 2.1,
+    quas: 2.6,
+    multihab: 2.6,
+    vpo: 3.0,
+    solucionProb: 3.0,
+    infraest: 4.0,
+  }
 };
 
 export const bloqueFrio: AreaData = {
@@ -146,6 +170,18 @@ export const bloqueFrio: AreaData = {
   ],
   excelenciaEquipo: 95,
   cumplimientoPorHora: baseHoras.map((h, i) => ({ hora: h, cumplimiento: [92, 94, 95, 96, 97, 95, 96, 95][i] })),
+  autonomyFactors: {
+    dinamica: 3.8,
+    liderazgo: 4.0,
+    skap: 3.2,
+    ato: 2.5,
+    seguridad: 3.5,
+    quas: 2.8,
+    multihab: 3.0,
+    vpo: 3.2,
+    solucionProb: 3.5,
+    infraest: 3.8,
+  }
 };
 
 export const mantenimiento: AreaData = {
@@ -166,6 +202,18 @@ export const mantenimiento: AreaData = {
   logros: [],
   excelenciaEquipo: 0,
   cumplimientoPorHora: baseHoras.map((h, i) => ({ hora: h, cumplimiento: [90, 92, 88, 95, 93, 91, 94, 92][i] })),
+  autonomyFactors: {
+    dinamica: 0,
+    liderazgo: 0,
+    skap: 0,
+    ato: 0,
+    seguridad: 0,
+    quas: 0,
+    multihab: 0,
+    vpo: 0,
+    solucionProb: 0,
+    infraest: 0,
+  }
 };
 
 export const championColors: Record<ChampionKey, { bg: string; text: string; label: string }> = {

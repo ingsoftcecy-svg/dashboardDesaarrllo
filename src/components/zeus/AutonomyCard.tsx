@@ -10,30 +10,35 @@ interface Props {
 export function AutonomyCard({ autonomia, nivelLabel }: Props) {
   return (
     <motion.section 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -5 }}
-      transition={{ delay: 0.1 }}
-      className="flex h-full flex-col rounded-xl border border-white/40 bg-white/70 backdrop-blur-md shadow-xl overflow-hidden"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex flex-col rounded-xl border border-slate-200 bg-white shadow-xl overflow-hidden"
     >
-      <header className="flex items-center gap-2 border-b border-slate-100 bg-gradient-to-r from-blue-900 to-blue-800 px-4 py-3 text-white">
-        <Target className="h-5 w-5 text-yellow-400" />
+      <header className="flex items-center gap-3 bg-gradient-to-r from-blue-700 to-blue-800 px-4 py-3 text-white">
+        <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20">
+          <div className="absolute h-5 w-5 rounded-full border-2 border-yellow-400 opacity-50" />
+          <div className="absolute h-3 w-3 rounded-full border-2 border-yellow-400" />
+          <div className="h-1 w-1 rounded-full bg-yellow-400" />
+        </div>
         <div>
-          <h2 className="text-sm font-bold">Nivel de Autonomía</h2>
-          <p className="text-[10px] text-blue-200">Progreso actual del equipo</p>
+          <h2 className="text-sm font-bold uppercase tracking-tight">Nivel de Autonomía</h2>
+          <p className="text-[10px] font-medium text-blue-100/70">Progreso actual del equipo</p>
         </div>
       </header>
 
-      <div className="flex flex-1 items-center justify-center p-6">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <div className="scale-125 transform">
-            <AutonomyGauge value={autonomia} />
-          </div>
-          <div>
-            <div className="text-lg font-bold text-blue-900">{nivelLabel}</div>
-            <div className="mt-2 inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-bold text-yellow-800 border border-yellow-200">
+      <div className="flex flex-1 items-center gap-8 p-6">
+        <div className="flex shrink-0 items-center justify-center">
+          <AutonomyGauge value={autonomia} max={4} size={130} strokeWidth={15} />
+        </div>
+        
+        <div className="flex flex-col justify-center space-y-2">
+          <h3 className="text-xl font-black text-[#1a4491] uppercase tracking-tight leading-tight">
+            {nivelLabel}
+          </h3>
+          <div className="inline-flex w-fit items-center rounded-full bg-yellow-100 px-3 py-1 border border-yellow-200">
+            <span className="text-[10px] font-black text-yellow-800 uppercase tracking-widest">
               META ESPERADA: 4.00
-            </div>
+            </span>
           </div>
         </div>
       </div>

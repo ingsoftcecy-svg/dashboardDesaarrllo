@@ -7,6 +7,7 @@ import { PhysicalBoard } from "@/components/zeus/PhysicalBoard";
 import { ExcellenceCard } from "@/components/zeus/ExcellenceCard";
 import { TeamRankingCard } from "@/components/zeus/TeamRankingCard";
 import { AutonomyCard } from "@/components/zeus/AutonomyCard";
+import { PromedioPorFactorCard } from "@/components/zeus/PromedioPorFactorCard";
 import { useExcelData } from "@/hooks/useExcelData";
 
 export const Route = createFileRoute("/")({
@@ -37,23 +38,28 @@ function Index() {
         <div className="flex flex-col gap-4 p-4">
         <TeamHeader area={area} />
 
-        {/* Top Cards: Excellence, Ranking and Autonomy */}
-        <div className="grid flex-shrink-0 grid-cols-1 gap-4 lg:grid-cols-3 mb-4">
+        {/* Top Section Grid */}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 mb-4">
           <ExcellenceCard
             podio={area.podio}
             logros={area.logros}
             excelenciaEquipo={area.excelenciaEquipo}
           />
+          
           <TeamRankingCard rankings={area.teamRankings} />
-          <AutonomyCard
-            autonomia={area.autonomia}
-            nivelLabel={area.nivelLabel}
-          />
+
+          <div className="flex flex-col gap-4">
+            <AutonomyCard
+              autonomia={area.autonomia}
+              nivelLabel={area.nivelLabel}
+            />
+            <PromedioPorFactorCard area={area} />
+          </div>
         </div>
 
-        {/* Bottom Full-Width Table: Physical Board */}
-        <div className="mt-2 flex-1">
-          <h3 className="mb-3 text-lg font-bold text-slate-800">Matriz SKAP</h3>
+        {/* Bottom Section: Full-Width SKAP Matrix */}
+        <div className="mt-4">
+          <h3 className="mb-3 text-lg font-bold text-slate-800 uppercase tracking-tight">Matriz SKAP</h3>
           <PhysicalBoard operadores={area.operadores as any} />
         </div>
       </div>
