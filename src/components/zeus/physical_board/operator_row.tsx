@@ -5,6 +5,8 @@ import type { Operator } from "@/data/zeus";
 import { OperatorAvatar } from "./operator_avatar";
 import { PreReqEditor } from "./pre_req_editor";
 import { IpMediator } from "./ip_mediator";
+import { MultiSkillEditor } from "./multi_skill_editor";
+import { AtoEditor } from "./ato_editor";
 import { get_capability_color, is_assessment_expired, get_initials } from "./utils";
 import { CHAMPION_ICONS, STRINGS } from "./constants";
 import { cn, getLeaderColor } from "@/lib/utils";
@@ -13,9 +15,10 @@ interface OperatorRowProps {
   operator: Operator & { autonomyScore: number };
   original_index: number;
   visual_index: number;
+  show_ato?: boolean;
 }
 
-export function OperatorRow({ operator, original_index, visual_index }: OperatorRowProps) {
+export function OperatorRow({ operator, original_index, visual_index, show_ato = true }: OperatorRowProps) {
   const autonomy_score = ((operator.autonomyScore / 100) * 4).toFixed(2);
   const is_expired = is_assessment_expired(operator.lastAssessmentDate);
   
@@ -133,7 +136,7 @@ export function OperatorRow({ operator, original_index, visual_index }: Operator
           <div className="flex flex-col items-center gap-1">
             <Dialog>
               <DialogTrigger asChild>
-                <button className="h-10 w-10 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm flex items-center justify-center p-1 transition-transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#1a4491]">
+              <button className="h-20 w-20 overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-lg flex items-center justify-center p-2 transition-transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#1a4491]">
                   <img 
                     src={`/logos/${operator.equipoAutonomo.trim().toUpperCase()}.png`} 
                     alt={operator.equipoAutonomo}
@@ -189,18 +192,11 @@ export function OperatorRow({ operator, original_index, visual_index }: Operator
       </td>
 
       <td className="border-b border-r border-slate-200/50 p-2 align-middle">
-        <div className="flex flex-col gap-1.5">
-          {operator.equipos && operator.equipos.length > 0 ? (
-            operator.equipos.slice(0, 4).map((equipment, i) => (
-              <div key={i} className="rounded bg-sky-400 px-2 py-1 text-[10px] font-bold text-white shadow-sm flex items-center gap-1.5 leading-none">
-                <Wrench className="h-3 w-3 opacity-75" />
-                <span className="truncate">{equipment.toUpperCase()}</span>
-              </div>
-            ))
-          ) : (
-            <div className="text-xs text-slate-400 italic">{STRINGS.NO_EQUIPMENT}</div>
-          )}
-        </div>
+        <MultiSkillEditor 
+          operator_id={operator.id} 
+          operator_name={operator.nombre} 
+          equipos={operator.equipos || []} 
+        />
       </td>
 
       <td className="border-b border-r border-slate-200/50 p-2 align-middle">
@@ -230,14 +226,15 @@ export function OperatorRow({ operator, original_index, visual_index }: Operator
         </div>
       </td>
 
-      <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center">
-        <div className="mx-auto flex w-full max-w-[100px] flex-col overflow-hidden rounded border border-[#1a4491] shadow-sm">
-          <div className="bg-[#1a4491] py-0.5 text-[10px] font-bold text-white uppercase">{STRINGS.ATO}</div>
-          <div className="flex h-10 items-center justify-center bg-slate-200 text-lg font-black text-slate-800">
-            {operator.ato ?? 4}
-          </div>
-        </div>
-      </td>
+      {show_ato && (
+        <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center">
+          <AtoEditor 
+            operator_id={operator.id} 
+            operator_name={operator.nombre} 
+            initial_ato={operator.ato || 4} 
+          />
+        </td>
+      )}
 
       <td className="border-b border-r border-slate-200/50 p-2 align-middle">
         <IpMediator operator_id={operator.id} operator_name={operator.nombre} />

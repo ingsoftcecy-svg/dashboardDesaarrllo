@@ -8,9 +8,10 @@ import { STRINGS } from "./constants";
 
 export interface PhysicalBoardProps {
   operadores: (Operator & { autonomyScore: number })[];
+  show_ato?: boolean;
 }
 
-export function PhysicalBoard({ operadores }: PhysicalBoardProps) {
+export function PhysicalBoard({ operadores, show_ato = true }: PhysicalBoardProps) {
   const [search_query, set_search_query] = useState("");
 
   const filtered_operators = useMemo(() => {
@@ -56,7 +57,7 @@ export function PhysicalBoard({ operadores }: PhysicalBoardProps) {
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-48 text-center z-30">CAPABILITIES</th>
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-48 z-30">MULTI-HABILIDAD</th>
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-40 z-30">CHAMPIONS</th>
-              <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-32 text-center z-30">ATO</th>
+              {show_ato && <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-32 text-center z-30">ATO</th>}
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-64 z-30">IPs ASIGNADOS</th>
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-40 z-30">PRE REQUISITOS</th>
               <th className="sticky top-0 bg-[#1a4491] border-b p-3 w-32 text-center z-30">NIVEL AUTONOMIA</th>
@@ -69,6 +70,7 @@ export function PhysicalBoard({ operadores }: PhysicalBoardProps) {
                 operator={operator} 
                 original_index={original_index} 
                 visual_index={visual_index} 
+                show_ato={show_ato}
               />
             ))}
           </tbody>

@@ -11,7 +11,7 @@ export const CHAMPION_ICONS: Record<ChampionKey, any> = {
   logistica: Truck,
 };
 
-export const PRE_REQUISITES_LIST = ["WVD", "ACADIA", "CORREO", "MANGYVER", "SAP", "CORE", "IAL", "ETO"];
+export const PRE_REQUISITES_LIST = ["WVD", "ACADIA", "CORREO", "MANGYVER", "SAP", "CORE", "IAL", "ETO", "SPLAN", "SUITE 360"];
 
 export const STRINGS = {
   SEARCH_PLACEHOLDER: "Buscar por operador, equipo o líder…",

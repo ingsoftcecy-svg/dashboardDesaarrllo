@@ -65,7 +65,10 @@ function Index() {
             {/* Bottom Section: Full-Width SKAP Matrix */}
             <div className="mt-4">
               <h3 className="mb-3 text-lg font-bold text-slate-800 uppercase tracking-tight">Matriz SKAP</h3>
-              <PhysicalBoard operadores={area.operadores as any} />
+              <PhysicalBoard 
+                operadores={area.operadores as any} 
+                show_ato={tab !== "mantenimiento"}
+              />
             </div>
           </div>
         )}
