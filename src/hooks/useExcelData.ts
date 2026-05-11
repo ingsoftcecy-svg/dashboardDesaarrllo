@@ -203,7 +203,7 @@ export function useExcelData() {
             equipoAutonomo: eaData.equipo,
             lider: eaData.lider,
             lastAssessmentDate: row["Assessment Date"] || row["Last Assessment Date"] || null,
-            ato: 4
+            ato: nombre.toUpperCase().includes("MARIO ALBERTO ZAMARRIPA") ? 8 : (row["ATO"] || 4)
           };
         };
 
