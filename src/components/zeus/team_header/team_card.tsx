@@ -157,7 +157,24 @@ export function TeamCard({ variant, team }: TeamCardProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, x: initial_animation_x }}
-      animate={{ opacity: 1, x: 0 }}
+      animate={{ 
+        opacity: 1, 
+        x: 0,
+        ...(!is_best && {
+          scale: [1, 1.01, 1],
+          boxShadow: [
+            "0 0 0px 0px rgba(244, 63, 94, 0)",
+            "0 0 15px 2px rgba(244, 63, 94, 0.2)",
+            "0 0 0px 0px rgba(244, 63, 94, 0)"
+          ]
+        })
+      }}
+      transition={{
+        x: { duration: 0.5 },
+        opacity: { duration: 0.5 },
+        scale: { repeat: Infinity, duration: 2, ease: "easeInOut" },
+        boxShadow: { repeat: Infinity, duration: 2, ease: "easeInOut" }
+      }}
       className={`relative overflow-hidden flex-1 flex items-center justify-between gap-6 rounded-2xl bg-gradient-to-br p-5 border shadow-sm ${bg_gradient}`}
     >
       {is_best && (
