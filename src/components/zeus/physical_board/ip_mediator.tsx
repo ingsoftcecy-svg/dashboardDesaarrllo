@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, Search, Sparkles, X } from "lucide-react";
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
@@ -9,12 +9,15 @@ import { STRINGS } from "./constants";
 interface IpMediatorProps {
   operator_id: string;
   operator_name: string;
+  team_members: { id: string, name: string }[];
 }
 
-export function IpMediator({ operator_id, operator_name }: IpMediatorProps) {
+export function IpMediator({ operator_id, operator_name, team_members }: IpMediatorProps) {
   const [global_ips, set_global_ips] = useState<string[]>([]);
   const [assigned_ips, set_assigned_ips] = useState<string[]>([]);
+  const [team_ips, set_team_ips] = useState<string[]>([]);
   const [new_ip_input, set_new_ip_input] = useState("");
+  const [search_term, set_search_term] = useState("");
 
   useEffect(() => {
     const unsubscribe_global = onSnapshot(doc(db, "config", "ips"), (snapshot) => {
@@ -34,6 +37,24 @@ export function IpMediator({ operator_id, operator_name }: IpMediatorProps) {
       unsubscribe_operator(); 
     };
   }, [operator_id]);
+
+  useEffect(() => {
+    if (!team_members || team_members.length === 0) {
+      set_team_ips([]);
+      return;
+    }
+
+    const unsubscribes = team_members.map(member => 
+      onSnapshot(doc(db, "operator_ips", member.id), (snapshot) => {
+        if (snapshot.exists()) {
+          const assigned = snapshot.data().assigned || [];
+          set_team_ips(prev => [...new Set([...prev, ...assigned])]);
+        }
+      })
+    );
+
+    return () => unsubscribes.forEach(unsub => unsub());
+  }, [team_members]);
 
   const toggle_assignment = async (ip_address: string) => {
     const next_assignments = assigned_ips.includes(ip_address) 
@@ -66,10 +87,21 @@ export function IpMediator({ operator_id, operator_name }: IpMediatorProps) {
     await setDoc(doc(db, "config", "ips"), { list: next_global_list });
   };
 
+  const filtered_ips = global_ips
+    .filter(ip => ip.toLowerCase().includes(search_term.toLowerCase()))
+    .sort((a, b) => a.localeCompare(b));
+
+  const suggestions = team_ips.filter(ip => !assigned_ips.includes(ip));
+  const filtered_suggestions = suggestions
+    .filter(ip => ip.toLowerCase().includes(search_term.toLowerCase()))
+    .sort((a, b) => a.localeCompare(b));
+
+  const sorted_assigned_ips = [...assigned_ips].sort((a, b) => a.localeCompare(b));
+
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex flex-wrap gap-1">
-        {assigned_ips.map(ip_address => (
+        {sorted_assigned_ips.map(ip_address => (
           <div key={ip_address} className="rounded bg-sky-500 px-2 py-0.5 text-[9px] font-bold text-white shadow-sm flex items-center gap-1 group">
             {ip_address}
             <button onClick={() => toggle_assignment(ip_address)} className="hover:text-red-200">×</button>
@@ -85,11 +117,50 @@ export function IpMediator({ operator_id, operator_name }: IpMediatorProps) {
         </DialogTrigger>
         <DialogContent className="max-w-md">
           <DialogTitle>{STRINGS.MANAGE_IPS_TITLE} - {operator_name}</DialogTitle>
+          
+          <div className="relative mt-2">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            <input 
+              type="text"
+              placeholder="Buscar IP..."
+              value={search_term}
+              onChange={(e) => set_search_term(e.target.value)}
+              className="w-full pl-8 pr-10 py-1.5 text-xs border rounded-md outline-none focus:ring-1 focus:ring-[#1a4491] transition-all"
+            />
+            {search_term && (
+              <button
+                onClick={() => set_search_term("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+
           <div className="space-y-4 py-4">
+            {filtered_suggestions.length > 0 && (
+              <div className="bg-amber-50/50 p-2.5 rounded-xl border border-amber-100/50 shadow-sm">
+                <h4 className="text-[10px] font-black uppercase text-amber-600 mb-2 flex items-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5" /> {STRINGS.TEAM_SUGGESTIONS || "Sugerencias de tu equipo"}
+                </h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {filtered_suggestions.map(ip_address => (
+                    <button
+                      key={ip_address}
+                      onClick={() => toggle_assignment(ip_address)}
+                      className="px-2 py-1 rounded-md text-[10px] font-bold uppercase bg-white text-amber-700 border border-amber-200 hover:bg-amber-100 hover:border-amber-300 transition-all shadow-sm flex items-center gap-1"
+                    >
+                      <span className="text-amber-400 font-black">+</span> {ip_address}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div>
               <h4 className="text-xs font-bold uppercase text-slate-400 mb-2">{STRINGS.SELECT_IPS_SUBTITLE}</h4>
-              <div className="flex flex-wrap gap-2">
-                {global_ips.map(ip_address => (
+              <div className="flex flex-wrap gap-2 max-h-[150px] overflow-y-auto p-1 custom-scrollbar">
+                {filtered_ips.map(ip_address => (
                   <button
                     key={ip_address}
                     onClick={() => toggle_assignment(ip_address)}
@@ -122,8 +193,8 @@ export function IpMediator({ operator_id, operator_name }: IpMediatorProps) {
                   {STRINGS.ADD_BUTTON}
                 </button>
               </div>
-              <div className="space-y-1">
-                {global_ips.map(ip_address => (
+              <div className="space-y-1 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                {filtered_ips.map(ip_address => (
                   <div key={ip_address} className="flex items-center justify-between bg-slate-50 p-1.5 rounded text-[10px] font-medium">
                     {ip_address}
                     <button onClick={() => remove_global_ip(ip_address)} className="text-red-500 hover:text-red-700 font-bold">

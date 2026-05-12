@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { motion } from "framer-motion";
 import type { Operator } from "@/data/zeus";
 import { OperatorRow } from "./operator_row";
@@ -39,8 +39,16 @@ export function PhysicalBoard({ operadores, show_ato = true }: PhysicalBoardProp
           value={search_query}
           onChange={(event) => set_search_query(event.target.value)}
           placeholder={STRINGS.SEARCH_PLACEHOLDER}
-          className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-700 shadow-sm placeholder:text-slate-400 focus:border-[#1a4491] focus:outline-none focus:ring-2 focus:ring-[#1a4491]/20 transition-colors"
+          className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-10 text-sm text-slate-700 shadow-sm placeholder:text-slate-400 focus:border-[#1a4491] focus:outline-none focus:ring-2 focus:ring-[#1a4491]/20 transition-colors"
         />
+        {search_query && (
+          <button
+            onClick={() => set_search_query("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       <motion.div 
@@ -71,6 +79,10 @@ export function PhysicalBoard({ operadores, show_ato = true }: PhysicalBoardProp
                 original_index={original_index} 
                 visual_index={visual_index} 
                 show_ato={show_ato}
+                team_members={operadores
+                  .filter(op => op.equipoAutonomo && op.equipoAutonomo === operator.equipoAutonomo && op.id !== operator.id)
+                  .map(op => ({ id: op.id, name: op.nombre }))
+                }
               />
             ))}
           </tbody>

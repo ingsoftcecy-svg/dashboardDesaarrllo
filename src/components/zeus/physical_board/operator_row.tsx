@@ -16,9 +16,10 @@ interface OperatorRowProps {
   original_index: number;
   visual_index: number;
   show_ato?: boolean;
+  team_members: { id: string, name: string }[];
 }
 
-export function OperatorRow({ operator, original_index, visual_index, show_ato = true }: OperatorRowProps) {
+export function OperatorRow({ operator, original_index, visual_index, show_ato = true, team_members }: OperatorRowProps) {
   const autonomy_score = ((operator.autonomyScore / 100) * 4).toFixed(2);
   const is_expired = is_assessment_expired(operator.lastAssessmentDate);
   
@@ -237,7 +238,11 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
       )}
 
       <td className="border-b border-r border-slate-200/50 p-2 align-middle">
-        <IpMediator operator_id={operator.id} operator_name={operator.nombre} />
+        <IpMediator 
+          operator_id={operator.id} 
+          operator_name={operator.nombre} 
+          team_members={team_members}
+        />
       </td>
 
       <td className="border-b border-r border-slate-200/50 p-2 align-middle">

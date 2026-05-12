@@ -33,4 +33,5 @@ export const STRINGS = {
   LEADER_LABEL: "Líder:",
   TEAM_LOGO_OFFICIAL: "Logo Oficial del Equipo",
   LOGO_FALLBACK: "LOGO",
+  TEAM_SUGGESTIONS: "Sugerencias de tu equipo",
 };

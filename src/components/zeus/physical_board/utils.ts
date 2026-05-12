@@ -6,16 +6,17 @@ export function get_initials(name: string): string {
 }
 
 export function get_capability_color(value: number): string {
-  if (value >= 90) {
+  const rounded = Math.round(value);
+  if (rounded >= 90) {
     return "bg-green-500 text-white";
   }
-  if (value >= 70) {
+  if (rounded >= 70) {
     return "bg-green-400 text-slate-800";
   }
-  if (value >= 50) {
+  if (rounded >= 50) {
     return "bg-yellow-400 text-slate-800";
   }
-  if (value >= 30) {
+  if (rounded >= 30) {
     return "bg-orange-500 text-white";
   }
   return "bg-red-500 text-white";
