@@ -129,7 +129,7 @@ export function TeamCard({ variant, team }: TeamCardProps) {
   const logo_section = (
     <Dialog>
       <DialogTrigger asChild>
-        <button className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white border-2 shadow-lg p-2 overflow-hidden transition-transform hover:scale-105 active:scale-95 ${avatar_border}`}>
+        <button className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white border shadow-lg p-0.5 overflow-hidden transition-transform hover:scale-105 active:scale-95 ${avatar_border}`}>
           <img 
             src={`/logos/${team_name.trim().toUpperCase()}.png`} 
             alt={team_name}

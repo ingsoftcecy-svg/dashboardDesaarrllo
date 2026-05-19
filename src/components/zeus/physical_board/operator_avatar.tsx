@@ -7,11 +7,11 @@ interface OperatorAvatarProps {
 }
 
 export function OperatorAvatar({ operator_name }: OperatorAvatarProps) {
-  const [image_src, set_image_src] = useState(`/fotos/${operator_name.trim()}.jpeg?t=${Date.now()}`);
+  const [image_src, set_image_src] = useState(`/fotos/${operator_name.trim()}.jpeg?v=2`);
 
   const handle_image_error = () => {
     if (image_src.includes('.jpeg')) {
-      set_image_src(`/fotos/${operator_name.trim()}.png?t=${Date.now()}`);
+      set_image_src(`/fotos/${operator_name.trim()}.png?v=2`);
     }
   };
 

@@ -270,6 +270,9 @@ export function useExcelData() {
              if (op.equipoAutonomo === "Sin Equipo" || !op.equipoAutonomo) {
                op.equipoAutonomo = "LOS NAHUALES";
              }
+             if (op.equipoAutonomo.toUpperCase() === "LOS NAHUALES") {
+               op.lider = "LUIS MANUEL GARCIA VICTORIO";
+             }
              mantenimientoOps.push(op);
            }
         });

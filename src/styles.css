@@ -199,3 +199,35 @@
     background: #94a3b8;
   }
 }
+
+@media print {
+  .no-pdf, 
+  nav, 
+  header, 
+  button {
+    display: none !important;
+  }
+
+  body {
+    background-color: white !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  #dashboard-content {
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .rounded-xl {
+    border-radius: 0 !important;
+  }
+
+  .shadow-xl, .shadow-lg, .shadow-md {
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+}

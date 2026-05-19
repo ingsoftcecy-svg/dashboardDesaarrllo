@@ -73,13 +73,13 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             <DialogContent className="max-w-sm sm:max-w-md bg-white p-6 rounded-2xl border-none shadow-2xl flex flex-col items-center">
               <div className="w-full aspect-square relative rounded-xl overflow-hidden bg-slate-100 shadow-inner flex items-center justify-center">
                 <img 
-                  src={`/fotos/${operator.nombre.trim()}.jpeg?t=${Date.now()}`} 
+                  src={`/fotos/${operator.nombre.trim()}.jpeg?v=2`} 
                   alt={operator.nombre} 
                   className="w-full h-full object-cover" 
                   onError={(e) => {
                     const target = e.currentTarget as HTMLImageElement;
                     if (!target.src.includes('.png')) {
-                      target.src = `/fotos/${operator.nombre.trim()}.png?t=${Date.now()}`;
+                      target.src = `/fotos/${operator.nombre.trim()}.png?v=2`;
                       return;
                     }
                     target.style.display = 'none';
@@ -137,7 +137,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
           <div className="flex flex-col items-center gap-1">
             <Dialog>
               <DialogTrigger asChild>
-              <button className="h-20 w-20 overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-lg flex items-center justify-center p-2 transition-transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#1a4491]">
+              <button className="h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg flex items-center justify-center p-1 transition-transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#1a4491]">
                   <img 
                     src={`/logos/${operator.equipoAutonomo.trim().toUpperCase()}.png`} 
                     alt={operator.equipoAutonomo}

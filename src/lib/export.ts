@@ -1,38 +1,57 @@
 import jsPDF from "jspdf";
-import { toPng } from "html-to-image";
+import html2canvas from "html2canvas";
 
 export async function exportToPDF(elementId: string, filename: string) {
   const element = document.getElementById(elementId);
-  if (!element) return;
+  if (!element) {
+    console.error(`Element with id "${elementId}" not found`);
+    return;
+  }
+
+  console.log("Starting PDF generation with html2canvas for:", elementId);
+
+  // Add a class to indicate export is in progress
+  element.classList.add("pdf-exporting");
 
   try {
-    // html-to-image handles oklch and modern CSS better than html2canvas
-    const dataUrl = await toPng(element, {
-      cacheBust: true,
+    // html2canvas is often more robust for large tables
+    const canvas = await html2canvas(element, {
+      scale: 1, // Reduced to 1 to ensure it fits within browser limits
+      useCORS: true,
+      logging: false,
       backgroundColor: "#f8fafc",
-      style: {
-        // Ensure the element is visible and has correct dimensions
-        borderRadius: "0",
+      ignoreElements: (node) => {
+        return node.classList.contains("no-pdf");
+      },
+      // Remove specific dimensions to let html2canvas handle it naturally
+      scrollX: 0,
+      scrollY: 0,
+      onclone: (clonedDoc) => {
+        const clonedElement = clonedDoc.getElementById(elementId);
+        if (clonedElement) {
+          clonedElement.style.overflow = "visible";
+          clonedElement.style.height = "auto";
+        }
       }
     });
 
-    // Create an image object to get the dimensions
-    const img = new Image();
-    img.src = dataUrl;
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.7); // Higher compression
     
-    img.onload = () => {
-      const pdf = new jsPDF({
-        orientation: img.width > img.height ? "landscape" : "portrait",
-        unit: "px",
-        format: [img.width, img.height],
-      });
+    const pdf = new jsPDF({
+      orientation: canvas.width > canvas.height ? "landscape" : "portrait",
+      unit: "px",
+      format: [canvas.width, canvas.height],
+    });
 
-      pdf.addImage(dataUrl, "PNG", 0, 0, img.width, img.height);
-      pdf.save(`${filename}.pdf`);
-    };
+    pdf.addImage(dataUrl, "JPEG", 0, 0, canvas.width, canvas.height);
+    pdf.save(`${filename}.pdf`);
+    console.log("PDF saved successfully:", filename);
+
   } catch (error) {
     console.error("Error generating PDF:", error);
-    // Fallback to print if PDF generation fails
+    alert("La generación del PDF está tomando demasiado tiempo o el tablero es muy grande. Se abrirá el menú de impresión como alternativa.");
     window.print();
+  } finally {
+    element.classList.remove("pdf-exporting");
   }
 }

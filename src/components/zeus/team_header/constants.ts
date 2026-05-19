@@ -11,6 +11,4 @@ export const STRINGS = {
   TEAM_LEADER: "LÍDER DE EQUIPO",
   NOT_AVAILABLE: "N/A",
   GLOBAL_VIEW: "VISTA GLOBAL",
-  PDF_BUTTON: "PDF",
-  REPORT_PREFIX: "Reporte_",
 };
