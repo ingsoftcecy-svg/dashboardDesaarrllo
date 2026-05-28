@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Beer, Clock } from "lucide-react";
+import { Beer, Clock, Settings } from "lucide-react"; // ⚙️ Importado Settings
 import { cn } from "@/lib/utils";
+import { useNavigate } from '@tanstack/react-router';
 
 export type AreaTab = "general" | "cocimientos" | "bloqueFrio" | "mantenimiento";
 
@@ -19,6 +20,7 @@ function useClock() {
 }
 
 export function TopNav({ tab, onTabChange }: Props) {
+  const navigate = useNavigate();
   const now = useClock();
   const time = new Intl.DateTimeFormat("es-MX", {
     hour: "2-digit",
@@ -73,7 +75,7 @@ export function TopNav({ tab, onTabChange }: Props) {
         </nav>
 
         {/* Right cluster */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5"> {/* Se aumentó ligeramente el gap de 4 a 5 */}
           <div className="hidden text-right md:block min-w-[120px]">
             {mounted && (
               <>
@@ -85,6 +87,19 @@ export function TopNav({ tab, onTabChange }: Props) {
               </>
             )}
           </div>
+
+          {/* ⚙️ Icono de Configuración interactivo al lado del reloj */}
+          <button
+            aria-label="Configuración"
+            className="text-blue-200 hover:text-yellow-400 transition-colors p-1.5 rounded-lg hover:bg-blue-800/50 outline-none"
+            onClick={() => {
+              // Aquí puedes redirigir usando TanStack Router si lo necesitas
+              navigate({ to: '/cargar-datos' })
+              console.log("Abrir configurador de datos (ruta: /cargar-datos)");
+            }}
+          >
+            <Settings className="h-5 w-5" />
+          </button>
         </div>
       </div>
     </header>

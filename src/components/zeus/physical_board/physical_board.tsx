@@ -6,12 +6,14 @@ import { OperatorRow } from "./operator_row";
 import { normalize_string } from "./utils";
 import { STRINGS } from "./constants";
 
+
 export interface PhysicalBoardProps {
   operadores: (Operator & { autonomyScore: number })[];
   show_ato?: boolean;
+  puedeEditar?: boolean; // Nueva prop para controlar la edición
 }
 
-export function PhysicalBoard({ operadores, show_ato = true }: PhysicalBoardProps) {
+export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false }: PhysicalBoardProps) {
   const [search_query, set_search_query] = useState("");
 
   const filtered_operators = useMemo(() => {
@@ -79,11 +81,12 @@ export function PhysicalBoard({ operadores, show_ato = true }: PhysicalBoardProp
                 original_index={original_index} 
                 visual_index={visual_index} 
                 show_ato={show_ato}
+                puedeEditar={puedeEditar}
                 team_members={operadores
                   .filter(op => op.equipoAutonomo && op.equipoAutonomo === operator.equipoAutonomo && op.id !== operator.id)
                   .map(op => ({ id: op.id, name: op.nombre }))
                 }
-              />
+              />  
             ))}
           </tbody>
         </table>

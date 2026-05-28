@@ -17,9 +17,10 @@ interface OperatorRowProps {
   visual_index: number;
   show_ato?: boolean;
   team_members: { id: string, name: string }[];
+  puedeEditar?: boolean; // Nueva prop para controlar la edición
 }
 
-export function OperatorRow({ operator, original_index, visual_index, show_ato = true, team_members }: OperatorRowProps) {
+export function OperatorRow({ operator, original_index, visual_index, show_ato = true, team_members, puedeEditar = false }: OperatorRowProps) {
   const autonomy_score = ((operator.autonomyScore / 100) * 4).toFixed(2);
   const is_expired = is_assessment_expired(operator.lastAssessmentDate);
   
@@ -197,6 +198,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
           operator_id={operator.id} 
           operator_name={operator.nombre} 
           equipos={operator.equipos || []} 
+          puedeEditar={puedeEditar}
         />
       </td>
 
@@ -233,6 +235,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             operator_id={operator.id} 
             operator_name={operator.nombre} 
             initial_ato={operator.ato || 4} 
+            puedeEditar={puedeEditar}
           />
         </td>
       )}
@@ -242,11 +245,17 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
           operator_id={operator.id} 
           operator_name={operator.nombre} 
           team_members={team_members}
+          puedeEditar={puedeEditar}
         />
       </td>
 
       <td className="border-b border-r border-slate-200/50 p-2 align-middle">
-        <PreReqEditor operator_id={operator.id} operator_name={operator.nombre} team_name={operator.equipoAutonomo || STRINGS.NO_TEAM} />
+        <PreReqEditor 
+          operator_id={operator.id}
+          operator_name={operator.nombre} 
+          team_name={operator.equipoAutonomo || STRINGS.NO_TEAM} 
+          puedeEditar={puedeEditar}
+        />
       </td>
 
       <td className="border-b p-3 align-middle text-center">

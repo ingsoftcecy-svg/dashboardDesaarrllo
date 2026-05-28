@@ -3,13 +3,14 @@ import { useState } from "react";
 import { TopNav, type AreaTab } from "@/components/zeus/TopNav";
 import { TeamHeader } from "@/components/zeus/team_header";
 import { PhysicalBoard } from "@/components/zeus/physical_board";
-
 import { ExcellenceCard } from "@/components/zeus/excellence_card";
 import { TeamRankingCard } from "@/components/zeus/team_ranking_card";
 import { AutonomyCard } from "@/components/zeus/autonomy_card";
 import { PromedioPorFactorCard } from "@/components/zeus/promedio_por_factor_card";
 import { useExcelData } from "@/hooks/useExcelData";
 import { DashboardSkeleton } from "@/components/zeus/dashboard_skeleton";
+import { Settings } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -29,19 +30,22 @@ function Index() {
   const [tab, setTab] = useState<AreaTab>("general");
   const { general, cocimientos, bloqueFrio, mantenimiento, loading } = useExcelData();
   
+  const usuario = useAuth();
+  const puedeEditar = usuario !== null; // Solo los usuarios autenticados pueden editar
+
   const area = tab === "general" ? general : tab === "cocimientos" ? cocimientos : tab === "bloqueFrio" ? bloqueFrio : mantenimiento;
 
   return (
     <div className="flex h-screen flex-col bg-slate-100 overflow-hidden">
       <TopNav tab={tab} onTabChange={setTab} />
-
+      
       <main id="dashboard-content" className="flex-1 overflow-auto">
         {loading ? (
           <DashboardSkeleton />
         ) : (
           <div className="flex flex-col gap-4 p-4">
             <TeamHeader area={area} />
-
+            
             {/* Top Section Grid */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 mb-4">
               <ExcellenceCard
@@ -68,11 +72,16 @@ function Index() {
               <PhysicalBoard 
                 operadores={area.operadores as any} 
                 show_ato={tab !== "mantenimiento"}
+                puedeEditar={puedeEditar}
               />
             </div>
+            
           </div>
+          
         )}
       </main>
     </div>
   );
 }
+ 
+

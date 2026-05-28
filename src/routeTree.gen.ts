@@ -9,8 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ConfigurarPlantillaRouteImport } from './routes/configurar-plantilla'
+import { Route as CargarDatosRouteImport } from './routes/cargar-datos'
+import { Route as AnalisisComparativoRouteImport } from './routes/analisis-comparativo'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ConfigurarPlantillaRoute = ConfigurarPlantillaRouteImport.update({
+  id: '/configurar-plantilla',
+  path: '/configurar-plantilla',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CargarDatosRoute = CargarDatosRouteImport.update({
+  id: '/cargar-datos',
+  path: '/cargar-datos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalisisComparativoRoute = AnalisisComparativoRouteImport.update({
+  id: '/analisis-comparativo',
+  path: '/analisis-comparativo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +37,70 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analisis-comparativo': typeof AnalisisComparativoRoute
+  '/cargar-datos': typeof CargarDatosRoute
+  '/configurar-plantilla': typeof ConfigurarPlantillaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analisis-comparativo': typeof AnalisisComparativoRoute
+  '/cargar-datos': typeof CargarDatosRoute
+  '/configurar-plantilla': typeof ConfigurarPlantillaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analisis-comparativo': typeof AnalisisComparativoRoute
+  '/cargar-datos': typeof CargarDatosRoute
+  '/configurar-plantilla': typeof ConfigurarPlantillaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/analisis-comparativo'
+    | '/cargar-datos'
+    | '/configurar-plantilla'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/analisis-comparativo' | '/cargar-datos' | '/configurar-plantilla'
+  id:
+    | '__root__'
+    | '/'
+    | '/analisis-comparativo'
+    | '/cargar-datos'
+    | '/configurar-plantilla'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalisisComparativoRoute: typeof AnalisisComparativoRoute
+  CargarDatosRoute: typeof CargarDatosRoute
+  ConfigurarPlantillaRoute: typeof ConfigurarPlantillaRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/configurar-plantilla': {
+      id: '/configurar-plantilla'
+      path: '/configurar-plantilla'
+      fullPath: '/configurar-plantilla'
+      preLoaderRoute: typeof ConfigurarPlantillaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cargar-datos': {
+      id: '/cargar-datos'
+      path: '/cargar-datos'
+      fullPath: '/cargar-datos'
+      preLoaderRoute: typeof CargarDatosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analisis-comparativo': {
+      id: '/analisis-comparativo'
+      path: '/analisis-comparativo'
+      fullPath: '/analisis-comparativo'
+      preLoaderRoute: typeof AnalisisComparativoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +113,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalisisComparativoRoute: AnalisisComparativoRoute,
+  CargarDatosRoute: CargarDatosRoute,
+  ConfigurarPlantillaRoute: ConfigurarPlantillaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

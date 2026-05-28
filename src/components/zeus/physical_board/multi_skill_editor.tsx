@@ -3,17 +3,20 @@ import { Star, Check } from "lucide-react";
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
+import{useAuth} from '@/lib/auth';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface MultiSkillEditorProps {
   operator_id: string;
   operator_name: string;
   equipos: string[];
+  puedeEditar?: boolean; // Nueva prop para controlar la edición
 }
 
 
 
-export function MultiSkillEditor({ operator_id, operator_name, equipos }: MultiSkillEditorProps) {
+export function MultiSkillEditor({ operator_id, operator_name, equipos, puedeEditar = false }: MultiSkillEditorProps) {
+  const usuario = useAuth();
   const [config, set_config] = useState<{ primary?: string }>(() => {
     try {
       const stored = localStorage.getItem(`mskill_${operator_id}`);
@@ -38,6 +41,7 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos }: MultiS
   const [is_saving, set_is_saving] = useState(false);
 
   const save_config = async (primary: string | undefined) => {
+    if (!puedeEditar) return; // Seguridad adicional para evitar cambios si no se puede editar
     set_is_saving(true);
     const new_config = { primary };
     set_config(new_config);
@@ -63,7 +67,11 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos }: MultiS
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="flex flex-col gap-1.5 w-full hover:bg-slate-100 p-1 rounded transition-colors text-left group">
+
+        <button className={cn(
+          "flex flex-col gap-1.5 w-full hover:bg-slate-100 p-1 rounded transition-colors text-left group",
+          puedeEditar ? "cursor-pointer" : "cursor-default opacity-75"
+        )}>
           {sorted_equipos.length > 0 ? (
             sorted_equipos.slice(0, 4).map((eq, i) => {
               const is_primary = config.primary === eq || (equipos.length === 1);
@@ -85,7 +93,9 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos }: MultiS
           ) : (
             <div className="text-xs text-slate-400 italic">Sin equipos</div>
           )}
-          <div className="hidden group-hover:block text-[8px] text-blue-500 font-bold mt-1 uppercase text-center w-full">Configurar Principal</div>
+          {puedeEditar && (
+            <div className="hidden group-hover:block text-[8px] text-blue-500 font-bold mt-1 uppercase text-center w-full">Configurar Principal</div>
+          )}
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-md bg-white p-6 rounded-xl">
@@ -94,7 +104,12 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos }: MultiS
             <DialogTitle className="text-lg font-bold text-slate-800">
               Personalizar Multihabilidad
             </DialogTitle>
-            <p className="text-xs text-slate-500">Define la habilidad principal de {operator_name}.</p>
+            <p className="text-xs text-slate-500">
+              {puedeEditar  
+                ? `Define la habilidad principal de ${operator_name}.` 
+                : "No puedes editar esta configuración."
+              }
+            </p>
           </div>
           {is_saving && (
             <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-600 animate-pulse border border-emerald-100">
@@ -110,12 +125,14 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos }: MultiS
             {equipos.map((eq) => (
               <button
                 key={eq}
+                disabled={!puedeEditar}
                 onClick={() => save_config(eq)}
                 className={cn(
                   "flex items-center justify-between p-3 rounded-lg border transition-all",
                   config.primary === eq 
                     ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500" 
-                    : "border-slate-200 hover:border-slate-300 bg-white"
+                    : "border-slate-200 hover:border-slate-300 bg-white",
+                  puedeEditar ? "hover:border-slate-300 cursor-pointer" : "cursor-default opacity-75"
                 )}
               >
                 <span className="text-sm font-bold text-slate-700">{eq}</span>

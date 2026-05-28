@@ -3,6 +3,7 @@ import { ClipboardList, Search, Sparkles, X } from "lucide-react";
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
+import { useAuth } from '@/lib/auth';
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { STRINGS } from "./constants";
 
@@ -10,9 +11,12 @@ interface IpMediatorProps {
   operator_id: string;
   operator_name: string;
   team_members: { id: string, name: string }[];
+  puedeEditar?: boolean; // Nueva prop para controlar la edición
 }
 
-export function IpMediator({ operator_id, operator_name, team_members }: IpMediatorProps) {
+export function IpMediator({ operator_id, operator_name, team_members, puedeEditar }: IpMediatorProps) {
+  const usuario = useAuth();
+// Solo los usuarios autenticados pueden editar
   const [global_ips, set_global_ips] = useState<string[]>([]);
   const [assigned_ips, set_assigned_ips] = useState<string[]>([]);
   const [team_ips, set_team_ips] = useState<string[]>([]);
@@ -104,20 +108,30 @@ export function IpMediator({ operator_id, operator_name, team_members }: IpMedia
         {sorted_assigned_ips.map(ip_address => (
           <div key={ip_address} className="rounded bg-sky-500 px-2 py-0.5 text-[9px] font-bold text-white shadow-sm flex items-center gap-1 group">
             {ip_address}
-            <button onClick={() => toggle_assignment(ip_address)} className="hover:text-red-200">×</button>
+            {puedeEditar && (
+              <button onClick={() => toggle_assignment(ip_address)} className="hover:text-red-200">×</button>
+            )}
           </div>
         ))}
       </div>
-      
+    
       <Dialog>
         <DialogTrigger asChild>
-          <button className="h-6 w-6 rounded-full bg-sky-50 text-sky-600 hover:bg-sky-100 flex items-center justify-center transition-colors shadow-sm border border-sky-200" title={STRINGS.MANAGE_IPS_TITLE}>
+          <button
+            disabled={!puedeEditar}
+            className={cn(
+              "flex items-center gap-1 px-2 py-1 text-[10px] font-bold rounded transition-colors",
+              puedeEditar 
+                ? "bg-[#1a4491] text-white hover:bg-blue-600"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            )}
+            title={STRINGS.MANAGE_IPS_TITLE} 
+          >
             <ClipboardList className="h-3.5 w-3.5" />
           </button>
         </DialogTrigger>
         <DialogContent className="max-w-md">
           <DialogTitle>{STRINGS.MANAGE_IPS_TITLE} - {operator_name}</DialogTitle>
-          
           <div className="relative mt-2">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
             <input 

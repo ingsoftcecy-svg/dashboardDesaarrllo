@@ -3,15 +3,18 @@ import { Check } from "lucide-react";
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
+import{useAuth} from '@/lib/auth';
 import { PRE_REQUISITES_LIST } from "./constants";
 
 interface PreReqEditorProps {
   operator_id: string;
   operator_name: string;
   team_name: string;
+  puedeEditar?: boolean; // Nueva prop para controlar la edición
 }
 
-export function PreReqEditor({ operator_id, operator_name, team_name }: PreReqEditorProps) {
+export function PreReqEditor({ operator_id, operator_name, team_name, puedeEditar = false }: PreReqEditorProps) {
+  const usuario = useAuth();
   const [checked_items, set_checked_items] = useState<Record<string, boolean>>(() => {
     try {
       const stored = localStorage.getItem(`prereqs_${operator_id}`);
@@ -45,6 +48,7 @@ export function PreReqEditor({ operator_id, operator_name, team_name }: PreReqEd
   }, [operator_id, operator_name]);
 
   const toggle_requirement = async (requirement: string) => {
+    if (!puedeEditar) return; // Seguridad adicional para evitar cambios si no se puede editar
     try {
       const next_state = !checked_items[requirement];
       set_checked_items(previous => ({ ...previous, [requirement]: next_state }));
@@ -76,15 +80,24 @@ export function PreReqEditor({ operator_id, operator_name, team_name }: PreReqEd
         <button
           key={requirement}
           onClick={() => toggle_requirement(requirement)}
-          className="flex items-center gap-1.5 focus:outline-none hover:bg-slate-100 p-0.5 rounded transition-colors text-left"
+          className={cn(
+            "flex items-center gap-1.5 focus:outline-none hover:bg-slate-100 p-0.5 rounded transition-colors text-left w-full",
+            puedeEditar 
+              ? "hover:bg-slate-100 cursor-pointer"
+              : "cursor-default opacity-75"
+          )}
         >
           <div className={cn(
-            "flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[3px] border",
-            checked_items[requirement] ? "bg-[#1a4491] border-[#1a4491] text-white" : "border-slate-300 bg-white"
+            "flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[3px] border transition-all",
+            checked_items[requirement] ?
+              (puedeEditar ? "bg-[#1a4491] border-[#1a4491] text-white" : "border-slate-300 bg-white")
+              : "border-slate-300 bg-white"
           )}>
             {checked_items[requirement] && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
           </div>
-          {requirement}
+          <span className={cn(!puedeEditar && checked_items[requirement] ? "text-slate-500" : "")}>
+            {requirement}
+          </span>
         </button>
       ))}
     </div>

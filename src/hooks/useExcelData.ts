@@ -18,12 +18,15 @@ export function useExcelData() {
         const factorMap: Record<string, AreaData["autonomyFactors"]> = {};
 
         try {
+          
           const baseRes = await fetch(`/0. BASE EQUIPOS AUTÓNOMOS CCZ (3).xlsx?t=${timestamp}`);
           const baseBuf = await baseRes.arrayBuffer();
           const baseWb = xlsx.read(baseBuf, { type: "array" });
+        // nombre de la hoja de excel 
           const baseRows = xlsx.utils.sheet_to_json(baseWb.Sheets["BD_ZAC_OFICIAL"]) as any[];
           
           for (const row of baseRows) {
+            // id de los empleados, fotos, 
             const id = row["ID Sharp"] ? String(row["ID Sharp"]) : null;
             if (id) {
               const rawChamp = row["CHAMPION"];
