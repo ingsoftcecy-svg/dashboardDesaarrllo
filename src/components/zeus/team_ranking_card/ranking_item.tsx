@@ -4,6 +4,9 @@ import { cn } from "@/lib/utils";
 import { get_initials } from "./utils";
 import { STRINGS } from "./constants";
 import { LeaderAvatar } from "./leader_avatar";
+import { TeamHistoryDialog } from "../physical_board/team_history_dialog";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+
 
 interface TeamRanking {
   name: string;
@@ -16,9 +19,20 @@ interface RankingItemProps {
   index: number;
   is_best: boolean;
   is_worst: boolean;
+  operadores?: any[];
 }
 
-export function RankingItem({ team, index, is_best, is_worst }: RankingItemProps) {
+export function RankingItem({ team, index, is_best, is_worst, operadores = [] }: RankingItemProps) {
+  const members = (operadores || [])
+    .filter(op => op.equipoAutonomo && op.equipoAutonomo.trim().toUpperCase() === team.name.trim().toUpperCase())
+    .map(op => ({
+      id: op.id,
+      name: op.nombre,
+      puesto: op.puesto,
+      score: op.autonomyScore,
+      lastAssessmentDate: op.lastAssessmentDate,
+      noEvaluado: op.noEvaluado
+    }));
   const handle_dialog_image_error = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = event.currentTarget;
     if (!target.src.includes('.png')) {
@@ -80,9 +94,19 @@ export function RankingItem({ team, index, is_best, is_worst }: RankingItemProps
         </Dialog>
 
         <div className="min-w-0">
-          <div className="text-[11px] font-bold text-slate-800 truncate uppercase leading-tight">
-            {team.name}
-          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className="text-[11px] font-bold text-slate-800 hover:text-[#1a4491] hover:underline cursor-pointer focus:outline-none truncate uppercase leading-tight block text-left">
+                {team.name}
+              </button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
+              <TeamHistoryDialog 
+                teamName={team.name} 
+                members={members} 
+              />
+            </DialogContent>
+          </Dialog>
           <div className="text-[9px] font-semibold text-slate-500 truncate leading-tight mt-0.5">
             {STRINGS.LEADER_LABEL} {team.leader || "N/A"}
           </div>
@@ -90,15 +114,24 @@ export function RankingItem({ team, index, is_best, is_worst }: RankingItemProps
       </div>
 
       <div className="flex shrink-0 flex-col items-end justify-center ml-2">
-        <div className={cn(
-          "flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold shadow-sm",
-          is_best ? "bg-yellow-100 text-yellow-800 border border-yellow-200" : 
-          is_worst ? "bg-rose-100 text-rose-800 border border-rose-200" :
-          "bg-blue-50 text-blue-800 border border-blue-100"
-        )}>
-          {is_best ? <TrendingUp className="h-3 w-3" /> : is_worst ? <TrendingDown className="h-3 w-3" /> : <Medal className="h-3 w-3" />}
-          {team.avg}%
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className={cn(
+                "flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold shadow-sm cursor-help",
+                is_best ? "bg-yellow-100 text-yellow-800 border border-yellow-200" : 
+                is_worst ? "bg-rose-100 text-rose-800 border border-rose-200" :
+                "bg-blue-50 text-blue-800 border border-blue-100"
+              )}>
+                {is_best ? <TrendingUp className="h-3 w-3" /> : is_worst ? <TrendingDown className="h-3 w-3" /> : <Medal className="h-3 w-3" />}
+                {team.avg}%
+              </div>
+            </TooltipTrigger>
+            <TooltipContent className="bg-slate-950 text-white border border-slate-800 px-3 py-2 text-[11px] max-w-xs font-semibold shadow-xl rounded-lg">
+              <p className="leading-normal">Promedio en vivo: Calculado a partir de las habilidades de los integrantes actuales.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );

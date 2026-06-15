@@ -8,7 +8,7 @@ import { STRINGS } from "./constants";
 
 interface TeamData {
   name: string;
-  leader: string;
+  leader?: string;
   avg: number;
 }
 

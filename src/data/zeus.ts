@@ -15,6 +15,7 @@ export interface Operator {
   equipos?: string[];
   lastAssessmentDate?: string;
   ato?: number;
+  noEvaluado?: boolean;
 }
 
 export interface IPRow {

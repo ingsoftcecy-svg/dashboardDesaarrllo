@@ -54,7 +54,7 @@ function Index() {
                 excelenciaEquipo={area.excelenciaEquipo}
               />
               
-              <TeamRankingCard rankings={area.teamRankings} />
+              <TeamRankingCard rankings={area.teamRankings} operadores={area.operadores} />
 
               <div className="flex flex-col gap-4">
                 <AutonomyCard

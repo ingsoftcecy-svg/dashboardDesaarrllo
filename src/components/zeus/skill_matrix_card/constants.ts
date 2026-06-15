@@ -1,4 +1,4 @@
-import { ShieldAlert, BadgeCheck, Leaf, Wrench } from "lucide-react";
+import { ShieldAlert, BadgeCheck, Leaf, Wrench, ClipboardList, Users, Truck } from "lucide-react";
 import type { ChampionKey } from "@/data/zeus";
 
 export const STRINGS = {
@@ -16,4 +16,7 @@ export const CHAMPION_ICONS: Record<ChampionKey, any> = {
   calidad: BadgeCheck,
   ambiental: Leaf,
   mantenimiento: Wrench,
+  gestion: ClipboardList,
+  gente: Users,
+  logistica: Truck,
 };

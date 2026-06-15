@@ -10,6 +10,14 @@ export interface ReporteMensual {
   base_equipos?: any[];
 }
 
+// Interfaz para documentos de la colección historicos_mensuales
+export interface ReporteMes {
+  mes_anio: string;           // Ej: "2024-05"
+  ultima_actualizacion: string;
+  datos_skap?: any[];
+  bpre?: any[];
+}
+
 /**
  * Recupera todos los registros históricos de la base de datos NoSQL
  * ordenados cronológicamente por identificador de mes.
@@ -37,6 +45,36 @@ export const obtenerTodoElHistorico = async (): Promise<ReporteMensual[]> => {
     
     console.log(`📦 Histórico Mensual Sincronizado (${historial.length} meses encontrados).`);
     return historial; 
+  } catch (error) {
+    console.error("Error al extraer el histórico mensual desde Firestore:", error);
+    throw error;
+  }
+};
+
+/**
+ * Recupera todos los registros de la colección mensual (historicos_mensuales)
+ * ordenados cronológicamente por ID de mes (ej: "2024-05").
+ */
+export const obtenerTodoElHistoricoMensual = async (): Promise<ReporteMes[]> => {
+  try {
+    const mensualRef = collection(db, "historicos_mensuales");
+    const q = query(mensualRef, orderBy("__name__", "asc"));
+    const querySnapshot = await getDocs(q);
+
+    const historial: ReporteMes[] = [];
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      historial.push({
+        mes_anio: data.mes_anio || doc.id,
+        ultima_actualizacion: data.ultima_actualizacion || new Date().toISOString(),
+        datos_skap: data.datos_skap || [],
+        bpre: data.bpre || [],
+      } as ReporteMes);
+    });
+
+    console.log(`📅 Histórico Mensual Sincronizado (${historial.length} meses encontrados).`);
+    return historial;
   } catch (error) {
     console.error("Error al extraer el histórico mensual desde Firestore:", error);
     throw error;

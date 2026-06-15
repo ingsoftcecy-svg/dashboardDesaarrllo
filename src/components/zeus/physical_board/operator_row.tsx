@@ -1,6 +1,8 @@
 import { AlertTriangle, Wrench } from "lucide-react";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { OperatorHistoryDialog } from "./operator_history_dialog";
+import { TeamHistoryDialog } from "./team_history_dialog";
 import type { Operator } from "@/data/zeus";
 import { OperatorAvatar } from "./operator_avatar";
 import { PreReqEditor } from "./pre_req_editor";
@@ -17,10 +19,11 @@ interface OperatorRowProps {
   visual_index: number;
   show_ato?: boolean;
   team_members: { id: string, name: string }[];
+  full_team_members?: { id: string; name: string; puesto: string; score: number; lastAssessmentDate?: string }[];
   puedeEditar?: boolean; // Nueva prop para controlar la edición
 }
 
-export function OperatorRow({ operator, original_index, visual_index, show_ato = true, team_members, puedeEditar = false }: OperatorRowProps) {
+export function OperatorRow({ operator, original_index, visual_index, show_ato = true, team_members, full_team_members = [], puedeEditar = false }: OperatorRowProps) {
   const autonomy_score = ((operator.autonomyScore / 100) * 4).toFixed(2);
   const is_expired = is_assessment_expired(operator.lastAssessmentDate);
   
@@ -59,11 +62,11 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
       transition={{ delay: visual_index * 0.03 }}
       className={cn("group transition-colors", row_class)}
     >
-      <td className="border-b border-r border-slate-200/50 p-3 text-center align-middle font-black text-slate-400">
+      <td className="border-b border-r border-slate-200/50 p-3 text-center align-middle font-black text-slate-400 w-16">
         {original_index + 1}
       </td>
       
-      <td className="border-b border-r border-slate-200/50 p-3 align-middle">
+      <td className="border-b border-r border-slate-200/50 p-3 align-middle w-64">
         <div className="flex items-center gap-3">
           <Dialog>
             <DialogTrigger asChild>
@@ -113,7 +116,20 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               ) : original_index < 5 ? (
                 <span className="text-base">{["🥇", "🥈", "🥉", "⭐", "✨"][original_index]}</span>
               ) : null}
-              {operator.nombre}
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button className="text-left hover:underline hover:text-[#1a4491] focus:outline-none cursor-pointer transition-colors leading-tight">
+                    {operator.nombre}
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
+                  <OperatorHistoryDialog 
+                    operatorName={operator.nombre} 
+                    operatorId={operator.id} 
+                    operatorPuesto={operator.puesto} 
+                  />
+                </DialogContent>
+              </Dialog>
               {is_expired && (
                 <div className="flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-[8px] font-bold text-red-700 uppercase tracking-wider" title={`Última evaluación: ${operator.lastAssessmentDate}`}>
                   <AlertTriangle className="h-2.5 w-2.5" />
@@ -133,7 +149,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
         </div>
       </td>
 
-      <td className="border-b border-r border-slate-200/50 p-3 align-middle text-center">
+      <td className="border-b border-r border-slate-200/50 p-3 align-middle text-center w-40">
         {operator.equipoAutonomo ? (
           <div className="flex flex-col items-center gap-1">
             <Dialog>
@@ -161,39 +177,49 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                 </div>
               </DialogContent>
             </Dialog>
-            <div className="text-[9px] font-bold text-[#1a4491] uppercase leading-tight max-w-[100px] truncate">
-              {operator.equipoAutonomo}
-            </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="text-[9px] font-bold text-[#1a4491] uppercase hover:underline cursor-pointer focus:outline-none leading-tight max-w-[100px] truncate">
+                  {operator.equipoAutonomo}
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
+                <TeamHistoryDialog 
+                  teamName={operator.equipoAutonomo} 
+                  members={full_team_members} 
+                />
+              </DialogContent>
+            </Dialog>
           </div>
         ) : (
           <span className="text-slate-400 italic font-normal text-[10px]">{STRINGS.NO_TEAM}</span>
         )}
       </td>
 
-      <td className="border-b border-r border-slate-200/50 p-2 align-middle">
+      <td className="border-b border-r border-slate-200/50 p-2 align-middle w-48">
         <div className="flex flex-col gap-1.5 text-[11px] font-semibold text-slate-600">
           <div className="flex items-center justify-between">
             <span>{STRINGS.DRIVERS_LICENSE}</span>
             <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.basico))}>
-              {Math.round(operator.basico)}
+              {operator.basico > 0 ? Math.round(operator.basico) : "-"}
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span>{STRINGS.INTERMEDIATE}</span>
             <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.intermedio))}>
-              {Math.round(operator.intermedio)}
+              {operator.intermedio > 0 ? Math.round(operator.intermedio) : "-"}
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span>{STRINGS.ADVANCED}</span>
             <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.avanzado))}>
-              {Math.round(operator.avanzado)}
+              {operator.avanzado > 0 ? Math.round(operator.avanzado) : "-"}
             </span>
           </div>
         </div>
       </td>
 
-      <td className="border-b border-r border-slate-200/50 p-2 align-middle">
+      <td className="border-b border-r border-slate-200/50 p-2 align-middle w-48">
         <MultiSkillEditor 
           operator_id={operator.id} 
           operator_name={operator.nombre} 
@@ -202,7 +228,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
         />
       </td>
 
-      <td className="border-b border-r border-slate-200/50 p-2 align-middle">
+      <td className="border-b border-r border-slate-200/50 p-2 align-middle w-28">
         <div className="flex flex-col gap-1.5">
           {operator.champions && operator.champions.length > 0 ? (
             operator.champions.map((champion_role) => {
@@ -230,7 +256,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
       </td>
 
       {show_ato && (
-        <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center">
+        <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32">
           <AtoEditor 
             operator_id={operator.id} 
             operator_name={operator.nombre} 
@@ -240,7 +266,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
         </td>
       )}
 
-      <td className="border-b border-r border-slate-200/50 p-2 align-middle">
+      <td className="border-b border-r border-slate-200/50 p-2 align-middle w-44">
         <IpMediator 
           operator_id={operator.id} 
           operator_name={operator.nombre} 
@@ -249,7 +275,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
         />
       </td>
 
-      <td className="border-b border-r border-slate-200/50 p-2 align-middle">
+      <td className="border-b border-r border-slate-200/50 p-2 align-middle w-64">
         <PreReqEditor 
           operator_id={operator.id}
           operator_name={operator.nombre} 
@@ -258,7 +284,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
         />
       </td>
 
-      <td className="border-b p-3 align-middle text-center">
+      <td className="border-b p-3 align-middle text-center w-40">
         <div className={cn(
           "mx-auto flex w-16 flex-col items-center justify-center overflow-hidden rounded border border-[#1a4491] shadow-sm transition-all",
           autonomy_score === "4.00" && "animate-glow-gold scale-110"
@@ -269,8 +295,15 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
           )}>
             {STRINGS.AUTONOMY_LEVEL}
           </div>
-          <div className="flex w-full items-center justify-center bg-white py-1.5 text-xl font-black text-[#1a4491]">
-            {autonomy_score}
+          <div className="flex w-full items-center justify-center bg-white py-1 text-[#1a4491] min-h-[36px]">
+            {operator.noEvaluado ? (
+              <div className="flex flex-col items-center justify-center leading-none">
+                <span className="text-sm font-black text-slate-400">0.00</span>
+                <span className="text-[6.5px] text-rose-500 font-black uppercase tracking-widest mt-0.5 whitespace-nowrap">Sin Evaluar</span>
+              </div>
+            ) : (
+              <span className="text-xl font-black">{autonomy_score}</span>
+            )}
           </div>
         </div>
       </td>

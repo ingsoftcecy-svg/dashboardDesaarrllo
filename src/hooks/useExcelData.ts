@@ -6,7 +6,7 @@ export function useExcelData() {
   const [cocimientos, setCocimientos] = useState<AreaData>(defaultCocimientos);
   const [bloqueFrio, setBloqueFrio] = useState<AreaData>(defaultBloqueFrio);
   const [mantenimiento, setMantenimiento] = useState<AreaData>(defaultMantenimiento);
-  const [general, setGeneral] = useState<AreaData>({ ...defaultCocimientos, title: "Vista General", subtitle: "Toda la Planta" });
+  const [general, setGeneral] = useState<AreaData>({ ...defaultCocimientos, team: "Vista General", lema: "Toda la Planta" });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -161,7 +161,7 @@ export function useExcelData() {
         const sheet = workbook.Sheets[sheetName];
         const rows = xlsx.utils.sheet_to_json(sheet) as any[];
 
-        const parseOperator = (row: any): Operator & { autonomyScore: number } => {
+        const parseOperator = (row: any): Operator & { autonomyScore: number, noEvaluado: boolean } => {
           const empMatch = row["Employee"] ? String(row["Employee"]).match(/\[(\d+)\]\s+(.*)/) : null;
           const id = empMatch ? empMatch[1] : String(Math.random());
           const nombre = empMatch ? empMatch[2] : row["Employee"] || "Desconocido";
@@ -185,12 +185,32 @@ export function useExcelData() {
             return values.reduce((a, b) => a + b, 0) / cols.length;
           };
 
+          const hasEvaluation = [...basicCols, ...intermediateCols, ...advancedCols].some(c => {
+            const val = row[c];
+            return val !== undefined && val !== null && val !== "-" && String(val).trim() !== "";
+          });
+
+          const colScore = Object.keys(row).find(k => 
+            k.toLowerCase().includes("autonomy score") || 
+            k.toLowerCase().includes("excelencia") || 
+            k.toLowerCase().includes("autono") || 
+            k.toLowerCase().trim() === "autonomía"
+          );
+          
+          let val: number | null = null;
+          if (colScore) {
+            val = parseFloat(row[colScore]);
+          }
+
           const basico = calculateAverage(basicCols);
           const intermedio = calculateAverage(intermediateCols);
           const avanzado = calculateAverage(advancedCols);
-          
-          // Calculate autonomy score based on weighted components
-          const autonomyScore = (basico * 0.5) + (intermedio * 0.35) + (avanzado * 0.15);
+
+          if (val === null || isNaN(val)) {
+            val = (basico * 0.5) + (intermedio * 0.35) + (avanzado * 0.15);
+          }
+
+          const autonomyScore = val <= 1.0 ? parseFloat((val * 100).toFixed(2)) : parseFloat(val.toFixed(2));
 
           const eaData = eaMap[id] || { equipo: "Sin Equipo", lider: "No asignado" };
 
@@ -206,11 +226,12 @@ export function useExcelData() {
             equipoAutonomo: eaData.equipo,
             lider: eaData.lider,
             lastAssessmentDate: row["Assessment Date"] || row["Last Assessment Date"] || null,
-            ato: nombre.toUpperCase().includes("MARIO ALBERTO ZAMARRIPA") ? 8 : (row["ATO"] || 4)
+            ato: nombre.toUpperCase().includes("MARIO ALBERTO ZAMARRIPA") ? 8 : (row["ATO"] || 4),
+            noEvaluado: !hasEvaluation || Number(autonomyScore.toFixed(2)) === 0
           };
         };
 
-        const opsMap: Record<string, Operator & { autonomyScore: number, _count: number, _area: string }> = {};
+        const opsMap: Record<string, Operator & { autonomyScore: number, noEvaluado: boolean, _count: number, _area: string }> = {};
 
         for (const row of rows) {
           const area = row["Area"] || "";
@@ -224,6 +245,9 @@ export function useExcelData() {
             ext.avanzado += parsed.avanzado;
             ext.autonomyScore += parsed.autonomyScore;
             ext._count++;
+            if (!parsed.noEvaluado) {
+              ext.noEvaluado = false;
+            }
             
             if (eqStr) {
                const newEqs = eqStr.split(",").map(e => e.trim()).filter(Boolean);
@@ -257,9 +281,9 @@ export function useExcelData() {
           }
         }
 
-        const cocimientosOps: (Operator & { autonomyScore: number })[] = [];
-        const bloqueFrioOps: (Operator & { autonomyScore: number })[] = [];
-        const mantenimientoOps: (Operator & { autonomyScore: number })[] = [];
+        const cocimientosOps: (Operator & { autonomyScore: number, noEvaluado: boolean, _area: string })[] = [];
+        const bloqueFrioOps: (Operator & { autonomyScore: number, noEvaluado: boolean, _area: string })[] = [];
+        const mantenimientoOps: (Operator & { autonomyScore: number, noEvaluado: boolean, _area: string })[] = [];
 
         Object.values(opsMap).forEach(op => {
            op.basico = Number((op.basico / op._count).toFixed(2));
@@ -284,7 +308,7 @@ export function useExcelData() {
         bloqueFrioOps.sort((a, b) => b.autonomyScore - a.autonomyScore);
         mantenimientoOps.sort((a, b) => b.autonomyScore - a.autonomyScore);
 
-        const buildExcellence = (ops: (Operator & { autonomyScore: number })[], areaKey?: string) => {
+        const buildExcellence = (ops: (Operator & { autonomyScore: number, noEvaluado: boolean, _area: string })[], areaKey?: string) => {
           if (ops.length === 0) return null;
           
           const sorted = [...ops].sort((a, b) => b.autonomyScore - a.autonomyScore);
@@ -295,8 +319,9 @@ export function useExcelData() {
             lider: op.lider
           }));
 
-          const totalScore = ops.reduce((sum, op) => sum + op.autonomyScore, 0);
-          const excelenciaEquipo = Number((totalScore / ops.length).toFixed(2));
+          const evaluatedOps = ops.filter(op => !op.noEvaluado);
+          const totalScore = evaluatedOps.reduce((sum, op) => sum + op.autonomyScore, 0);
+          const excelenciaEquipo = evaluatedOps.length > 0 ? Number((totalScore / evaluatedOps.length).toFixed(2)) : 0;
           const autonomia = Number(((excelenciaEquipo / 100) * 4).toFixed(2));
           
           let nivelLabel = "Nivel 1 — Inicial";
@@ -314,8 +339,10 @@ export function useExcelData() {
           ops.forEach(op => {
             const team = op.equipoAutonomo || "Sin Equipo";
             if (!teamsMap[team]) teamsMap[team] = { sum: 0, count: 0, leader: op.lider || "No asignado" };
-            teamsMap[team].sum += op.autonomyScore;
-            teamsMap[team].count += 1;
+            if (!op.noEvaluado) {
+              teamsMap[team].sum += op.autonomyScore;
+              teamsMap[team].count += 1;
+            }
             if (op.lider && teamsMap[team].leader === "No asignado") {
               teamsMap[team].leader = op.lider;
             }
@@ -325,7 +352,7 @@ export function useExcelData() {
             .filter(([name]) => name !== "Sin Equipo")
             .map(([name, data]) => ({
               name,
-              avg: Number((data.sum / data.count).toFixed(2)),
+              avg: data.count > 0 ? Number((data.sum / data.count).toFixed(2)) : 0,
               leader: data.leader
             }))
             .sort((a, b) => b.avg - a.avg);

@@ -11,9 +11,10 @@ interface TeamRanking {
 
 interface TeamRankingCardProps {
   rankings?: TeamRanking[];
+  operadores?: any[];
 }
 
-export function TeamRankingCard({ rankings = [] }: TeamRankingCardProps) {
+export function TeamRankingCard({ rankings = [], operadores = [] }: TeamRankingCardProps) {
   return (
     <motion.section 
       initial={{ opacity: 0, scale: 0.95 }}
@@ -47,6 +48,7 @@ export function TeamRankingCard({ rankings = [] }: TeamRankingCardProps) {
                   index={index} 
                   is_best={is_best} 
                   is_worst={is_worst} 
+                  operadores={operadores}
                 />
               );
             })}

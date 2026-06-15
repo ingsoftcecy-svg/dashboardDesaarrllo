@@ -75,27 +75,30 @@ export function PreReqEditor({ operator_id, operator_name, team_name, puedeEdita
   };
 
   return (
-    <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] font-semibold text-slate-600">
+    <div className="grid grid-cols-2 gap-x-1.5 gap-y-0.5 text-[9.5px] font-semibold text-slate-600 min-w-0 w-full">
       {PRE_REQUISITES_LIST.map((requirement) => (
         <button
           key={requirement}
           onClick={() => toggle_requirement(requirement)}
           className={cn(
-            "flex items-center gap-1.5 focus:outline-none hover:bg-slate-100 p-0.5 rounded transition-colors text-left w-full",
+            "flex items-center gap-1 focus:outline-none hover:bg-slate-100 p-0.5 rounded transition-colors text-left w-full min-w-0 truncate",
             puedeEditar 
               ? "hover:bg-slate-100 cursor-pointer"
               : "cursor-default opacity-75"
           )}
         >
           <div className={cn(
-            "flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[3px] border transition-all",
+            "flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[2px] border transition-all",
             checked_items[requirement] ?
               (puedeEditar ? "bg-[#1a4491] border-[#1a4491] text-white" : "border-slate-300 bg-white")
               : "border-slate-300 bg-white"
           )}>
-            {checked_items[requirement] && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
+            {checked_items[requirement] && <Check className="h-2 w-2" strokeWidth={3} />}
           </div>
-          <span className={cn(!puedeEditar && checked_items[requirement] ? "text-slate-500" : "")}>
+          <span className={cn(
+            "truncate select-none",
+            !puedeEditar && checked_items[requirement] ? "text-slate-500" : ""
+          )}>
             {requirement}
           </span>
         </button>
