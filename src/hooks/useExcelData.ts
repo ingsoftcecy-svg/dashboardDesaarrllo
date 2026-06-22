@@ -226,7 +226,7 @@ export function useExcelData() {
             equipoAutonomo: eaData.equipo,
             lider: eaData.lider,
             lastAssessmentDate: row["Assessment Date"] || row["Last Assessment Date"] || null,
-            ato: nombre.toUpperCase().includes("MARIO ALBERTO ZAMARRIPA") ? 8 : (row["ATO"] || 4),
+            ato: row["ATO"] || 4,
             noEvaluado: !hasEvaluation || Number(autonomyScore.toFixed(2)) === 0
           };
         };

@@ -141,6 +141,11 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     text-transform: uppercase;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    transition: filter 0.2s ease;
   }
 }
 
@@ -200,34 +205,15 @@
   }
 }
 
+/* Forzar visibilidad de la insignia de reCAPTCHA v3 en primer plano */
+.grecaptcha-badge {
+  z-index: 999999 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
 @media print {
-  .no-pdf, 
-  nav, 
-  header, 
-  button {
-    display: none !important;
-  }
-
   body {
-    background-color: white !important;
-    print-color-adjust: exact;
-    -webkit-print-color-adjust: exact;
-  }
-
-  #dashboard-content {
-    overflow: visible !important;
-    height: auto !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  .rounded-xl {
-    border-radius: 0 !important;
-  }
-
-  .shadow-xl, .shadow-lg, .shadow-md {
-    box-shadow: none !important;
-    border: 1px solid #e2e8f0 !important;
+    display: none !important;
   }
 }

@@ -31,7 +31,7 @@ function Index() {
   const { general, cocimientos, bloqueFrio, mantenimiento, loading } = useExcelData();
   
   const usuario = useAuth();
-  const puedeEditar = usuario !== null; // Solo los usuarios autenticados pueden editar
+  const puedeEditar = usuario?.rol === 'admin'; // Solo administradores pueden editar
 
   const area = tab === "general" ? general : tab === "cocimientos" ? cocimientos : tab === "bloqueFrio" ? bloqueFrio : mantenimiento;
 

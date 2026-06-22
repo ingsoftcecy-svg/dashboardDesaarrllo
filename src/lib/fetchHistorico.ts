@@ -43,8 +43,7 @@ export const obtenerTodoElHistorico = async (): Promise<ReporteMensual[]> => {
       } as ReporteMensual);
     });
     
-    console.log(`📦 Histórico Mensual Sincronizado (${historial.length} meses encontrados).`);
-    return historial; 
+    return historial;
   } catch (error) {
     console.error("Error al extraer el histórico mensual desde Firestore:", error);
     throw error;
@@ -73,7 +72,6 @@ export const obtenerTodoElHistoricoMensual = async (): Promise<ReporteMes[]> => 
       } as ReporteMes);
     });
 
-    console.log(`📅 Histórico Mensual Sincronizado (${historial.length} meses encontrados).`);
     return historial;
   } catch (error) {
     console.error("Error al extraer el histórico mensual desde Firestore:", error);

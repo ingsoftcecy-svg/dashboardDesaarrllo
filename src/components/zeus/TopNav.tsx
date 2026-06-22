@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Beer, Clock, Settings } from "lucide-react"; // ⚙️ Importado Settings
 import { cn } from "@/lib/utils";
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, Link } from '@tanstack/react-router';
 
 export type AreaTab = "general" | "cocimientos" | "bloqueFrio" | "mantenimiento";
 
@@ -76,6 +76,15 @@ export function TopNav({ tab, onTabChange }: Props) {
 
         {/* Right cluster */}
         <div className="flex items-center gap-5"> {/* Se aumentó ligeramente el gap de 4 a 5 */}
+          {mounted && (
+            <Link
+              to="/analisis-comparativo"
+              className="rounded-full bg-blue-950/40 border border-blue-800/80 px-4 py-1.5 text-xs font-semibold tracking-wide uppercase text-blue-100 hover:bg-blue-800/60 hover:text-white transition-all shadow-sm"
+            >
+              Comparativo
+            </Link>
+          )}
+
           <div className="hidden text-right md:block min-w-[120px]">
             {mounted && (
               <>

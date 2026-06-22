@@ -25,6 +25,8 @@ export function PreReqEditor({ operator_id, operator_name, team_name, puedeEdita
   });
 
   useEffect(() => {
+    if (!usuario) return;
+
     const document_reference = doc(db, "prerequisitos", operator_id);
     
     const unsubscribe = onSnapshot(

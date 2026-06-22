@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { Calendar, User, TrendingUp, TrendingDown, Clock, Award, ChevronRight } from "lucide-react";
 import { obtenerTodoElHistorico, ReporteMensual } from "@/lib/fetchHistorico";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,7 @@ interface MesProgreso {
   name: string; // E.g. "Ene 2026"
   score: number;
   mesKey: string;
+  [key: string]: any;
 }
 
 // Parseador de fechas robusto
@@ -203,21 +204,35 @@ export function OperatorHistoryDialog({ operatorName, operatorId, operatorPuesto
         // Ordenar todas las evaluaciones de la más antigua a la más reciente
         evPoints.sort((a, b) => a.mesKey.localeCompare(b.mesKey));
 
-        // Agrupar por mes para la gráfica
-        const gruposMes: Record<string, number[]> = {};
+        // Agrupar por mes y puesto para la gráfica
+        const gruposMes: Record<string, Record<string, number[]>> = {};
         evPoints.forEach(pt => {
-          if (!gruposMes[pt.mesKey]) gruposMes[pt.mesKey] = [];
-          gruposMes[pt.mesKey].push(pt.score);
+          if (!gruposMes[pt.mesKey]) gruposMes[pt.mesKey] = {};
+          if (!gruposMes[pt.mesKey][pt.puesto]) gruposMes[pt.mesKey][pt.puesto] = [];
+          gruposMes[pt.mesKey][pt.puesto].push(pt.score);
         });
 
         const puntosGrafico: MesProgreso[] = Object.keys(gruposMes).map(mesKey => {
-          const scores = gruposMes[mesKey];
-          const promedio = scores.reduce((sum, s) => sum + s, 0) / scores.length;
-          return {
+          const puestosData = gruposMes[mesKey];
+          const point: MesProgreso = {
             name: formatearMesAnio(mesKey),
-            score: parseFloat(promedio.toFixed(2)),
+            score: 0,
             mesKey: mesKey
           };
+          
+          let sumAll = 0;
+          let countAll = 0;
+          
+          Object.keys(puestosData).forEach(puesto => {
+            const scores = puestosData[puesto];
+            const avg = scores.reduce((sum, s) => sum + s, 0) / scores.length;
+            point[puesto] = parseFloat(avg.toFixed(2));
+            sumAll += scores.reduce((sum, s) => sum + s, 0);
+            countAll += scores.length;
+          });
+          
+          point.score = countAll > 0 ? parseFloat((sumAll / countAll).toFixed(2)) : 0;
+          return point;
         }).sort((a, b) => a.mesKey.localeCompare(b.mesKey));
 
         // Reordenar las evaluaciones individuales de la más reciente a la más antigua para mostrarlas en la tabla
@@ -242,6 +257,8 @@ export function OperatorHistoryDialog({ operatorName, operatorId, operatorPuesto
   const ultimoScore = tieneDatos ? evaluaciones[0].score : 0;
   const incremento = ultimoScore - primerScore;
   const esPositivo = incremento >= 0;
+
+  const puestosUnicos = Array.from(new Set(evaluaciones.map(ev => ev.puesto)));
 
   return (
     <div className="flex flex-col space-y-6 text-slate-800 select-none">
@@ -338,16 +355,25 @@ export function OperatorHistoryDialog({ operatorName, operatorId, operatorPuesto
                         fontSize: "11px",
                         fontWeight: "800"
                       }}
-                      formatter={(value: any) => [`${value}%`, "Autonomía"]}
+                      formatter={(value: any, name: any) => [`${value}%`, name]}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="score" 
-                      stroke="#1a4491" 
-                      strokeWidth={3} 
-                      dot={{ r: 4, stroke: "#1a4491", strokeWidth: 1, fill: "#ffffff" }}
-                      activeDot={{ r: 6 }} 
-                    />
+                    <Legend wrapperStyle={{ fontSize: '9px', fontWeight: '900', paddingTop: '10px', textTransform: 'uppercase' }} />
+                    {puestosUnicos.map((puesto, i) => {
+                      const colores = ["#1a4491", "#ffcc00", "#10b981", "#ef4444", "#8b5cf6", "#ec4899", "#14b8a6", "#f59e0b"];
+                      const color = colores[i % colores.length];
+                      return (
+                        <Line 
+                          key={puesto}
+                          type="monotone" 
+                          dataKey={puesto} 
+                          stroke={color} 
+                          strokeWidth={3} 
+                          dot={{ r: 4, stroke: color, strokeWidth: 1, fill: "#ffffff" }}
+                          activeDot={{ r: 6 }} 
+                          connectNulls
+                        />
+                      );
+                    })}
                   </LineChart>
                 </ResponsiveContainer>
               )}

@@ -81,16 +81,8 @@ export const cocimientos: AreaData = {
     { label: "Cumplimiento IPs", value: "92%", tone: "warn" },
     { label: "Incidentes", value: "0", tone: "ok" },
   ],
-  operadores: [
-    { id: "1", nombre: "ALDO ADRIAN SIFUENTES", puesto: "Operador Senior", basico: 100, intermedio: 90, avanzado: 70, champions: ["seguridad", "calidad"] },
-    { id: "2", nombre: "JOSE LUIS CAZARES", puesto: "Cocedor", basico: 100, intermedio: 85, avanzado: 60, champions: ["mantenimiento"] },
-    { id: "3", nombre: "RAFAEL VERA", puesto: "Molinero", basico: 100, intermedio: 75, avanzado: 45, champions: ["ambiental"] },
-    { id: "4", nombre: "URIEL ESCOBEDO", puesto: "Tablerista", basico: 100, intermedio: 95, avanzado: 80, champions: ["calidad", "seguridad"] },
-    { id: "5", nombre: "VALERIA NATALY CASTAÑON", puesto: "Filtración", basico: 100, intermedio: 70, avanzado: 40, champions: ["mantenimiento", "ambiental"] },
-    { id: "6", nombre: "Diana Rojas", puesto: "Operador Jr.", basico: 90, intermedio: 55, avanzado: 25, champions: [] },
-    { id: "7", nombre: "Raúl Gómez", puesto: "Líder de Turno", basico: 100, intermedio: 100, avanzado: 90, champions: ["seguridad", "calidad", "mantenimiento"] },
-    { id: "8", nombre: "Sofía Mendoza", puesto: "Operador", basico: 100, intermedio: 80, avanzado: 55, champions: ["ambiental"] },
-  ],
+  // Los operadores se cargan dinámicamente desde Firebase/Excel
+  operadores: [],
   ips: [
     { id: "i1", categoria: "Productividad", metrica: "Merma de molienda", objetivo: "≤ 1.20%", valor: "0.98%", equipos: ["Molinos", "Tolva de granos"], sistemas: ["SAP", "MES"], estado: "ok", trend: [1.2, 1.1, 1.0, 1.05, 0.98, 0.97, 0.98] },
     { id: "i2", categoria: "Calidad", metrica: "°Plato del mosto", objetivo: "16.0 ± 0.2", valor: "16.05", equipos: ["Cocedor", "Olla de mosto"], sistemas: ["ACADIA", "MES"], estado: "ok", trend: [16.0, 16.1, 15.9, 16.0, 16.05, 16.02, 16.05] },
@@ -100,11 +92,7 @@ export const cocimientos: AreaData = {
     { id: "i6", categoria: "Calidad", metrica: "Turbidez del mosto", objetivo: "≤ 30 EBC", valor: "22 EBC", equipos: ["Filtro Prensa"], sistemas: ["ACADIA"], estado: "ok", trend: [28, 26, 24, 23, 22, 22, 22] },
     { id: "i7", categoria: "Productividad", metrica: "Consumo de vapor", objetivo: "≤ 220 kg/hL", valor: "215 kg/hL", equipos: ["Cocedor", "Caldera"], sistemas: ["MANGYVER", "WVD"], estado: "ok", trend: [225, 222, 220, 218, 216, 215, 215] },
   ],
-  podio: [
-    { nombre: "Raúl Gómez", puesto: "Líder de Turno", excelencia: 98.5 },
-    { nombre: "URIEL ESCOBEDO", puesto: "Tablerista", excelencia: 96.2 },
-    { nombre: "ALDO ADRIAN SIFUENTES", puesto: "Operador Sr.", excelencia: 94.8 },
-  ],
+  podio: [],
   logros: [
     "5 días sin desviaciones de °Plato",
     "Kaizen entregado: reducción de merma -0.3%",
@@ -139,16 +127,8 @@ export const bloqueFrio: AreaData = {
     { label: "Cumplimiento IPs", value: "95%", tone: "ok" },
     { label: "Incidentes", value: "0", tone: "ok" },
   ],
-  operadores: [
-    { id: "1", nombre: "Carlos Vega", puesto: "Líder de Turno", basico: 100, intermedio: 100, avanzado: 95, champions: ["seguridad", "calidad", "mantenimiento"] },
-    { id: "2", nombre: "Lucía Torres", puesto: "Microbiología", basico: 100, intermedio: 95, avanzado: 85, champions: ["calidad", "ambiental"] },
-    { id: "3", nombre: "Esteban Cruz", puesto: "Propagación", basico: 100, intermedio: 90, avanzado: 75, champions: ["mantenimiento"] },
-    { id: "4", nombre: "Paola Reyes", puesto: "Fermentación", basico: 100, intermedio: 85, avanzado: 65, champions: ["seguridad"] },
-    { id: "5", nombre: "Iván López", puesto: "Filtración Fría", basico: 100, intermedio: 80, avanzado: 55, champions: ["ambiental"] },
-    { id: "6", nombre: "Mónica Aguilar", puesto: "Tablerista", basico: 100, intermedio: 95, avanzado: 80, champions: ["calidad"] },
-    { id: "7", nombre: "Héctor Salinas", puesto: "Operador", basico: 95, intermedio: 60, avanzado: 30, champions: [] },
-    { id: "8", nombre: "Brenda Núñez", puesto: "Operador Jr.", basico: 90, intermedio: 50, avanzado: 20, champions: [] },
-  ],
+  // Los operadores se cargan dinámicamente desde Firebase/Excel
+  operadores: [],
   ips: [
     { id: "i1", categoria: "Calidad", metrica: "pH del mosto frío", objetivo: "5.20 ± 0.05", valor: "5.22", equipos: ["Tanque de Propagación", "Intercambiador"], sistemas: ["ACADIA", "MES"], estado: "ok", trend: [5.2, 5.21, 5.22, 5.21, 5.22, 5.22, 5.22] },
     { id: "i2", categoria: "Calidad", metrica: "Oxígeno disuelto", objetivo: "8 - 10 ppm", valor: "9.1 ppm", equipos: ["Línea de aireación", "Intercambiador"], sistemas: ["ACADIA"], estado: "ok", trend: [8.5, 8.8, 9.0, 9.2, 9.1, 9.1, 9.1] },
@@ -158,11 +138,7 @@ export const bloqueFrio: AreaData = {
     { id: "i6", categoria: "Calidad", metrica: "Diacetilo", objetivo: "≤ 0.10 ppm", valor: "0.07 ppm", equipos: ["Tanques CCT", "Cromatógrafo"], sistemas: ["ACADIA"], estado: "ok", trend: [0.12, 0.10, 0.09, 0.08, 0.07, 0.07, 0.07] },
     { id: "i7", categoria: "Productividad", metrica: "Pérdidas en filtración", objetivo: "≤ 0.8%", valor: "0.6%", equipos: ["Filtro de Tierras", "Bombas"], sistemas: ["SAP", "MES"], estado: "ok", trend: [0.9, 0.8, 0.7, 0.65, 0.6, 0.6, 0.6] },
   ],
-  podio: [
-    { nombre: "Carlos Vega", puesto: "Líder de Turno", excelencia: 99.1 },
-    { nombre: "Lucía Torres", puesto: "Microbiología", excelencia: 97.4 },
-    { nombre: "Mónica Aguilar", puesto: "Tablerista", excelencia: 95.6 },
-  ],
+  podio: [],
   logros: [
     "12 días consecutivos sin desviaciones de O₂",
     "Kaizen entregado: -8% consumo de glycol",

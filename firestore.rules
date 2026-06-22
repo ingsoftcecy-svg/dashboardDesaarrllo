@@ -1,8 +1,61 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ── Helpers ────────────────────────────────────────────────────────────
+    function estaAutenticado() {
+      return request.auth != null;
+    }
+
+    // Verifica que el usuario tenga rol 'admin' en la colección usuarios.
+    // Usa exists() para no fallar si el documento aún no existe.
+    function esAdmin() {
+      return estaAutenticado()
+        && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid))
+        && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == 'admin';
+    }
+
+    // ── Colección: usuarios ────────────────────────────────────────────────
+    // Cada usuario puede leer solo su propio perfil.
+    // Solo un admin puede crear, modificar o eliminar perfiles.
+    match /usuarios/{uid} {
+      allow read: if estaAutenticado() && (request.auth.uid == uid || esAdmin());
+      allow write: if esAdmin();
+    }
+
+    // ── Colección: historicos_excel ────────────────────────────────────────
+    // Lectura: cualquier usuario autenticado.
+    // Escritura: solo administradores.
+    match /historicos_excel/{docId} {
+      allow read: if estaAutenticado();
+      allow write: if esAdmin();
+    }
+
+    // ── Colección: historicos_mensuales ────────────────────────────────────
+    match /historicos_mensuales/{docId} {
+      allow read: if estaAutenticado();
+      allow write: if esAdmin();
+    }
+
+    // ── Colección: config_dashboard ────────────────────────────────────────
+    match /config_dashboard/{docId} {
+      allow read: if estaAutenticado();
+      allow write: if esAdmin();
+    }
+
+    // ── Colección: audit_logs ──────────────────────────────────────────────
+    // Cualquier usuario autenticado puede ESCRIBIR su propio evento.
+    // Solo admins pueden LEER el historial de accesos.
+    match /audit_logs/{logId} {
+      allow create: if estaAutenticado();
+      allow read:   if esAdmin();
+    }
+
+    // ── Regla de respaldo para cualquier colección futura ──────────────────
+    // Por defecto: lectura autenticada, escritura solo admin.
     match /{document=**} {
-      allow read, write: if true;
+      allow read: if estaAutenticado();
+      allow write: if esAdmin();
     }
   }
 }

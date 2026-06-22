@@ -27,6 +27,7 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos, puedeEdi
   });
 
   useEffect(() => {
+    if (!usuario) return;
     const doc_ref = doc(db, "multi_habilidades", operator_id);
     const unsubscribe = onSnapshot(doc_ref, (snap) => {
       if (snap.exists()) {
@@ -36,7 +37,7 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos, puedeEdi
       }
     });
     return () => unsubscribe();
-  }, [operator_id]);
+  }, [operator_id, usuario]);
 
   const [is_saving, set_is_saving] = useState(false);
 

@@ -20,6 +20,7 @@ export function AtoEditor({ operator_id, operator_name, initial_ato, puedeEditar
   const [is_saving, set_is_saving] = useState(false);
 
   useEffect(() => {
+    if (!usuario) return;
     const doc_ref = doc(db, "config_operadores", operator_id);
     const unsubscribe = onSnapshot(doc_ref, (snap) => {
       if (snap.exists()) {

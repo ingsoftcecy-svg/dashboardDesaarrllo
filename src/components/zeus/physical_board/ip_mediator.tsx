@@ -24,6 +24,7 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
   const [search_term, set_search_term] = useState("");
 
   useEffect(() => {
+    if (!usuario) return;
     const unsubscribe_global = onSnapshot(doc(db, "config", "ips"), (snapshot) => {
       if (snapshot.exists()) {
         set_global_ips(snapshot.data().list || []);
@@ -40,9 +41,10 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
       unsubscribe_global(); 
       unsubscribe_operator(); 
     };
-  }, [operator_id]);
+  }, [operator_id, usuario]);
 
   useEffect(() => {
+    if (!usuario) return;
     if (!team_members || team_members.length === 0) {
       set_team_ips([]);
       return;
@@ -58,7 +60,7 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
     );
 
     return () => unsubscribes.forEach(unsub => unsub());
-  }, [team_members]);
+  }, [team_members, usuario]);
 
   const toggle_assignment = async (ip_address: string) => {
     const next_assignments = assigned_ips.includes(ip_address) 

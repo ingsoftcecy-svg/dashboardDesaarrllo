@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { db, auth } from '@/lib/firebase';
 import { useAuth } from '@/lib/auth';
+import { registrarEvento } from '@/lib/auditLog';
 
 import { Star, Check, LogOut, LayoutDashboard, CloudUpload, Terminal } from "lucide-react";
 import { doc, setDoc, getDoc, collection, getDocs, query, orderBy, writeBatch } from 'firebase/firestore';
@@ -168,6 +169,15 @@ function CargarDatos() {
       setCargando(true);
       const json = await parsearExcel(file);
       await setDoc(doc(db, "config_dashboard", "catalogos_fijos"), { [tipo]: json }, { merge: true });
+      if (usuario) {
+        await registrarEvento(
+          usuario.uid,
+          usuario.email || '',
+          usuario.rol || 'operador',
+          'CARGA_DATOS',
+          `Carga de catálogo fijo: ${tipo} (${file.name})`
+        );
+      }
       alert(`¡Catálogo ${tipo} guardado con éxito!`);
     } catch (err) {
       alert("Error al subir el catálogo.");
@@ -441,6 +451,18 @@ function CargarDatos() {
           ultima_actualizacion: new Date().toISOString()
         }, { merge: false });
         setLogProceso(prev => [...prev, `📅 Mes ${mesID} consolidado de forma acumulativa en historicos_mensuales.`]);
+      }
+      if (usuario) {
+        const archivos = [];
+        if (archivoDatos) archivos.push(`Datos: ${archivoDatos.name}`);
+        if (archivoBpre) archivos.push(`BPRE: ${archivoBpre.name}`);
+        await registrarEvento(
+          usuario.uid,
+          usuario.email || '',
+          usuario.rol || 'operador',
+          'CARGA_DATOS',
+          `Sincronización base de datos semanal/mensual con archivos: ${archivos.join(', ')}`
+        );
       }
       alert("¡Sincronización semanal lista!");
       setArchivoDatos(null);

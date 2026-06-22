@@ -6,6 +6,8 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 import { Tooltip as ShadcnTooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { OperatorHistoryDialog } from "./operator_history_dialog";
 
 
 interface TeamMember {
@@ -427,7 +429,20 @@ export function TeamHistoryDialog({ teamName, members }: TeamHistoryDialogProps)
                       <tr key={member.id} className="hover:bg-slate-50/50 transition-colors">
                         <td className="p-3 font-bold text-slate-900 flex items-center gap-1.5">
                           <ChevronRight className="h-3 w-3 text-[#1a4491] opacity-40" />
-                          {member.name}
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <button className="hover:underline hover:text-[#1a4491] text-left focus:outline-none cursor-pointer">
+                                {member.name}
+                              </button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
+                              <OperatorHistoryDialog 
+                                operatorName={member.name} 
+                                operatorId={member.id} 
+                                operatorPuesto={member.puesto} 
+                              />
+                            </DialogContent>
+                          </Dialog>
                         </td>
                         <td className="p-3 text-slate-500 uppercase font-semibold text-[10px]">{member.puesto}</td>
                         <td className="p-3 text-center align-middle text-slate-500 font-semibold text-[10px] whitespace-nowrap">
