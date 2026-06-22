@@ -304,14 +304,25 @@ export function useExcelData() {
            }
         });
 
-        cocimientosOps.sort((a, b) => b.autonomyScore - a.autonomyScore);
-        bloqueFrioOps.sort((a, b) => b.autonomyScore - a.autonomyScore);
-        mantenimientoOps.sort((a, b) => b.autonomyScore - a.autonomyScore);
+        const compararOperadores = (a: any, b: any) => {
+          if (b.autonomyScore !== a.autonomyScore) {
+            return b.autonomyScore - a.autonomyScore;
+          }
+          const timeA = a.lastAssessmentDate ? new Date(a.lastAssessmentDate).getTime() : 0;
+          const timeB = b.lastAssessmentDate ? new Date(b.lastAssessmentDate).getTime() : 0;
+          const validA = isNaN(timeA) ? 0 : timeA;
+          const validB = isNaN(timeB) ? 0 : timeB;
+          return validB - validA;
+        };
+
+        cocimientosOps.sort(compararOperadores);
+        bloqueFrioOps.sort(compararOperadores);
+        mantenimientoOps.sort(compararOperadores);
 
         const buildExcellence = (ops: (Operator & { autonomyScore: number, noEvaluado: boolean, _area: string })[], areaKey?: string) => {
           if (ops.length === 0) return null;
           
-          const sorted = [...ops].sort((a, b) => b.autonomyScore - a.autonomyScore);
+          const sorted = [...ops].sort(compararOperadores);
           const podio = sorted.slice(0, 5).map(op => ({
             nombre: op.nombre,
             puesto: op.puesto,
