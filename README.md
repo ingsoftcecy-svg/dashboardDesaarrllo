@@ -73,3 +73,14 @@ npm run build
 ```bash
 npx firebase deploy --only hosting
 ```
+
+## Seguridad y Protección de Datos
+
+Este proyecto cuenta con medidas avanzadas de ciberseguridad para un entorno empresarial:
+* **Control de Acceso (RBAC):** Privilegios de edición de datos restringidos por roles en base de datos.
+* **Firebase App Check:** Protección contra abusos de APIs con Google reCAPTCHA v3.
+* **Prevención de Fuga de Datos (DLP):** Selección de texto deshabilitada, bloqueo de copiar/pegar y clic derecho.
+* **Protección Antiespía:** Difuminado automático de la pantalla al perder el foco y bloqueo total de impresión a PDF (genera página en blanco).
+* **Bitácora de Auditoría:** Registro de accesos y cargas en la colección `audit_logs` de Firestore.
+
+Para más información técnica detallada sobre las implementaciones y cómo habilitar App Check en desarrollo, consulta el archivo [SECURITY.md](SECURITY.md).
