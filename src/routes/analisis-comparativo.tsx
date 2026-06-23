@@ -5,6 +5,7 @@ import { obtenerTodoElHistorico, ReporteMensual, obtenerTodoElHistoricoMensual, 
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { useAuth } from '@/lib/auth';
 
 export const Route = createFileRoute('/analisis-comparativo')({
   component: AnalisisComparativoSemanas,
@@ -150,6 +151,7 @@ const obtenerPromedioArea = (filas: any[], areaNombre: string): number | null =>
 };
 
 function AnalisisComparativoSemanas() {
+  const usuario = useAuth();
   const [todasLasSemanas, setTodasLasSemanas] = useState<ReporteMensual[]>([]);
   const [semanaA, setSemanaA] = useState<string>('');
   const [semanaB, setSemanaB] = useState<string>('');
@@ -523,6 +525,66 @@ function AnalisisComparativoSemanas() {
     return (
       <div className="flex h-screen items-center justify-center bg-[#f1f5f9]">
         <p className="text-[#1a4491] font-bold uppercase tracking-wider animate-pulse text-xs">Sincronizando Históricos...</p>
+      </div>
+    );
+  }
+
+  if (!usuario) {
+    return (
+      <div className="min-h-screen bg-[#f1f5f9] text-slate-800 font-sans antialiased pb-12 select-none">
+        {/* 🟦 1. NAVBAR SUPERIOR COMPLETO (IDÉNTICO AL DEL DASHBOARD) */}
+        <header className="bg-[#1a4491] w-full h-16 px-6 flex items-center justify-between shadow-md">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-full bg-amber-400 flex items-center justify-center font-black text-[#1a4491] text-xs shadow-inner">
+              ★
+            </div>
+            <h1 className="text-white font-bold text-sm tracking-wider uppercase">
+              Dashboard de Autonomía
+            </h1>
+          </div>
+
+          {/* Links tipo Cápsula Centrados */}
+          <nav className="hidden md:flex items-center gap-2">
+            <Link to="/" className="px-4 py-1.5 text-white/80 hover:text-white font-bold text-xs uppercase tracking-wide transition-colors rounded-full">
+              General
+            </Link>
+            <Link to="/analisis-comparativo" className="px-4 py-1.5 bg-[#ffcc00] text-[#1a4491] font-black text-xs uppercase tracking-wide rounded-full shadow-sm">
+              Comparativo
+            </Link>
+            <Link to="/cargar-datos" className="px-4 py-1.5 text-white/80 hover:text-white font-bold text-xs uppercase tracking-wide transition-colors rounded-full">
+              Cargar Datos
+            </Link>
+          </nav>
+
+          {/* Reloj a la derecha */}
+          <div className="text-right text-white/90 font-medium text-[11px] tracking-tight hidden sm:block">
+            <div className="font-bold text-amber-400">{tiempoActual.split(' - ')[0]}</div>
+            <div className="text-[10px] opacity-75">{tiempoActual.split(' - ')[1]}</div>
+          </div>
+        </header>
+
+        {/* Tarjeta de error / requiere autenticación */}
+        <main className="max-w-md mx-auto p-6 mt-16 text-center">
+          <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-xl space-y-6 flex flex-col items-center">
+            <div className="h-16 w-16 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center shadow-sm">
+              <span className="text-3xl text-amber-500">🔒</span>
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-base font-black text-[#1a4491] uppercase tracking-wider">
+                Acceso Restringido
+              </h2>
+              <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                Para visualizar el análisis comparativo y las tendencias históricas de autonomía, es necesario iniciar sesión con una cuenta autorizada.
+              </p>
+            </div>
+            <Link
+              to="/cargar-datos"
+              className="w-full bg-[#1a4491] hover:bg-[#12316b] text-white py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all shadow-md active:scale-[0.98]"
+            >
+              Iniciar Sesión
+            </Link>
+          </div>
+        </main>
       </div>
     );
   }

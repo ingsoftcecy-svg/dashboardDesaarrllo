@@ -400,7 +400,7 @@ export function useExcelData() {
         }));
 
         const allOps = [...cocimientosOps, ...bloqueFrioOps, ...mantenimientoOps]
-          .sort((a, b) => b.autonomyScore - a.autonomyScore);
+          .sort(compararOperadores);
         const generalExc = buildExcellence(allOps, "General");
         setGeneral(prev => ({
           ...prev,
