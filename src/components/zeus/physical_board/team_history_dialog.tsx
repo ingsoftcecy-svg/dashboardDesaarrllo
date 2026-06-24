@@ -280,7 +280,7 @@ export function TeamHistoryDialog({ teamName, members }: TeamHistoryDialogProps)
   const esPositivo = incremento >= 0;
 
   return (
-    <div className="flex flex-col space-y-6 text-slate-800 select-none">
+    <div className="flex flex-col space-y-6 text-slate-800">
       {/* 👥 CABECERA DEL MODAL */}
       <div className="border-b border-slate-100 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
