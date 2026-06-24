@@ -261,7 +261,7 @@ export function OperatorHistoryDialog({ operatorName, operatorId, operatorPuesto
   const puestosUnicos = Array.from(new Set(evaluaciones.map(ev => ev.puesto)));
 
   return (
-    <div className="flex flex-col space-y-6 text-slate-800 select-none">
+    <div className="flex flex-col space-y-6 text-slate-800">
       
       {/* 👤 CABECERA DEL MODAL */}
       <div className="border-b border-slate-100 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">

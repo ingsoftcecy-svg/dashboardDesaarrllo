@@ -531,7 +531,7 @@ function AnalisisComparativoSemanas() {
 
   if (!usuario) {
     return (
-      <div className="min-h-screen bg-[#f1f5f9] text-slate-800 font-sans antialiased pb-12 select-none">
+      <div className="min-h-screen bg-[#f1f5f9] text-slate-800 font-sans antialiased pb-12">
         {/* 🟦 1. NAVBAR SUPERIOR COMPLETO (IDÉNTICO AL DEL DASHBOARD) */}
         <header className="bg-[#1a4491] w-full h-16 px-6 flex items-center justify-between shadow-md">
           <div className="flex items-center gap-3">
@@ -590,7 +590,7 @@ function AnalisisComparativoSemanas() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f1f5f9] text-slate-800 font-sans antialiased pb-12 select-none">
+    <div className="min-h-screen bg-[#f1f5f9] text-slate-800 font-sans antialiased pb-12">
       
       {/* 🟦 1. NAVBAR SUPERIOR COMPLETO (IDÉNTICO AL DEL DASHBOARD) */}
       <header className="bg-[#1a4491] w-full h-16 px-6 flex items-center justify-between shadow-md">

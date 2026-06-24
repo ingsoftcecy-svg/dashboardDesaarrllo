@@ -478,7 +478,7 @@ function CargarDatos() {
   // PANTALLA DE ACCESO ADMINISTRATIVO (CON PALETA CORPORATIVA COHERENTE)
   if (!usuario) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f1f5f9] p-4 font-sans select-none">
+      <div className="flex min-h-screen items-center justify-center bg-[#f1f5f9] p-4 font-sans">
         <form onSubmit={handleLogin} className="w-full max-w-md p-8 bg-white rounded-2xl border border-slate-200 shadow-xl space-y-5">
           <div className="text-center space-y-1">
             <h2 className="text-lg font-black uppercase tracking-wider text-[#1a4491]">
@@ -538,7 +538,7 @@ function CargarDatos() {
 
   // PANEL PRINCIPAL DE CARGA (LOGUEADO)
   return (
-    <div className="min-h-screen bg-[#f1f5f9] text-slate-800 font-sans antialiased pb-12 select-none">
+    <div className="min-h-screen bg-[#f1f5f9] text-slate-800 font-sans antialiased pb-12">
       
       {/* 🟦 1. NAVBAR SUPERIOR GLOBAL (IDÉNTICO AL DEL DASHBOARD) */}
       <header className="bg-[#1a4491] w-full h-16 px-6 flex items-center justify-between shadow-md">

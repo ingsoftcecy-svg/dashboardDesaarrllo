@@ -141,10 +141,6 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     text-transform: uppercase;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     transition: filter 0.2s ease;
   }
 }

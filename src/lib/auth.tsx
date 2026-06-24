@@ -17,26 +17,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Refs para acceder al estado actual sin recrear listeners
   const usuarioRef = useRef<ExtendedUser | null>(null);
 
-  // ── Medidas de seguridad avanzadas (Anti-Copia, Anti-Inspección) ──
+  // ── Medidas de seguridad avanzadas (Anti-Copia) ──
   useEffect(() => {
-    // 1. Evitar copiar, cortar y menú contextual (clic derecho)
+    // 1. Evitar copiar y cortar
     const prevenirAccion = (e: Event) => {
       e.preventDefault();
     };
     
     document.addEventListener('copy', prevenirAccion);
     document.addEventListener('cut', prevenirAccion);
-    document.addEventListener('contextmenu', prevenirAccion);
 
-    // 2. Bloquear combinaciones de teclado de copiado y herramientas de desarrollo (F12, Ctrl+U, Ctrl+Shift+I, etc.)
+    // 2. Bloquear combinaciones de teclado de copiado y limpiar PrintScreen
     const handleKeydown = (e: KeyboardEvent) => {
       if (
-        // Ctrl+C, Ctrl+X, Ctrl+U (ver código fuente)
-        (e.ctrlKey && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X' || e.key === 'u' || e.key === 'U')) ||
-        // Ctrl+Shift+I (inspeccionar), Ctrl+Shift+J (consola), Ctrl+Shift+C (inspeccionar elemento)
-        (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'I' || e.key === 'j' || e.key === 'J' || e.key === 'c' || e.key === 'C')) ||
-        // F12 (devtools)
-        e.key === 'F12'
+        // Ctrl+C, Ctrl+X
+        (e.ctrlKey && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X'))
       ) {
         e.preventDefault();
       }
@@ -55,7 +50,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       document.removeEventListener('copy', prevenirAccion);
       document.removeEventListener('cut', prevenirAccion);
-      document.removeEventListener('contextmenu', prevenirAccion);
       window.removeEventListener('keydown', handleKeydown, true);
     };
   }, []);
