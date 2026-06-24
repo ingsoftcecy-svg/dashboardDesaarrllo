@@ -17,42 +17,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Refs para acceder al estado actual sin recrear listeners
   const usuarioRef = useRef<ExtendedUser | null>(null);
 
-  // ── Medidas de seguridad avanzadas (Anti-Copia) ──
-  useEffect(() => {
-    // 1. Evitar copiar y cortar
-    const prevenirAccion = (e: Event) => {
-      e.preventDefault();
-    };
-    
-    document.addEventListener('copy', prevenirAccion);
-    document.addEventListener('cut', prevenirAccion);
-
-    // 2. Bloquear combinaciones de teclado de copiado y limpiar PrintScreen
-    const handleKeydown = (e: KeyboardEvent) => {
-      if (
-        // Ctrl+C, Ctrl+X
-        (e.ctrlKey && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X'))
-      ) {
-        e.preventDefault();
-      }
-
-      // Intentar interceptar PrintScreen (Impr Pant)
-      if (e.key === 'PrintScreen') {
-        try {
-          navigator.clipboard.writeText(''); // Limpia el portapapeles
-        } catch (_) {}
-        e.preventDefault();
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeydown, true);
-
-    return () => {
-      document.removeEventListener('copy', prevenirAccion);
-      document.removeEventListener('cut', prevenirAccion);
-      window.removeEventListener('keydown', handleKeydown, true);
-    };
-  }, []);
 
   // ── Escuchar cambios de autenticación ─────────────────────────────────
   useEffect(() => {
