@@ -18,12 +18,8 @@ export function useExcelData() {
         const factorMap: Record<string, AreaData["autonomyFactors"]> = {};
 
         try {
-          
-          const baseRes = await fetch(`/0. BASE EQUIPOS AUTÓNOMOS CCZ (3).xlsx?t=${timestamp}`);
-          const baseBuf = await baseRes.arrayBuffer();
-          const baseWb = xlsx.read(baseBuf, { type: "array" });
-        // nombre de la hoja de excel 
-          const baseRows = xlsx.utils.sheet_to_json(baseWb.Sheets["BD_ZAC_OFICIAL"]) as any[];
+          const baseRes = await fetch(`/base.json?t=${timestamp}`);
+          const baseRows = await baseRes.json() as any[];
           
           for (const row of baseRows) {
             // id de los empleados, fotos, 
@@ -53,10 +49,8 @@ export function useExcelData() {
 
 
         try {
-          const eacRes = await fetch(`/EAC.xlsx?t=${timestamp}`);
-          const eacBuf = await eacRes.arrayBuffer();
-          const eacWb = xlsx.read(eacBuf, { type: "array" });
-          const eacRows = xlsx.utils.sheet_to_json(eacWb.Sheets[eacWb.SheetNames[0]]) as any[];
+          const eacRes = await fetch(`/eac.json?t=${timestamp}`);
+          const eacRows = await eacRes.json() as any[];
           for (const row of eacRows) {
             if (row["SHARP"]) {
               eaMap[String(row["SHARP"])] = {
@@ -70,10 +64,8 @@ export function useExcelData() {
         }
 
         try {
-          const eabfRes = await fetch(`/EABF.xlsx?t=${timestamp}`);
-          const eabfBuf = await eabfRes.arrayBuffer();
-          const eabfWb = xlsx.read(eabfBuf, { type: "array" });
-          const eabfRows = xlsx.utils.sheet_to_json(eabfWb.Sheets[eabfWb.SheetNames[0]]) as any[];
+          const eabfRes = await fetch(`/eabf.json?t=${timestamp}`);
+          const eabfRows = await eabfRes.json() as any[];
           
           let lastEquipo = "";
           let lastLider = "";
@@ -93,10 +85,8 @@ export function useExcelData() {
         }
 
         try {
-          const bpreRes = await fetch(`/BPRE.xlsx?t=${timestamp}`);
-          const bpreBuf = await bpreRes.arrayBuffer();
-          const bpreWb = xlsx.read(bpreBuf, { type: "array" });
-          const bpreRows = xlsx.utils.sheet_to_json(bpreWb.Sheets[bpreWb.SheetNames[0]]) as any[];
+          const bpreRes = await fetch(`/bpre.json?t=${timestamp}`);
+          const bpreRows = await bpreRes.json() as any[];
           
           for (const row of bpreRows) {
             const rawArea = String(row["ÁREA"] || "").trim();
@@ -154,12 +144,8 @@ export function useExcelData() {
           console.error("Error loading BPRE:", e);
         }
 
-        const response = await fetch(`/DATOS.xlsx?t=${timestamp}`);
-        const arrayBuffer = await response.arrayBuffer();
-        const workbook = xlsx.read(arrayBuffer, { type: "array" });
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-        const rows = xlsx.utils.sheet_to_json(sheet) as any[];
+        const response = await fetch(`/datos.json?t=${timestamp}`);
+        const rows = await response.json() as any[];
 
         const parseOperator = (row: any): Operator & { autonomyScore: number, noEvaluado: boolean } => {
           const empMatch = row["Employee"] ? String(row["Employee"]).match(/\[(\d+)\]\s+(.*)/) : null;

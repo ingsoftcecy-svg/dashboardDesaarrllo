@@ -1,0 +1,394 @@
+[
+  {
+    "Puesto en en Worday": "SUPERVISOR DE COCIMIENTOS",
+    "SHARP": 32045531,
+    "Integrante": "JUAN SALAZAR BANDA",
+    "SHARP Lider": 32132858,
+    "Nombre del Lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
+    "Nombre del Equipo": "CUCHILLAS"
+  },
+  {
+    "Puesto en en Worday": "TECNICO MANTENIMIENTO",
+    "SHARP": 32044502,
+    "Integrante": "ABEL GUILLERMO MAZATAN PAREDES",
+    "SHARP Lider": 32045531,
+    "Nombre del Lider": "JUAN SALAZAR BANDA",
+    "Nombre del Equipo": "CUCHILLAS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR DE MONTACARGAS",
+    "SHARP": 32102191,
+    "Integrante": "MARIO ALBERTO ZAMARRIPA LLANAS",
+    "SHARP Lider": 32045531,
+    "Nombre del Lider": "JUAN SALAZAR BANDA",
+    "Nombre del Equipo": "CUCHILLAS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR PREPARADOR",
+    "SHARP": 32209454,
+    "Integrante": "JOSÉ LUIS MALDONADO",
+    "SHARP Lider": 32045531,
+    "Nombre del Lider": "JUAN SALAZAR BANDA",
+    "Nombre del Equipo": "CUCHILLAS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR RECIBO DE QUÍMICOS",
+    "SHARP": 32204264,
+    "Integrante": "ADRIAN HERNANDEZ DE AVILA",
+    "SHARP Lider": 32045531,
+    "Nombre del Lider": "JUAN SALAZAR BANDA",
+    "Nombre del Equipo": "CUCHILLAS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR RELEVO Y QUAS",
+    "SHARP": 32222225,
+    "Integrante": "MANUEL DE JESUS DEL REAL ESQUIVEL",
+    "SHARP Lider": 32045531,
+    "Nombre del Lider": "JUAN SALAZAR BANDA",
+    "Nombre del Equipo": "CUCHILLAS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR DE MATERIAS PRIMAS",
+    "SHARP": 32198258,
+    "Integrante": "VALERIA NATALY CASTAÑON RAMIREZ",
+    "SHARP Lider": 32045531,
+    "Nombre del Lider": "JUAN SALAZAR BANDA",
+    "Nombre del Equipo": "CUCHILLAS"
+  },
+  {
+    "Puesto en en Worday": "TECNICO DE ELABORACION",
+    "SHARP": 32231912,
+    "Integrante": "BETSAIDA GUERRERO SILVA",
+    "SHARP Lider": 32045531,
+    "Nombre del Lider": "JUAN SALAZAR BANDA",
+    "Nombre del Equipo": "CUCHILLAS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR DE MATERIAS PRIMAS ",
+    "SHARP": 32237827,
+    "Integrante": "CONCEPCIÓN REYES MONTERO",
+    "SHARP Lider": 32045531,
+    "Nombre del Lider": "JUAN SALAZAR BANDA",
+    "Nombre del Equipo": "CUCHILLAS"
+  },
+  {
+    "Puesto en en Worday": "SUPERVISOR DE COCIMIENTOS",
+    "SHARP": 32045014,
+    "Integrante": "J JESUS ALVARADO TENORIO",
+    "SHARP Lider": 32132858,
+    "Nombre del Lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
+    "Nombre del Equipo": "BREWMAN"
+  },
+  {
+    "Puesto en en Worday": "SUPERVISOR DE COCIMIENTOS",
+    "SHARP": 32144668,
+    "Integrante": "OBED CALVILLO RAMIREZ",
+    "SHARP Lider": 32132858,
+    "Nombre del Lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
+    "Nombre del Equipo": "MOSTO-BOYS"
+  },
+  {
+    "Puesto en en Worday": "SUPERVISOR DE COCIMIENTOS",
+    "SHARP": 32151919,
+    "Integrante": "PAOLA CRISTINA OLIVARES SANCHEZ",
+    "SHARP Lider": 32132858,
+    "Nombre del Lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
+    "Nombre del Equipo": "MOSTO-BOYS"
+  },
+  {
+    "Puesto en en Worday": "SUPERVISOR DE COCIMIENTOS",
+    "SHARP": 32174889,
+    "Integrante": "FÁTIMA NEDITH GOMEZ MIRELES",
+    "SHARP Lider": 32132858,
+    "Nombre del Lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
+    "Nombre del Equipo": "LOS CAZADORES DEL AMARGOR"
+  },
+  {
+    "Puesto en en Worday": "SUPERVISOR DE COCIMIENTOS",
+    "SHARP": 32044788,
+    "Integrante": "OSCAR NUÑEZ CALZADA",
+    "SHARP Lider": 32132858,
+    "Nombre del Lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
+    "Nombre del Equipo": "LOS CAZADORES DEL AMARGOR"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR DE MONTACARGAS",
+    "SHARP": 32043796,
+    "Integrante": "JUAN RAMON JIMENEZ DELGADO",
+    "SHARP Lider": 32174889,
+    "Nombre del Lider": "FÁTIMA NEDITH GOMEZ MIRELES",
+    "Nombre del Equipo": "LOS CAZADORES DEL AMARGOR"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR DE MONTACARGAS",
+    "SHARP": 32044838,
+    "Integrante": "J MARIO TRUJILLO MEZA",
+    "SHARP Lider": 32174889,
+    "Nombre del Lider": "FÁTIMA NEDITH GOMEZ MIRELES",
+    "Nombre del Equipo": "LOS CAZADORES DEL AMARGOR"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR DE MONTACARGAS",
+    "SHARP": 32148922,
+    "Integrante": "JUAN ANTONIO VALDEZ LICERIO",
+    "SHARP Lider": 32174889,
+    "Nombre del Lider": "FÁTIMA NEDITH GOMEZ MIRELES",
+    "Nombre del Equipo": "LOS CAZADORES DEL AMARGOR"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR ADICIONADOR",
+    "SHARP": 32197423,
+    "Integrante": "URIEL ESCOBEDO MURO",
+    "SHARP Lider": 32174889,
+    "Nombre del Lider": "FÁTIMA NEDITH GOMEZ MIRELES",
+    "Nombre del Equipo": "LOS CAZADORES DEL AMARGOR"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR ADICIONADOR",
+    "SHARP": 32202297,
+    "Integrante": "OMAR ALBERTO ROBLES SOSA",
+    "SHARP Lider": 32174889,
+    "Nombre del Lider": "FÁTIMA NEDITH GOMEZ MIRELES",
+    "Nombre del Equipo": "LOS CAZADORES DEL AMARGOR"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR AYUDANTE DE DISOLUCIÓN",
+    "SHARP": 32218817,
+    "Integrante": "MARCO AURELIO CUAUCOATL RAMIREZ REVELES",
+    "SHARP Lider": 32174889,
+    "Nombre del Lider": "FÁTIMA NEDITH GOMEZ MIRELES",
+    "Nombre del Equipo": "LOS CAZADORES DEL AMARGOR"
+  },
+  {
+    "Puesto en en Worday": "TECNICO DE ELABORACION",
+    "SHARP": 32233326,
+    "Integrante": "RAFAEL VERA ORTEGA",
+    "SHARP Lider": 32174889,
+    "Nombre del Lider": "FÁTIMA NEDITH GOMEZ MIRELES",
+    "Nombre del Equipo": "LOS CAZADORES DEL AMARGOR"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR DE MATERIAS PRIMAS ",
+    "SHARP": 32237830,
+    "Integrante": "ERIKA IVONE IBARRA NAVA",
+    "SHARP Lider": 32174889,
+    "Nombre del Lider": "FÁTIMA NEDITH GOMEZ MIRELES",
+    "Nombre del Equipo": "LOS CAZADORES DEL AMARGOR"
+  },
+  {
+    "Puesto en en Worday": "SUPERVISOR DE COCIMIENTOS",
+    "SHARP": 32045378,
+    "Integrante": "JOSÉ FRANCISCO TORRES LÓPEZ",
+    "SHARP Lider": 32132858,
+    "Nombre del Lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
+    "Nombre del Equipo": "LOS PANCHITOS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR DE MONTACARGAS",
+    "SHARP": 32045438,
+    "Integrante": "HUGO ALBERTO CARDONA ESPINOZA",
+    "SHARP Lider": 32209640,
+    "Nombre del Lider": "LUIS FERNANDO GUTIERREZ",
+    "Nombre del Equipo": "LOS PANCHITOS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR RELEVO DE MONTACARGAS",
+    "SHARP": 32044892,
+    "Integrante": "LEOBARDO VARELA NIETO",
+    "SHARP Lider": 32209640,
+    "Nombre del Lider": "LUIS FERNANDO GUTIERREZ",
+    "Nombre del Equipo": "LOS PANCHITOS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR RELEVO DE MONTACARGAS",
+    "SHARP": 32044783,
+    "Integrante": "SANTIAGO HERRERA AMADOR",
+    "SHARP Lider": 32209640,
+    "Nombre del Lider": "LUIS FERNANDO GUTIERREZ",
+    "Nombre del Equipo": "LOS PANCHITOS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR DE TOLVAS DE BAGAZO",
+    "SHARP": 32209189,
+    "Integrante": "EDGAR EMANUEL JUAREZ ALBA",
+    "SHARP Lider": 32209640,
+    "Nombre del Lider": "LUIS FERNANDO GUTIERREZ",
+    "Nombre del Equipo": "LOS PANCHITOS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR ADICIONADOR",
+    "SHARP": 32132194,
+    "Integrante": "HECTOR HUGO VALDEZ PIÑA",
+    "SHARP Lider": 32209640,
+    "Nombre del Lider": "LUIS FERNANDO GUTIERREZ",
+    "Nombre del Equipo": "LOS PANCHITOS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR ADICIONADOR",
+    "SHARP": 32188007,
+    "Integrante": "JOSE MANUEL VARELA ROSALES",
+    "SHARP Lider": 32209640,
+    "Nombre del Lider": "LUIS FERNANDO GUTIERREZ",
+    "Nombre del Equipo": "LOS PANCHITOS"
+  },
+  {
+    "Puesto en en Worday": "SUPERVISOR DE MATERIAS PRIMAS",
+    "SHARP": 32131972,
+    "Integrante": "OSCAR IVAN IBARRA ORTIZ",
+    "SHARP Lider": 32209640,
+    "Nombre del Lider": "LUIS FERNANDO GUTIERREZ",
+    "Nombre del Equipo": "LOS PANCHITOS"
+  },
+  {
+    "Puesto en en Worday": "TECNICO DE ELABORACION",
+    "SHARP": 32132054,
+    "Integrante": "RUBEN CARRILLO CASAS",
+    "SHARP Lider": 32209640,
+    "Nombre del Lider": "LUIS FERNANDO GUTIERREZ",
+    "Nombre del Equipo": "LOS PANCHITOS"
+  },
+  {
+    "Puesto en en Worday": "SUPERVISOR DE COCIMIENTOS",
+    "SHARP": 32044518,
+    "Integrante": "RODRÍGUEZ RANGEL JOSÉ LUIS",
+    "SHARP Lider": 32132858,
+    "Nombre del Lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
+    "Nombre del Equipo": "MASH-RAINBOW"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR DE MONTACARGAS",
+    "SHARP": 32044839,
+    "Integrante": "JAIME LOPEZ CHAVEZ",
+    "SHARP Lider": 32044518,
+    "Nombre del Lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
+    "Nombre del Equipo": "MASH-RAINBOW"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR DE MONTACARGAS",
+    "SHARP": 32045409,
+    "Integrante": "ALBERTO NUÑEZ VELEZ",
+    "SHARP Lider": 32044518,
+    "Nombre del Lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
+    "Nombre del Equipo": "MASH-RAINBOW"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR ADICIONADOR",
+    "SHARP": 32197427,
+    "Integrante": "EDGAR ZAMARRON ACOSTA",
+    "SHARP Lider": 32044518,
+    "Nombre del Lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
+    "Nombre del Equipo": "MASH-RAINBOW"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR ADICIONADOR",
+    "SHARP": 32148846,
+    "Integrante": "RIGOBERTO MOTA CORTES",
+    "SHARP Lider": 32044518,
+    "Nombre del Lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
+    "Nombre del Equipo": "MASH-RAINBOW"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR RELEVO Y QUAS",
+    "SHARP": 32045510,
+    "Integrante": "J MANUEL RAYGOZA JUAREZ",
+    "SHARP Lider": 32044518,
+    "Nombre del Lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
+    "Nombre del Equipo": "MASH-RAINBOW"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR DE MATERIAS PRIMAS ",
+    "SHARP": 32222227,
+    "Integrante": "CARLOS RIVERA REYES",
+    "SHARP Lider": 32044518,
+    "Nombre del Lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
+    "Nombre del Equipo": "MASH-RAINBOW"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR AYUDANTE DE DISOLUCIÓN",
+    "SHARP": 32045572,
+    "Integrante": "J GUADALUPE GUZMAN MUÑOZ",
+    "SHARP Lider": 32044518,
+    "Nombre del Lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
+    "Nombre del Equipo": "MASH-RAINBOW"
+  },
+  {
+    "Puesto en en Worday": "TECNICO DE ELABORACION",
+    "SHARP": 32186666,
+    "Integrante": "SAMANTHA MONTSERRAT ROJERO LERMA",
+    "SHARP Lider": 32044518,
+    "Nombre del Lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
+    "Nombre del Equipo": "MASH-RAINBOW"
+  },
+  {
+    "Puesto en en Worday": "SUPERVISOR DE COCIMIENTOS",
+    "SHARP": 32209640,
+    "Integrante": "LUIS FERNANDO GUTIERREZ",
+    "SHARP Lider": 32132858,
+    "Nombre del Lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
+    "Nombre del Equipo": "LOS PANCHITOS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR DE MONTACARGAS",
+    "SHARP": 32044037,
+    "Integrante": "MANUEL DE JESUS CHAVEZ GARCIA",
+    "SHARP Lider": 32144668,
+    "Nombre del Lider": "OBED CALVILLO RAMIREZ",
+    "Nombre del Equipo": "MOSTO-BOYS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR ADICIONADOR",
+    "SHARP": 32173445,
+    "Integrante": "JOSE LUIS CAZARES PINALES",
+    "SHARP Lider": 32144668,
+    "Nombre del Lider": "OBED CALVILLO RAMIREZ",
+    "Nombre del Equipo": "MOSTO-BOYS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR ADICIONADOR",
+    "SHARP": 32046259,
+    "Integrante": "JOSE CARLOS CARDONA LOERA",
+    "SHARP Lider": 32144668,
+    "Nombre del Lider": "OBED CALVILLO RAMIREZ",
+    "Nombre del Equipo": "MOSTO-BOYS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR RECIBO DE QUÍMICOS",
+    "SHARP": 32177483,
+    "Integrante": "ALDO ADRIAN SIFUENTES VELOZ",
+    "SHARP Lider": 32144668,
+    "Nombre del Lider": "OBED CALVILLO RAMIREZ",
+    "Nombre del Equipo": "MOSTO-BOYS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR RELEVO DE MONTACARGAS",
+    "SHARP": 32132055,
+    "Integrante": "JOSE AMADOR RODRIGUEZ JUAREZ",
+    "SHARP Lider": 32144668,
+    "Nombre del Lider": "OBED CALVILLO RAMIREZ",
+    "Nombre del Equipo": "MOSTO-BOYS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR RELEVO Y QUAS",
+    "SHARP": 32137247,
+    "Integrante": "EDUARDO VALLE ARIAS",
+    "SHARP Lider": 32144668,
+    "Nombre del Lider": "OBED CALVILLO RAMIREZ",
+    "Nombre del Equipo": "MOSTO-BOYS"
+  },
+  {
+    "Puesto en en Worday": "OPERADOR AYUDANTE DE DISOLUCIÓN",
+    "SHARP": 32045004,
+    "Integrante": "J JESUS RIVERA MEDINA",
+    "SHARP Lider": 32144668,
+    "Nombre del Lider": "OBED CALVILLO RAMIREZ",
+    "Nombre del Equipo": "MOSTO-BOYS"
+  },
+  {
+    "Puesto en en Worday": "TECNICO DE ELABORACION",
+    "SHARP": 32044983,
+    "Integrante": "RAÚL BAÑUELOS FLORES",
+    "SHARP Lider": 32144668,
+    "Nombre del Lider": "OBED CALVILLO RAMIREZ",
+    "Nombre del Equipo": "MOSTO-BOYS"
+  }
+]

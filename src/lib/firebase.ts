@@ -16,19 +16,19 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
-const db = getFirestore(app);
-const auth = getAuth(app);
+// Initialize Firebase only if config is present (prevents build crashes during SSR)
+const app = firebaseConfig.apiKey ? initializeApp(firebaseConfig) : null;
+const analytics = app && typeof window !== 'undefined' ? getAnalytics(app) : null;
+const db = app ? getFirestore(app) : null;
+const auth = app ? getAuth(app) : null;
 
 // Activar token de depuración para desarrollo local
 if (import.meta.env.DEV && typeof window !== 'undefined') {
   (window as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 }
 
-// Inicializar App Check en cliente si la siteKey está disponible
-if (typeof window !== 'undefined') {
+// Inicializar App Check en cliente si la siteKey está disponible y la app se inicializó
+if (typeof window !== 'undefined' && app) {
   const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
   if (siteKey) {
     initializeAppCheck(app, {
