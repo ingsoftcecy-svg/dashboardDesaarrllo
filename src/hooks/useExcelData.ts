@@ -20,13 +20,16 @@ export function useExcelData() {
         const factorMap: Record<string, AreaData["autonomyFactors"]> = {};
         const overridesMap: Record<string, { leader: string }> = {};
 
+        // Carga las asignaciones manuales (overrides) de líderes de equipo desde la colección "team_overrides" de Firestore.
+        // Esto permite a los administradores sobrescribir quién es el líder de un equipo desde la interfaz (TeamCard/RankingItem),
+        // sin tener que modificar la base de datos original o los archivos JSON estáticos (EAC/Excel).
         try {
           const overridesSnapshot = await getDocs(collection(db, "team_overrides"));
           overridesSnapshot.forEach((doc) => {
             overridesMap[doc.id] = doc.data() as { leader: string };
           });
         } catch (e) {
-          console.error("Error loading team overrides:", e);
+          console.error("Error cargando las asignaciones manuales de líderes (overrides):", e);
         }
 
         try {

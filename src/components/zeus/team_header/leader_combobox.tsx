@@ -22,10 +22,15 @@ interface LeaderComboboxProps {
   operadores: any[];
 }
 
+/**
+ * LeaderCombobox: Componente que renderiza un menú desplegable (combobox) con buscador integrado,
+ * permitiendo a los administradores buscar y seleccionar a un nuevo líder de equipo
+ * a partir de la lista de operadores disponibles.
+ */
 export function LeaderCombobox({ value, onChange, operadores }: LeaderComboboxProps) {
   const [open, setOpen] = useState(false);
 
-  // Extract unique operator names, ensuring no duplicates and filtering out empty names
+  // Extrae los nombres únicos de los operadores para la lista del combobox, filtrando vacíos o duplicados
   const uniqueNames = Array.from(new Set((operadores || []).map(op => op.nombre))).filter(Boolean);
   
   const options = uniqueNames.map(name => ({
@@ -33,7 +38,7 @@ export function LeaderCombobox({ value, onChange, operadores }: LeaderComboboxPr
     label: name,
   }));
 
-  // Also include the current value if it's not in the list (e.g., loaded from static data but not in operators)
+  // También incluye el valor actual si no está en la lista (ej. un líder cargado de un JSON estático que no es operador)
   if (value && value !== "N/A" && !uniqueNames.includes(value)) {
     options.unshift({ value, label: value });
   }

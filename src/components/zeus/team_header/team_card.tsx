@@ -22,6 +22,11 @@ interface TeamCardProps {
   operadores?: any[];
 }
 
+/**
+ * TeamCard: Componente visual que muestra la información de un equipo (el mejor o el peor).
+ * Incluye funcionalidad para que los administradores puedan editar y guardar un nuevo líder
+ * para el equipo, almacenando dicha anulación (override) directamente en Firestore.
+ */
 export function TeamCard({ variant, team, operadores = [] }: TeamCardProps) {
   const is_best = variant === "best";
   const canvas_ref = useRef<HTMLCanvasElement>(null);

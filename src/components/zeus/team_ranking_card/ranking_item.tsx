@@ -27,6 +27,11 @@ interface RankingItemProps {
   operadores?: any[];
 }
 
+/**
+ * RankingItem: Representa una fila individual en la lista del ranking de equipos.
+ * Integra validación de roles (admin) para permitir la modificación manual del líder
+ * del equipo asociado, guardando los cambios asíncronamente en Firestore.
+ */
 export function RankingItem({ team, index, is_best, is_worst, operadores = [] }: RankingItemProps) {
   const auth = useAuth();
   const is_admin = auth?.rol === "admin";
