@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import * as xlsx from "xlsx";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { Operator, ChampionKey, cocimientos as defaultCocimientos, bloqueFrio as defaultBloqueFrio, mantenimiento as defaultMantenimiento, AreaData } from "@/data/zeus";
 
 export function useExcelData() {
@@ -16,6 +18,16 @@ export function useExcelData() {
         const eaMap: Record<string, { equipo: string; lider: string }> = {};
         const championMap: Record<string, ChampionKey[]> = {};
         const factorMap: Record<string, AreaData["autonomyFactors"]> = {};
+        const overridesMap: Record<string, { leader: string }> = {};
+
+        try {
+          const overridesSnapshot = await getDocs(collection(db, "team_overrides"));
+          overridesSnapshot.forEach((doc) => {
+            overridesMap[doc.id] = doc.data() as { leader: string };
+          });
+        } catch (e) {
+          console.error("Error loading team overrides:", e);
+        }
 
         try {
           const baseRes = await fetch(`/base.json?t=${timestamp}`);
@@ -350,7 +362,7 @@ export function useExcelData() {
             .map(([name, data]) => ({
               name,
               avg: data.count > 0 ? Number((data.sum / data.count).toFixed(2)) : 0,
-              leader: data.leader
+              leader: overridesMap[name]?.leader || data.leader
             }))
             .sort((a, b) => b.avg - a.avg);
 

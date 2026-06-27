@@ -104,7 +104,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             </DialogContent>
           </Dialog>
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 truncate text-sm font-bold text-slate-800">
+            <div className="flex items-start gap-2 text-sm font-bold text-slate-800 flex-wrap">
               {original_index === 0 ? (
                 <motion.span 
                   animate={{ scale: [1, 1.3, 1], rotate: [0, 10, -10, 0] }}

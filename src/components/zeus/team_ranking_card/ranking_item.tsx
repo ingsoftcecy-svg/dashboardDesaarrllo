@@ -1,4 +1,5 @@
-import { TrendingUp, TrendingDown, Medal } from "lucide-react";
+import { useState, useEffect } from "react";
+import { TrendingUp, TrendingDown, Medal, Edit2, Check, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { get_initials } from "./utils";
@@ -6,6 +7,10 @@ import { STRINGS } from "./constants";
 import { LeaderAvatar } from "./leader_avatar";
 import { TeamHistoryDialog } from "../physical_board/team_history_dialog";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import { useAuth } from "@/lib/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { LeaderCombobox } from "../team_header/leader_combobox";
 
 
 interface TeamRanking {
@@ -23,6 +28,27 @@ interface RankingItemProps {
 }
 
 export function RankingItem({ team, index, is_best, is_worst, operadores = [] }: RankingItemProps) {
+  const auth = useAuth();
+  const is_admin = auth?.rol === "admin";
+  const [editingLeader, setEditingLeader] = useState(false);
+  const [localLeader, setLocalLeader] = useState(team.leader || "N/A");
+  const [newLeader, setNewLeader] = useState(localLeader);
+
+  useEffect(() => {
+    setLocalLeader(team.leader || "N/A");
+    setNewLeader(team.leader || "N/A");
+  }, [team.leader]);
+
+  const handleSaveLeader = async () => {
+    if (!team.name) return;
+    try {
+      await setDoc(doc(db, "team_overrides", team.name), { leader: newLeader });
+      setLocalLeader(newLeader);
+      setEditingLeader(false);
+    } catch (e) {
+      console.error("Error saving new leader:", e);
+    }
+  };
   const members = (operadores || [])
     .filter(op => op.equipoAutonomo && op.equipoAutonomo.trim().toUpperCase() === team.name.trim().toUpperCase())
     .map(op => ({
@@ -87,7 +113,7 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [] }:
               </div>
             </div>
             <div className="text-center mt-4 space-y-1">
-              <DialogTitle className="text-2xl font-black text-[#1a4491] leading-tight uppercase">{team.leader || STRINGS.NO_ASSIGNED}</DialogTitle>
+              <DialogTitle className="text-2xl font-black text-[#1a4491] leading-tight uppercase">{localLeader}</DialogTitle>
               <DialogDescription className="text-sm font-bold text-slate-500 uppercase tracking-widest">Líder de {team.name}</DialogDescription>
             </div>
           </DialogContent>
@@ -107,9 +133,26 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [] }:
               />
             </DialogContent>
           </Dialog>
-          <div className="text-[9px] font-semibold text-slate-500 truncate leading-tight mt-0.5">
-            {STRINGS.LEADER_LABEL} {team.leader || "N/A"}
-          </div>
+          {editingLeader ? (
+            <div className="flex items-center gap-1 mt-1">
+              <LeaderCombobox 
+                value={newLeader} 
+                onChange={setNewLeader} 
+                operadores={operadores} 
+              />
+              <button onClick={handleSaveLeader} className="text-emerald-500 hover:text-emerald-600 bg-emerald-50 rounded p-0.5"><Check className="w-3 h-3"/></button>
+              <button onClick={() => { setEditingLeader(false); setNewLeader(localLeader); }} className="text-rose-500 hover:text-rose-600 bg-rose-50 rounded p-0.5"><X className="w-3 h-3"/></button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 text-[9px] font-semibold text-slate-500 truncate leading-tight mt-0.5">
+              <span>{STRINGS.LEADER_LABEL} {localLeader}</span>
+              {is_admin && (
+                <button onClick={() => setEditingLeader(true)} className="hover:text-[#1a4491] transition-colors" title="Editar Líder">
+                  <Edit2 className="w-2.5 h-2.5" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

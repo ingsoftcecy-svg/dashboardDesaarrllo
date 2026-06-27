@@ -1,10 +1,14 @@
-import { useEffect, useRef } from "react";
-import { Medal, AlertCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Medal, AlertCircle, Edit2, Check, X } from "lucide-react";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { STRINGS } from "./constants";
+import { useAuth } from "@/lib/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { LeaderCombobox } from "./leader_combobox";
 
 interface TeamData {
   name: string;
@@ -15,11 +19,34 @@ interface TeamData {
 interface TeamCardProps {
   variant: "best" | "worst";
   team?: TeamData;
+  operadores?: any[];
 }
 
-export function TeamCard({ variant, team }: TeamCardProps) {
+export function TeamCard({ variant, team, operadores = [] }: TeamCardProps) {
   const is_best = variant === "best";
   const canvas_ref = useRef<HTMLCanvasElement>(null);
+  
+  const auth = useAuth();
+  const is_admin = auth?.rol === "admin";
+  const [editingLeader, setEditingLeader] = useState(false);
+  const [localLeader, setLocalLeader] = useState(team?.leader || STRINGS.NOT_AVAILABLE);
+  const [newLeader, setNewLeader] = useState(localLeader);
+
+  useEffect(() => {
+    setLocalLeader(team?.leader || STRINGS.NOT_AVAILABLE);
+    setNewLeader(team?.leader || STRINGS.NOT_AVAILABLE);
+  }, [team?.leader]);
+
+  const handleSaveLeader = async () => {
+    if (!team?.name) return;
+    try {
+      await setDoc(doc(db, "team_overrides", team.name), { leader: newLeader });
+      setLocalLeader(newLeader);
+      setEditingLeader(false);
+    } catch (e) {
+      console.error("Error saving new leader:", e);
+    }
+  };
 
   useEffect(() => {
     if (is_best && canvas_ref.current) {
@@ -67,7 +94,7 @@ export function TeamCard({ variant, team }: TeamCardProps) {
   const team_subtitle = is_best ? STRINGS.BEST_TEAM_SUBTITLE : STRINGS.WORST_TEAM_SUBTITLE;
   
   const team_name = team?.name || STRINGS.NOT_AVAILABLE;
-  const leader_name = team?.leader || STRINGS.NOT_AVAILABLE;
+  const leader_name = localLeader;
   const initial_animation_x = is_best ? -20 : 20;
 
   const handle_logo_error = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -118,10 +145,31 @@ export function TeamCard({ variant, team }: TeamCardProps) {
         </DialogContent>
       </Dialog>
       <div className="text-center">
-        <div className={`text-[8px] font-black uppercase tracking-tighter ${label_color}`}>{STRINGS.TEAM_LEADER}</div>
-        <div className="text-[10px] font-black text-slate-700 uppercase leading-tight max-w-[80px] break-words">
-          {leader_name !== STRINGS.NOT_AVAILABLE ? leader_name.split(" ").slice(-2).join(" ") : STRINGS.NOT_AVAILABLE}
+        <div className={`flex items-center justify-center gap-1 text-[8px] font-black uppercase tracking-tighter ${label_color}`}>
+          {STRINGS.TEAM_LEADER}
+          {is_admin && !editingLeader && (
+            <button onClick={() => setEditingLeader(true)} className="hover:opacity-75 transition-opacity" title="Editar Líder">
+              <Edit2 className="w-3 h-3" />
+            </button>
+          )}
         </div>
+        {editingLeader ? (
+          <div className="flex flex-col items-center gap-1 mt-1">
+            <LeaderCombobox 
+              value={newLeader} 
+              onChange={setNewLeader} 
+              operadores={operadores} 
+            />
+            <div className="flex items-center gap-2 mt-1">
+              <button onClick={handleSaveLeader} className="text-emerald-500 hover:text-emerald-600 bg-emerald-50 rounded p-0.5"><Check className="w-3 h-3"/></button>
+              <button onClick={() => { setEditingLeader(false); setNewLeader(localLeader); }} className="text-rose-500 hover:text-rose-600 bg-rose-50 rounded p-0.5"><X className="w-3 h-3"/></button>
+            </div>
+          </div>
+        ) : (
+          <div className="text-[10px] font-black text-slate-700 uppercase leading-tight max-w-[80px] break-words mt-0.5">
+            {leader_name !== STRINGS.NOT_AVAILABLE ? leader_name.split(" ").slice(-2).join(" ") : STRINGS.NOT_AVAILABLE}
+          </div>
+        )}
       </div>
     </div>
   );
