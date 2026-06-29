@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import * as xlsx from "xlsx";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, query, orderBy, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Operator, ChampionKey, cocimientos as defaultCocimientos, bloqueFrio as defaultBloqueFrio, mantenimiento as defaultMantenimiento, AreaData } from "@/data/zeus";
 
@@ -32,135 +32,174 @@ export function useExcelData() {
           console.error("Error cargando las asignaciones manuales de líderes (overrides):", e);
         }
 
+        // --- Cargar catálogos fijos (base, eac, eabf) ---
+        let baseRows: any[] = [];
+        let eacRows: any[] = [];
+        let eabfRows: any[] = [];
+        let catalogosCargados = false;
+
         try {
-          const baseRes = await fetch(`/base.json?t=${timestamp}`);
-          const baseRows = await baseRes.json() as any[];
-          
-          for (const row of baseRows) {
-            // id de los empleados, fotos, 
-            const id = row["ID Sharp"] ? String(row["ID Sharp"]) : null;
-            if (id) {
-              const rawChamp = row["CHAMPION"];
-              const champs: ChampionKey[] = [];
-              if (rawChamp && rawChamp !== "-") {
-                const parts = String(rawChamp).toUpperCase().split(/ Y | AND |,/);
-                for (const p of parts) {
-                  const clean = p.trim();
-                  if (clean === "SEGURIDAD") champs.push("seguridad");
-                  else if (clean === "CALIDAD") champs.push("calidad");
-                  else if (clean === "AMBIENTAL") champs.push("ambiental");
-                  else if (clean === "MANTENIMIENTO") champs.push("mantenimiento");
-                  else if (clean === "GESTIÓN" || clean === "GESTION") champs.push("gestion");
-                  else if (clean === "GENTE") champs.push("gente");
-                  else if (clean === "LOGÍSTICA" || clean === "LOGISTICA") champs.push("logistica");
-                }
-              }
-              championMap[id] = champs;
-            }
+          const catDocRef = doc(db, "config_dashboard", "catalogos_fijos");
+          const catSnap = await getDoc(catDocRef);
+          if (catSnap.exists()) {
+            const data = catSnap.data();
+            baseRows = data.base_equipos || [];
+            eacRows = data.eac || [];
+            eabfRows = data.eabf || [];
+            catalogosCargados = true;
+            console.log("Loaded fixed catalogs from Firestore.");
           }
         } catch (e) {
-          console.error("Error loading base configuration:", e);
+          console.error("Error loading fixed catalogs from Firestore, falling back to local files:", e);
         }
 
+        // Fallback local para catálogos fijos
+        if (!catalogosCargados) {
+          try {
+            const baseRes = await fetch(`/base.json?t=${timestamp}`);
+            baseRows = await baseRes.json() as any[];
+          } catch (e) { console.error("Error loading fallback base.json:", e); }
 
-        try {
-          const eacRes = await fetch(`/eac.json?t=${timestamp}`);
-          const eacRows = await eacRes.json() as any[];
-          for (const row of eacRows) {
-            if (row["SHARP"]) {
-              eaMap[String(row["SHARP"])] = {
-                equipo: row["Nombre del Equipo"] || "",
-                lider: row["Nombre del Lider"] || "",
-              };
-            }
-          }
-        } catch (e) {
-          console.error("Error loading EAC:", e);
+          try {
+            const eacRes = await fetch(`/eac.json?t=${timestamp}`);
+            eacRows = await eacRes.json() as any[];
+          } catch (e) { console.error("Error loading fallback eac.json:", e); }
+
+          try {
+            const eabfRes = await fetch(`/eabf.json?t=${timestamp}`);
+            eabfRows = await eabfRes.json() as any[];
+          } catch (e) { console.error("Error loading fallback eabf.json:", e); }
         }
 
-        try {
-          const eabfRes = await fetch(`/eabf.json?t=${timestamp}`);
-          const eabfRows = await eabfRes.json() as any[];
-          
-          let lastEquipo = "";
-          let lastLider = "";
-          for (const row of eabfRows) {
-            if (row["NUEVO EQUIPO "]) lastEquipo = row["NUEVO EQUIPO "];
-            if (row["NUEVO LIDER"]) lastLider = row["NUEVO LIDER"];
-            
-            if (row["SHARP"]) {
-              eaMap[String(row["SHARP"])] = {
-                equipo: lastEquipo,
-                lider: lastLider,
-              };
-            }
-          }
-        } catch (e) {
-          console.error("Error loading EABF:", e);
-        }
-
-        try {
-          const bpreRes = await fetch(`/bpre.json?t=${timestamp}`);
-          const bpreRows = await bpreRes.json() as any[];
-          
-          for (const row of bpreRows) {
-            const rawArea = String(row["ÁREA"] || "").trim();
-            const rawNombre = String(row["NOMBRE"] || "").trim();
-            
-            // Determine area key
-            let areaKey = "";
-            const areaLower = rawArea.toLowerCase();
-            const nombreLower = rawNombre.toLowerCase();
-            const combined = (areaLower + " " + nombreLower).trim();
-
-            if (combined.includes("cocimientos")) areaKey = "Warm Block";
-            else if (combined.includes("bloque frio") || combined.includes("cuartos frios")) areaKey = "Cold Block";
-            else if (combined.includes("mantenimiento")) areaKey = "Brewing Maintenance";
-            
-            // Priority for General if it contains "promedio general" or similar
-            if (combined.includes("promedio general")) areaKey = "General";
-            else if (areaKey === "" && combined.includes("general")) areaKey = "General";
-
-            if (areaKey) {
-              // Helper to find column value by partial name match
-              const getVal = (keyword: string) => {
-                const colName = Object.keys(row).find(key => 
-                  key.toLowerCase().includes(keyword.toLowerCase())
-                );
-                if (!colName) return 0;
-                let val = row[colName];
-                if (typeof val === "string") {
-                  val = val.replace(",", ".");
-                }
-                const num = Number(val);
-                return isNaN(num) ? 0 : num;
-              };
-
-              const factors = {
-                dinamica: getVal("DINÁMICA") || getVal("DINAMICA"),
-                liderazgo: getVal("LIDERAZGO") || getVal("LIDERAZ"),
-                skap: getVal("SKAP"),
-                ato: getVal("ATO"),
-                seguridad: getVal("SEGURIDAD"),
-                quas: getVal("QUAS") || getVal("CALIDAD"),
-                multihab: getVal("MULTIHAB") || getVal("MULTIHA") || getVal("MULTI"),
-                vpo: getVal("VPO"),
-                solucionProb: getVal("SOLUCIÓN") || getVal("SOLUCION") || getVal("PROB"),
-                infraest: getVal("INFRAEST") || getVal("INFRAESTRUCTURA"),
-              };
-
-              // If it's a 'Promedio' row, it should overwrite any previous team-specific data for that area map
-              if (nombreLower.includes("promedio") || areaLower.includes("promedio") || !factorMap[areaKey]) {
-                factorMap[areaKey] = factors;
+        // Procesar Base Config (championMap)
+        for (const row of baseRows) {
+          const id = row["ID Sharp"] ? String(row["ID Sharp"]) : null;
+          if (id) {
+            const rawChamp = row["CHAMPION"];
+            const champs: ChampionKey[] = [];
+            if (rawChamp && rawChamp !== "-") {
+              const parts = String(rawChamp).toUpperCase().split(/ Y | AND |,/);
+              for (const p of parts) {
+                const clean = p.trim();
+                if (clean === "SEGURIDAD") champs.push("seguridad");
+                else if (clean === "CALIDAD") champs.push("calidad");
+                else if (clean === "AMBIENTAL") champs.push("ambiental");
+                else if (clean === "MANTENIMIENTO") champs.push("mantenimiento");
+                else if (clean === "GESTIÓN" || clean === "GESTION") champs.push("gestion");
+                else if (clean === "GENTE") champs.push("gente");
+                else if (clean === "LOGÍSTICA" || clean === "LOGISTICA") champs.push("logistica");
               }
             }
+            championMap[id] = champs;
           }
-        } catch (e) {
-          console.error("Error loading BPRE:", e);
         }
 
-        const response = await fetch(`/datos.json?t=${timestamp}`);
-        const rows = await response.json() as any[];
+        // Procesar EAC (eaMap)
+        for (const row of eacRows) {
+          if (row["SHARP"]) {
+            eaMap[String(row["SHARP"])] = {
+              equipo: row["Nombre del Equipo"] || "",
+              lider: row["Nombre del Lider"] || "",
+            };
+          }
+        }
+
+        // Procesar EABF (eaMap)
+        let lastEquipo = "";
+        let lastLider = "";
+        for (const row of eabfRows) {
+          if (row["NUEVO EQUIPO "]) lastEquipo = row["NUEVO EQUIPO "];
+          if (row["NUEVO LIDER"]) lastLider = row["NUEVO LIDER"];
+          
+          if (row["SHARP"]) {
+            eaMap[String(row["SHARP"])] = {
+              equipo: lastEquipo,
+              lider: lastLider,
+            };
+          }
+        }
+
+        // --- Cargar datos del mes actual (bpre y datos_skap) ---
+        let bpreRows: any[] = [];
+        let rows: any[] = [];
+        let datosCargados = false;
+
+        try {
+          const q = query(collection(db, "historicos_excel"), orderBy("__name__", "desc"), limit(1));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            const docData = snap.docs[0].data();
+            rows = docData.datos_skap || [];
+            bpreRows = docData.bpre || [];
+            datosCargados = true;
+            console.log(`Loaded active data from Firestore weekly doc: ${snap.docs[0].id}`);
+          }
+        } catch (e) {
+          console.error("Error loading active data from Firestore, falling back to local files:", e);
+        }
+
+        // Fallback local para datos activos
+        if (!datosCargados) {
+          try {
+            const bpreRes = await fetch(`/bpre.json?t=${timestamp}`);
+            bpreRows = await bpreRes.json() as any[];
+          } catch (e) { console.error("Error loading fallback bpre.json:", e); }
+
+          try {
+            const response = await fetch(`/datos.json?t=${timestamp}`);
+            rows = await response.json() as any[];
+          } catch (e) { console.error("Error loading fallback datos.json:", e); }
+        }
+
+        // Procesar BPRE (factorMap)
+        for (const row of bpreRows) {
+          const rawArea = String(row["ÁREA"] || "").trim();
+          const rawNombre = String(row["NOMBRE"] || "").trim();
+          
+          let areaKey = "";
+          const areaLower = rawArea.toLowerCase();
+          const nombreLower = rawNombre.toLowerCase();
+          const combined = (areaLower + " " + nombreLower).trim();
+
+          if (combined.includes("cocimientos")) areaKey = "Warm Block";
+          else if (combined.includes("bloque frio") || combined.includes("cuartos frios")) areaKey = "Cold Block";
+          else if (combined.includes("mantenimiento")) areaKey = "Brewing Maintenance";
+          
+          if (combined.includes("promedio general")) areaKey = "General";
+          else if (areaKey === "" && combined.includes("general")) areaKey = "General";
+
+          if (areaKey) {
+            const getVal = (keyword: string) => {
+              const colName = Object.keys(row).find(key => 
+                key.toLowerCase().includes(keyword.toLowerCase())
+              );
+              if (!colName) return 0;
+              let val = row[colName];
+              if (typeof val === "string") {
+                val = val.replace(",", ".");
+              }
+              const num = Number(val);
+              return isNaN(num) ? 0 : num;
+            };
+
+            const factors = {
+              dinamica: getVal("DINÁMICA") || getVal("DINAMICA"),
+              liderazgo: getVal("LIDERAZGO") || getVal("LIDERAZ"),
+              skap: getVal("SKAP"),
+              ato: getVal("ATO"),
+              seguridad: getVal("SEGURIDAD"),
+              quas: getVal("QUAS") || getVal("CALIDAD"),
+              multihab: getVal("MULTIHAB") || getVal("MULTIHA") || getVal("MULTI"),
+              vpo: getVal("VPO"),
+              solucionProb: getVal("SOLUCIÓN") || getVal("SOLUCION") || getVal("PROB"),
+              infraest: getVal("INFRAEST") || getVal("INFRAESTRUCTURA"),
+            };
+
+            if (nombreLower.includes("promedio") || areaLower.includes("promedio") || !factorMap[areaKey]) {
+              factorMap[areaKey] = factors;
+            }
+          }
+        }
 
         const parseOperator = (row: any): Operator & { autonomyScore: number, noEvaluado: boolean } => {
           const empMatch = row["Employee"] ? String(row["Employee"]).match(/\[(\d+)\]\s+(.*)/) : null;
