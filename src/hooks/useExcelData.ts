@@ -4,6 +4,23 @@ import { collection, getDocs, doc, getDoc, query, orderBy, limit } from "firebas
 import { db } from "@/lib/firebase";
 import { Operator, ChampionKey, cocimientos as defaultCocimientos, bloqueFrio as defaultBloqueFrio, mantenimiento as defaultMantenimiento, AreaData } from "@/data/zeus";
 
+export const normalizarNombreEquipo = (name: string): string => {
+  const n = name.trim().toUpperCase();
+  if (n === "LOS CAZADORES DEL AMARGOR" || n === "CAZADORES_AMARGOR" || n === "LOS CAZADORES DEL AMARGOR ") return "CAZADORES_AMARGOR";
+  if (n === "CUCHILLAS" || n === "CUCHILLA") return "CUCHILLA";
+  if (n === "MASH-RAINBOW" || n === "MASHRAINBOW") return "MASHRAINBOW";
+  if (n === "MOSTO-BOYS" || n === "MOSTOBOYS") return "MOSTOBOYS";
+  if (n === "LOS PANCHITOS" || n === "PANCHITOS") return "PANCHITOS";
+  if (n === "LOS ANDAMOS CON TODO" || n === "ANDAMOS_CON_TODO" || n === "ANDAMOS_CON_TODO ") return "ANDAMOS_CON_TODO ";
+  if (n === "LOS BRONCOS" || n === "BRONCOS") return "BRONCOS";
+  if (n === "LOS BRAVOS DEL FRIO" || n === "LOS_BRAVOS") return "LOS_BRAVOS";
+  if (n === "LOS FUERTES DEL FRIO" || n === "LOS_FUERTES") return "LOS_FUERTES";
+  if (n === "REYES DE LA MEZCLA" || n === "REYES_MEZCLA") return "REYES_MEZCLA";
+  if (n === "MUNICH") return "MUNICH";
+  if (n === "NAHUALES" || n === "LOS NAHUALES") return "NAHUALES";
+  return n;
+};
+
 export function useExcelData() {
   const [cocimientos, setCocimientos] = useState<AreaData>(defaultCocimientos);
   const [bloqueFrio, setBloqueFrio] = useState<AreaData>(defaultBloqueFrio);
@@ -18,7 +35,10 @@ export function useExcelData() {
         const eaMap: Record<string, { equipo: string; lider: string }> = {};
         const championMap: Record<string, ChampionKey[]> = {};
         const factorMap: Record<string, AreaData["autonomyFactors"]> = {};
-        const overridesMap: Record<string, { leader: string }> = {};
+        const overridesMap: Record<string, { leader: string }> = {
+          "LOS PANCHITOS": { leader: "JOSÉ FRANCISCO TORRES LÓPEZ" },
+          "PANCHITOS": { leader: "JOSÉ FRANCISCO TORRES LÓPEZ" }
+        };
 
         // Carga las asignaciones manuales (overrides) de líderes de equipo desde la colección "team_overrides" de Firestore.
         // Esto permite a los administradores sobrescribir quién es el líder de un equipo desde la interfaz (TeamCard/RankingItem),
@@ -253,18 +273,32 @@ export function useExcelData() {
           const autonomyScore = val <= 1.0 ? parseFloat((val * 100).toFixed(2)) : parseFloat(val.toFixed(2));
 
           const eaData = eaMap[id] || { equipo: "Sin Equipo", lider: "No asignado" };
+          const normalizedTeam = normalizarNombreEquipo(eaData.equipo);
+          const activeOverride = Object.entries(overridesMap).find(
+            ([teamName]) => normalizarNombreEquipo(teamName) === normalizedTeam
+          );
+          let leaderName = activeOverride ? activeOverride[1].leader : eaData.lider;
+          let puesto = row["SKAP Position"] || row["Position"] || "Operador";
+
+          if (leaderName === "JOSÉ FRANCISCO TORRES LÓPEZ" && normalizedTeam === "PANCHITOS") {
+            if (nombre.trim().toUpperCase() === "JOSÉ FRANCISCO TORRES LÓPEZ") {
+              puesto = "Líder";
+            } else if (nombre.trim().toUpperCase() === "LUIS FERNANDO GUTIERREZ MURILLO") {
+              puesto = "Integrante";
+            }
+          }
 
           return {
             id,
             nombre,
-            puesto: row["SKAP Position"] || row["Position"] || "Operador",
+            puesto: puesto,
             basico: Number(basico.toFixed(2)),
             intermedio: Number(intermedio.toFixed(2)),
             avanzado: Number(avanzado.toFixed(2)),
             autonomyScore: Number(autonomyScore.toFixed(2)),
             champions: championMap[id] || [],
             equipoAutonomo: eaData.equipo,
-            lider: eaData.lider,
+            lider: leaderName,
             lastAssessmentDate: row["Assessment Date"] || row["Last Assessment Date"] || null,
             ato: row["ATO"] || 4,
             noEvaluado: !hasEvaluation || Number(autonomyScore.toFixed(2)) === 0
@@ -401,11 +435,47 @@ export function useExcelData() {
 
           const teamRankings = Object.entries(teamsMap)
             .filter(([name]) => name !== "Sin Equipo")
-            .map(([name, data]) => ({
-              name,
-              avg: data.count > 0 ? Number((data.sum / data.count).toFixed(2)) : 0,
-              leader: overridesMap[name]?.leader || data.leader
-            }))
+            .map(([name, data]) => {
+              const bpreName = normalizarNombreEquipo(name);
+              const bpreRow = bpreRows.find(r => normalizarNombreEquipo(r["NOMBRE"] || "") === bpreName);
+
+              const getVal = (row: any, keyword: string) => {
+                if (!row) return 0;
+                const colName = Object.keys(row).find(key => 
+                  key.toLowerCase().includes(keyword.toLowerCase())
+                );
+                if (!colName) return 0;
+                let val = row[colName];
+                if (typeof val === "string") {
+                  val = val.replace(",", ".");
+                }
+                const num = Number(val);
+                return isNaN(num) ? 0 : num;
+              };
+
+              const autonomyFactors = bpreRow ? {
+                dinamica: getVal(bpreRow, "DINÁMICA") || getVal(bpreRow, "DINAMICA"),
+                liderazgo: getVal(bpreRow, "LIDERAZGO") || getVal(bpreRow, "LIDERAZ"),
+                skap: getVal(bpreRow, "SKAP"),
+                ato: getVal(bpreRow, "ATO"),
+                seguridad: getVal(bpreRow, "SEGURIDAD"),
+                quas: getVal(bpreRow, "QUAS") || getVal(bpreRow, "CALIDAD"),
+                multihab: getVal(bpreRow, "MULTIHAB") || getVal(bpreRow, "MULTIHA") || getVal(bpreRow, "MULTI"),
+                vpo: getVal(bpreRow, "VPO"),
+                solucionProb: getVal(bpreRow, "SOLUCIÓN") || getVal(bpreRow, "SOLUCION") || getVal(bpreRow, "PROB"),
+                infraest: getVal(bpreRow, "INFRAEST") || getVal(bpreRow, "INFRAESTRUCTURA"),
+              } : undefined;
+
+              return {
+                name,
+                avg: data.count > 0 ? Number((data.sum / data.count).toFixed(2)) : 0,
+                leader: overridesMap[name]?.leader || data.leader,
+                autonomyFactors,
+                faseActual: bpreRow ? bpreRow["FASE ACTUAL"] || "F2" : "F2",
+                fase2026: 4,
+                fechaCompromiso: bpreRow ? bpreRow["FECHA COMPROMISO CAMBIO DE FASE"] || "No definida" : "No definida",
+              };
+            })
             .sort((a, b) => b.avg - a.avg);
 
           const bestTeam = teamRankings[0] || undefined;

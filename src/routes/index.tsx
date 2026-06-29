@@ -73,6 +73,7 @@ function Index() {
                 operadores={area.operadores as any} 
                 show_ato={tab !== "mantenimiento"}
                 puedeEditar={puedeEditar}
+                teamRankings={area.teamRankings}
               />
             </div>
             

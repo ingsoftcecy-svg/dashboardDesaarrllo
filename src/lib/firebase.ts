@@ -1,9 +1,25 @@
+// Polyfill for crypto.randomUUID in non-secure HTTP contexts
+if (typeof window !== "undefined") {
+  if (!window.crypto) {
+    (window as any).crypto = {} as any;
+  }
+  if (!window.crypto.randomUUID) {
+    window.crypto.randomUUID = function () {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    } as any;
+  }
+}
+
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from 'firebase/auth';
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
 
 // Las credenciales se leen desde variables de entorno (.env) — nunca hardcodeadas
 const firebaseConfig = {
@@ -32,7 +48,7 @@ if (typeof window !== 'undefined' && app) {
   const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
   if (siteKey) {
     initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(siteKey),
+      provider: new ReCaptchaEnterpriseProvider(siteKey),
       isTokenAutoRefreshEnabled: true,
     });
   }

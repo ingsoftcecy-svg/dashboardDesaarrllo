@@ -21,9 +21,11 @@ interface OperatorRowProps {
   team_members: { id: string, name: string }[];
   full_team_members?: { id: string; name: string; puesto: string; score: number; lastAssessmentDate?: string }[];
   puedeEditar?: boolean; // Nueva prop para controlar la edición
+  teamRankings?: any[];
 }
 
-export function OperatorRow({ operator, original_index, visual_index, show_ato = true, team_members, full_team_members = [], puedeEditar = false }: OperatorRowProps) {
+export function OperatorRow({ operator, original_index, visual_index, show_ato = true, team_members, full_team_members = [], puedeEditar = false, teamRankings = [] }: OperatorRowProps) {
+  const teamData = (teamRankings || []).find(r => r.name.trim().toUpperCase() === operator.equipoAutonomo?.trim().toUpperCase());
   const autonomy_score = ((operator.autonomyScore / 100) * 4).toFixed(2);
   const is_expired = is_assessment_expired(operator.lastAssessmentDate);
   
@@ -187,6 +189,10 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                 <TeamHistoryDialog 
                   teamName={operator.equipoAutonomo} 
                   members={full_team_members} 
+                  autonomyFactors={teamData?.autonomyFactors}
+                  faseActual={teamData?.faseActual}
+                  fase2026={teamData?.fase2026}
+                  fechaCompromiso={teamData?.fechaCompromiso}
                 />
               </DialogContent>
             </Dialog>

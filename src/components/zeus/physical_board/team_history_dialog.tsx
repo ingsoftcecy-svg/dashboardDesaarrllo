@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { Calendar, Users, TrendingUp, TrendingDown, Clock, Award, ChevronRight } from "lucide-react";
+import { Calendar, Users, TrendingUp, TrendingDown, Clock, Award, ChevronRight, CheckCircle2, AlertCircle, HelpCircle } from "lucide-react";
 import { obtenerTodoElHistorico } from "@/lib/fetchHistorico";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -22,6 +22,21 @@ interface TeamMember {
 interface TeamHistoryDialogProps {
   teamName: string;
   members: TeamMember[];
+  autonomyFactors?: {
+    dinamica: number;
+    liderazgo: number;
+    skap: number;
+    ato: number;
+    seguridad: number;
+    quas: number;
+    multihab: number;
+    vpo: number;
+    solucionProb: number;
+    infraest: number;
+  };
+  faseActual?: string;
+  fase2026?: number;
+  fechaCompromiso?: string;
 }
 
 interface EvaluacionPunto {
@@ -143,8 +158,16 @@ const obtenerNivelDeScore = (score: number) => {
   return "Nivel 1";
 };
 
-export function TeamHistoryDialog({ teamName, members }: TeamHistoryDialogProps) {
+export function TeamHistoryDialog({ 
+  teamName, 
+  members, 
+  autonomyFactors, 
+  faseActual, 
+  fase2026,
+  fechaCompromiso
+}: TeamHistoryDialogProps) {
   const [loading, setLoading] = useState(true);
+  const [activeSubTab, setActiveSubTab] = useState<"history" | "requirements">("history");
   const [datosGrafico, setDatosGrafico] = useState<MesProgreso[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -279,6 +302,175 @@ export function TeamHistoryDialog({ teamName, members }: TeamHistoryDialogProps)
   const incremento = ultimoScore - primerScore;
   const esPositivo = incremento >= 0;
 
+  const renderRequirementsSection = () => {
+    if (!autonomyFactors) return null;
+
+    const faseActualNum = parseInt(faseActual?.replace(/\D/g, "") || "2", 10) || 2;
+    const siguienteFaseNum = Math.min(faseActualNum + 1, 4);
+    const isMaxPhase = faseActualNum >= 4;
+    const esMantenimiento = teamName.toUpperCase().includes("MUNICH") || teamName.toUpperCase().includes("NAHUALES");
+
+    const factorsList = [
+      { key: "dinamica", label: "1. Dinámica de Equipo" },
+      { key: "liderazgo", label: "2. Liderazgo" },
+      { key: "skap", label: "3. SKAP y Carrera" },
+      { key: "ato", label: "4. ATO" },
+      { key: "seguridad", label: "5. Seguridad" },
+      { key: "quas", label: "6. Calidad en la Fuente" },
+      { key: "multihab", label: "7. Multihabilidad" },
+      { key: "vpo", label: "8. VPO" },
+      { key: "solucionProb", label: "9. Solución de Problemas" },
+      { key: "infraest", label: "10. Infraestructura" }
+    ];
+
+    const REQUISITOS_FASES: Record<string, Record<number, string>> = {
+      dinamica: {
+        1: "Integrantes fijos y dinámica de equipo en Formación",
+        2: "Dinámica de equipo en Tormenta",
+        3: "Dinámica de equipo en Normalización",
+        4: "Dinámica de equipo en Desempeño"
+      },
+      liderazgo: {
+        1: "Liderazgo en Formación",
+        2: "Liderazgo en Tormenta",
+        3: "Liderazgo en Normalización",
+        4: "Liderazgo en Desempeño"
+      },
+      skap: {
+        1: "25% Operadores Intermedias >85%",
+        2: "75% Operadores Intermedias en >85%",
+        3: "33% Operadores en 85% de Avanzadas",
+        4: "75% Operadores en 85% de Avanzadas"
+      },
+      ato: {
+        1: "Nivel 4 en 25% de las maquinas aplicables",
+        2: "Nivel 4 en 75% de Máquinas aplicables",
+        3: "- Nivel 4 en 100% Máquinas aplicables / - Nivel 8 en 50% Máquinas aplicables",
+        4: "- Nivel 8 en 75% Máquinas aplicables"
+      },
+      seguridad: {
+        1: "Todos los territorios del Equipo en Fase 1 Link de Acadia con requisitos de certificación",
+        2: "Todos los territorios del Equipo en Fase 2 Link de Acadia con requisitos de certificación",
+        3: "Todos los territorios del Equipo en Fase 3 Link de Acadia con requisitos de certificación",
+        4: "Todos los territorios del Equipo en Fase 4 Link de Acadia con requisitos de certificación"
+      },
+      quas: {
+        1: "Equipo informado de resultados de Calidad",
+        2: "Equipo certificado en métodos mínimos transferibles de Calidad en la fuente (*Listado zonal)",
+        3: "Equipo certificado en todos los controles de Calidad aplicables (*Listado Zonal)",
+        4: "Equipo propone e implementa ideas de mejora en Calidad, soportado en las herramientas definidas de solución de problemas y el uso de la ETO digital"
+      },
+      multihab: {
+        1: "1x1",
+        2: "1x1 + 10% operadores 2x2",
+        3: "100% el 2x2 + 10% operadores 3x3",
+        4: "100% el 3x3"
+      },
+      vpo: {
+        1: "Facilitado por el líder",
+        2: "Facilitado por el líder + Operadores Champions (Champions asignados a pilares foco)",
+        3: "Facilitado por el líder + Operadores Champions (Champions CERTIFICADOS en Supply Training de su pilar asignado y ejecutando sus responsabilidades del toolkit)",
+        4: "Facilitado por el líder + Operadores Champions (Champions CERTIFICADOS en Supply Training de su pilar asignado y ejecutando sus responsabilidades del toolkit)"
+      },
+      solucionProb: {
+        1: "Primera línea ejecuta plan de reacción o activa 5Ws (Requisito del pilar 1.9.1.1 - 1.9.1.2)",
+        2: "Carrera de relevos efectiva, Planes de reacción actualizados. Reducción de recurrencia de problemas. (Requisito del Pilar 1.9.1.3 - 1.9.1.4 - 1.9.1.6 - 1.9.1.7)",
+        3: "Primera línea ayuda a encontrar causa raíz y acciones efectivas (Requisito del Pilar 1.9.1.8 - 1.9.1.9)",
+        4: "Primera línea usa autónomamente 5W y evidencia reducción en recurrencia de problemas (Requisito del Pilar 1.9.1.11 - 1.9.1.12)"
+      },
+      infraest: {
+        1: "- Team Room / - ETOs en Eq. Sugerido por la zona / necesidad de la operación",
+        2: "- Team Room / - ETO digital con QUAS",
+        3: "- Team Room / - ETO digital con QUAS / - Uso de herramientas básicas: IAL - ACADIA - Mangyver",
+        4: "- Team Room / - ETO digital con QUAS / - Uso de herramientas básicas e intermedias hasta avanzadas"
+      }
+    };
+
+    return (
+      <div className="space-y-4">
+        {/* Encabezado de la fase */}
+        <div className="bg-slate-50/80 rounded-xl border border-slate-200/50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Progreso de Fase (BPRE)</div>
+            <div className="text-base font-extrabold text-[#1a4491] mt-0.5">
+              {isMaxPhase ? (
+                <span>El equipo se encuentra en la Fase Máxima ({faseActual})</span>
+              ) : (
+                <span>Evaluando paso de {faseActual} a Fase {siguienteFaseNum}</span>
+              )}
+            </div>
+          </div>
+          <div className="bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 text-center shrink-0">
+            <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Meta 2026</div>
+            <div className="text-sm font-black text-[#1a4491]">Fase {fase2026 || 4}</div>
+            {fechaCompromiso && fechaCompromiso !== "No definida" && (
+              <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">{fechaCompromiso}</div>
+            )}
+          </div>
+        </div>
+
+        {/* Lista de factores */}
+        <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+          {factorsList.map(f => {
+            const rawVal = (autonomyFactors as any)[f.key];
+            const isNA = esMantenimiento && (f.key === "ato" || f.key === "quas" || f.key === "multihab");
+            const valorActual = isNA ? siguienteFaseNum : (parseFloat(rawVal) || 0);
+
+            const cumple = valorActual >= siguienteFaseNum;
+
+            return (
+              <div 
+                key={f.key} 
+                className={cn(
+                  "p-3 rounded-xl border flex items-start gap-3 transition-colors",
+                  isNA ? "bg-slate-50/50 border-slate-200/40 text-slate-400" :
+                  cumple ? "bg-emerald-50/30 border-emerald-100 text-slate-700" : "bg-rose-50/20 border-rose-100/60 text-slate-700"
+                )}
+              >
+                <div className="shrink-0 mt-0.5">
+                  {isNA ? (
+                    <HelpCircle className="h-5 w-5 text-slate-300" />
+                  ) : cumple ? (
+                    <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                  ) : (
+                    <AlertCircle className="h-5 w-5 text-rose-500" />
+                  )}
+                </div>
+                <div className="flex-1 space-y-0.5">
+                  <div className="flex flex-wrap items-center gap-x-2">
+                    <span className="text-xs font-bold text-slate-800">{f.label}</span>
+                    {isNA ? (
+                      <span className="text-[8px] font-black bg-slate-100 text-slate-500 px-1 py-0.2 rounded border border-slate-200 uppercase tracking-wider">Exceptuado</span>
+                    ) : (
+                      <span className={cn(
+                        "text-[9px] font-black px-1.5 py-0.2 rounded border uppercase tracking-wider",
+                        cumple ? "bg-emerald-100/80 text-emerald-800 border-emerald-200" : "bg-rose-100/80 text-rose-800 border-rose-200"
+                      )}>
+                        Fase Actual: {valorActual}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[11px] font-semibold text-slate-500 leading-normal">
+                    {isNA ? (
+                      "Este factor está excluido de la evaluación para los equipos de Mantenimiento."
+                    ) : cumple ? (
+                      `¡Completado! El equipo ha alcanzado o superado el nivel requerido.`
+                    ) : (
+                      <>
+                        <span className="font-extrabold text-rose-600">Pendiente para Fase {siguienteFaseNum}: </span>
+                        <span>{REQUISITOS_FASES[f.key]?.[siguienteFaseNum] || "Requisito no especificado."}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col space-y-6 text-slate-800">
       {/* 👥 CABECERA DEL MODAL */}
@@ -335,153 +527,185 @@ export function TeamHistoryDialog({ teamName, members }: TeamHistoryDialogProps)
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#1a4491] border-t-transparent"></div>
           <p className="text-[10px] font-black uppercase text-[#1a4491] tracking-widest animate-pulse">Obteniendo Histórico de Firestore...</p>
         </div>
-      ) : error ? (
-        <div className="h-40 flex items-center justify-center text-center">
-          <p className="text-sm font-bold text-rose-600 uppercase tracking-wider">{error}</p>
-        </div>
-      ) : !tieneDatos ? (
-        <div className="h-48 bg-slate-50 border border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center p-6 space-y-2">
-          <Clock className="h-8 w-8 text-slate-300" />
-          <p className="text-xs font-black uppercase text-slate-500 tracking-wider">Sin evaluaciones registradas</p>
-          <p className="text-[11px] text-slate-400 max-w-xs font-medium">No se encontraron registros históricos para los integrantes de este equipo.</p>
-        </div>
       ) : (
-        <div className="space-y-6">
-          {/* 📊 GRÁFICO HISTÓRICO MENSUAL */}
-          <div className="bg-slate-50/60 rounded-2xl border border-slate-200/50 p-4">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-1.5">
-              <TrendingUp className="h-3.5 w-3.5 text-[#1a4491]" />
-              <span>Autonomía Promedio del Equipo</span>
-            </h3>
-            
-            <div className="h-[200px] w-full text-[10px] font-black">
-              {datosGrafico.length === 1 ? (
-                <div className="h-full w-full flex flex-col items-center justify-center space-y-1">
-                  <Award className="h-6 w-6 text-amber-500" />
-                  <p className="text-[11px] font-black uppercase text-slate-600">Primera evaluación registrada</p>
-                  <p className="text-[10px] text-slate-400 font-medium">Autonomía promedio de {datosGrafico[0].score}% en {datosGrafico[0].name}</p>
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={datosGrafico} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize: 9, fontWeight: "900", fill: "#475569" }} />
-                    <YAxis domain={[0, 100]} tickCount={5} tickFormatter={v => `${v}%`} tick={{ fontSize: 9, fontWeight: "900", fill: "#475569" }} />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: "#ffffff",
-                        borderColor: "#cbd5e1",
-                        borderRadius: "8px",
-                        fontSize: "11px",
-                        fontWeight: "800"
-                      }}
-                      formatter={(value: any) => [`${value}%`, "Autonomía"]}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="score" 
-                      stroke="#1a4491" 
-                      strokeWidth={3} 
-                      dot={{ r: 4, stroke: "#1a4491", strokeWidth: 1, fill: "#ffffff" }}
-                      activeDot={{ r: 6 }} 
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+        <>
+          {/* 📊 TABS DE NAVEGACIÓN */}
+          <div className="flex border-b border-slate-100 pb-1 gap-4 text-xs font-black uppercase tracking-wider">
+            <button 
+              onClick={() => setActiveSubTab("history")}
+              className={cn(
+                "pb-2 border-b-2 px-1 transition-colors focus:outline-none",
+                activeSubTab === "history" ? "border-[#1a4491] text-[#1a4491]" : "border-transparent text-slate-400 hover:text-slate-600"
               )}
-            </div>
+            >
+              Historial e Integrantes
+            </button>
+            {autonomyFactors && (
+              <button 
+                onClick={() => setActiveSubTab("requirements")}
+                className={cn(
+                  "pb-2 border-b-2 px-1 transition-colors focus:outline-none flex items-center gap-1.5",
+                  activeSubTab === "requirements" ? "border-[#1a4491] text-[#1a4491]" : "border-transparent text-slate-400 hover:text-slate-600"
+                )}
+              >
+                Requisitos de Fase
+              </button>
+            )}
           </div>
 
-          {/* 📋 TABLA DETALLADA DE INTEGRANTES */}
-          <div className="space-y-2.5">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
-              <Users className="h-3.5 w-3.5 text-[#1a4491]" />
-              <span>Integrantes del Equipo y Desempeño Actual</span>
-            </h3>
+          {activeSubTab === "history" ? (
+            error ? (
+              <div className="h-40 flex items-center justify-center text-center">
+                <p className="text-sm font-bold text-rose-600 uppercase tracking-wider">{error}</p>
+              </div>
+            ) : !tieneDatos ? (
+              <div className="h-48 bg-slate-50 border border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center p-6 space-y-2">
+                <Clock className="h-8 w-8 text-slate-300" />
+                <p className="text-xs font-black uppercase text-slate-500 tracking-wider">Sin evaluaciones registradas</p>
+                <p className="text-[11px] text-slate-400 max-w-xs font-medium">No se encontraron registros históricos para los integrantes de este equipo.</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {/* 📊 GRÁFICO HISTÓRICO MENSUAL */}
+                <div className="bg-slate-50/60 rounded-2xl border border-slate-200/50 p-4">
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-1.5">
+                    <TrendingUp className="h-3.5 w-3.5 text-[#1a4491]" />
+                    <span>Autonomía Promedio del Equipo</span>
+                  </h3>
+                  
+                  <div className="h-[200px] w-full text-[10px] font-black">
+                    {datosGrafico.length === 1 ? (
+                      <div className="h-full w-full flex flex-col items-center justify-center space-y-1">
+                        <Award className="h-6 w-6 text-amber-500" />
+                        <p className="text-[11px] font-black uppercase text-slate-600">Primera evaluación registrada</p>
+                        <p className="text-[10px] text-slate-400 font-medium">Autonomía promedio de {datosGrafico[0].score}% en {datosGrafico[0].name}</p>
+                      </div>
+                    ) : (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={datosGrafico} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                          <XAxis dataKey="name" tick={{ fontSize: 9, fontWeight: "900", fill: "#475569" }} />
+                          <YAxis domain={[0, 100]} tickCount={5} tickFormatter={v => `${v}%`} tick={{ fontSize: 9, fontWeight: "900", fill: "#475569" }} />
+                          <Tooltip 
+                            contentStyle={{
+                              backgroundColor: "#ffffff",
+                              borderColor: "#cbd5e1",
+                              borderRadius: "8px",
+                              fontSize: "11px",
+                              fontWeight: "800"
+                            }}
+                            formatter={(value: any) => [`${value}%`, "Autonomía"]}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="score" 
+                            stroke="#1a4491" 
+                            strokeWidth={3} 
+                            dot={{ r: 4, stroke: "#1a4491", strokeWidth: 1, fill: "#ffffff" }}
+                            activeDot={{ r: 6 }} 
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    )}
+                  </div>
+                </div>
 
-            <div className="rounded-xl border border-slate-200/60 overflow-hidden max-h-60 overflow-y-auto bg-white">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-100 text-[10px] font-black uppercase text-slate-500 tracking-wider sticky top-0">
-                    <th className="p-3 border-b border-slate-200">Operador</th>
-                    <th className="p-3 border-b border-slate-200">Puesto</th>
-                    <th className="p-3 border-b border-slate-200 text-center">Evaluación</th>
-                    <th className="p-3 border-b border-slate-200 text-center">Autonomía</th>
-                    <th className="p-3 border-b border-slate-200 text-center">Nivel</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                  {(() => {
-                    const sortedMembers = [...members].sort((a, b) => {
-                      const aNoEval = !!a.noEvaluado;
-                      const bNoEval = !!b.noEvaluado;
-                      if (aNoEval && !bNoEval) return 1;
-                      if (!aNoEval && bNoEval) return -1;
-                      if (aNoEval && bNoEval) {
-                        return a.name.localeCompare(b.name);
-                      }
-                      if (b.score !== a.score) {
-                        return b.score - a.score;
-                      }
-                      return a.name.localeCompare(b.name);
-                    });
+                {/* 📋 TABLA DETALLADA DE INTEGRANTES */}
+                <div className="space-y-2.5">
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                    <Users className="h-3.5 w-3.5 text-[#1a4491]" />
+                    <span>Integrantes del Equipo y Desempeño Actual</span>
+                  </h3>
 
-                    return sortedMembers.map((member) => (
-                      <tr key={member.id} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="p-3 font-bold text-slate-900 flex items-center gap-1.5">
-                          <ChevronRight className="h-3 w-3 text-[#1a4491] opacity-40" />
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <button className="hover:underline hover:text-[#1a4491] text-left focus:outline-none cursor-pointer">
-                                {member.name}
-                              </button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
-                              <OperatorHistoryDialog 
-                                operatorName={member.name} 
-                                operatorId={member.id} 
-                                operatorPuesto={member.puesto} 
-                              />
-                            </DialogContent>
-                          </Dialog>
-                        </td>
-                        <td className="p-3 text-slate-500 uppercase font-semibold text-[10px]">{member.puesto}</td>
-                        <td className="p-3 text-center align-middle text-slate-500 font-semibold text-[10px] whitespace-nowrap">
-                          {member.lastAssessmentDate ? (() => {
-                            const dateObj = new Date(member.lastAssessmentDate);
-                            if (!isNaN(dateObj.getTime())) {
-                              return `${dateObj.getDate()} ${NOMBRES_MESES[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+                  <div className="rounded-xl border border-slate-200/60 overflow-hidden max-h-60 overflow-y-auto bg-white">
+                    <table className="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr className="bg-slate-100 text-[10px] font-black uppercase text-slate-500 tracking-wider sticky top-0">
+                          <th className="p-3 border-b border-slate-200">Operador</th>
+                          <th className="p-3 border-b border-slate-200">Puesto</th>
+                          <th className="p-3 border-b border-slate-200 text-center">Evaluación</th>
+                          <th className="p-3 border-b border-slate-200 text-center">Autonomía</th>
+                          <th className="p-3 border-b border-slate-200 text-center">Nivel</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                        {(() => {
+                          const sortedMembers = [...members].sort((a, b) => {
+                            const aNoEval = !!a.noEvaluado;
+                            const bNoEval = !!b.noEvaluado;
+                            if (aNoEval && !bNoEval) return 1;
+                            if (!aNoEval && bNoEval) return -1;
+                            if (aNoEval && bNoEval) {
+                              return a.name.localeCompare(b.name);
                             }
-                            return member.lastAssessmentDate;
-                          })() : "-"}
-                        </td>
-                        <td className="p-3 text-center align-middle whitespace-nowrap">
-                          {member.noEvaluado ? (
-                            <div className="flex flex-col items-center gap-0.5">
-                              <span className="px-1.5 py-0.5 rounded font-black border text-[10px] bg-rose-50 text-rose-700 border-rose-100 tabular-nums">
-                                0%
-                              </span>
-                              <span className="text-[8px] font-black text-rose-500 uppercase tracking-wider leading-none">Sin Evaluar</span>
-                            </div>
-                          ) : (
-                            <span className={cn(
-                              "px-2 py-0.5 rounded font-black border text-[11px] tabular-nums",
-                              getScoreBadgeStyle(member.score)
-                            )}>
-                              {Math.round(member.score)}%
-                            </span>
-                          )}
-                        </td>
-                        <td className="p-3 text-center font-bold text-[#1a4491]">
-                          {member.noEvaluado ? "-" : obtenerNivelDeScore(member.score)}
-                        </td>
-                      </tr>
-                    ));
-                  })()}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+                            if (b.score !== a.score) {
+                              return b.score - a.score;
+                            }
+                            return a.name.localeCompare(b.name);
+                          });
+
+                          return sortedMembers.map((member) => (
+                            <tr key={member.id} className="hover:bg-slate-50/50 transition-colors">
+                              <td className="p-3 font-bold text-slate-900 flex items-center gap-1.5">
+                                <ChevronRight className="h-3 w-3 text-[#1a4491] opacity-40" />
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <button className="hover:underline hover:text-[#1a4491] text-left focus:outline-none cursor-pointer">
+                                      {member.name}
+                                    </button>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
+                                    <OperatorHistoryDialog 
+                                      operatorName={member.name} 
+                                      operatorId={member.id} 
+                                      operatorPuesto={member.puesto} 
+                                    />
+                                  </DialogContent>
+                                </Dialog>
+                              </td>
+                              <td className="p-3 text-slate-500 uppercase font-semibold text-[10px]">{member.puesto}</td>
+                              <td className="p-3 text-center align-middle text-slate-500 font-semibold text-[10px] whitespace-nowrap">
+                                {member.lastAssessmentDate ? (() => {
+                                  const dateObj = new Date(member.lastAssessmentDate);
+                                  if (!isNaN(dateObj.getTime())) {
+                                    return `${dateObj.getDate()} ${NOMBRES_MESES[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+                                  }
+                                  return member.lastAssessmentDate;
+                                })() : "-"}
+                              </td>
+                              <td className="p-3 text-center align-middle whitespace-nowrap">
+                                {member.noEvaluado ? (
+                                  <div className="flex flex-col items-center gap-0.5">
+                                    <span className="px-1.5 py-0.5 rounded font-black border text-[10px] bg-rose-50 text-rose-700 border-rose-100 tabular-nums">
+                                      0%
+                                    </span>
+                                    <span className="text-[8px] font-black text-rose-500 uppercase tracking-wider leading-none">Sin Evaluar</span>
+                                  </div>
+                                ) : (
+                                  <span className={cn(
+                                    "px-2 py-0.5 rounded font-black border text-[11px] tabular-nums",
+                                    getScoreBadgeStyle(member.score)
+                                  )}>
+                                    {Math.round(member.score)}%
+                                  </span>
+                                )}
+                              </td>
+                              <td className="p-3 text-center font-bold text-[#1a4491]">
+                                {member.noEvaluado ? "-" : obtenerNivelDeScore(member.score)}
+                              </td>
+                            </tr>
+                          ));
+                        })()}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )
+          ) : (
+            renderRequirementsSection()
+          )}
+        </>
       )}
     </div>
   );

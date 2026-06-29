@@ -11,9 +11,10 @@ export interface PhysicalBoardProps {
   operadores: (Operator & { autonomyScore: number })[];
   show_ato?: boolean;
   puedeEditar?: boolean; // Nueva prop para controlar la edición
+  teamRankings?: any[];
 }
 
-export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false }: PhysicalBoardProps) {
+export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false, teamRankings = [] }: PhysicalBoardProps) {
   const [search_query, set_search_query] = useState("");
   const [visibleCount, setVisibleCount] = useState(10);
 
@@ -94,6 +95,7 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
                 visual_index={visual_index}
                 show_ato={show_ato}
                 puedeEditar={puedeEditar}
+                teamRankings={teamRankings}
                 team_members={operadores
                   .filter(op => op.equipoAutonomo && op.equipoAutonomo === operator.equipoAutonomo && op.id !== operator.id)
                   .map(op => ({ id: op.id, name: op.nombre }))

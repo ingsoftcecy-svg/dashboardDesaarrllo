@@ -17,6 +17,10 @@ interface TeamRanking {
   name: string;
   avg: number;
   leader?: string;
+  faseActual?: string;
+  fase2026?: number;
+  fechaCompromiso?: string;
+  autonomyFactors?: any;
 }
 
 interface RankingItemProps {
@@ -135,6 +139,10 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [] }:
               <TeamHistoryDialog 
                 teamName={team.name} 
                 members={members} 
+                autonomyFactors={team.autonomyFactors}
+                faseActual={team.faseActual}
+                fase2026={team.fase2026}
+                fechaCompromiso={team.fechaCompromiso}
               />
             </DialogContent>
           </Dialog>

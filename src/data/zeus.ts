@@ -51,7 +51,15 @@ export interface AreaData {
   excelenciaEquipo: number;
   bestTeam?: { name: string; avg: number; leader?: string };
   worstTeam?: { name: string; avg: number; leader?: string };
-  teamRankings?: { name: string; avg: number; leader?: string }[];
+  teamRankings?: {
+    name: string;
+    avg: number;
+    leader?: string;
+    faseActual?: string;
+    fase2026?: number;
+    fechaCompromiso?: string;
+    autonomyFactors?: AreaData["autonomyFactors"];
+  }[];
   cumplimientoPorHora: { hora: string; cumplimiento: number }[];
   autonomyFactors?: {
     dinamica: number;
