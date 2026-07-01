@@ -145,14 +145,15 @@ export function useExcelData() {
         let datosCargados = false;
 
         try {
-          const q = query(collection(db, "historicos_excel"), orderBy("__name__", "desc"), limit(1));
+          const q = query(collection(db, "historicos_excel"));
           const snap = await getDocs(q);
           if (!snap.empty) {
-            const docData = snap.docs[0].data();
+            const sortedDocs = [...snap.docs].sort((a, b) => b.id.localeCompare(a.id));
+            const docData = sortedDocs[0].data();
             rows = docData.datos_skap || [];
             bpreRows = docData.bpre || [];
             datosCargados = true;
-            console.log(`Loaded active data from Firestore weekly doc: ${snap.docs[0].id}`);
+            console.log(`Loaded active data from Firestore weekly doc: ${sortedDocs[0].id}`);
           }
         } catch (e) {
           console.error("Error loading active data from Firestore, falling back to local files:", e);

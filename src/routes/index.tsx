@@ -20,7 +20,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Tablero TPM de Elaboración del Proyecto ZEUS: Cocimientos y Bloque Frío, IPs, multi-skill y reconocimientos.",
+          "Tablero TPM de Elaboración: Cocimientos y Bloque Frío, IPs, multi-skill y reconocimientos.",
       },
     ],
   }),
