@@ -23,6 +23,7 @@ export function PromedioPorFactorCard({ area }: PromedioPorFactorCardProps) {
   };
 
   const factor_items = Object.entries(FACTORS_LABELS).map(([key, label]) => ({
+    key,
     label,
     value: (factors as any)[key] || 0,
   }));
@@ -48,10 +49,13 @@ export function PromedioPorFactorCard({ area }: PromedioPorFactorCardProps) {
       <div className="grid grid-cols-3 gap-2 p-3 sm:grid-cols-3 md:grid-cols-3">
         {factor_items.map((item, index) => (
           <FactorItem 
-            key={item.label} 
+            key={item.key} 
+            factorKey={item.key}
             label={item.label} 
             value={item.value} 
             index={index} 
+            operadores={area.operadores}
+            areaName={area.team}
           />
         ))}
       </div>

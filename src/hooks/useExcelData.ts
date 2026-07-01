@@ -148,12 +148,43 @@ export function useExcelData() {
           const q = query(collection(db, "historicos_excel"));
           const snap = await getDocs(q);
           if (!snap.empty) {
-            const sortedDocs = [...snap.docs].sort((a, b) => b.id.localeCompare(a.id));
-            const docData = sortedDocs[0].data();
-            rows = docData.datos_skap || [];
-            bpreRows = docData.bpre || [];
+            const sortedDocs = [...snap.docs].sort((a, b) => a.id.localeCompare(b.id));
+            const skapMap: Record<string, any> = {};
+            const bpreMap: Record<string, any> = {};
+
+            sortedDocs.forEach(docSnap => {
+              const docData = docSnap.data();
+              const weekSkap = docData.datos_skap || [];
+              const weekBpre = docData.bpre || [];
+
+              weekSkap.forEach((fila: any) => {
+                const empCol = Object.keys(fila).find(k => k.toLowerCase().trim() === 'employee');
+                const empVal = empCol ? String(fila[empCol]).trim() : '';
+                const posCol = Object.keys(fila).find(k => k.toLowerCase().trim() === 'skap position' || k.toLowerCase().trim() === 'position');
+                const posVal = posCol ? String(fila[posCol]).trim() : '';
+                if (empVal) {
+                  const key = `${empVal}_${posVal}`;
+                  skapMap[key] = fila;
+                }
+              });
+
+              weekBpre.forEach((fila: any) => {
+                const nameCol = Object.keys(fila).find(k => k.toLowerCase().trim() === 'nombre');
+                const areaCol = Object.keys(fila).find(k => k.toLowerCase().trim() === 'area' || k.toLowerCase().trim() === 'área');
+                const nameVal = nameCol ? String(fila[nameCol]).trim() : '';
+                const areaVal = areaCol ? String(fila[areaCol]).trim() : '';
+                
+                const key = `${nameVal}_${areaVal}`.toUpperCase();
+                if (nameVal || areaVal) {
+                  bpreMap[key] = fila;
+                }
+              });
+            });
+
+            rows = Object.values(skapMap);
+            bpreRows = Object.values(bpreMap);
             datosCargados = true;
-            console.log(`Loaded active data from Firestore weekly doc: ${sortedDocs[0].id}`);
+            console.log(`Loaded and merged data from ${sortedDocs.length} Firestore weekly documents.`);
           }
         } catch (e) {
           console.error("Error loading active data from Firestore, falling back to local files:", e);

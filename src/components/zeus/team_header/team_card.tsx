@@ -62,23 +62,30 @@ export function TeamCard({ variant, team, operadores = [] }: TeamCardProps) {
 
       const fire = () => {
         my_confetti({
-          particleCount: 15,
+          particleCount: 35,
           angle: 60,
-          spread: 55,
+          spread: 60,
           origin: { x: 0, y: 1 },
           colors: ['#10b981', '#34d399', '#059669', '#fcd34d', '#fbbf24']
         });
         my_confetti({
-          particleCount: 15,
+          particleCount: 35,
           angle: 120,
-          spread: 55,
+          spread: 60,
           origin: { x: 1, y: 1 },
+          colors: ['#10b981', '#34d399', '#059669', '#fcd34d', '#fbbf24']
+        });
+        my_confetti({
+          particleCount: 20,
+          angle: 90,
+          spread: 80,
+          origin: { x: 0.5, y: 1 },
           colors: ['#10b981', '#34d399', '#059669', '#fcd34d', '#fbbf24']
         });
       };
 
       fire();
-      const interval = setInterval(fire, 2000);
+      const interval = setInterval(fire, 1800);
 
       return () => clearInterval(interval);
     }
@@ -214,19 +221,19 @@ export function TeamCard({ variant, team, operadores = [] }: TeamCardProps) {
         opacity: 1, 
         x: 0,
         ...(!is_best && {
-          scale: [1, 1.01, 1],
+          scale: [1, 1.006, 1],
           boxShadow: [
-            "0 0 0px 0px rgba(244, 63, 94, 0)",
-            "0 0 15px 2px rgba(244, 63, 94, 0.2)",
-            "0 0 0px 0px rgba(244, 63, 94, 0)"
+            "0 0 0px 0px rgba(245, 158, 11, 0)",
+            "0 0 10px 2px rgba(245, 158, 11, 0.15)",
+            "0 0 0px 0px rgba(245, 158, 11, 0)"
           ]
         })
       }}
       transition={{
         x: { duration: 0.5 },
         opacity: { duration: 0.5 },
-        scale: { repeat: Infinity, duration: 2, ease: "easeInOut" },
-        boxShadow: { repeat: Infinity, duration: 2, ease: "easeInOut" }
+        scale: { repeat: Infinity, duration: 3.5, ease: "easeInOut" },
+        boxShadow: { repeat: Infinity, duration: 3.5, ease: "easeInOut" }
       }}
       className={`relative overflow-hidden flex-1 flex items-center justify-between gap-6 rounded-2xl bg-gradient-to-br p-5 border shadow-sm ${bg_gradient}`}
     >
