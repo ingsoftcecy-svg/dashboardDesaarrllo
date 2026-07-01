@@ -221,10 +221,15 @@ export function TeamCard({ variant, team, operadores = [] }: TeamCardProps) {
         opacity: 1, 
         x: 0,
         ...(!is_best && {
-          scale: [1, 1.006, 1],
+          scale: [1, 1.01, 1],
+          borderColor: [
+            "rgba(244, 63, 94, 0.2)",
+            "rgba(245, 158, 11, 0.6)",
+            "rgba(244, 63, 94, 0.2)"
+          ],
           boxShadow: [
             "0 0 0px 0px rgba(245, 158, 11, 0)",
-            "0 0 10px 2px rgba(245, 158, 11, 0.15)",
+            "0 0 15px 3px rgba(245, 158, 11, 0.25)",
             "0 0 0px 0px rgba(245, 158, 11, 0)"
           ]
         })
@@ -232,8 +237,9 @@ export function TeamCard({ variant, team, operadores = [] }: TeamCardProps) {
       transition={{
         x: { duration: 0.5 },
         opacity: { duration: 0.5 },
-        scale: { repeat: Infinity, duration: 3.5, ease: "easeInOut" },
-        boxShadow: { repeat: Infinity, duration: 3.5, ease: "easeInOut" }
+        scale: { repeat: Infinity, duration: 2.5, ease: "easeInOut" },
+        borderColor: { repeat: Infinity, duration: 2.5, ease: "easeInOut" },
+        boxShadow: { repeat: Infinity, duration: 2.5, ease: "easeInOut" }
       }}
       className={`relative overflow-hidden flex-1 flex items-center justify-between gap-6 rounded-2xl bg-gradient-to-br p-5 border shadow-sm ${bg_gradient}`}
     >
