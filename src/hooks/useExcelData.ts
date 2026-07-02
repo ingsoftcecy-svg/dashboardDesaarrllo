@@ -6,15 +6,15 @@ import { Operator, ChampionKey, cocimientos as defaultCocimientos, bloqueFrio as
 
 export const normalizarNombreEquipo = (name: string): string => {
   const n = name.trim().toUpperCase();
-  if (n === "LOS CAZADORES DEL AMARGOR" || n === "CAZADORES_AMARGOR" || n === "LOS CAZADORES DEL AMARGOR ") return "CAZADORES_AMARGOR";
+  if (n === "LOS CAZADORES DEL AMARGOR" || n === "CAZADORES_AMARGOR" || n === "LOS CAZADORES DEL AMARGOR " || n === "CAZADORES DEL AMARGOR") return "CAZADORES_AMARGOR";
   if (n === "CUCHILLAS" || n === "CUCHILLA") return "CUCHILLA";
   if (n === "MASH-RAINBOW" || n === "MASHRAINBOW") return "MASHRAINBOW";
   if (n === "MOSTO-BOYS" || n === "MOSTOBOYS") return "MOSTOBOYS";
   if (n === "LOS PANCHITOS" || n === "PANCHITOS") return "PANCHITOS";
-  if (n === "LOS ANDAMOS CON TODO" || n === "ANDAMOS_CON_TODO" || n === "ANDAMOS_CON_TODO ") return "ANDAMOS_CON_TODO ";
+  if (n === "LOS ANDAMOS CON TODO" || n === "ANDAMOS CON TODO" || n === "ANDAMOS_CON_TODO" || n === "ANDAMOS_CON_TODO ") return "ANDAMOS_CON_TODO ";
   if (n === "LOS BRONCOS" || n === "BRONCOS") return "BRONCOS";
-  if (n === "LOS BRAVOS DEL FRIO" || n === "LOS_BRAVOS") return "LOS_BRAVOS";
-  if (n === "LOS FUERTES DEL FRIO" || n === "LOS_FUERTES") return "LOS_FUERTES";
+  if (n === "LOS BRAVOS DEL FRIO" || n === "BRAVOS DEL FRIO" || n === "LOS_BRAVOS" || n === "BRAVOS DEL FRÍO" || n === "LOS BRAVOS DEL FRÍO") return "LOS_BRAVOS";
+  if (n === "LOS FUERTES DEL FRIO" || n === "FUERTES DEL FRIO" || n === "LOS_FUERTES" || n === "FUERTES DEL FRÍO" || n === "LOS FUERTES DEL FRÍO") return "LOS_FUERTES";
   if (n === "REYES DE LA MEZCLA" || n === "REYES_MEZCLA") return "REYES_MEZCLA";
   if (n === "MUNICH") return "MUNICH";
   if (n === "NAHUALES" || n === "LOS NAHUALES") return "NAHUALES";
@@ -37,7 +37,9 @@ export function useExcelData() {
         const factorMap: Record<string, AreaData["autonomyFactors"]> = {};
         const overridesMap: Record<string, { leader: string }> = {
           "LOS PANCHITOS": { leader: "JOSÉ FRANCISCO TORRES LÓPEZ" },
-          "PANCHITOS": { leader: "JOSÉ FRANCISCO TORRES LÓPEZ" }
+          "PANCHITOS": { leader: "JOSÉ FRANCISCO TORRES LÓPEZ" },
+          "REYES DE LA MEZCLA": { leader: "RODRIGO REGALADO PALOMEQUE" },
+          "REYES_MEZCLA": { leader: "RODRIGO REGALADO PALOMEQUE" }
         };
 
         // Carga las asignaciones manuales (overrides) de líderes de equipo desde la colección "team_overrides" de Firestore.
@@ -52,25 +54,32 @@ export function useExcelData() {
           console.error("Error cargando las asignaciones manuales de líderes (overrides):", e);
         }
 
-        // --- Cargar catálogos fijos (base, eac, eabf) ---
+        // --- Cargar catálogos fijos (base, eac, eabf, estructura_nueva) ---
         let baseRows: any[] = [];
         let eacRows: any[] = [];
         let eabfRows: any[] = [];
+        let estructuraNuevaRows: any[] = [];
         let catalogosCargados = false;
 
-        try {
-          const catDocRef = doc(db, "config_dashboard", "catalogos_fijos");
-          const catSnap = await getDoc(catDocRef);
-          if (catSnap.exists()) {
-            const data = catSnap.data();
-            baseRows = data.base_equipos || [];
-            eacRows = data.eac || [];
-            eabfRows = data.eabf || [];
-            catalogosCargados = true;
-            console.log("Loaded fixed catalogs from Firestore.");
+        const isDev = import.meta.env.DEV;
+
+        // En desarrollo forzamos la carga de archivos JSON locales para previsualizar los cambios antes de subirlos
+        if (!isDev) {
+          try {
+            const catDocRef = doc(db, "config_dashboard", "catalogos_fijos");
+            const catSnap = await getDoc(catDocRef);
+            if (catSnap.exists()) {
+              const data = catSnap.data();
+              baseRows = data.base_equipos || [];
+              eacRows = data.eac || [];
+              eabfRows = data.eabf || [];
+              estructuraNuevaRows = data.estructura_nueva || [];
+              catalogosCargados = true;
+              console.log("Loaded fixed catalogs from Firestore.");
+            }
+          } catch (e) {
+            console.error("Error loading fixed catalogs from Firestore, falling back to local files:", e);
           }
-        } catch (e) {
-          console.error("Error loading fixed catalogs from Firestore, falling back to local files:", e);
         }
 
         // Fallback local para catálogos fijos
@@ -89,6 +98,11 @@ export function useExcelData() {
             const eabfRes = await fetch(`/eabf.json?t=${timestamp}`);
             eabfRows = await eabfRes.json() as any[];
           } catch (e) { console.error("Error loading fallback eabf.json:", e); }
+
+          try {
+            const estRes = await fetch(`/estructura_nueva.json?t=${timestamp}`);
+            estructuraNuevaRows = await estRes.json() as any[];
+          } catch (e) { console.error("Error loading fallback estructura_nueva.json:", e); }
         }
 
         // Procesar Base Config (championMap)
@@ -114,28 +128,96 @@ export function useExcelData() {
           }
         }
 
-        // Procesar EAC (eaMap)
-        for (const row of eacRows) {
-          if (row["SHARP"]) {
-            eaMap[String(row["SHARP"])] = {
-              equipo: row["Nombre del Equipo"] || "",
-              lider: row["Nombre del Lider"] || "",
-            };
+        // Obtener líderes de baseRows para los equipos (como fallback)
+        const leaderMap: Record<string, string> = {};
+        for (const row of baseRows) {
+          const rol = String(row["Puesto / ROL"] || "").toUpperCase();
+          if (rol.includes("LÍDER") || rol.includes("LIDER")) {
+            const eq = String(row["Nombre del equipo "] || "").trim().toUpperCase();
+            if (eq) {
+              leaderMap[eq] = String(row["Nombre del integrante "] || "").trim();
+            }
           }
         }
 
-        // Procesar EABF (eaMap)
-        let lastEquipo = "";
-        let lastLider = "";
-        for (const row of eabfRows) {
-          if (row["NUEVO EQUIPO "]) lastEquipo = row["NUEVO EQUIPO "];
-          if (row["NUEVO LIDER"]) lastLider = row["NUEVO LIDER"];
-          
-          if (row["SHARP"]) {
-            eaMap[String(row["SHARP"])] = {
-              equipo: lastEquipo,
-              lider: lastLider,
-            };
+        // Poblar eaMap usando la estructura nueva oficial (si existe)
+        if (estructuraNuevaRows && estructuraNuevaRows.length > 0) {
+          // Mapeo de IDs discrepantes entre el Excel de estructura y el catálogo base/datos
+          const idTranslations: Record<string, string> = {
+            "32173442": "32043900", // VICTOR MANUEL HURTADO ORTIZ
+            "32145333": "32044316", // SERGIO TRUJILLO GUARDADO
+            "32043835": "32145333", // FLAVIO CESAR DIAZ MALDONADO
+            "32043900": "32045469", // ANDRES SARABIA RODARTE
+            "32043739": "32043301", // EDUARDO NERI DE LUNA
+            "32043861": "32043835", // FILIBERTO PINEDO RODRIGUEZ
+            "32044301": "32043861", // VICTOR MANUEL DE JESUS SIMENTAL
+            "32044319": "32045769", // MARCO ANTONIO MENCHACA PEREZ / LAZARO QUEZADA OJEDA
+          };
+
+          for (const row of estructuraNuevaRows) {
+            const id = row["SHARP"] ? String(row["SHARP"]).trim() : null;
+            if (id) {
+              const rawTeam = String(row["Nombre del Equipo"] || row["ESTRUCTURA DE EQUIPOS"] || "").trim();
+              const match = rawTeam.match(/^\d+\.\s*(.*)$/);
+              const cleanTeam = match ? match[1].trim() : rawTeam;
+
+              const teamData = {
+                equipo: cleanTeam,
+                lider: String(row["Nombre del Lider"] || row["JEFE DIRECTO"] || "No asignado").trim()
+              };
+
+              eaMap[id] = teamData;
+
+              // Mapear también el ID correspondiente de datos/base si difiere del Excel de estructura
+              const translatedId = idTranslations[id];
+              if (translatedId) {
+                eaMap[translatedId] = teamData;
+              }
+            }
+          }
+        } else {
+          // Fallback a lógica vieja basada en baseRows + EAC + EABF
+          for (const row of baseRows) {
+            const id = row["ID Sharp"] ? String(row["ID Sharp"]) : null;
+            if (id) {
+              const rawEquipo = String(row["Nombre del equipo "] || "").trim();
+              const rawEquipoUpper = rawEquipo.toUpperCase();
+              eaMap[id] = {
+                equipo: rawEquipo,
+                lider: leaderMap[rawEquipoUpper] || "No asignado",
+              };
+            }
+          }
+
+          // Procesar EAC (eaMap - Fallback si no está en baseRows)
+          for (const row of eacRows) {
+            if (row["SHARP"]) {
+              const sharpStr = String(row["SHARP"]).trim();
+              if (!eaMap[sharpStr]) {
+                eaMap[sharpStr] = {
+                  equipo: row["Nombre del Equipo"] || "",
+                  lider: row["Nombre del Lider"] || "",
+                };
+              }
+            }
+          }
+
+          // Procesar EABF (eaMap - Fallback si no está en baseRows)
+          let lastEquipo = "";
+          let lastLider = "";
+          for (const row of eabfRows) {
+            if (row["NUEVO EQUIPO "]) lastEquipo = String(row["NUEVO EQUIPO "]).trim();
+            if (row["NUEVO LIDER"]) lastLider = String(row["NUEVO LIDER"]).trim();
+            
+            if (row["SHARP"]) {
+              const sharpStr = String(row["SHARP"]).trim();
+              if (!eaMap[sharpStr]) {
+                eaMap[sharpStr] = {
+                  equipo: lastEquipo,
+                  lider: lastLider,
+                };
+              }
+            }
           }
         }
 
@@ -203,6 +285,96 @@ export function useExcelData() {
           } catch (e) { console.error("Error loading fallback datos.json:", e); }
         }
 
+        // Excluir operarios inactivos e inyectar nuevos operarios requeridos
+        if (rows) {
+          // Preprocesar nombres mal escritos o incompletos
+          rows.forEach((r: any) => {
+            if (!r["Employee"]) return;
+            const empStr = String(r["Employee"]).trim();
+            const empMatch = empStr.match(/\[(\d+)\]\s+(.*)/);
+            let id = empMatch ? empMatch[1] : "";
+            let nombre = empMatch ? empMatch[2] : empStr;
+
+            const normNombre = nombre.toUpperCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .replace(/\s+/g, " ")
+              .trim();
+
+            let changed = false;
+            if (normNombre.includes("CESAR ROFRIGUEZ") || normNombre.includes("CESAR RODRIGUEZ")) {
+              id = "32197863";
+              nombre = "CESAR RODRIGUEZ BANDA";
+              changed = true;
+            } else if (normNombre.includes("ALEXIS BERLIN")) {
+              id = "32244174";
+              nombre = "ALEXIS BERLIN ALVAREZ CORONA";
+              changed = true;
+            }
+
+            if (changed) {
+              r["Employee"] = `[${id}] ${nombre}`;
+            }
+          });
+
+          const inactiveEmployeeIds = new Set(["32045556", "32188117"]);
+          
+          // 1. Filtrar los inactivos
+          rows = rows.filter((r: any) => {
+            const empMatch = r["Employee"] ? String(r["Employee"]).match(/\[(\d+)\]/) : null;
+            const id = empMatch ? empMatch[1] : "";
+            return !inactiveEmployeeIds.has(id);
+          });
+
+          // 2. Inyectar César Rodríguez Banda si no está
+          const hasCesar = rows.some((r: any) => {
+            const empMatch = r["Employee"] ? String(r["Employee"]).match(/\[(\d+)\]/) : null;
+            return empMatch && empMatch[1] === "32197863";
+          });
+          if (!hasCesar) {
+            rows.push({
+              "Employee": "[32197863] CESAR RODRIGUEZ BANDA",
+              "SKAP Position": "Integrante",
+              "Position": "Integrante",
+              "Autonomy Score": 0,
+              "Area": "Cold Block",
+              "Department": "Brewing",
+              "Safety": 0,
+              "Quality": 0,
+              "Environment": 0,
+              "Management": 0,
+              "People": 0,
+              "Maintenance": 0,
+              "Logistics": 0,
+              "Operation": 0
+            });
+          }
+
+          // 3. Inyectar Alexis Berlin Alvarez Corona si no está
+          const hasAlexis = rows.some((r: any) => {
+            const empMatch = r["Employee"] ? String(r["Employee"]).match(/\[(\d+)\]/) : null;
+            return empMatch && empMatch[1] === "32244174";
+          });
+          if (!hasAlexis) {
+            rows.push({
+              "Employee": "[32244174] ALEXIS BERLIN ALVAREZ CORONA",
+              "SKAP Position": "QUAS",
+              "Position": "QUAS",
+              "Autonomy Score": 0,
+              "Area": "Cold Block",
+              "Department": "Brewing",
+              "Safety": 0,
+              "Quality": 0,
+              "Environment": 0,
+              "Management": 0,
+              "People": 0,
+              "Maintenance": 0,
+              "Logistics": 0,
+              "Operation": 0
+            });
+          }
+        }
+
         // Procesar BPRE (factorMap)
         for (const row of bpreRows) {
           const rawArea = String(row["ÁREA"] || "").trim();
@@ -255,8 +427,13 @@ export function useExcelData() {
 
         const parseOperator = (row: any): Operator & { autonomyScore: number, noEvaluado: boolean } => {
           const empMatch = row["Employee"] ? String(row["Employee"]).match(/\[(\d+)\]\s+(.*)/) : null;
-          const id = empMatch ? empMatch[1] : String(Math.random());
+          let id = empMatch ? empMatch[1] : String(Math.random());
           const nombre = empMatch ? empMatch[2] : row["Employee"] || "Desconocido";
+
+          // Corrección de ID de Lazaro Quezada para evitar colisión con Eduardo Neri
+          if (id === "32043739" && nombre.toUpperCase().includes("LAZARO")) {
+            id = "32045769";
+          }
 
           // NEW COLUMN STRUCTURE FROM INSPECTION
           const basicCols = ["Safety", "Quality", "Environment", "Management", "People", "Maintenance", "Logistics", "Operation"];
@@ -298,7 +475,7 @@ export function useExcelData() {
           const intermedio = calculateAverage(intermediateCols);
           const avanzado = calculateAverage(advancedCols);
 
-          if (val === null || isNaN(val)) {
+          if (val === null || isNaN(val) || (val === 0 && hasEvaluation)) {
             val = (basico * 0.5) + (intermedio * 0.35) + (avanzado * 0.15);
           }
 
@@ -401,9 +578,10 @@ export function useExcelData() {
            else if (op._area === "Cold Block") bloqueFrioOps.push(op);
            else if (op._area === "Brewing Maintenance") {
              if (op.equipoAutonomo === "Sin Equipo" || !op.equipoAutonomo) {
-               op.equipoAutonomo = "LOS NAHUALES";
+               op.equipoAutonomo = "NAHUALES";
              }
-             if (op.equipoAutonomo.toUpperCase() === "LOS NAHUALES") {
+             const teamUpper = op.equipoAutonomo.toUpperCase();
+             if (teamUpper === "NAHUALES" || teamUpper === "LOS NAHUALES") {
                op.lider = "LUIS MANUEL GARCIA VICTORIO";
              }
              mantenimientoOps.push(op);

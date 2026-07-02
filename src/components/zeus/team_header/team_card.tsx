@@ -27,6 +27,42 @@ interface TeamCardProps {
  * Incluye funcionalidad para que los administradores puedan editar y guardar un nuevo líder
  * para el equipo, almacenando dicha anulación (override) directamente en Firestore.
  */
+const obtenerLogoFallbacks = (name: string): string[] => {
+  const clean = name.trim().toUpperCase();
+  if (!clean) return [];
+  const list: string[] = [];
+
+  list.push(clean);
+
+  if (clean.startsWith("LOS ")) {
+    list.push(clean.replace(/^LOS\s+/, ""));
+  } else {
+    list.push(`LOS ${clean}`);
+  }
+
+  if (clean.startsWith("EL ")) list.push(clean.replace(/^EL\s+/, ""));
+  else if (clean.startsWith("LA ")) list.push(clean.replace(/^LA\s+/, ""));
+  else if (clean.startsWith("LAS ")) list.push(clean.replace(/^LAS\s+/, ""));
+
+  if (clean.includes("-")) {
+    list.push(clean.replace(/-/g, " "));
+  } else {
+    if (clean.includes("MASH") || clean.includes("MOSTO")) {
+      list.push(clean.replace(/\s+/g, "-"));
+    }
+  }
+
+  if (clean === "LOS_BRAVOS" || clean === "BRAVOS" || clean === "LOS BRAVOS") {
+    list.push("BRAVOS DEL FRIO");
+  }
+  if (clean === "LOS_FUERTES" || clean === "FUERTES" || clean === "LOS FUERTES") {
+    list.push("LOS FUERTES DEL FRIO");
+  }
+
+  const unique = Array.from(new Set(list));
+  return unique.map(item => `/logos/${item}.png`);
+};
+
 export function TeamCard({ variant, team, operadores = [] }: TeamCardProps) {
   const is_best = variant === "best";
   const canvas_ref = useRef<HTMLCanvasElement>(null);
@@ -109,11 +145,25 @@ export function TeamCard({ variant, team, operadores = [] }: TeamCardProps) {
   const leader_name = localLeader;
   const initial_animation_x = is_best ? -20 : 20;
 
+  const logo_fallbacks = team_name ? obtenerLogoFallbacks(team_name) : [];
+
   const handle_logo_error = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = event.currentTarget;
+    const fallbacksStr = target.getAttribute("data-fallbacks");
+    if (fallbacksStr) {
+      const fallbacks = JSON.parse(fallbacksStr) as string[];
+      const currentIndex = parseInt(target.getAttribute("data-index") || "0", 10);
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < fallbacks.length) {
+        target.setAttribute("data-index", String(nextIndex));
+        target.src = fallbacks[nextIndex];
+        return;
+      }
+    }
+    
     target.style.display = 'none';
     if (target.parentElement) {
-      target.parentElement.innerHTML = `<div class="${label_color} font-black">${is_best ? 'TOP' : 'LOW'}</div>`;
+      target.parentElement.innerHTML = `<div class="${label_color} font-black text-[10px]">${is_best ? 'TOP' : 'LOW'}</div>`;
     }
   };
 
@@ -191,9 +241,11 @@ export function TeamCard({ variant, team, operadores = [] }: TeamCardProps) {
       <DialogTrigger asChild>
         <button className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white border shadow-lg p-0.5 overflow-hidden transition-transform hover:scale-105 active:scale-95 ${avatar_border}`}>
           <img 
-            src={`/logos/${team_name.trim().toUpperCase()}.png`} 
+            src={logo_fallbacks[0] || `/logos/${team_name.trim().toUpperCase()}.png`} 
             alt={team_name}
             className="max-h-full max-w-full object-contain"
+            data-fallbacks={JSON.stringify(logo_fallbacks)}
+            data-index="0"
             onError={handle_logo_error}
           />
         </button>
@@ -201,9 +253,12 @@ export function TeamCard({ variant, team, operadores = [] }: TeamCardProps) {
       <DialogContent className="max-w-sm sm:max-w-md bg-white p-6 rounded-2xl border-none shadow-2xl flex flex-col items-center">
         <div className="w-full aspect-square flex items-center justify-center p-4">
           <img 
-            src={`/logos/${team_name.trim().toUpperCase()}.png`} 
+            src={logo_fallbacks[0] || `/logos/${team_name.trim().toUpperCase()}.png`} 
             alt={team_name}
             className="max-h-full max-w-full object-contain drop-shadow-xl"
+            data-fallbacks={JSON.stringify(logo_fallbacks)}
+            data-index="0"
+            onError={handle_logo_error}
           />
         </div>
         <div className="text-center mt-4">

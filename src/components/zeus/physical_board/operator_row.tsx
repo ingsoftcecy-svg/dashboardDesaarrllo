@@ -24,6 +24,42 @@ interface OperatorRowProps {
   teamRankings?: any[];
 }
 
+const obtenerLogoFallbacks = (name: string): string[] => {
+  const clean = name.trim().toUpperCase();
+  if (!clean) return [];
+  const list: string[] = [];
+
+  list.push(clean);
+
+  if (clean.startsWith("LOS ")) {
+    list.push(clean.replace(/^LOS\s+/, ""));
+  } else {
+    list.push(`LOS ${clean}`);
+  }
+
+  if (clean.startsWith("EL ")) list.push(clean.replace(/^EL\s+/, ""));
+  else if (clean.startsWith("LA ")) list.push(clean.replace(/^LA\s+/, ""));
+  else if (clean.startsWith("LAS ")) list.push(clean.replace(/^LAS\s+/, ""));
+
+  if (clean.includes("-")) {
+    list.push(clean.replace(/-/g, " "));
+  } else {
+    if (clean.includes("MASH") || clean.includes("MOSTO")) {
+      list.push(clean.replace(/\s+/g, "-"));
+    }
+  }
+
+  if (clean === "LOS_BRAVOS" || clean === "BRAVOS" || clean === "LOS BRAVOS") {
+    list.push("BRAVOS DEL FRIO");
+  }
+  if (clean === "LOS_FUERTES" || clean === "FUERTES" || clean === "LOS FUERTES") {
+    list.push("LOS FUERTES DEL FRIO");
+  }
+
+  const unique = Array.from(new Set(list));
+  return unique.map(item => `/logos/${item}.png`);
+};
+
 export function OperatorRow({ operator, original_index, visual_index, show_ato = true, team_members, full_team_members = [], puedeEditar = false, teamRankings = [] }: OperatorRowProps) {
   const teamData = (teamRankings || []).find(r => r.name.trim().toUpperCase() === operator.equipoAutonomo?.trim().toUpperCase());
   const autonomy_score = ((operator.autonomyScore / 100) * 4).toFixed(2);
@@ -48,8 +84,22 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
     row_class = cn(podium_style, original_index === 0 && "animate-glow-gold relative z-10");
   }
 
+  const logo_fallbacks = operator.equipoAutonomo ? obtenerLogoFallbacks(operator.equipoAutonomo) : [];
+
   const handle_team_logo_error = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = event.currentTarget;
+    const fallbacksStr = target.getAttribute("data-fallbacks");
+    if (fallbacksStr) {
+      const fallbacks = JSON.parse(fallbacksStr) as string[];
+      const currentIndex = parseInt(target.getAttribute("data-index") || "0", 10);
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < fallbacks.length) {
+        target.setAttribute("data-index", String(nextIndex));
+        target.src = fallbacks[nextIndex];
+        return;
+      }
+    }
+    
     target.style.display = 'none';
     if (target.parentElement) {
       target.parentElement.innerHTML = `<div class="text-[8px] font-bold text-slate-400">${STRINGS.LOGO_FALLBACK}</div>`;
@@ -158,9 +208,11 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               <DialogTrigger asChild>
               <button className="h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg flex items-center justify-center p-1 transition-transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#1a4491]">
                   <img 
-                    src={`/logos/${operator.equipoAutonomo.trim().toUpperCase()}.png`} 
+                    src={logo_fallbacks[0] || `/logos/${operator.equipoAutonomo.trim().toUpperCase()}.png`} 
                     alt={operator.equipoAutonomo}
                     className="max-h-full max-w-full object-contain"
+                    data-fallbacks={JSON.stringify(logo_fallbacks)}
+                    data-index="0"
                     onError={handle_team_logo_error}
                   />
                 </button>
@@ -168,9 +220,12 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               <DialogContent className="max-w-sm sm:max-w-md bg-white p-6 rounded-2xl border-none shadow-2xl flex flex-col items-center">
                 <div className="w-full aspect-square flex items-center justify-center p-4">
                   <img 
-                    src={`/logos/${operator.equipoAutonomo.trim().toUpperCase()}.png`} 
+                    src={logo_fallbacks[0] || `/logos/${operator.equipoAutonomo.trim().toUpperCase()}.png`} 
                     alt={operator.equipoAutonomo}
                     className="max-h-full max-w-full object-contain drop-shadow-xl"
+                    data-fallbacks={JSON.stringify(logo_fallbacks)}
+                    data-index="0"
+                    onError={handle_team_logo_error}
                   />
                 </div>
                 <div className="text-center mt-4">

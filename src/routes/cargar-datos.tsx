@@ -20,18 +20,18 @@ const obtenerSemanaDesdeFechaString = (fechaStr: any): string => {
 
   if (typeof fechaStr === 'number') {
     fecha = new Date((fechaStr - 25569) * 86400 * 1000);
-  } 
+  }
   else if (fechaStr instanceof Date) {
     fecha = fechaStr;
-  } 
+  }
   else {
     const limpio = String(fechaStr).trim();
     const partes = limpio.replace(/\//g, '-').split('-');
-    
+
     if (partes.length !== 3) return '';
-    
+
     const anio = parseInt(partes[0], 10);
-    const mes = parseInt(partes[1], 10) - 1; 
+    const mes = parseInt(partes[1], 10) - 1;
     const dia = parseInt(partes[2], 10);
 
     fecha = new Date(anio, mes, dia);
@@ -41,13 +41,13 @@ const obtenerSemanaDesdeFechaString = (fechaStr: any): string => {
 
   const copiaFecha = new Date(Date.UTC(fecha.getFullYear(), fecha.getMonth(), fecha.getDate()));
   const diaNum = copiaFecha.getUTCDay() || 7;
-  
+
   copiaFecha.setUTCDate(copiaFecha.getUTCDate() + 4 - diaNum);
-  
+
   const inicioAnio = new Date(Date.UTC(copiaFecha.getUTCFullYear(), 0, 1));
   const milisegundosPorDia = 86400000;
   const numeroSemana = Math.ceil((((copiaFecha.getTime() - inicioAnio.getTime()) / milisegundosPorDia) + 1) / 7);
-  
+
   return `${copiaFecha.getUTCFullYear()}-W${numeroSemana.toString().padStart(2, '0')}`;
 };
 
@@ -65,14 +65,14 @@ const obtenerMesDesdeFechaString = (fechaStr: any): string => {
     const partes = limpio.replace(/\//g, '-').split('-');
     if (partes.length !== 3) return '';
     const anio = parseInt(partes[0], 10);
-    const mes  = parseInt(partes[1], 10) - 1;
-    const dia  = parseInt(partes[2], 10);
+    const mes = parseInt(partes[1], 10) - 1;
+    const dia = parseInt(partes[2], 10);
     fecha = new Date(anio, mes, dia);
   }
 
   if (isNaN(fecha.getTime())) return '';
   const anio = fecha.getFullYear();
-  const mes  = (fecha.getMonth() + 1).toString().padStart(2, '0');
+  const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
   return `${anio}-${mes}`;
 };
 
@@ -80,7 +80,7 @@ const obtenerClaveRegistro = (fila: any): string => {
   if (!fila) return '';
   const colEmp = Object.keys(fila).find(k => k.toLowerCase().trim() === 'employee');
   const empVal = colEmp ? String(fila[colEmp]).trim().toUpperCase() : '';
-  
+
   const colFecha = Object.keys(fila).find(k => k.toLowerCase().includes('assessment') || (k.toLowerCase().includes('fecha') && !k.toLowerCase().includes('compromiso')));
   const fechaVal = colFecha ? String(fila[colFecha]).trim() : '';
 
@@ -141,7 +141,7 @@ function CargarDatos() {
   const handleLogout = async () => {
     await signOut(auth);
   };
-  
+
   if (cargando) {
     return <ComprobandoAuth />;
   }
@@ -152,10 +152,37 @@ function CargarDatos() {
       reader.onload = (e) => {
         try {
           const data = new Uint8Array(e.target?.result as ArrayBuffer);
-          const workbook = XLSX.read(data, { type: 'array', cellDates: true }); 
+          const workbook = XLSX.read(data, { type: 'array', cellDates: true });
           const nombreHoja = workbook.SheetNames[0];
           const json = XLSX.utils.sheet_to_json(workbook.Sheets[nombreHoja]);
           resolve(json);
+        } catch (err) { reject(err); }
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  const parsearExcelCompleto = (file: File): Promise<{ base_equipos?: any[], estructura_nueva?: any[], defaultSheet?: any[] }> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = new Uint8Array(e.target?.result as ArrayBuffer);
+          const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+
+          const result: { base_equipos?: any[], estructura_nueva?: any[], defaultSheet?: any[] } = {};
+
+          if (workbook.SheetNames.includes("BD_ZAC_OFICIAL")) {
+            result.base_equipos = XLSX.utils.sheet_to_json(workbook.Sheets["BD_ZAC_OFICIAL"]);
+          }
+          if (workbook.SheetNames.includes("Personal Total")) {
+            result.estructura_nueva = XLSX.utils.sheet_to_json(workbook.Sheets["Personal Total"], { range: 2 });
+          }
+
+          const firstSheet = workbook.SheetNames[0];
+          result.defaultSheet = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
+
+          resolve(result);
         } catch (err) { reject(err); }
       };
       reader.readAsArrayBuffer(file);
@@ -167,6 +194,37 @@ function CargarDatos() {
     if (!file) return;
     try {
       setCargando(true);
+
+      if (tipo === 'base_equipos') {
+        const parsed = await parsearExcelCompleto(file);
+        const updates: any = {};
+        let uploadedSheets: string[] = [];
+
+        if (parsed.base_equipos) {
+          updates.base_equipos = parsed.base_equipos;
+          uploadedSheets.push("Base de Equipos (BD_ZAC_OFICIAL)");
+        }
+        if (parsed.estructura_nueva) {
+          updates.estructura_nueva = parsed.estructura_nueva;
+          uploadedSheets.push("Estructura Nueva Oficial (Personal Total)");
+        }
+
+        if (Object.keys(updates).length > 0) {
+          await setDoc(doc(db, "config_dashboard", "catalogos_fijos"), updates, { merge: true });
+          if (usuario) {
+            await registrarEvento(
+              usuario.uid,
+              usuario.email || '',
+              usuario.rol || 'operador',
+              'CARGA_DATOS',
+              `Carga de catálogo: ${uploadedSheets.join(" y ")} (${file.name})`
+            );
+          }
+          alert(`¡Catálogo(s) subido(s) con éxito: ${uploadedSheets.join(", ")}!`);
+          return;
+        }
+      }
+
       const json = await parsearExcel(file);
       await setDoc(doc(db, "config_dashboard", "catalogos_fijos"), { [tipo]: json }, { merge: true });
       if (usuario) {
@@ -180,6 +238,7 @@ function CargarDatos() {
       }
       alert(`¡Catálogo ${tipo} guardado con éxito!`);
     } catch (err) {
+      console.error(err);
       alert("Error al subir el catálogo.");
     } finally {
       setCargando(false);
@@ -299,7 +358,7 @@ function CargarDatos() {
         const filas = await parsearExcel(archivoBpre);
 
         // Vemos si hay fecha en BPRE
-        const tieneFechaBpre = filas.some(fila => 
+        const tieneFechaBpre = filas.some(fila =>
           Object.keys(fila).some(k => k.toLowerCase().includes('assessment') || (k.toLowerCase().includes('fecha') && !k.toLowerCase().includes('compromiso')))
         );
 
@@ -308,7 +367,7 @@ function CargarDatos() {
           setLogProceso(prev => [...prev, `💡 BPRE no tiene columna de fecha. Guardando datos únicamente en la semana actual (${semanaID})...`]);
           if (!gruposPorSemana[semanaID]) gruposPorSemana[semanaID] = {};
           if (!gruposPorSemana[semanaID].bpre) gruposPorSemana[semanaID].bpre = [];
-          
+
           filas.forEach((fila) => {
             const colNombre = Object.keys(fila).find(k => k.toLowerCase().trim() === 'nombre');
             const nombreEquipo = colNombre ? String(fila[colNombre]).trim() : '';
@@ -351,7 +410,7 @@ function CargarDatos() {
         const docRef = doc(db, "historicos_excel", semanaID);
         const snap = await getDoc(docRef);
         const dataVieja = snap.exists() ? snap.data() : {};
-        
+
         // Fusión semanal acumulativa de datos_skap
         const datosSkapExistentes = dataVieja.datos_skap || [];
         const nuevosDatosSkap = gruposPorSemana[semanaID].datos_skap || [];
@@ -415,12 +474,12 @@ function CargarDatos() {
         const mesRef = doc(db, "historicos_mensuales", mesID);
         const mesSnap = await getDoc(mesRef);
         const dataViejaMes = mesSnap.exists() ? mesSnap.data() : {};
-        
+
         // Fusión mensual acumulativa de datos_skap
         const skapExistentesMes = dataViejaMes.datos_skap || [];
         const nuevosSkapMes = gruposPorMes[mesID].datos_skap;
         const mapaSkapMes: Record<string, any> = {};
-        
+
         skapExistentesMes.forEach((fila: any) => {
           const clave = obtenerClaveRegistro(fila);
           if (clave) mapaSkapMes[clave] = fila;
@@ -434,7 +493,7 @@ function CargarDatos() {
         const bpreExistentesMes = dataViejaMes.bpre || [];
         const nuevosBpreMes = gruposPorMes[mesID].bpre;
         const mapaBpreMes: Record<string, any> = {};
-        
+
         bpreExistentesMes.forEach((fila: any) => {
           const clave = obtenerClaveBpre(fila);
           if (clave) mapaBpreMes[clave] = fila;
@@ -488,29 +547,29 @@ function CargarDatos() {
               Módulo de Carga Operacional
             </p>
           </div>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">
                 Correo Electrónico
               </label>
-              <input 
-                type="email" 
-                value={email} 
+              <input
+                type="email"
+                value={email}
                 onChange={e => setEmail(e.target.value)}
                 className="w-full rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none border border-slate-200 focus:border-[#1a4491] focus:bg-white transition-all"
                 placeholder="usuario@planta.com"
                 required
               />
             </div>
-            
+
             <div>
               <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">
                 Contraseña
               </label>
-              <input 
-                type="password" 
-                value={password} 
+              <input
+                type="password"
+                value={password}
                 onChange={e => setPassword(e.target.value)}
                 className="w-full rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none border border-slate-200 focus:border-[#1a4491] focus:bg-white transition-all"
                 placeholder="••••••••"
@@ -518,8 +577,8 @@ function CargarDatos() {
               />
             </div>
           </div>
-          
-          <button 
+
+          <button
             type="submit"
             className="w-full mt-2 py-3 bg-[#1a4491] hover:bg-blue-800 text-white font-black rounded-xl transition-colors uppercase text-xs tracking-widest shadow-md"
           >
@@ -539,7 +598,7 @@ function CargarDatos() {
   // PANEL PRINCIPAL DE CARGA (LOGUEADO)
   return (
     <div className="min-h-screen bg-[#f1f5f9] text-slate-800 font-sans antialiased pb-12">
-      
+
       {/* 🟦 1. NAVBAR SUPERIOR GLOBAL (IDÉNTICO AL DEL DASHBOARD) */}
       <header className="bg-[#1a4491] w-full h-16 px-6 flex items-center justify-between shadow-md">
         <div className="flex items-center gap-3">
@@ -554,12 +613,12 @@ function CargarDatos() {
         {/* Links tipo Cápsula Centrados */}
         <nav className="hidden md:flex items-center gap-2">
           <Link
-                to="/"
-                className="px-4 py-1.5 text-white/80 hover:text-white font-bold text-xs uppercase tracking-wide transition-colors rounded-full"
-              >
-                
-                Modificar Datos
-              </Link>
+            to="/"
+            className="px-4 py-1.5 text-white/80 hover:text-white font-bold text-xs uppercase tracking-wide transition-colors rounded-full"
+          >
+
+            Dashboard
+          </Link>
           <Link to="/analisis-comparativo" className="px-4 py-1.5 text-white/80 hover:text-white font-bold text-xs uppercase tracking-wide transition-colors rounded-full">
             Comparativo
           </Link>
@@ -570,14 +629,14 @@ function CargarDatos() {
 
         {/* Bloque Informativo Estático derecho */}
         <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
-              
-              <button           
-                onClick={handleLogout}
-                className="flex items-center justify-center gap-1.5 h-8 px-4 text-[10px] font-black text-white bg-red-600 hover:bg-red-700 rounded-full transition-colors uppercase tracking-wider shadow-sm"
-              >
-                <LogOut className="h-3 w-3" />
-                Cerrar Sesión
-              </button>
+
+          <button
+            onClick={handleLogout}
+            className="flex items-center justify-center gap-1.5 h-8 px-4 text-[10px] font-black text-white bg-red-600 hover:bg-red-700 rounded-full transition-colors uppercase tracking-wider shadow-sm"
+          >
+            <LogOut className="h-3 w-3" />
+            Cerrar Sesión
+          </button>
         </div>
       </header>
 
@@ -586,7 +645,7 @@ function CargarDatos() {
 
         {/* 🎛️ 2. PANEL ADMINISTRATIVO CENTRAL */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          
+
           {/* Encabezado Industrial de la Tarjeta */}
           <div className="bg-[#1a4491] px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-blue-900 text-white">
             <div className="flex items-center gap-3">
@@ -597,24 +656,24 @@ function CargarDatos() {
                 Carga de Datos y Configuración del Dashboard
               </h2>
             </div>
-            
+
             {/* Acciones Superiores Estilo Cápsula */}
-            
+
           </div>
 
           {/* Cuerpo de Carga */}
           <div className="p-6 space-y-6">
-            
+
             {/* Banner Informativo */}
             <div className="bg-slate-50 border border-slate-150 p-3 rounded-xl text-center">
               <p className="text-[10px] text-slate-500 font-black tracking-wide uppercase">
                 🚀 El sistema leerá las marcas de tiempo e indexará la información de forma automática por semana.
               </p>
             </div>
-            
+
             {/* 📁 Grid de Zonas de Carga de Archivos */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
+
               {/* Reporte General */}
               <div className="border-2 border-dashed border-slate-200 bg-slate-50/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center space-y-3 hover:border-[#1a4491]/30 transition-colors">
                 <div className="p-3 bg-blue-50 text-[#1a4491] rounded-xl">
@@ -628,18 +687,18 @@ function CargarDatos() {
                     (DATOS.XLSX)
                   </p>
                 </div>
-                
+
                 <label className="bg-[#1a4491] hover:bg-blue-800 text-white text-[11px] font-black uppercase tracking-wide px-4 py-2 rounded-xl cursor-pointer shadow-sm transition-colors inline-block">
                   Seleccionar archivo
-                  <input 
-                    type="file" 
-                    accept=".xlsx, .xls" 
+                  <input
+                    type="file"
+                    accept=".xlsx, .xls"
                     disabled={cargando}
                     onChange={(e) => setArchivoDatos(e.target.files?.[0] || null)}
-                    className="hidden" 
+                    className="hidden"
                   />
                 </label>
-                
+
                 <div className="h-4 text-[11px] font-black tracking-wide uppercase text-slate-500 truncate max-w-[220px]">
                   {archivoDatos ? (
                     <span className="text-emerald-600 flex items-center justify-center gap-1">
@@ -662,18 +721,18 @@ function CargarDatos() {
                     (BPRE.XLSX)
                   </p>
                 </div>
-                
+
                 <label className="bg-[#1a4491] hover:bg-blue-800 text-white text-[11px] font-black uppercase tracking-wide px-4 py-2 rounded-xl cursor-pointer shadow-sm transition-colors inline-block">
                   Seleccionar archivo
-                  <input 
-                    type="file" 
-                    accept=".xlsx, .xls" 
+                  <input
+                    type="file"
+                    accept=".xlsx, .xls"
                     disabled={cargando}
                     onChange={(e) => setArchivoBpre(e.target.files?.[0] || null)}
-                    className="hidden" 
+                    className="hidden"
                   />
                 </label>
-                
+
                 <div className="h-4 text-[11px] font-black tracking-wide uppercase text-slate-500 truncate max-w-[220px]">
                   {archivoBpre ? (
                     <span className="text-emerald-600 flex items-center justify-center gap-1">
@@ -705,7 +764,7 @@ function CargarDatos() {
             <h3 className="text-xs font-black text-[#1a4491] uppercase tracking-wider">Cargas Administrativas Especiales</h3>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Actualización directa de estructuras fijas globales</p>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <label className="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer text-center">
               <span className="text-[10px] font-black uppercase text-slate-600 tracking-wide mb-1">Base Equipos</span>

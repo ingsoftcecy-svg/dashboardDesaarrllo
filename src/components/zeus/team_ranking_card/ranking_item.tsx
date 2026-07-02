@@ -43,9 +43,60 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [] }:
   const [localLeader, setLocalLeader] = useState(team.leader || "N/A");
   const [newLeader, setNewLeader] = useState(localLeader);
 
+  const [dialogImageSrc, setDialogImageSrc] = useState("");
+  const [dialogFallbackIndex, setDialogFallbackIndex] = useState(0);
+
+  const get_dialog_fallbacks = (name: string): string[] => {
+    const clean = name.trim();
+    if (!clean) return [];
+    const parts = clean.split(/\s+/);
+    const list: string[] = [];
+
+    // 1. Full name
+    list.push(`${clean}.jpeg`);
+    list.push(`${clean}.png`);
+
+    if (parts.length >= 3) {
+      // 2. Omit second surname (last word)
+      const omitLast = parts.slice(0, -1).join(" ");
+      list.push(`${omitLast}.jpeg`);
+      list.push(`${omitLast}.png`);
+    }
+
+    if (parts.length >= 4) {
+      // 3. First name + First surname (e.g. "RAUL DAVID CORTES ALANIZ" -> "RAUL CORTES")
+      const firstAndThird = `${parts[0]} ${parts[2]}`;
+      list.push(`${firstAndThird}.jpeg`);
+      list.push(`${firstAndThird}.png`);
+    }
+
+    if (parts.length >= 2) {
+      // 4. First name + Second word
+      const firstTwo = `${parts[0]} ${parts[1]}`;
+      list.push(`${firstTwo}.jpeg`);
+      list.push(`${firstTwo}.png`);
+      
+      // 5. First + Last
+      const firstAndLast = `${parts[0]} ${parts[parts.length - 1]}`;
+      list.push(`${firstAndLast}.jpeg`);
+      list.push(`${firstAndLast}.png`);
+    }
+
+    return list.map(filename => `/fotos/${filename}?t=${Date.now()}`);
+  };
+
+  const dialogFallbacks = team.leader ? get_dialog_fallbacks(team.leader) : [];
+
   useEffect(() => {
     setLocalLeader(team.leader || "N/A");
     setNewLeader(team.leader || "N/A");
+
+    if (dialogFallbacks.length > 0) {
+      setDialogImageSrc(dialogFallbacks[0]);
+      setDialogFallbackIndex(0);
+    } else {
+      setDialogImageSrc("");
+    }
   }, [team.leader]);
 
   const handleSaveLeader = async () => {
@@ -69,14 +120,16 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [] }:
       noEvaluado: op.noEvaluado
     }));
   const handle_dialog_image_error = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    const target = event.currentTarget;
-    if (!target.src.includes('.png')) {
-      target.src = `/fotos/${team.leader?.trim()}.png?t=${Date.now()}`;
-      return;
-    }
-    target.style.display = 'none';
-    if (target.nextElementSibling) {
-      (target.nextElementSibling as HTMLElement).style.display = 'flex';
+    const nextIndex = dialogFallbackIndex + 1;
+    if (nextIndex < dialogFallbacks.length) {
+      setDialogFallbackIndex(nextIndex);
+      setDialogImageSrc(dialogFallbacks[nextIndex]);
+    } else {
+      const target = event.currentTarget;
+      target.style.display = 'none';
+      if (target.nextElementSibling) {
+        (target.nextElementSibling as HTMLElement).style.display = 'flex';
+      }
     }
   };
 
@@ -109,7 +162,7 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [] }:
           <DialogContent className="max-w-sm sm:max-w-md bg-white p-6 rounded-2xl border-none shadow-2xl flex flex-col items-center">
             <div className="w-full aspect-square relative rounded-xl overflow-hidden bg-slate-100 shadow-inner flex items-center justify-center">
               <img 
-                src={`/fotos/${team.leader?.trim()}.jpeg?t=${Date.now()}`} 
+                src={dialogImageSrc} 
                 alt={team.leader} 
                 className="w-full h-full object-cover" 
                 onError={handle_dialog_image_error} 

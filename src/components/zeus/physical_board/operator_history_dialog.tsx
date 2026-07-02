@@ -94,7 +94,7 @@ const obtenerScoreNormalizado = (fila: any): { score: number; corregido: boolean
   
   let corregido = false;
   // Recalculo si no está el score precalculado
-  if (val === null || isNaN(val)) {
+  if (val === null || isNaN(val) || (val === 0 && hasEvaluation)) {
     const calculateAverage = (cols: string[]) => {
       const values = cols.map(c => {
         const cell = fila[c];
@@ -159,14 +159,43 @@ export function OperatorHistoryDialog({ operatorName, operatorId, operatorPuesto
           
           skap.forEach(row => {
             const employeeStr = String(row.Employee || "").toUpperCase();
+            const empMatch = employeeStr.match(/\[(\d+)\]\s+(.*)/);
+            let id = empMatch ? empMatch[1] : "";
+            let nombre = empMatch ? empMatch[2] : employeeStr;
+
+            const normNombre = nombre.toUpperCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .replace(/\s+/g, " ")
+              .trim();
+
+            // Traducción de nombres/IDs de César y Alexis
+            if (normNombre.includes("CESAR ROFRIGUEZ") || normNombre.includes("CESAR RODRIGUEZ")) {
+              id = "32197863";
+              nombre = "CESAR RODRIGUEZ BANDA";
+            } else if (normNombre.includes("ALEXIS BERLIN")) {
+              id = "32244174";
+              nombre = "ALEXIS BERLIN ALVAREZ CORONA";
+            }
+
             const cleanId = String(operatorId).trim().toUpperCase();
             const cleanName = String(operatorName).trim().toUpperCase();
+            
+            const normCleanName = cleanName.normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .replace(/\s+/g, " ")
+              .trim();
 
-            // Buscar coincidencia exacta por ID en corchetes o coincidencia parcial de nombre
+            // Corrección de ID de Lazaro Quezada para evitar colisión con Eduardo Neri
+            if (id === "32043739" && normNombre.includes("LAZARO")) {
+              id = "32045769";
+            }
+
+            // Buscar coincidencia por ID o coincidencia parcial de nombre normalizado
             const esMismoOperador = 
-              (cleanId && employeeStr.includes(`[${cleanId}]`)) ||
-              (cleanId && employeeStr.includes(cleanId)) ||
-              (cleanName && employeeStr.includes(cleanName));
+              (cleanId && id === cleanId) ||
+              (normNombre.includes(normCleanName)) ||
+              (normCleanName.includes(normNombre));
 
             if (esMismoOperador) {
               const res = obtenerScoreNormalizado(row);

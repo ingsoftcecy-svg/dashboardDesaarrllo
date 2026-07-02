@@ -37,6 +37,24 @@ const formatearTextoMes = (idMes: string): string => {
 const normalizar = (s: string): string =>
   s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 
+const normalizarNombreEquipo = (name: string): string => {
+  if (!name) return "";
+  const n = name.trim().toUpperCase();
+  if (n === "LOS CAZADORES DEL AMARGOR" || n === "CAZADORES_AMARGOR" || n === "LOS CAZADORES DEL AMARGOR " || n === "CAZADORES DEL AMARGOR") return "CAZADORES_AMARGOR";
+  if (n === "CUCHILLAS" || n === "CUCHILLA") return "CUCHILLA";
+  if (n === "MASH-RAINBOW" || n === "MASHRAINBOW") return "MASHRAINBOW";
+  if (n === "MOSTO-BOYS" || n === "MOSTOBOYS") return "MOSTOBOYS";
+  if (n === "LOS PANCHITOS" || n === "PANCHITOS") return "PANCHITOS";
+  if (n === "LOS ANDAMOS CON TODO" || n === "ANDAMOS CON TODO" || n === "ANDAMOS_CON_TODO" || n === "ANDAMOS_CON_TODO ") return "ANDAMOS_CON_TODO ";
+  if (n === "LOS BRONCOS" || n === "BRONCOS") return "BRONCOS";
+  if (n === "LOS BRAVOS DEL FRIO" || n === "BRAVOS DEL FRIO" || n === "LOS_BRAVOS" || n === "BRAVOS DEL FRÍO" || n === "LOS BRAVOS DEL FRÍO") return "LOS_BRAVOS";
+  if (n === "LOS FUERTES DEL FRIO" || n === "FUERTES DEL FRIO" || n === "LOS_FUERTES" || n === "FUERTES DEL FRÍO" || n === "LOS FUERTES DEL FRÍO") return "LOS_FUERTES";
+  if (n === "REYES DE LA MEZCLA" || n === "REYES_MEZCLA") return "REYES_MEZCLA";
+  if (n === "MUNICH") return "MUNICH";
+  if (n === "NAHUALES" || n === "LOS NAHUALES") return "NAHUALES";
+  return n;
+};
+
 // Las 8 categorías reales de habilidades de operarios en DATOS.xlsx (mapeadas en español e inglés)
 const CATEGORIAS_OPERARIOS = [
   { clave: 'gente',       tag: 'GENTE',         alias: 'people' },
@@ -206,20 +224,66 @@ function AnalisisComparativoSemanas() {
         const eaMap: Record<string, string> = {};
         if (catalogSnap.exists()) {
           const catData = catalogSnap.data();
-          const eac = catData.eac || [];
-          const eabf = catData.eabf || [];
-          
-          eac.forEach((row: any) => {
-            if (row.SHARP) {
-              eaMap[String(row.SHARP).trim()] = String(row["Nombre del Equipo"] || "").trim().toUpperCase();
+          const estructuraNuevaRows = catData.estructura_nueva || [];
+          const baseRows = catData.base_equipos || [];
+          const eacRows = catData.eac || [];
+          const eabfRows = catData.eabf || [];
+
+          const idTranslations: Record<string, string> = {
+            "32173442": "32043900", // VICTOR MANUEL HURTADO ORTIZ
+            "32145333": "32044316", // SERGIO TRUJILLO GUARDADO
+            "32043835": "32145333", // FLAVIO CESAR DIAZ MALDONADO
+            "32043900": "32045469", // ANDRES SARABIA RODARTE
+            "32043739": "32043301", // EDUARDO NERI DE LUNA
+            "32043861": "32043835", // FILIBERTO PINEDO RODRIGUEZ
+            "32044301": "32043861", // VICTOR MANUEL DE JESUS SIMENTAL
+            "32044319": "32045769", // MARCO ANTONIO MENCHACA PEREZ / LAZARO QUEZADA OJEDA
+          };
+
+          // 1. Estructura nueva (prioridad más alta)
+          estructuraNuevaRows.forEach((row: any) => {
+            const id = row.SHARP ? String(row.SHARP).trim() : null;
+            if (id) {
+              const rawTeam = String(row["Nombre del Equipo"] || row["ESTRUCTURA DE EQUIPOS"] || "").trim();
+              const match = rawTeam.match(/^\d+\.\s*(.*)$/);
+              const cleanTeam = match ? match[1].trim() : rawTeam;
+
+              eaMap[id] = cleanTeam;
+
+              const translatedId = idTranslations[id];
+              if (translatedId) {
+                eaMap[translatedId] = cleanTeam;
+              }
             }
           });
 
-          let lastEquipo = "";
-          eabf.forEach((row: any) => {
-            if (row["NUEVO EQUIPO "]) lastEquipo = String(row["NUEVO EQUIPO "]).trim().toUpperCase();
+          // 2. Fallback baseRows
+          baseRows.forEach((row: any) => {
+            const id = row["ID Sharp"] ? String(row["ID Sharp"]).trim() : null;
+            if (id && !eaMap[id]) {
+              eaMap[id] = String(row["Nombre del equipo "] || "").trim();
+            }
+          });
+
+          // 3. Fallback eac
+          eacRows.forEach((row: any) => {
             if (row.SHARP) {
-              eaMap[String(row.SHARP).trim()] = lastEquipo;
+              const sharpStr = String(row.SHARP).trim();
+              if (!eaMap[sharpStr]) {
+                eaMap[sharpStr] = String(row["Nombre del Equipo"] || "").trim();
+              }
+            }
+          });
+
+          // 4. Fallback eabf
+          let lastEquipo = "";
+          eabfRows.forEach((row: any) => {
+            if (row["NUEVO EQUIPO "]) lastEquipo = String(row["NUEVO EQUIPO "]).trim();
+            if (row.SHARP) {
+              const sharpStr = String(row.SHARP).trim();
+              if (!eaMap[sharpStr]) {
+                eaMap[sharpStr] = lastEquipo;
+              }
             }
           });
         }
@@ -265,13 +329,55 @@ function AnalisisComparativoSemanas() {
 
   const obtenerAutonomyScore = (row: any): number | null => {
     if (!row) return null;
-    const col = Object.keys(row).find(k => 
-      k.toLowerCase().includes('excelencia') || k.toLowerCase().includes('%') || k.toLowerCase().includes('autono')
+
+    const basicCols = ["Safety", "Quality", "Environment", "Management", "People", "Maintenance", "Logistics", "Operation"];
+    const intermediateCols = ["Safety_1", "Quality_1", "Environment_1", "Management_1", "People_1", "Maintenance_1", "Logistics_1", "Operation_1"];
+    const advancedCols = ["Safety_2", "Quality_2", "Environment_2", "Management_2", "People_2", "Maintenance_2", "Logistics_2", "Operation_2"];
+    
+    const hasEvaluation = [...basicCols, ...intermediateCols, ...advancedCols].some(c => {
+      const cell = row[c];
+      return cell !== undefined && cell !== null && cell !== "-" && String(cell).trim() !== "";
+    });
+
+    const colScore = Object.keys(row).find(k => 
+      k.toLowerCase().includes("autonomy score") || 
+      k.toLowerCase().includes("excelencia") || 
+      k.toLowerCase().includes("autono") || 
+      k.toLowerCase().trim() === "autonomía"
     );
-    if (!col) return null;
-    const val = parseFloat(row[col]);
-    if (isNaN(val)) return null;
-    return val <= 1 ? val * 100 : val;
+    
+    let val: number | null = null;
+    if (colScore) {
+      val = parseFloat(row[colScore]);
+    }
+    
+    const calculateAverage = (cols: string[]) => {
+      const values = cols.map(c => {
+        const cell = row[c];
+        if (cell === undefined || cell === null || cell === "-") return 0;
+        if (typeof cell === "number") return cell * 100;
+        if (cell === "Certified" || cell === "100%") return 100;
+        if (cell === "Qualified" || cell === "75%") return 75;
+        if (cell === "In Training" || cell === "50%") return 50;
+        if (cell === "Novice" || cell === "25%") return 25;
+        return 0;
+      });
+      return values.reduce((sum, item) => sum + item, 0) / cols.length;
+    };
+
+    const basico = calculateAverage(basicCols);
+    const intermedio = calculateAverage(intermediateCols);
+    const avanzado = calculateAverage(advancedCols);
+
+    if (val === null || isNaN(val) || (val === 0 && hasEvaluation)) {
+      val = (basico * 0.5) + (intermedio * 0.35) + (avanzado * 0.15);
+    }
+
+    if (val === null || isNaN(val)) return null;
+    const finalScore = val <= 1.0 ? parseFloat((val * 100).toFixed(2)) : parseFloat(val.toFixed(2));
+    
+    const noEvaluado = !hasEvaluation || finalScore === 0;
+    return noEvaluado ? null : finalScore;
   };
 
   const obtenerPromedioAutonomiaArea = (filasSkap: any[], areaNombre: string): number | null => {
@@ -335,11 +441,32 @@ function AnalisisComparativoSemanas() {
     const colEmp = Object.keys(row).find(k => k.toLowerCase().trim() === 'employee');
     const empVal = colEmp ? String(row[colEmp]).trim() : '';
     const match = empVal.match(/\[(\d+)\]/);
+    let opEquipo = 'SIN EQUIPO';
     if (match) {
-      const id = match[1].trim();
-      return eaMap[id] || 'SIN EQUIPO';
+      let id = match[1].trim();
+      
+      // Corrección de ID de Lazaro Quezada para evitar colisión con Eduardo Neri
+      const opNameCol = Object.keys(row).find(k => k.toLowerCase().trim() === 'employee');
+      const opName = opNameCol ? String(row[opNameCol]).trim() : '';
+      if (id === '32043739' && opName.toUpperCase().includes('LAZARO')) {
+        id = '32045769';
+      }
+
+      opEquipo = eaMap[id] || 'SIN EQUIPO';
     }
-    return 'SIN EQUIPO';
+
+    // Fallback de mantenimiento
+    let area = row["Area"] || "Cold Block";
+    if (row["Department"] === "Brewing" && row["Equipment"] === "Brewing Maintenance") {
+      area = "Brewing Maintenance";
+    }
+    if (area === "Brewing Maintenance") {
+      if (opEquipo === "SIN EQUIPO" || !opEquipo) {
+        opEquipo = "NAHUALES";
+      }
+    }
+
+    return normalizarNombreEquipo(opEquipo);
   };
 
   const getTrendDataEquipo = () => {
@@ -356,7 +483,7 @@ function AnalisisComparativoSemanas() {
       const operadoresDelEquipo = equipoSeleccionado.toUpperCase() === 'GENERAL'
         ? filasSkap
         : filasSkap.filter(op => 
-            obtenerEquipoDeOperador(op, mapaOperadorEquipo).toLowerCase() === equipoSeleccionado.toLowerCase()
+            normalizarNombreEquipo(obtenerEquipoDeOperador(op, mapaOperadorEquipo)) === normalizarNombreEquipo(equipoSeleccionado)
           );
 
       const dataPoint: any = { name: label };

@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const publicDir = path.join(__dirname, '..', 'public');
 
-function parseAndSave(filename, sheetName, outputFilename) {
+function parseAndSave(filename, sheetName, outputFilename, options = {}) {
   const filePath = path.join(publicDir, filename);
   if (!fs.existsSync(filePath)) {
     console.warn(`⚠️ File not found: ${filePath}`);
@@ -23,10 +23,10 @@ function parseAndSave(filename, sheetName, outputFilename) {
       return;
     }
     
-    const rows = XLSX.utils.sheet_to_json(targetSheet);
+    const rows = XLSX.utils.sheet_to_json(targetSheet, options);
     const outputPath = path.join(publicDir, outputFilename);
     fs.writeFileSync(outputPath, JSON.stringify(rows, null, 2), 'utf-8');
-    console.log(`✅ Parsed ${filename} -> ${outputFilename}`);
+    console.log(`✅ Parsed ${filename} (${sheetName || 'default'}) -> ${outputFilename}`);
   } catch (error) {
     console.error(`❌ Failed to parse ${filename}:`, error);
   }
@@ -36,6 +36,9 @@ console.log('🔄 Parsing Excel files in public/ to JSON...');
 
 // "0. BASE EQUIPOS AUTÓNOMOS CCZ (3).xlsx" -> base.json (hoja "BD_ZAC_OFICIAL")
 parseAndSave('0. BASE EQUIPOS AUTÓNOMOS CCZ (3).xlsx', 'BD_ZAC_OFICIAL', 'base.json');
+
+// "ESTRUCTURA NUEVA OFICIAL 2 EAs.xlsx" -> estructura_nueva.json (hoja "Personal Total")
+parseAndSave('ESTRUCTURA NUEVA OFICIAL 2 EAs.xlsx', 'Personal Total', 'estructura_nueva.json', { range: 2 });
 
 // "EAC.xlsx" -> eac.json
 parseAndSave('EAC.xlsx', null, 'eac.json');

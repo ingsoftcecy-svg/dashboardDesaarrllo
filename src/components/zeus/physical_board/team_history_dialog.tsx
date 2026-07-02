@@ -85,6 +85,24 @@ const formatearMesAnio = (mesAnioKey: string): string => {
   return `${NOMBRES_MESES[idx] || mes} ${anio}`;
 };
 
+const normalizarNombreEquipo = (name: string): string => {
+  if (!name) return "";
+  const n = name.trim().toUpperCase();
+  if (n === "LOS CAZADORES DEL AMARGOR" || n === "CAZADORES_AMARGOR" || n === "LOS CAZADORES DEL AMARGOR " || n === "CAZADORES DEL AMARGOR") return "CAZADORES_AMARGOR";
+  if (n === "CUCHILLAS" || n === "CUCHILLA") return "CUCHILLA";
+  if (n === "MASH-RAINBOW" || n === "MASHRAINBOW") return "MASHRAINBOW";
+  if (n === "MOSTO-BOYS" || n === "MOSTOBOYS") return "MOSTOBOYS";
+  if (n === "LOS PANCHITOS" || n === "PANCHITOS") return "PANCHITOS";
+  if (n === "LOS ANDAMOS CON TODO" || n === "ANDAMOS CON TODO" || n === "ANDAMOS_CON_TODO" || n === "ANDAMOS_CON_TODO ") return "ANDAMOS_CON_TODO ";
+  if (n === "LOS BRONCOS" || n === "BRONCOS") return "BRONCOS";
+  if (n === "LOS BRAVOS DEL FRIO" || n === "BRAVOS DEL FRIO" || n === "LOS_BRAVOS" || n === "BRAVOS DEL FRÍO" || n === "LOS BRAVOS DEL FRÍO") return "LOS_BRAVOS";
+  if (n === "LOS FUERTES DEL FRIO" || n === "FUERTES DEL FRIO" || n === "LOS_FUERTES" || n === "FUERTES DEL FRÍO" || n === "LOS FUERTES DEL FRÍO") return "LOS_FUERTES";
+  if (n === "REYES DE LA MEZCLA" || n === "REYES_MEZCLA") return "REYES_MEZCLA";
+  if (n === "MUNICH") return "MUNICH";
+  if (n === "NAHUALES" || n === "LOS NAHUALES") return "NAHUALES";
+  return n;
+};
+
 // Normalizador y calculador de Autonomy Score
 const obtenerScoreNormalizado = (fila: any): { score: number; noEvaluado: boolean } | null => {
   if (!fila) return null;
@@ -115,7 +133,7 @@ const obtenerScoreNormalizado = (fila: any): { score: number; noEvaluado: boolea
   }
   
   // Recalculo si no está el score precalculado
-  if (val === null || isNaN(val)) {
+  if (val === null || isNaN(val) || (val === 0 && hasEvaluation)) {
     const calculateAverage = (cols: string[]) => {
       const values = cols.map(c => {
         const cell = fila[c];
@@ -185,20 +203,66 @@ export function TeamHistoryDialog({
         const eaMap: Record<string, string> = {};
         if (catalogSnap.exists()) {
           const catData = catalogSnap.data();
-          const eac = catData.eac || [];
-          const eabf = catData.eabf || [];
+          const estructuraNuevaRows = catData.estructura_nueva || [];
+          const baseRows = catData.base_equipos || [];
+          const eacRows = catData.eac || [];
+          const eabfRows = catData.eabf || [];
 
-          eac.forEach((row: any) => {
-            if (row.SHARP) {
-              eaMap[String(row.SHARP).trim()] = String(row["Nombre del Equipo"] || "").trim().toUpperCase();
+          const idTranslations: Record<string, string> = {
+            "32173442": "32043900", // VICTOR MANUEL HURTADO ORTIZ
+            "32145333": "32044316", // SERGIO TRUJILLO GUARDADO
+            "32043835": "32145333", // FLAVIO CESAR DIAZ MALDONADO
+            "32043900": "32045469", // ANDRES SARABIA RODARTE
+            "32043739": "32043301", // EDUARDO NERI DE LUNA
+            "32043861": "32043835", // FILIBERTO PINEDO RODRIGUEZ
+            "32044301": "32043861", // VICTOR MANUEL DE JESUS SIMENTAL
+            "32044319": "32045769", // MARCO ANTONIO MENCHACA PEREZ / LAZARO QUEZADA OJEDA
+          };
+
+          // 1. Estructura nueva (prioridad más alta)
+          estructuraNuevaRows.forEach((row: any) => {
+            const id = row.SHARP ? String(row.SHARP).trim() : null;
+            if (id) {
+              const rawTeam = String(row["Nombre del Equipo"] || row["ESTRUCTURA DE EQUIPOS"] || "").trim();
+              const match = rawTeam.match(/^\d+\.\s*(.*)$/);
+              const cleanTeam = match ? match[1].trim() : rawTeam;
+
+              eaMap[id] = cleanTeam;
+
+              const translatedId = idTranslations[id];
+              if (translatedId) {
+                eaMap[translatedId] = cleanTeam;
+              }
             }
           });
 
-          let lastEquipo = "";
-          eabf.forEach((row: any) => {
-            if (row["NUEVO EQUIPO "]) lastEquipo = String(row["NUEVO EQUIPO "]).trim().toUpperCase();
+          // 2. Fallback baseRows
+          baseRows.forEach((row: any) => {
+            const id = row["ID Sharp"] ? String(row["ID Sharp"]).trim() : null;
+            if (id && !eaMap[id]) {
+              eaMap[id] = String(row["Nombre del equipo "] || "").trim();
+            }
+          });
+
+          // 3. Fallback eac
+          eacRows.forEach((row: any) => {
             if (row.SHARP) {
-              eaMap[String(row.SHARP).trim()] = lastEquipo;
+              const sharpStr = String(row.SHARP).trim();
+              if (!eaMap[sharpStr]) {
+                eaMap[sharpStr] = String(row["Nombre del Equipo"] || "").trim();
+              }
+            }
+          });
+
+          // 4. Fallback eabf
+          let lastEquipo = "";
+          eabfRows.forEach((row: any) => {
+            if (row["NUEVO EQUIPO "]) lastEquipo = String(row["NUEVO EQUIPO "]).trim();
+            if (row.SHARP) {
+              const sharpStr = String(row.SHARP).trim();
+              if (!eaMap[sharpStr]) {
+                eaMap[sharpStr] = lastEquipo;
+              }
             }
           });
         }
@@ -220,12 +284,35 @@ export function TeamHistoryDialog({
             const colEmp = Object.keys(row).find(k => k.toLowerCase().trim() === "employee");
             const empVal = colEmp ? String(row[colEmp]).trim() : "";
             const match = empVal.match(/\[(\d+)\]/);
+            let id = "";
             if (match) {
-              const id = match[1].trim();
+              id = match[1].trim();
+              
+              // Corrección de ID de Lazaro Quezada para evitar colisión con Eduardo Neri
+              const opNameCol = Object.keys(row).find(k => k.toLowerCase().trim() === "employee");
+              const opName = opNameCol ? String(row[opNameCol]).trim() : "";
+              if (id === "32043739" && opName.toUpperCase().includes("LAZARO")) {
+                id = "32045769";
+              }
+
               opEquipo = eaMap[id] || "SIN EQUIPO";
             }
 
-            if (opEquipo.toUpperCase() === teamName.toUpperCase()) {
+            // Fallback de mantenimiento
+            let area = row["Area"] || "Cold Block";
+            if (row["Department"] === "Brewing" && row["Equipment"] === "Brewing Maintenance") {
+              area = "Brewing Maintenance";
+            }
+            if (area === "Brewing Maintenance") {
+              if (opEquipo === "SIN EQUIPO" || !opEquipo) {
+                opEquipo = "NAHUALES";
+              }
+            }
+
+            const normOpEquipo = normalizarNombreEquipo(opEquipo);
+            const normTargetTeam = normalizarNombreEquipo(teamName);
+
+            if (normOpEquipo === normTargetTeam && normTargetTeam !== "") {
               const res = obtenerScoreNormalizado(row);
               if (res !== null) {
                 const colFecha = Object.keys(row).find(k => k.toLowerCase().includes("assessment") || (k.toLowerCase().includes("fecha") && !k.toLowerCase().includes("compromiso")));
@@ -240,7 +327,7 @@ export function TeamHistoryDialog({
                 }
 
                 evPoints.push({
-                  id: match ? match[1].trim() : String(Math.random()),
+                  id: id || String(Math.random()),
                   score: res.score,
                   mesKey: mesKey,
                   noEvaluado: res.noEvaluado
