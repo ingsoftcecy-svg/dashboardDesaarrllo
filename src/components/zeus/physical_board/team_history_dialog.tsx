@@ -481,18 +481,28 @@ export function TeamHistoryDialog({
             <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Progreso de Fase (BPRE)</div>
             <div className="text-base font-extrabold text-[#1a4491] mt-0.5">
               {isMaxPhase ? (
-                <span>El equipo se encuentra en la Fase Máxima ({faseActual})</span>
+                <span>El equipo se encuentra en la Fase Máxima (Fase {faseActualNum})</span>
               ) : (
-                <span>Evaluando paso de {faseActual} a Fase {siguienteFaseNum}</span>
+                <span>Evaluando paso de Fase {faseActualNum} a Fase {siguienteFaseNum}</span>
               )}
             </div>
           </div>
-          <div className="bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 text-center shrink-0">
-            <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Meta 2026</div>
-            <div className="text-sm font-black text-[#1a4491]">Fase {fase2026 || 4}</div>
-            {fechaCompromiso && fechaCompromiso !== "No definida" && (
-              <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">{fechaCompromiso}</div>
-            )}
+          <div className="flex gap-3 shrink-0">
+            {/* Badge de Fase Actual */}
+            <div className="bg-emerald-50 text-emerald-800 border border-emerald-250 px-3.5 py-1.5 rounded-xl text-center shadow-sm min-w-[90px]">
+              <div className="text-[8px] font-black text-emerald-600 uppercase tracking-widest leading-none">Fase Actual</div>
+              <div className="text-sm font-black mt-1 leading-none">FASE {faseActualNum}</div>
+              <div className="text-[7.5px] font-bold text-emerald-500 uppercase tracking-tight mt-1 leading-none">(Pilar Mínimo)</div>
+            </div>
+
+            {/* Badge de Meta */}
+            <div className="bg-blue-50 text-[#1a4491] border border-blue-200 px-3.5 py-1.5 rounded-xl text-center shadow-sm min-w-[90px]">
+              <div className="text-[8px] font-black text-blue-600 uppercase tracking-widest leading-none">Meta 2026</div>
+              <div className="text-sm font-black mt-1 leading-none">FASE {fase2026 || 4}</div>
+              {fechaCompromiso && fechaCompromiso !== "No definida" && (
+                <div className="text-[8px] font-bold text-slate-500 uppercase tracking-wider mt-1 leading-none">{fechaCompromiso}</div>
+              )}
+            </div>
           </div>
         </div>
 
