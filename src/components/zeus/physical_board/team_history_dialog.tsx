@@ -474,7 +474,7 @@ export function TeamHistoryDialog({
     };
 
     return (
-      <div className="space-y-4">
+      <div className="flex-1 overflow-y-auto pr-1 mt-4 custom-scrollbar space-y-4">
         {/* Encabezado de la fase */}
         <div className="bg-slate-50/80 rounded-xl border border-slate-200/50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -506,7 +506,7 @@ export function TeamHistoryDialog({
         </div>
 
         {/* Lista de factores */}
-        <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+        <div className="space-y-2">
           {factorsList.map(f => {
             const rawVal = (autonomyFactors as any)[f.key];
             const isNA = esMantenimiento && (f.key === "ato" || f.key === "quas" || f.key === "multihab");
@@ -568,9 +568,9 @@ export function TeamHistoryDialog({
   };
 
   return (
-    <div className="flex flex-col space-y-6 text-slate-800">
+    <div className="flex flex-col text-slate-800 h-full max-h-[calc(90vh-48px)] overflow-hidden">
       {/* 👥 CABECERA DEL MODAL */}
-      <div className="border-b border-slate-100 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="border-b border-slate-100 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-slate-400 text-xs font-black uppercase tracking-widest">
             <Users className="h-3.5 w-3.5 text-[#1a4491]" />
@@ -626,7 +626,7 @@ export function TeamHistoryDialog({
       ) : (
         <>
           {/* 📊 TABS DE NAVEGACIÓN */}
-          <div className="flex border-b border-slate-100 pb-1 gap-4 text-xs font-black uppercase tracking-wider">
+          <div className="flex border-b border-slate-100 pb-1 gap-4 text-xs font-black uppercase tracking-wider mb-4">
             <button
               onClick={() => setActiveSubTab("history")}
               className={cn(
@@ -661,7 +661,7 @@ export function TeamHistoryDialog({
                 <p className="text-[11px] text-slate-400 max-w-xs font-medium">No se encontraron registros históricos para los integrantes de este equipo.</p>
               </div>
             ) : (
-              <div className="space-y-6">
+              <div className="flex-1 overflow-y-auto pr-1 mt-4 custom-scrollbar space-y-6">
                 {/* 📊 GRÁFICO HISTÓRICO MENSUAL */}
                 <div className="bg-slate-50/60 rounded-2xl border border-slate-200/50 p-4">
                   <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-1.5">
@@ -713,7 +713,7 @@ export function TeamHistoryDialog({
                     <span>Integrantes del Equipo y Desempeño Actual</span>
                   </h3>
 
-                  <div className="rounded-xl border border-slate-200/60 overflow-hidden max-h-60 overflow-y-auto bg-white">
+                  <div className="rounded-xl border border-slate-200/60 overflow-hidden bg-white">
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
                         <tr className="bg-slate-100 text-[10px] font-black uppercase text-slate-500 tracking-wider sticky top-0">
