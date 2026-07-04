@@ -223,6 +223,11 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [] }:
       </div>
 
       <div className="flex shrink-0 flex-col items-end justify-center ml-2">
+        {team.faseActual && (
+          <span className="text-[8.5px] font-black uppercase text-slate-400 tracking-wider mb-1.5 leading-none">
+            {team.faseActual.toUpperCase().includes("F") ? `FASE ${team.faseActual.replace(/\D/g, "")}` : `FASE ${team.faseActual}`}
+          </span>
+        )}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
