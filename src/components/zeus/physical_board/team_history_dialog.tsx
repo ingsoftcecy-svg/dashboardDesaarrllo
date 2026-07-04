@@ -106,11 +106,11 @@ const normalizarNombreEquipo = (name: string): string => {
 // Normalizador y calculador de Autonomy Score
 const obtenerScoreNormalizado = (fila: any): { score: number; noEvaluado: boolean } | null => {
   if (!fila) return null;
-  
+
   const basicCols = ["Safety", "Quality", "Environment", "Management", "People", "Maintenance", "Logistics", "Operation"];
   const intermediateCols = ["Safety_1", "Quality_1", "Environment_1", "Management_1", "People_1", "Maintenance_1", "Logistics_1", "Operation_1"];
   const advancedCols = ["Safety_2", "Quality_2", "Environment_2", "Management_2", "People_2", "Maintenance_2", "Logistics_2", "Operation_2"];
-  
+
   const hasEvaluation = [...basicCols, ...intermediateCols, ...advancedCols].some(c => {
     const cell = fila[c];
     return cell !== undefined && cell !== null && cell !== "-" && String(cell).trim() !== "";
@@ -120,18 +120,18 @@ const obtenerScoreNormalizado = (fila: any): { score: number; noEvaluado: boolea
     return { score: 0, noEvaluado: true };
   }
 
-  const colScore = Object.keys(fila).find(k => 
-    k.toLowerCase().includes("autonomy score") || 
-    k.toLowerCase().includes("excelencia") || 
-    k.toLowerCase().includes("autono") || 
+  const colScore = Object.keys(fila).find(k =>
+    k.toLowerCase().includes("autonomy score") ||
+    k.toLowerCase().includes("excelencia") ||
+    k.toLowerCase().includes("autono") ||
     k.toLowerCase().trim() === "autonomía"
   );
-  
+
   let val: number | null = null;
   if (colScore) {
     val = parseFloat(fila[colScore]);
   }
-  
+
   // Recalculo si no está el score precalculado
   if (val === null || isNaN(val) || (val === 0 && hasEvaluation)) {
     const calculateAverage = (cols: string[]) => {
@@ -156,7 +156,7 @@ const obtenerScoreNormalizado = (fila: any): { score: number; noEvaluado: boolea
 
   if (val === null || isNaN(val)) return null;
   const finalScore = val <= 1.0 ? parseFloat((val * 100).toFixed(2)) : parseFloat(val.toFixed(2));
-  
+
   const noEvaluado = !hasEvaluation || finalScore === 0;
   return { score: finalScore, noEvaluado };
 };
@@ -176,11 +176,11 @@ const obtenerNivelDeScore = (score: number) => {
   return "Nivel 1";
 };
 
-export function TeamHistoryDialog({ 
-  teamName, 
-  members, 
-  autonomyFactors, 
-  faseActual, 
+export function TeamHistoryDialog({
+  teamName,
+  members,
+  autonomyFactors,
+  faseActual,
   fase2026,
   fechaCompromiso
 }: TeamHistoryDialogProps) {
@@ -287,7 +287,7 @@ export function TeamHistoryDialog({
             let id = "";
             if (match) {
               id = match[1].trim();
-              
+
               // Corrección de ID de Lazaro Quezada para evitar colisión con Eduardo Neri
               const opNameCol = Object.keys(row).find(k => k.toLowerCase().trim() === "employee");
               const opName = opNameCol ? String(row[opNameCol]).trim() : "";
@@ -345,7 +345,7 @@ export function TeamHistoryDialog({
 
         const puntosGrafico: MesProgreso[] = uniqueMeses.map(mesKey => {
           const activeMembers = new Map<string, EvaluacionMiembro>();
-          
+
           evPoints.forEach(pt => {
             if (pt.mesKey <= mesKey) {
               const existing = activeMembers.get(pt.id);
@@ -354,7 +354,7 @@ export function TeamHistoryDialog({
               }
             }
           });
-          
+
           let sum = 0;
           let count = 0;
           activeMembers.forEach(pt => {
@@ -363,7 +363,7 @@ export function TeamHistoryDialog({
               count++;
             }
           });
-          
+
           return {
             name: formatearMesAnio(mesKey),
             score: count > 0 ? parseFloat((sum / count).toFixed(2)) : 0,
@@ -492,7 +492,6 @@ export function TeamHistoryDialog({
             <div className="bg-emerald-50 text-emerald-800 border border-emerald-250 px-3.5 py-1.5 rounded-xl text-center shadow-sm min-w-[90px]">
               <div className="text-[8px] font-black text-emerald-600 uppercase tracking-widest leading-none">Fase Actual</div>
               <div className="text-sm font-black mt-1 leading-none">FASE {faseActualNum}</div>
-              <div className="text-[7.5px] font-bold text-emerald-500 uppercase tracking-tight mt-1 leading-none">(Pilar Mínimo)</div>
             </div>
 
             {/* Badge de Meta */}
@@ -516,12 +515,12 @@ export function TeamHistoryDialog({
             const cumple = valorActual >= siguienteFaseNum;
 
             return (
-              <div 
-                key={f.key} 
+              <div
+                key={f.key}
                 className={cn(
                   "p-3 rounded-xl border flex items-start gap-3 transition-colors",
                   isNA ? "bg-slate-50/50 border-slate-200/40 text-slate-400" :
-                  cumple ? "bg-emerald-50/30 border-emerald-100 text-slate-700" : "bg-rose-50/20 border-rose-100/60 text-slate-700"
+                    cumple ? "bg-emerald-50/30 border-emerald-100 text-slate-700" : "bg-rose-50/20 border-rose-100/60 text-slate-700"
                 )}
               >
                 <div className="shrink-0 mt-0.5">
@@ -628,7 +627,7 @@ export function TeamHistoryDialog({
         <>
           {/* 📊 TABS DE NAVEGACIÓN */}
           <div className="flex border-b border-slate-100 pb-1 gap-4 text-xs font-black uppercase tracking-wider">
-            <button 
+            <button
               onClick={() => setActiveSubTab("history")}
               className={cn(
                 "pb-2 border-b-2 px-1 transition-colors focus:outline-none",
@@ -638,7 +637,7 @@ export function TeamHistoryDialog({
               Historial e Integrantes
             </button>
             {autonomyFactors && (
-              <button 
+              <button
                 onClick={() => setActiveSubTab("requirements")}
                 className={cn(
                   "pb-2 border-b-2 px-1 transition-colors focus:outline-none flex items-center gap-1.5",
@@ -669,7 +668,7 @@ export function TeamHistoryDialog({
                     <TrendingUp className="h-3.5 w-3.5 text-[#1a4491]" />
                     <span>Autonomía Promedio del Equipo</span>
                   </h3>
-                  
+
                   <div className="h-[200px] w-full text-[10px] font-black">
                     {datosGrafico.length === 1 ? (
                       <div className="h-full w-full flex flex-col items-center justify-center space-y-1">
@@ -683,7 +682,7 @@ export function TeamHistoryDialog({
                           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                           <XAxis dataKey="name" tick={{ fontSize: 9, fontWeight: "900", fill: "#475569" }} />
                           <YAxis domain={[0, 100]} tickCount={5} tickFormatter={v => `${v}%`} tick={{ fontSize: 9, fontWeight: "900", fill: "#475569" }} />
-                          <Tooltip 
+                          <Tooltip
                             contentStyle={{
                               backgroundColor: "#ffffff",
                               borderColor: "#cbd5e1",
@@ -693,13 +692,13 @@ export function TeamHistoryDialog({
                             }}
                             formatter={(value: any) => [`${value}%`, "Autonomía"]}
                           />
-                          <Line 
-                            type="monotone" 
-                            dataKey="score" 
-                            stroke="#1a4491" 
-                            strokeWidth={3} 
+                          <Line
+                            type="monotone"
+                            dataKey="score"
+                            stroke="#1a4491"
+                            strokeWidth={3}
                             dot={{ r: 4, stroke: "#1a4491", strokeWidth: 1, fill: "#ffffff" }}
-                            activeDot={{ r: 6 }} 
+                            activeDot={{ r: 6 }}
                           />
                         </LineChart>
                       </ResponsiveContainer>
@@ -752,10 +751,10 @@ export function TeamHistoryDialog({
                                     </button>
                                   </DialogTrigger>
                                   <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
-                                    <OperatorHistoryDialog 
-                                      operatorName={member.name} 
-                                      operatorId={member.id} 
-                                      operatorPuesto={member.puesto} 
+                                    <OperatorHistoryDialog
+                                      operatorName={member.name}
+                                      operatorId={member.id}
+                                      operatorPuesto={member.puesto}
                                     />
                                   </DialogContent>
                                 </Dialog>

@@ -394,9 +394,20 @@ export function useExcelData() {
 
           if (areaKey) {
             const getVal = (keyword: string) => {
-              const colName = Object.keys(row).find(key => 
-                key.toLowerCase().includes(keyword.toLowerCase())
-              );
+              const normKeyword = keyword.toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+
+              const colName = Object.keys(row).find(key => {
+                const keyLower = key.toLowerCase();
+                if (keyLower.includes("fecha") || keyLower.includes("compromiso")) {
+                  return false;
+                }
+                const normKey = keyLower
+                  .normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '');
+                return normKey.includes(normKeyword);
+              });
               if (!colName) return 0;
               let val = row[colName];
               if (typeof val === "string") {
@@ -651,9 +662,20 @@ export function useExcelData() {
 
               const getVal = (row: any, keyword: string) => {
                 if (!row) return 0;
-                const colName = Object.keys(row).find(key => 
-                  key.toLowerCase().includes(keyword.toLowerCase())
-                );
+                const normKeyword = keyword.toLowerCase()
+                  .normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '');
+
+                const colName = Object.keys(row).find(key => {
+                  const keyLower = key.toLowerCase();
+                  if (keyLower.includes("fecha") || keyLower.includes("compromiso")) {
+                    return false;
+                  }
+                  const normKey = keyLower
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '');
+                  return normKey.includes(normKeyword);
+                });
                 if (!colName) return 0;
                 let val = row[colName];
                 if (typeof val === "string") {

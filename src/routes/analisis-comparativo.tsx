@@ -116,6 +116,10 @@ const obtenerValorPilarBpre = (fila: any, clavePilar: string): number | null => 
   if (!fila || typeof fila !== 'object') return null;
 
   const colBpre = Object.keys(fila).find(k => {
+    const kLower = k.toLowerCase();
+    if (kLower.includes("fecha") || kLower.includes("compromiso")) {
+      return false;
+    }
     const kNorm = normalizar(k);
     const alias = clavePilar === 'dinamica' ? 'dinamica'
                 : clavePilar === 'liderazgo' ? 'liderazgo'
