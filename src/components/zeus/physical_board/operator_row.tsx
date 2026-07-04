@@ -240,7 +240,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                   {operator.equipoAutonomo}
                 </button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
+              <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-y-auto max-h-[90vh]">
                 <TeamHistoryDialog 
                   teamName={operator.equipoAutonomo} 
                   members={full_team_members} 
