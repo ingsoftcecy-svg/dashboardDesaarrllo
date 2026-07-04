@@ -68,7 +68,7 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
         animate={{ opacity: 1, y: 0 }}
         className="w-full rounded-xl border border-white/40 bg-white/60 backdrop-blur-md shadow-xl overflow-x-auto custom-scrollbar"
       >
-        <table 
+        <table
           className="w-full table-fixed border-collapse text-left text-sm"
           style={{ minWidth: show_ato ? "1696px" : "1568px" }}
         >
@@ -77,7 +77,7 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-16 text-center z-30">#</th>
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-64 z-30">OPERADOR</th>
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-40 text-center z-30">EQUIPO AUTONOMO</th>
-              <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-48 text-center z-30">CAPABILITIES</th>
+              <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-48 text-center z-30">HABILIDADES</th>
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-48 z-30">MULTI-HABILIDAD</th>
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-28 text-center z-30">CHAMPIONS</th>
               {show_ato && <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-32 text-center z-30">ATO</th>}
