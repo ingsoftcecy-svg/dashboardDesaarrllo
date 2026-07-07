@@ -4,6 +4,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { db, auth } from '@/lib/firebase';
 import { useAuth } from '@/lib/auth';
 import { registrarEvento } from '@/lib/auditLog';
+import { cn } from '@/lib/utils';
 
 import { Star, Check, LogOut, LayoutDashboard, CloudUpload, Terminal } from "lucide-react";
 import { doc, setDoc, getDoc, collection, getDocs, query, orderBy, writeBatch } from 'firebase/firestore';
@@ -104,6 +105,31 @@ const obtenerClaveBpre = (fila: any): string => {
   return `${nombreVal}_${areaVal}_${fechaVal}`;
 };
 
+const getRowValue = (row: any, keywords: string[]): string => {
+  if (!row) return "";
+  const normalizedKeywords = keywords.map(kw => 
+    kw.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  );
+  
+  const foundKey = Object.keys(row).find(key => {
+    const normKey = key.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    return normalizedKeywords.some(kw => normKey === kw || normKey.includes(kw));
+  });
+  
+  return foundKey ? String(row[foundKey]).trim() : "";
+};
+
+const traducirArea = (area: any): string => {
+  if (area === null || area === undefined) return "Sin Departamento";
+  const str = String(area).trim();
+  if (!str) return "Sin Departamento";
+  const normalized = str.toLowerCase();
+  if (normalized === "warm block" || normalized.includes("cocimiento")) return "Cocimientos";
+  if (normalized === "cold block" || normalized.includes("frio")) return "Bloque Frío";
+  if (normalized === "brewing maintenance" || normalized.includes("mantenimiento")) return "Mantenimiento";
+  return str;
+};
+
 function ComprobandoAuth() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#f1f5f9] p-4">
@@ -126,6 +152,417 @@ function CargarDatos() {
   const [migrando, setMigrando] = useState(false);
   const [archivoDatos, setArchivoDatos] = useState<File | null>(null);
   const [archivoBpre, setArchivoBpre] = useState<File | null>(null);
+
+  // Estados para panel de Capacitación y Cursos
+  const [seccionActiva, setSeccionActiva] = useState<'autonomia' | 'cursos'>('autonomia');
+  const [activeIds, setActiveIds] = useState<Set<string>>(new Set());
+  const [archivoCursos, setArchivoCursos] = useState<File | null>(null);
+  const [textoCursosPegado, setTextoCursosPegado] = useState("");
+  const [cargandoCursos, setCargandoCursos] = useState(false);
+  const [cursosResumen, setCursosResumen] = useState<Record<string, { t: number; a: number; e: number; p: number }>>({});
+  const [selectedDepto, setSelectedDepto] = useState("Todos");
+  const [selectedEquipo, setSelectedEquipo] = useState("Todos");
+
+  const [operators, setOperators] = useState<any[]>([]);
+  const [selectedOperator, setSelectedOperator] = useState<any | null>(null);
+  const [operatorCourses, setOperatorCourses] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [newCourseName, setNewCourseName] = useState("");
+  const [newCourseModule, setNewCourseModule] = useState("");
+  const [newCourseStatus, setNewCourseStatus] = useState("Aprobado");
+  const [savingGrid, setSavingGrid] = useState(false);
+
+  const getAlternativeIds = (id: string): string[] => {
+    const translations: Record<string, string[]> = {
+      "32173442": ["32043900"],
+      "32043900": ["32173442", "32045469"],
+      "32145333": ["32044316"],
+      "32044316": ["32145333"],
+      "32043835": ["32145333"],
+      "32045469": ["32043900"],
+      "32043301": ["32043739"],
+      "32043739": ["32043301", "32045769"],
+      "32043861": ["32043835"],
+      "32044301": ["32043861"],
+      "32045769": ["32044319", "32043739"],
+      "32044319": ["32045769"],
+    };
+    const list = translations[id] || [];
+    return [id, ...list];
+  };
+
+  useEffect(() => {
+    if (!usuario) return;
+    const loadActiveIds = async () => {
+      const ids = new Set<string>();
+      const knownIds = [
+        "32173442", "32043900", "32145333", "32044316", "32043835", "32045469", 
+        "32043301", "32043739", "32043861", "32044301", "32045769", "32044319",
+        "32197863", "32244174"
+      ];
+      knownIds.forEach(id => ids.add(id));
+
+      try {
+        const catalogSnap = await getDoc(doc(db, "config_dashboard", "catalogos_fijos"));
+        if (catalogSnap.exists()) {
+          const catData = catalogSnap.data() || {};
+          const estData = catData.estructura_nueva || [];
+          estData.forEach((row: any) => {
+            if (row.SHARP) ids.add(String(row.SHARP).trim());
+          });
+        }
+      } catch (err) {
+        console.error("Error loading active IDs:", err);
+      }
+      setActiveIds(ids);
+    };
+    loadActiveIds();
+  }, [usuario]);
+
+  const alinearPrerequisitosBloqueFrio = async () => {
+    try {
+      setCargando(true);
+      
+      // 1. Cargar eabf.json
+      const resEabf = await fetch("/eabf.json");
+      if (!resEabf.ok) throw new Error("No se pudo cargar eabf.json");
+      const eabf = await resEabf.json();
+      if (!Array.isArray(eabf)) throw new Error("eabf.json no es un array válido");
+
+      // 2. Cargar eac.json
+      let eac: any[] = [];
+      try {
+        const resEac = await fetch("/eac.json");
+        if (resEac.ok) eac = await resEac.json();
+      } catch (e) { console.error(e); }
+
+      // 3. Cargar datos.json (semanal de firestore o local)
+      let skap: any[] = [];
+      try {
+        const q = query(collection(db, "historicos_excel"));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          const sortedDocs = [...snap.docs].sort((a, b) => b.id.localeCompare(a.id));
+          skap = sortedDocs[0].data().datos_skap || [];
+        } else {
+          const resDatos = await fetch("/datos.json");
+          if (resDatos.ok) skap = await resDatos.json();
+        }
+      } catch (e) { console.error(e); }
+
+      // Recopilar todos los IDs de operadores del dashboard
+      const allOpsMap = new Map<string, { id: string, name: string, isEabf: boolean }>();
+
+      // Agregar EABF
+      eabf.forEach(op => {
+        const id = String(op.SHARP).trim();
+        const name = String(op.NOMBRE).trim();
+        if (id && id !== "undefined" && id !== "NaN") {
+          allOpsMap.set(id, { id, name, isEabf: true });
+        }
+      });
+
+      // Agregar EAC
+      if (Array.isArray(eac)) {
+        eac.forEach(op => {
+          const id = String(op.SHARP).trim();
+          const name = String(op.Integrante || op.NOMBRE || "Desconocido").trim();
+          if (id && id !== "undefined" && id !== "NaN" && !allOpsMap.has(id)) {
+            allOpsMap.set(id, { id, name, isEabf: false });
+          }
+        });
+      }
+
+      // Agregar SKAP semanal
+      if (Array.isArray(skap)) {
+        skap.forEach(row => {
+          const empMatch = row["Employee"] ? String(row["Employee"]).match(/\[(\d+)\]\s+(.*)/) : null;
+          let id = empMatch ? empMatch[1] : "";
+          let name = empMatch ? empMatch[2] : row["Employee"] || "";
+          
+          if (!id) {
+            const sharpVal = getRowValue(row, ["sharp", "id", "global"]);
+            if (sharpVal) {
+              id = sharpVal;
+              name = getRowValue(row, ["integrante", "nombre", "employee", "empleado"]) || "Desconocido";
+            }
+          }
+          
+          if (id && id !== "undefined" && id !== "NaN" && !allOpsMap.has(id)) {
+            allOpsMap.set(id, { id, name, isEabf: false });
+          }
+        });
+      }
+
+      const todoMenosMangyverNames = [
+        "SOLORZANO ISAI",
+        "ANA PAOLA PERERA MARIN",
+        "ARIADNNE MAGDALENA TORRES RODRIGUEZ",
+        "CARLOS EDUARDO ORNEDO ESQUEDA",
+        "SHERLYN GARCIA PEREZ",
+        "OSCAR RODRIGUEZ CODALLOS",
+        "EDGAR RENE DIAZ SANCHEZ",
+        "GUILLERMO GERARDO GONZALEZ ULLOA",
+        "LUIS FERNANDO ZAPATA CARDONA",
+        "RICARDO ESPARZA DOMINGUEZ",
+        "MIGUEL ANGEL NAVARRO ESCOBEDO",
+        "JOSE LEANDRO MARTINEZ SANDOVAL",
+        "JESUS EDUARDO BRICEÑO MONTELONGO",
+        "VICTOR HUGO ASCENCIO LEYVA"
+      ];
+
+      const PRE_REQUISITES_LIST = ["WVD", "ACADIA", "CORREO", "MANGYVER", "SAP", "CORE", "IAL", "ETO", "SPLAN", "SUITE 360"];
+      
+      let alignedEabfCount = 0;
+      let alignedOthersCount = 0;
+
+      for (const [id, op] of allOpsMap.entries()) {
+        const prereqs: Record<string, boolean> = {};
+
+        if (op.isEabf) {
+          const name = op.name;
+          const isTodoMenosMangyver = todoMenosMangyverNames.some(n => name.toUpperCase().includes(n.toUpperCase()));
+          const isRodrigo = name.toUpperCase().includes("RODRIGO REGALADO");
+
+          PRE_REQUISITES_LIST.forEach(req => {
+            if (isRodrigo) {
+              prereqs[req] = false;
+            } else if (isTodoMenosMangyver) {
+              prereqs[req] = req !== "MANGYVER";
+            } else {
+              // TODO MENOS WVD, CORREO Y SAP
+              prereqs[req] = !(req === "WVD" || req === "CORREO" || req === "SAP");
+            }
+          });
+          alignedEabfCount++;
+        } else {
+          // Asignar NADA (todo false) a los que no pertenecen al Bloque Frío (EABF)
+          PRE_REQUISITES_LIST.forEach(req => {
+            prereqs[req] = false;
+          });
+          alignedOthersCount++;
+        }
+
+        await setDoc(doc(db, "prerequisitos", id), prereqs);
+      }
+
+      if (usuario) {
+        await registrarEvento(
+          usuario.uid,
+          usuario.email || '',
+          usuario.rol || 'operador',
+          'CARGA_DATOS',
+          `Alineación masiva de pre-requisitos: ${alignedEabfCount} de Bloque Frío y ${alignedOthersCount} externos asignados con NADA.`
+        );
+      }
+
+      alert(`¡Éxito! Se alinearon los pre-requisitos de ${alignedEabfCount} operadores de Bloque Frío y se asignó NADA a ${alignedOthersCount} operadores de otras áreas.`);
+    } catch (err: any) {
+      console.error(err);
+      alert(`Error al alinear pre-requisitos: ${err.message}`);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  useEffect(() => {
+    if (seccionActiva === 'cursos' && usuario) {
+      const loadOperators = async () => {
+        try {
+          // Cargar resumen de cursos
+          let summary: Record<string, { t: number; a: number; e: number; p: number }> = {};
+          try {
+            const sumRef = doc(db, "config_dashboard", "cursos_resumen");
+            const sumSnap = await getDoc(sumRef);
+            if (sumSnap.exists() && sumSnap.data().summary) {
+              summary = sumSnap.data().summary;
+            } else {
+              const res = await fetch("/cursos_resumen.json");
+              summary = await res.json();
+            }
+            setCursosResumen(summary);
+          } catch (err) {
+            console.error("Error loading courses summary for list:", err);
+          }
+
+          // Cargar catálogos fijos (eac, eabf, base_equipos) con fallback local
+          const eaMap: Record<string, string> = {};
+          let eacList: any[] = [];
+          let eabfList: any[] = [];
+          
+          try {
+            const catalogSnap = await getDoc(doc(db, "config_dashboard", "catalogos_fijos"));
+            const catData = catalogSnap.exists() ? catalogSnap.data() : {};
+            
+            // Cargar EAC con fallback
+            eacList = catData.eac || [];
+            if (!Array.isArray(eacList) || eacList.length === 0) {
+              eacList = [];
+              try {
+                const res = await fetch("/eac.json");
+                if (res.ok) {
+                  const data = await res.json();
+                  if (Array.isArray(data)) eacList = data;
+                }
+              } catch (e) {
+                console.error("Local fallback for eac failed:", e);
+              }
+            }
+            
+            // Cargar EABF con fallback
+            eabfList = catData.eabf || [];
+            if (!Array.isArray(eabfList) || eabfList.length === 0) {
+              eabfList = [];
+              try {
+                const res = await fetch("/eabf.json");
+                if (res.ok) {
+                  const data = await res.json();
+                  if (Array.isArray(data)) eabfList = data;
+                }
+              } catch (e) {
+                console.error("Local fallback for eabf failed:", e);
+              }
+            }
+            
+            // Cargar Base Equipos con fallback
+            let baseEquipos = catData.base_equipos || [];
+            if (!Array.isArray(baseEquipos) || baseEquipos.length === 0) {
+              baseEquipos = [];
+              try {
+                const res = await fetch("/base.json");
+                if (res.ok) {
+                  const data = await res.json();
+                  if (Array.isArray(data)) baseEquipos = data;
+                }
+              } catch (e) {
+                console.error("Local fallback for base_equipos failed:", e);
+              }
+            }
+
+            if (Array.isArray(baseEquipos)) {
+              baseEquipos.forEach((row: any) => {
+                const sharp = row["ID Sharp"] || row["SHARP"] || row["sharp"];
+                const equipo = row["Nombre del equipo "] || row["Nombre del equipo"] || row["Equipo"] || "Sin Equipo";
+                if (sharp) {
+                  eaMap[String(sharp).trim()] = String(equipo).trim();
+                }
+              });
+            }
+          } catch (err) {
+            console.error("Error loading fixed catalogs for grid mapping:", err);
+          }
+
+          const q = query(collection(db, "historicos_excel"));
+          const snap = await getDocs(q);
+          
+          let skap: any[] = [];
+          if (!snap.empty) {
+            const sortedDocs = [...snap.docs].sort((a, b) => b.id.localeCompare(a.id));
+            const docData = sortedDocs[0].data();
+            skap = docData.datos_skap || [];
+          } else {
+            try {
+              const res = await fetch("/datos.json");
+              if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data)) skap = data;
+              }
+            } catch (e) {
+              console.error("Local fallback for datos.json failed:", e);
+            }
+          }
+
+          // Combinar todas las fuentes de operadores
+          const combinedRows: { row: any, sourceArea: string }[] = [];
+          
+          if (Array.isArray(skap)) {
+            skap.forEach((row: any) => {
+              combinedRows.push({
+                row,
+                sourceArea: getRowValue(row, ["area", "departamento", "seccion"])
+              });
+            });
+          }
+
+          if (Array.isArray(eacList)) {
+            eacList.forEach((row: any) => {
+              combinedRows.push({
+                row,
+                sourceArea: "Warm Block"
+              });
+            });
+          }
+
+          if (Array.isArray(eabfList)) {
+            eabfList.forEach((row: any) => {
+              combinedRows.push({
+                row,
+                sourceArea: "Cold Block"
+              });
+            });
+          }
+
+          const parsedOpsMap = new Map<string, any>();
+          combinedRows.forEach(({ row, sourceArea }) => {
+            const empMatch = row["Employee"] ? String(row["Employee"]).match(/\[(\d+)\]\s+(.*)/) : null;
+            let id = empMatch ? empMatch[1] : "";
+            let name = empMatch ? empMatch[2] : row["Employee"] || "";
+
+            // Fallback para eac y eabf (que usan SHARP y Integrante/NOMBRE)
+            if (!id && row["SHARP"]) {
+              id = String(row["SHARP"]).trim();
+              name = row["Integrante"] || row["NOMBRE"] || "Desconocido";
+            }
+
+            if (!id || id === "undefined" || id === "NaN") return;
+            
+            const puesto = row["SKAP Position"] || row["Position"] || row["Puesto en en Worday"] || row["PUESTO"] || "Operador";
+            const depto = sourceArea || "Sin Departamento";
+            
+            // Buscar equipo en eaMap, y si no está, intentar sacarlo directamente de las columnas del registro (Nombre del Equipo, NUEVO EQUIPO)
+            let equipo = eaMap[id];
+            if (!equipo) {
+              equipo = row["Nombre del Equipo"] || row["NUEVO EQUIPO "] || row["NUEVO EQUIPO"] || "Sin Equipo";
+            }
+
+            if (parsedOpsMap.has(id)) {
+              const existing = parsedOpsMap.get(id);
+              if (!existing.puestos.includes(puesto)) {
+                existing.puestos.push(puesto);
+              }
+              if (existing.departamento === "Sin Departamento" && depto !== "Sin Departamento") {
+                existing.departamento = depto;
+              }
+              if (existing.equipo === "Sin Equipo" && equipo !== "Sin Equipo") {
+                existing.equipo = equipo;
+              }
+            } else {
+              parsedOpsMap.set(id, { 
+                id, 
+                name, 
+                puestos: [puesto],
+                departamento: depto,
+                equipo: equipo
+              });
+            }
+          });
+          
+          const parsedOps = Array.from(parsedOpsMap.values()).map(op => ({
+            id: op.id,
+            name: op.name,
+            puesto: op.puestos.join(" / "),
+            departamento: op.departamento,
+            equipo: op.equipo
+          }));
+            
+          setOperators(parsedOps);
+        } catch (err) {
+          console.error("Error loading operators for cursos grid:", err);
+        }
+      };
+      loadOperators();
+    }
+  }, [seccionActiva, usuario]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -244,6 +681,267 @@ function CargarDatos() {
       setCargando(false);
       e.target.value = '';
     }
+  };
+
+  const handleCargarCursosMasivo = async () => {
+    if (!archivoCursos && !textoCursosPegado.trim()) {
+      alert("Selecciona un archivo Excel de cursos o pega datos de celdas en el recuadro.");
+      return;
+    }
+
+    try {
+      setCargandoCursos(true);
+      let rawRows: any[] = [];
+
+      if (archivoCursos) {
+        // Opción 1: Carga por Excel
+        const reader = new FileReader();
+        const readPromise = new Promise<any[]>((resolve, reject) => {
+          reader.onload = (e) => {
+            try {
+              const data = new Uint8Array(e.target?.result as ArrayBuffer);
+              const workbook = XLSX.read(data, { type: 'array' });
+              const sheetName = workbook.SheetNames.includes("Hoja1") ? "Hoja1" : workbook.SheetNames[0];
+              const json = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { range: 14 });
+              resolve(json);
+            } catch (err) { reject(err); }
+          };
+          reader.readAsArrayBuffer(archivoCursos);
+        });
+        rawRows = await readPromise;
+      } else {
+        // Opción 2: Carga por Clipboard (Ctrl+V)
+        const lines = textoCursosPegado.trim().split("\n");
+        if (lines.length <= 1) {
+          alert("El texto pegado no tiene suficientes filas.");
+          setCargandoCursos(false);
+          return;
+        }
+        
+        const headers = lines[0].split("\t").map(h => h.trim());
+        const idIdx = headers.findIndex(h => h.toUpperCase().includes("ID GLOBAL") || h.toUpperCase() === "ID");
+        const nameIdx = headers.findIndex(h => h.toUpperCase().includes("CURSO") || h.toUpperCase().includes("COURSE"));
+        const statusIdx = headers.findIndex(h => h.toUpperCase().includes("ESTADO") || h.toUpperCase().includes("STATUS"));
+        const dateIdx = headers.findIndex(h => h.toUpperCase().includes("APROBAC") || h.toUpperCase().includes("FECHA"));
+        const modIdx = headers.findIndex(h => h.toUpperCase().includes("SUBMÓDULO 1") || h.toUpperCase().includes("MODULO") || h.toUpperCase().includes("ACADEMIA"));
+
+        if (idIdx === -1 || nameIdx === -1 || statusIdx === -1) {
+          alert("No se pudieron mapear las columnas obligatorias (ID GLOBAL, Nombre de Curso, Estado) del texto pegado. Asegúrate de incluir la fila de encabezados.");
+          setCargandoCursos(false);
+          return;
+        }
+
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split("\t").map(c => c.trim());
+          if (cols.length < 3) continue;
+          rawRows.push({
+            "ID GLOBAL": cols[idIdx],
+            "Nombre de Curso": cols[nameIdx],
+            "Estado": cols[statusIdx],
+            "Fecha de aprobación": dateIdx !== -1 ? cols[dateIdx] : "-",
+            "Submódulo 1": modIdx !== -1 ? cols[modIdx] : "-"
+          });
+        }
+      }
+
+      // Filtrar y normalizar
+      const translations: Record<string, string> = {
+        "32173442": "32043900",
+        "32145333": "32044316",
+        "32043835": "32145333",
+        "32043900": "32045469",
+        "32043301": "32043739",
+        "32043861": "32043835",
+        "32044301": "32043861",
+        "32044319": "32045769",
+      };
+
+      const targetIdsIncludesAlternative = (idGlobal: string) => {
+        if (activeIds.has(idGlobal)) return true;
+        const transVal = translations[idGlobal];
+        if (transVal && activeIds.has(transVal)) return true;
+        const transKey = Object.keys(translations).find(k => translations[k] === idGlobal);
+        if (transKey && activeIds.has(transKey)) return true;
+        return false;
+      };
+
+      const optimizedRows = rawRows
+        .filter(row => {
+          const idGlobal = row["ID GLOBAL"] ? String(row["ID GLOBAL"]).trim() : "";
+          return targetIdsIncludesAlternative(idGlobal);
+        })
+        .map(row => ({
+          id: row["ID GLOBAL"] ? Number(row["ID GLOBAL"]) : null,
+          n: row["Nombre de Curso"] ? String(row["Nombre de Curso"]).trim() : "",
+          e: row["Estado"] ? String(row["Estado"]).trim() : "Pendiente",
+          f: row["Fecha de aprobación"] || "-",
+          m: row["Submódulo 1"] || "-"
+        }));
+
+      if (optimizedRows.length === 0) {
+        alert("No se encontraron registros que correspondan a operadores activos del dashboard.");
+        setCargandoCursos(false);
+        return;
+      }
+
+      // Generar resumen
+      const summary: Record<string, { t: number; a: number; e: number; p: number }> = {};
+      for (const row of optimizedRows) {
+        const id = String(row.id);
+        if (!id || id === "null") continue;
+        
+        if (!summary[id]) {
+          summary[id] = { t: 0, a: 0, e: 0, p: 0 };
+        }
+        
+        summary[id].t++;
+        if (row.e === "Aprobado") {
+          summary[id].a++;
+        } else if (row.e === "En progreso") {
+          summary[id].e++;
+        } else {
+          summary[id].p++;
+        }
+      }
+
+      // Guardar a Firestore
+      await setDoc(doc(db, "config_dashboard", "cursos_detallados"), { list: optimizedRows });
+      await setDoc(doc(db, "config_dashboard", "cursos_resumen"), { summary });
+
+      // Registrar auditoría
+      if (usuario) {
+        await registrarEvento(
+          usuario.uid,
+          usuario.email || '',
+          usuario.rol || 'operador',
+          'CARGA_CURSOS',
+          `Carga masiva de cursos realizada con éxito. ${optimizedRows.length} registros insertados.`
+        );
+      }
+
+      alert(`¡Cursos sincronizados correctamente! Se registraron ${optimizedRows.length} cursos para ${Object.keys(summary).length} operadores.`);
+      setArchivoCursos(null);
+      setTextoCursosPegado("");
+    } catch (err) {
+      console.error(err);
+      alert("Error al procesar la carga masiva de cursos.");
+    } finally {
+      setCargandoCursos(false);
+    }
+  };
+
+  const handleSelectOperator = async (op: any) => {
+    setSelectedOperator(op);
+    setNewCourseName("");
+    setNewCourseModule("");
+    setNewCourseStatus("Aprobado");
+    
+    try {
+      let allCourses: any[] = [];
+      const docRef = doc(db, "config_dashboard", "cursos_detallados");
+      const snap = await getDoc(docRef);
+      if (snap.exists() && snap.data().list) {
+        allCourses = snap.data().list;
+      } else {
+        const res = await fetch("/cursos.json");
+        allCourses = await res.json();
+      }
+
+      const targetIds = getAlternativeIds(op.id);
+      const opCourses = allCourses.filter(c => targetIds.includes(String(c.id)));
+      setOperatorCourses(opCourses);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSaveOperatorCourses = async () => {
+    if (!selectedOperator) return;
+    try {
+      setSavingGrid(true);
+      
+      let allCourses: any[] = [];
+      const docRef = doc(db, "config_dashboard", "cursos_detallados");
+      const snap = await getDoc(docRef);
+      if (snap.exists() && snap.data().list) {
+        allCourses = snap.data().list;
+      } else {
+        const res = await fetch("/cursos.json");
+        allCourses = await res.json();
+      }
+
+      const targetIds = getAlternativeIds(selectedOperator.id);
+      let updatedList = allCourses.filter(c => !targetIds.includes(String(c.id)));
+
+      const newRowsForOp = operatorCourses.map(c => ({
+        id: Number(selectedOperator.id),
+        n: c.n,
+        e: c.e,
+        f: c.f || "-",
+        m: c.m || "-"
+      }));
+      updatedList = [...updatedList, ...newRowsForOp];
+
+      const summary: Record<string, { t: number; a: number; e: number; p: number }> = {};
+      for (const row of updatedList) {
+        const id = String(row.id);
+        if (!id || id === "null") continue;
+        
+        if (!summary[id]) {
+          summary[id] = { t: 0, a: 0, e: 0, p: 0 };
+        }
+        
+        summary[id].t++;
+        if (row.e === "Aprobado") {
+          summary[id].a++;
+        } else if (row.e === "En progreso") {
+          summary[id].e++;
+        } else {
+          summary[id].p++;
+        }
+      }
+
+      await setDoc(doc(db, "config_dashboard", "cursos_detallados"), { list: updatedList });
+      await setDoc(doc(db, "config_dashboard", "cursos_resumen"), { summary });
+
+      if (usuario) {
+        await registrarEvento(
+          usuario.uid,
+          usuario.email || '',
+          usuario.rol || 'operador',
+          'EDITAR_CURSOS_OPERADOR',
+          `Actualización de cursos para operador: ${selectedOperator.name} (ID: ${selectedOperator.id}). Total cursos: ${newRowsForOp.length}.`
+        );
+      }
+
+      alert(`¡Cambios guardados con éxito para ${selectedOperator.name}!`);
+    } catch (err) {
+      console.error(err);
+      alert("Error al guardar los cambios.");
+    } finally {
+      setSavingGrid(false);
+    }
+  };
+
+  const handleAddCourse = () => {
+    if (!newCourseName.trim()) {
+      alert("Especifica el nombre del curso.");
+      return;
+    }
+    const newCourse = {
+      id: Number(selectedOperator.id),
+      n: newCourseName.trim(),
+      e: newCourseStatus,
+      f: newCourseStatus === "Aprobado" ? new Date().toLocaleDateString('es-MX') : "-",
+      m: newCourseModule.trim() || "-"
+    };
+    setOperatorCourses(prev => [...prev, newCourse]);
+    setNewCourseName("");
+    setNewCourseModule("");
+  };
+
+  const handleRemoveCourse = (index: number) => {
+    setOperatorCourses(prev => prev.filter((_, i) => i !== index));
   };
 
   // ── Migración: lee historicos_excel existentes y genera historicos_mensuales ──
@@ -641,171 +1339,495 @@ function CargarDatos() {
       </header>
 
       {/* CONTENEDOR DE CONTENIDO PRINCIPAL */}
-      <main className="max-w-4xl mx-auto p-6 space-y-6 mt-4">
+      <main className="max-w-4xl mx-auto p-6 mt-4">
 
-        {/* 🎛️ 2. PANEL ADMINISTRATIVO CENTRAL */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-
-          {/* Encabezado Industrial de la Tarjeta */}
-          <div className="bg-[#1a4491] px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-blue-900 text-white">
-            <div className="flex items-center gap-3">
-              <div className="bg-blue-950 text-blue-200 border border-blue-700 text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-widest">
-                ADMIN
-              </div>
-              <h2 className="text-xs font-black uppercase tracking-wider text-center sm:text-left">
-                Carga de Datos y Configuración del Dashboard
-              </h2>
-            </div>
-
-            {/* Acciones Superiores Estilo Cápsula */}
-
-          </div>
-
-          {/* Cuerpo de Carga */}
-          <div className="p-6 space-y-6">
-
-            {/* Banner Informativo */}
-            <div className="bg-slate-50 border border-slate-150 p-3 rounded-xl text-center">
-              <p className="text-[10px] text-slate-500 font-black tracking-wide uppercase">
-                🚀 El sistema leerá las marcas de tiempo e indexará la información de forma automática por semana.
-              </p>
-            </div>
-
-            {/* 📁 Grid de Zonas de Carga de Archivos */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-              {/* Reporte General */}
-              <div className="border-2 border-dashed border-slate-200 bg-slate-50/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center space-y-3 hover:border-[#1a4491]/30 transition-colors">
-                <div className="p-3 bg-blue-50 text-[#1a4491] rounded-xl">
-                  <CloudUpload className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-black text-[#1a4491] uppercase tracking-wide">
-                    1. Reporte General
-                  </h3>
-                  <p className="text-[9px] text-slate-400 font-black uppercase tracking-tight mt-0.5">
-                    (DATOS.XLSX)
-                  </p>
-                </div>
-
-                <label className="bg-[#1a4491] hover:bg-blue-800 text-white text-[11px] font-black uppercase tracking-wide px-4 py-2 rounded-xl cursor-pointer shadow-sm transition-colors inline-block">
-                  Seleccionar archivo
-                  <input
-                    type="file"
-                    accept=".xlsx, .xls"
-                    disabled={cargando}
-                    onChange={(e) => setArchivoDatos(e.target.files?.[0] || null)}
-                    className="hidden"
-                  />
-                </label>
-
-                <div className="h-4 text-[11px] font-black tracking-wide uppercase text-slate-500 truncate max-w-[220px]">
-                  {archivoDatos ? (
-                    <span className="text-emerald-600 flex items-center justify-center gap-1">
-                      <Check className="h-3 w-3 stroke-[3]" /> {archivoDatos.name}
-                    </span>
-                  ) : 'Sin archivo cargado'}
-                </div>
-              </div>
-
-              {/* Reporte de Desempeño */}
-              <div className="border-2 border-dashed border-slate-200 bg-slate-50/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center space-y-3 hover:border-[#1a4491]/30 transition-colors">
-                <div className="p-3 bg-blue-50 text-[#1a4491] rounded-xl">
-                  <CloudUpload className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-black text-[#1a4491] uppercase tracking-wide">
-                    2. Reporte de Desempeño
-                  </h3>
-                  <p className="text-[9px] text-slate-400 font-black uppercase tracking-tight mt-0.5">
-                    (BPRE.XLSX)
-                  </p>
-                </div>
-
-                <label className="bg-[#1a4491] hover:bg-blue-800 text-white text-[11px] font-black uppercase tracking-wide px-4 py-2 rounded-xl cursor-pointer shadow-sm transition-colors inline-block">
-                  Seleccionar archivo
-                  <input
-                    type="file"
-                    accept=".xlsx, .xls"
-                    disabled={cargando}
-                    onChange={(e) => setArchivoBpre(e.target.files?.[0] || null)}
-                    className="hidden"
-                  />
-                </label>
-
-                <div className="h-4 text-[11px] font-black tracking-wide uppercase text-slate-500 truncate max-w-[220px]">
-                  {archivoBpre ? (
-                    <span className="text-emerald-600 flex items-center justify-center gap-1">
-                      <Check className="h-3 w-3 stroke-[3]" /> {archivoBpre.name}
-                    </span>
-                  ) : 'Sin archivo cargado'}
-                </div>
-              </div>
-
-            </div>
-
-            {/* ⚡ BOTÓN ACCIONADOR SEMANAL */}
-            <div className="pt-2">
-              <button
-                onClick={procesarTablasSemanales}
-                disabled={cargando || (!archivoDatos && !archivoBpre)}
-                className="w-full py-3.5 bg-[#ffcc00] hover:bg-amber-400 text-[#1a4491] font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                {cargando ? 'Sincronizando e inyectando registros...' : '⚙️ Sincronizar Base de Datos'}
-              </button>
-            </div>
-
-          </div>
-        </div>
-
-        {/* 💻 3. ACCIONES COMPLEMENTARIAS / CARGAS ÚNICAS DE CATÁLOGOS */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <div className="border-b border-slate-100 pb-2">
-            <h3 className="text-xs font-black text-[#1a4491] uppercase tracking-wider">Cargas Administrativas Especiales</h3>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Actualización directa de estructuras fijas globales</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <label className="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer text-center">
-              <span className="text-[10px] font-black uppercase text-slate-600 tracking-wide mb-1">Base Equipos</span>
-              <input type="file" accept=".xlsx,.xls" disabled={cargando} onChange={(e) => handleCargaUnica(e, 'base_equipos')} className="text-[9px] w-full text-slate-400 max-w-[150px]" />
-            </label>
-
-            <label className="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer text-center">
-              <span className="text-[10px] font-black uppercase text-slate-600 tracking-wide mb-1">Catálogo EAC</span>
-              <input type="file" accept=".xlsx,.xls" disabled={cargando} onChange={(e) => handleCargaUnica(e, 'eac')} className="text-[9px] w-full text-slate-400 max-w-[150px]" />
-            </label>
-
-            <label className="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer text-center">
-              <span className="text-[10px] font-black uppercase text-slate-600 tracking-wide mb-1">Catálogo EABF</span>
-              <input type="file" accept=".xlsx,.xls" disabled={cargando} onChange={(e) => handleCargaUnica(e, 'eabf')} className="text-[9px] w-full text-slate-400 max-w-[150px]" />
-            </label>
-          </div>
-        </div>
-
-        {/* 📅 4. MIGRACIÓN DE SEMANAS → MESES */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <div className="border-b border-slate-100 pb-2">
-            <h3 className="text-xs font-black text-[#1a4491] uppercase tracking-wider">Migración de Históricos Mensuales</h3>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
-              Convierte los datos semanales ya existentes en registros mensuales para las gráficas
-            </p>
-          </div>
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[10px] text-amber-700 font-bold uppercase tracking-wide">
-            ⚠️ Ejecuta esto una sola vez para migrar los datos históricos. Las cargas nuevas se agrupan automáticamente.
-          </div>
+        {/* Selector de Pestañas Estilo Corporativo */}
+        <div className="flex border-b border-slate-200 gap-6 text-[10px] font-black uppercase tracking-wider mb-6">
           <button
-            onClick={migrarSemanalesAMensuales}
-            disabled={migrando || cargando}
-            className="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {migrando ? (
-              <><span className="h-3 w-3 rounded-full border-2 border-white border-t-transparent animate-spin inline-block" /> Migrando datos...</>
-            ) : (
-              '🔄 Migrar Semanas → Histórico Mensual'
+            onClick={() => setSeccionActiva('autonomia')}
+            className={cn(
+              "pb-3 border-b-2 px-1 transition-all focus:outline-none cursor-pointer duration-200",
+              seccionActiva === 'autonomia' ? "border-[#1a4491] text-[#1a4491]" : "border-transparent text-slate-400 hover:text-slate-600"
             )}
+          >
+            Autonomía y Desempeño
+          </button>
+          <button
+            onClick={() => setSeccionActiva('cursos')}
+            className={cn(
+              "pb-3 border-b-2 px-1 transition-all focus:outline-none cursor-pointer duration-200",
+              seccionActiva === 'cursos' ? "border-[#1a4491] text-[#1a4491]" : "border-transparent text-slate-400 hover:text-slate-600"
+            )}
+          >
+            Capacitación y Cursos
           </button>
         </div>
+
+        {seccionActiva === 'autonomia' ? (
+          <div className="space-y-6 animate-fade-in">
+            {/* 🎛️ PANEL ADMINISTRATIVO CENTRAL */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-[#1a4491] px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-blue-900 text-white">
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-950 text-blue-200 border border-blue-700 text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-widest">
+                    ADMIN
+                  </div>
+                  <h2 className="text-xs font-black uppercase tracking-wider text-center sm:text-left">
+                    Carga de Datos y Configuración del Dashboard
+                  </h2>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div className="bg-slate-50 border border-slate-150 p-3 rounded-xl text-center">
+                  <p className="text-[10px] text-slate-500 font-black tracking-wide uppercase">
+                    🚀 El sistema leerá las marcas de tiempo e indexará la información de forma automática por semana.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Reporte General */}
+                  <div className="border-2 border-dashed border-slate-200 bg-slate-50/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center space-y-3 hover:border-[#1a4491]/30 transition-colors">
+                    <div className="p-3 bg-blue-50 text-[#1a4491] rounded-xl">
+                      <CloudUpload className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-black text-[#1a4491] uppercase tracking-wide">
+                        1. Reporte General
+                      </h3>
+                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-tight mt-0.5">
+                        (DATOS.XLSX)
+                      </p>
+                    </div>
+
+                    <label className="bg-[#1a4491] hover:bg-blue-800 text-white text-[11px] font-black uppercase tracking-wide px-4 py-2 rounded-xl cursor-pointer shadow-sm transition-colors inline-block">
+                      Seleccionar archivo
+                      <input
+                        type="file"
+                        accept=".xlsx, .xls"
+                        disabled={cargando}
+                        onChange={(e) => setArchivoDatos(e.target.files?.[0] || null)}
+                        className="hidden"
+                      />
+                    </label>
+
+                    <div className="h-4 text-[11px] font-black tracking-wide uppercase text-slate-500 truncate max-w-[220px]">
+                      {archivoDatos ? (
+                        <span className="text-emerald-600 flex items-center justify-center gap-1">
+                          <Check className="h-3 w-3 stroke-[3]" /> {archivoDatos.name}
+                        </span>
+                      ) : 'Sin archivo cargado'}
+                    </div>
+                  </div>
+
+                  {/* Reporte de Desempeño */}
+                  <div className="border-2 border-dashed border-slate-200 bg-slate-50/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center space-y-3 hover:border-[#1a4491]/30 transition-colors">
+                    <div className="p-3 bg-blue-50 text-[#1a4491] rounded-xl">
+                      <CloudUpload className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-black text-[#1a4491] uppercase tracking-wide">
+                        2. Reporte de Desempeño
+                      </h3>
+                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-tight mt-0.5">
+                        (BPRE.XLSX)
+                      </p>
+                    </div>
+
+                    <label className="bg-[#1a4491] hover:bg-blue-800 text-white text-[11px] font-black uppercase tracking-wide px-4 py-2 rounded-xl cursor-pointer shadow-sm transition-colors inline-block">
+                      Seleccionar archivo
+                      <input
+                        type="file"
+                        accept=".xlsx, .xls"
+                        disabled={cargando}
+                        onChange={(e) => setArchivoBpre(e.target.files?.[0] || null)}
+                        className="hidden"
+                      />
+                    </label>
+
+                    <div className="h-4 text-[11px] font-black tracking-wide uppercase text-slate-500 truncate max-w-[220px]">
+                      {archivoBpre ? (
+                        <span className="text-emerald-600 flex items-center justify-center gap-1">
+                          <Check className="h-3 w-3 stroke-[3]" /> {archivoBpre.name}
+                        </span>
+                      ) : 'Sin archivo cargado'}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    onClick={procesarTablasSemanales}
+                    disabled={cargando || (!archivoDatos && !archivoBpre)}
+                    className="w-full py-3.5 bg-[#ffcc00] hover:bg-amber-400 text-[#1a4491] font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {cargando ? 'Sincronizando e inyectando registros...' : '⚙️ Sincronizar Base de Datos'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* ACCIONES COMPLEMENTARIAS / CARGAS ÚNICAS DE CATÁLOGOS */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+              <div className="border-b border-slate-100 pb-2">
+                <h3 className="text-xs font-black text-[#1a4491] uppercase tracking-wider">Cargas Administrativas Especiales</h3>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Actualización directa de estructuras fijas globales</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <label className="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer text-center">
+                  <span className="text-[10px] font-black uppercase text-slate-600 tracking-wide mb-1">Base Equipos</span>
+                  <input type="file" accept=".xlsx,.xls" disabled={cargando} onChange={(e) => handleCargaUnica(e, 'base_equipos')} className="text-[9px] w-full text-slate-400 max-w-[150px]" />
+                </label>
+
+                <label className="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer text-center">
+                  <span className="text-[10px] font-black uppercase text-slate-600 tracking-wide mb-1">Catálogo EAC</span>
+                  <input type="file" accept=".xlsx,.xls" disabled={cargando} onChange={(e) => handleCargaUnica(e, 'eac')} className="text-[9px] w-full text-slate-400 max-w-[150px]" />
+                </label>
+
+                <label className="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer text-center">
+                  <span className="text-[10px] font-black uppercase text-slate-600 tracking-wide mb-1">Catálogo EABF</span>
+                  <input type="file" accept=".xlsx,.xls" disabled={cargando} onChange={(e) => handleCargaUnica(e, 'eabf')} className="text-[9px] w-full text-slate-400 max-w-[150px]" />
+                </label>
+              </div>
+            </div>
+
+            {/* MIGRACIÓN DE SEMANAS → MESES */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+              <div className="border-b border-slate-100 pb-2">
+                <h3 className="text-xs font-black text-[#1a4491] uppercase tracking-wider">Migración de Históricos Mensuales</h3>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                  Convierte los datos semanales ya existentes en registros mensuales para las gráficas
+                </p>
+              </div>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[10px] text-amber-700 font-bold uppercase tracking-wide">
+                ⚠️ Ejecuta esto una sola vez para migrar los datos históricos. Las cargas nuevas se agrupan automáticamente.
+              </div>
+              <button
+                onClick={migrarSemanalesAMensuales}
+                disabled={migrando || cargando}
+                className="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {migrando ? (
+                  <><span className="h-3 w-3 rounded-full border-2 border-white border-t-transparent animate-spin inline-block" /> Migrando datos...</>
+                ) : (
+                  '🔄 Migrar Semanas → Histórico Mensual'
+                )}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-6 animate-fade-in">
+            {/* SECCIÓN A: CARGA RÁPIDA DE CURSOS */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-[#1a4491] px-6 py-3.5 flex items-center gap-3 border-b border-blue-900 text-white">
+                <div className="bg-blue-950 text-blue-200 border border-blue-700 text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-widest">
+                  CURSOS
+                </div>
+                <h2 className="text-xs font-black uppercase tracking-wider">
+                  Carga Masiva de Capacitación
+                </h2>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Opción 1: Subir Archivo Excel */}
+                  <div className="border-2 border-dashed border-slate-200 bg-slate-50/50 p-5 rounded-xl flex flex-col items-center justify-center text-center space-y-3">
+                    <CloudUpload className="h-5 w-5 text-[#1a4491]" />
+                    <div>
+                      <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide">Opción 1: Arrastrar Excel</h3>
+                      <p className="text-[8px] text-slate-400 font-bold uppercase tracking-tight mt-0.5">(Cursos.xlsx)</p>
+                    </div>
+                    <label className="bg-[#1a4491] hover:bg-blue-800 text-white text-[10px] font-black uppercase tracking-wide px-3 py-1.5 rounded-lg cursor-pointer transition">
+                      Elegir archivo
+                      <input
+                        type="file"
+                        accept=".xlsx, .xls"
+                        disabled={cargandoCursos}
+                        onChange={(e) => {
+                          setArchivoCursos(e.target.files?.[0] || null);
+                          setTextoCursosPegado("");
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+                    <div className="text-[10px] font-black text-slate-500 truncate max-w-[200px]">
+                      {archivoCursos ? archivoCursos.name : 'Ningún archivo seleccionado'}
+                    </div>
+                  </div>
+
+                  {/* Opción 2: Pegar Celdas de Excel (VDI) */}
+                  <div className="border-2 border-dashed border-slate-200 bg-slate-50/50 p-5 rounded-xl flex flex-col space-y-2">
+                    <div className="text-center">
+                      <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide">Opción 2: Pegar Celdas (VDI)</h3>
+                      <p className="text-[8px] text-slate-400 font-bold uppercase tracking-tight mt-0.5">Copia celdas de Excel y pégalas aquí</p>
+                    </div>
+                    <textarea
+                      value={textoCursosPegado}
+                      onChange={(e) => {
+                        setTextoCursosPegado(e.target.value);
+                        setArchivoCursos(null);
+                      }}
+                      disabled={cargandoCursos}
+                      placeholder="Pega las celdas aquí (ej: ID GLOBAL\tNombre de Curso\tEstado\tFecha...)"
+                      className="w-full h-24 p-2 border border-slate-200 rounded-lg text-[9px] font-mono focus:outline-none focus:ring-1 focus:ring-[#1a4491]"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleCargarCursosMasivo}
+                  disabled={cargandoCursos || (!archivoCursos && !textoCursosPegado.trim())}
+                  className="w-full py-3 bg-[#ffcc00] hover:bg-amber-400 text-[#1a4491] font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {cargandoCursos ? 'Procesando e inyectando cursos...' : '🚀 Sincronizar Base de Cursos'}
+                </button>
+              </div>
+            </div>
+
+            {/* SECCIÓN B: EDITOR EN VIVO DE CAPACITACIÓN */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-[#1a4491] px-6 py-3.5 flex items-center gap-3 border-b border-blue-900 text-white">
+                <div className="bg-amber-500 text-white text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-widest">
+                  LIVE GRID
+                </div>
+                <h2 className="text-xs font-black uppercase tracking-wider">
+                  Matriz Interactiva de Cursos
+                </h2>
+              </div>
+
+              <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Panel Izquierdo: Lista de Operadores */}
+                <div className="md:col-span-1 border-r pr-0 md:pr-6 space-y-4">
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <label className="block text-[9px] font-black text-slate-500 uppercase tracking-wider">Buscar Operador</label>
+                      <input
+                        type="text"
+                        placeholder="Escribe nombre o ID..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1a4491]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <label className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Departamento</label>
+                         <select
+                          value={selectedDepto}
+                          onChange={(e) => {
+                            setSelectedDepto(e.target.value);
+                            setSelectedEquipo("Todos");
+                            setSelectedOperator(null);
+                          }}
+                          className="w-full px-2 py-1.5 border border-slate-200 rounded text-[9px] font-bold text-slate-700 bg-white focus:outline-none"
+                        >
+                          <option value="Todos">Todos</option>
+                          {Array.from(new Set(operators.map(op => traducirArea(op.departamento)).filter(Boolean))).sort().map((d: any, idx) => (
+                            <option key={idx} value={d}>{d}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Equipo</label>
+                        <select
+                          value={selectedEquipo}
+                          onChange={(e) => {
+                            setSelectedEquipo(e.target.value);
+                            setSelectedOperator(null);
+                          }}
+                          className="w-full px-2 py-1.5 border border-slate-200 rounded text-[9px] font-bold text-slate-700 bg-white focus:outline-none"
+                        >
+                          <option value="Todos">Todos</option>
+                          {Array.from(
+                            new Set(
+                              operators
+                                .filter(op => selectedDepto === "Todos" || traducirArea(op.departamento) === selectedDepto)
+                                .map(op => op.equipo)
+                                .filter(Boolean)
+                            )
+                          ).sort().map((eq: any, idx) => (
+                            <option key={idx} value={eq}>{eq}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="h-[300px] overflow-y-auto divide-y border rounded-lg bg-slate-50/50">
+                    {operators
+                      .filter(op => {
+                        const matchesSearch = op.name.toLowerCase().includes(searchTerm.toLowerCase()) || op.id.includes(searchTerm);
+                        const matchesDepto = selectedDepto === "Todos" || traducirArea(op.departamento) === selectedDepto;
+                        const matchesEquipo = selectedEquipo === "Todos" || op.equipo === selectedEquipo;
+                        return matchesSearch && matchesDepto && matchesEquipo;
+                      })
+                      .map((op) => {
+                        const targetIds = getAlternativeIds(op.id);
+                        let sum = null;
+                        for (const tid of targetIds) {
+                          if (cursosResumen[tid]) {
+                            sum = cursosResumen[tid];
+                            break;
+                          }
+                        }
+
+                        const total = sum?.t || 0;
+                        const aprobados = sum?.a || 0;
+                        const progress = total > 0 ? Math.round((aprobados / total) * 100) : 0;
+
+                        return (
+                          <button
+                            key={op.id}
+                            onClick={() => handleSelectOperator(op)}
+                            className={cn(
+                              "w-full text-left p-3 text-xs flex flex-col gap-0.5 hover:bg-slate-100 transition-colors focus:outline-none relative",
+                              selectedOperator?.id === op.id && "bg-blue-50 hover:bg-blue-100 font-bold border-l-4 border-l-[#1a4491]"
+                            )}
+                          >
+                            <span className="font-bold text-slate-900 uppercase truncate leading-tight pr-20">{op.name}</span>
+                            <span className="text-[9px] font-black text-[#1a4491] uppercase tracking-widest">{op.id} — {op.puesto}</span>
+                            
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                              {total === 0 ? (
+                                <span className="text-[8px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded uppercase">Sin Cursos</span>
+                              ) : (
+                                <span className={cn(
+                                  "text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider",
+                                  progress === 100 ? "bg-yellow-100 text-yellow-800" :
+                                  progress >= 80 ? "bg-emerald-100 text-emerald-800" :
+                                  progress >= 50 ? "bg-amber-100 text-amber-800" :
+                                  "bg-rose-100 text-rose-800"
+                                )}>
+                                  {progress}% ({aprobados}/{total})
+                                </span>
+                              )}
+                            </div>
+                          </button>
+                        );
+                      })}
+                  </div>
+                </div>
+
+                {/* Panel Derecho: Tabla de Cursos del Operador */}
+                <div className="md:col-span-2 space-y-4">
+                  {!selectedOperator ? (
+                    <div className="h-full flex flex-col items-center justify-center text-slate-400 py-16 space-y-2 border-2 border-dashed border-slate-200 rounded-xl">
+                      <span className="text-xs font-black uppercase tracking-wider">Selecciona un Operador</span>
+                      <p className="text-[10px] text-slate-400 max-w-xs text-center">Haz clic en un operador de la lista para ver, cambiar o añadir cursos.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 flex flex-col h-full">
+                      <div className="flex justify-between items-center bg-slate-50 border p-3 rounded-xl">
+                        <div>
+                          <span className="text-[8px] font-black text-[#1a4491] uppercase tracking-widest">Operador Seleccionado</span>
+                          <h4 className="text-sm font-black text-slate-800 uppercase leading-tight">{selectedOperator.name}</h4>
+                          <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Sharp ID: {selectedOperator.id}</span>
+                        </div>
+                        <button
+                          onClick={handleSaveOperatorCourses}
+                          disabled={savingGrid}
+                          className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-black text-[10px] uppercase tracking-widest px-4 py-2 rounded-lg transition"
+                        >
+                          {savingGrid ? 'Guardando...' : '💾 Guardar Cambios'}
+                        </button>
+                      </div>
+
+                      {/* Lista de Cursos */}
+                      <div className="border rounded-lg overflow-hidden bg-white max-h-[220px] overflow-y-auto custom-scrollbar flex-1">
+                        <table className="w-full text-left text-xs border-collapse">
+                          <thead>
+                            <tr className="bg-slate-50 border-b text-[8px] font-black uppercase text-slate-500 tracking-wider">
+                              <th className="p-2">Curso</th>
+                              <th className="p-2">Módulo</th>
+                              <th className="p-2 text-center">Estado</th>
+                              <th className="p-2 text-center">Acción</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y font-bold text-slate-700">
+                            {operatorCourses.map((c, index) => (
+                              <tr key={index} className="hover:bg-slate-50/50">
+                                <td className="p-2 font-bold text-slate-800 text-[10px] max-w-[200px] truncate leading-tight">{c.n}</td>
+                                <td className="p-2 text-[9px] text-slate-400 uppercase">{c.m}</td>
+                                <td className="p-2 text-center align-middle">
+                                  <select
+                                    value={c.e}
+                                    onChange={(e) => {
+                                      const newStatus = e.target.value;
+                                      setOperatorCourses(prev => prev.map((item, idx) => {
+                                        if (idx !== index) return item;
+                                        return {
+                                          ...item,
+                                          e: newStatus,
+                                          f: newStatus === "Aprobado" ? new Date().toLocaleDateString('es-MX') : "-"
+                                        };
+                                      }));
+                                    }}
+                                    className="text-[9px] bg-slate-50 border rounded p-1 font-black focus:outline-none"
+                                  >
+                                    <option value="Aprobado">Aprobado</option>
+                                    <option value="En progreso">En progreso</option>
+                                    <option value="Pendiente">Pendiente</option>
+                                  </select>
+                                </td>
+                                <td className="p-2 text-center">
+                                  <button
+                                    onClick={() => handleRemoveCourse(index)}
+                                    className="text-red-500 hover:text-red-700 text-[10px] font-black uppercase tracking-wider"
+                                  >
+                                    Eliminar
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Agregar Curso Form */}
+                      <div className="bg-slate-50 border p-3 rounded-xl space-y-3">
+                        <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest block border-b pb-1">Añadir Curso de Capacitación</span>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <input
+                            type="text"
+                            placeholder="Nombre del Curso..."
+                            value={newCourseName}
+                            onChange={(e) => setNewCourseName(e.target.value)}
+                            className="px-2 py-1.5 border border-slate-200 rounded text-[10px] font-bold text-slate-800 focus:outline-none"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Módulo/Academia..."
+                            value={newCourseModule}
+                            onChange={(e) => setNewCourseModule(e.target.value)}
+                            className="px-2 py-1.5 border border-slate-200 rounded text-[10px] font-bold text-slate-800 focus:outline-none"
+                          />
+                          <select
+                            value={newCourseStatus}
+                            onChange={(e) => setNewCourseStatus(e.target.value)}
+                            className="px-2 py-1.5 border border-slate-200 rounded text-[10px] font-black text-slate-700 bg-white focus:outline-none"
+                          >
+                            <option value="Aprobado">Aprobado</option>
+                            <option value="En progreso">En progreso</option>
+                            <option value="Pendiente">Pendiente</option>
+                          </select>
+                        </div>
+                        <button
+                          onClick={handleAddCourse}
+                          className="w-full bg-[#1a4491] hover:bg-blue-800 text-white font-black text-[9px] uppercase tracking-widest py-1.5 rounded-lg transition"
+                        >
+                          ➕ Agregar Curso a la Lista
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* 🖥️ 5. MONITOR DE LOGS EN TIEMPO REAL */}
         {logProceso.length > 0 && (

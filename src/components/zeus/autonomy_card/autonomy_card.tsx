@@ -6,11 +6,19 @@ interface AutonomyCardProps {
   autonomia: number;
   nivel_label: string;
   trend?: number[];
+  title?: string;
+  subtitle?: string;
+  customText?: string;
+  customSubText?: string;
 }
 
 import { Sparkline } from "@/components/zeus/sparkline";
 
-export function AutonomyCard({ autonomia, nivel_label, trend = [] }: AutonomyCardProps) {
+export function AutonomyCard({ autonomia, nivel_label, trend = [], title, subtitle, customText, customSubText }: AutonomyCardProps) {
+  const titleText = title || STRINGS.TITLE;
+  const subtitleText = subtitle || STRINGS.SUBTITLE;
+  const isCapacitacion = titleText.toLowerCase().includes("capacitac") || titleText.toLowerCase().includes("curso");
+
   return (
     <motion.section 
       initial={{ opacity: 0, y: 20 }}
@@ -25,8 +33,8 @@ export function AutonomyCard({ autonomia, nivel_label, trend = [] }: AutonomyCar
             <div className="h-1 w-1 rounded-full bg-yellow-400" />
           </div>
           <div>
-            <h2 className="text-sm font-bold uppercase tracking-tight">{STRINGS.TITLE}</h2>
-            <p className="text-[10px] font-medium text-blue-100/70">{STRINGS.SUBTITLE}</p>
+            <h2 className="text-sm font-bold uppercase tracking-tight">{titleText}</h2>
+            <p className="text-[10px] font-medium text-blue-100/70">{subtitleText}</p>
           </div>
         </div>
         
@@ -39,7 +47,7 @@ export function AutonomyCard({ autonomia, nivel_label, trend = [] }: AutonomyCar
 
       <div className="flex flex-1 items-center gap-8 p-6">
         <div className="flex shrink-0 items-center justify-center">
-          <AutonomyGauge value={autonomia} max={4} size={130} stroke_width={15} />
+          <AutonomyGauge value={autonomia} max={4} size={130} stroke_width={15} customText={customText} customSubText={customSubText} />
         </div>
         
         <div className="flex flex-col justify-center space-y-2">
@@ -48,7 +56,7 @@ export function AutonomyCard({ autonomia, nivel_label, trend = [] }: AutonomyCar
           </h3>
           <div className="inline-flex w-fit items-center rounded-full bg-yellow-100 px-3 py-1 border border-yellow-200">
             <span className="text-[10px] font-black text-yellow-800 uppercase tracking-widest">
-              {STRINGS.GOAL_LABEL}
+              META ESPERADA: 100%
             </span>
           </div>
         </div>

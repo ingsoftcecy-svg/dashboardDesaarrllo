@@ -6,14 +6,15 @@ import { STRINGS } from "./constants";
 
 interface TeamHeaderProps {
   area: AreaData;
+  metricMode?: "autonomia" | "cursos";
 }
 
-export function TeamHeader({ area }: TeamHeaderProps) {
+export function TeamHeader({ area, metricMode = "autonomia" }: TeamHeaderProps) {
   return (
     <section className="rounded-xl border border-white/40 bg-white/60 backdrop-blur-md p-6 shadow-xl overflow-hidden">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-stretch">
         
-        <TeamCard variant="best" team={area.bestTeam} operadores={area.operadores} />
+        <TeamCard variant="best" team={area.bestTeam} operadores={area.operadores} metricMode={metricMode} />
 
         <div className="flex flex-col items-center justify-center px-6 py-2 shrink-0">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-900 text-yellow-400 shadow-lg mb-2">
@@ -28,7 +29,7 @@ export function TeamHeader({ area }: TeamHeaderProps) {
           </div>
         </div>
 
-        <TeamCard variant="worst" team={area.worstTeam} operadores={area.operadores} />
+        <TeamCard variant="worst" team={area.worstTeam} operadores={area.operadores} metricMode={metricMode} />
 
       </div>
     </section>

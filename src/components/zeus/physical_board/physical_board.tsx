@@ -12,9 +12,10 @@ export interface PhysicalBoardProps {
   show_ato?: boolean;
   puedeEditar?: boolean; // Nueva prop para controlar la edición
   teamRankings?: any[];
+  metricMode?: "autonomia" | "cursos";
 }
 
-export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false, teamRankings = [] }: PhysicalBoardProps) {
+export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false, teamRankings = [], metricMode = "autonomia" }: PhysicalBoardProps) {
   const [search_query, set_search_query] = useState("");
   const [visibleCount, setVisibleCount] = useState(10);
 
@@ -83,7 +84,7 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
               {show_ato && <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-32 text-center z-30">ATO</th>}
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-44 z-30">IPs ASIGNADOS</th>
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-64 z-30">PRE REQUISITOS</th>
-              <th className="sticky top-0 bg-[#1a4491] border-b p-3 w-40 text-center z-30">NIVEL AUTONOMIA</th>
+              <th className="sticky top-0 bg-[#1a4491] border-b p-3 w-40 text-center z-30">{metricMode === "autonomia" ? "NIVEL AUTONOMIA" : "PROGRESO CURSOS"}</th>
             </tr>
           </thead>
           <tbody>
@@ -96,13 +97,26 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
                 show_ato={show_ato}
                 puedeEditar={puedeEditar}
                 teamRankings={teamRankings}
+                metricMode={metricMode}
                 team_members={operadores
                   .filter(op => op.equipoAutonomo && op.equipoAutonomo === operator.equipoAutonomo && op.id !== operator.id)
                   .map(op => ({ id: op.id, name: op.nombre }))
                 }
                 full_team_members={operadores
                   .filter(op => op.equipoAutonomo && op.equipoAutonomo === operator.equipoAutonomo)
-                  .map(op => ({ id: op.id, name: op.nombre, puesto: op.puesto, score: op.autonomyScore, lastAssessmentDate: op.lastAssessmentDate, noEvaluado: op.noEvaluado }))
+                  .map(op => ({ 
+                    id: op.id, 
+                    name: op.nombre, 
+                    puesto: op.puesto, 
+                    score: op.autonomyScore, 
+                    lastAssessmentDate: op.lastAssessmentDate, 
+                    noEvaluado: op.noEvaluado,
+                    cursosProgress: op.cursosProgress,
+                    cursosAprobados: op.cursosAprobados,
+                    cursosTotal: op.cursosTotal,
+                    cursosEnProgreso: op.cursosEnProgreso,
+                    cursosPendientes: op.cursosPendientes
+                  }))
                 }
               />
             ))}

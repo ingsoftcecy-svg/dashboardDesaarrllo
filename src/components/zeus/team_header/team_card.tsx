@@ -20,6 +20,7 @@ interface TeamCardProps {
   variant: "best" | "worst";
   team?: TeamData;
   operadores?: any[];
+  metricMode?: "autonomia" | "cursos";
 }
 
 /**
@@ -63,7 +64,7 @@ const obtenerLogoFallbacks = (name: string): string[] => {
   return unique.map(item => `/logos/${item}.png`);
 };
 
-export function TeamCard({ variant, team, operadores = [] }: TeamCardProps) {
+export function TeamCard({ variant, team, operadores = [], metricMode = "autonomia" }: TeamCardProps) {
   const is_best = variant === "best";
   const canvas_ref = useRef<HTMLCanvasElement>(null);
   
@@ -322,7 +323,7 @@ export function TeamCard({ variant, team, operadores = [] }: TeamCardProps) {
             </div>
             <span className={`text-xs font-black ${progress_text}`}>{team?.avg || 0}%</span>
           </div>
-          <div className={`text-[9px] font-bold uppercase tracking-widest ${progress_label}`}>{STRINGS.TEAM_AUTONOMY}</div>
+          <div className={`text-[9px] font-bold uppercase tracking-widest ${progress_label}`}>{metricMode === "autonomia" ? STRINGS.TEAM_AUTONOMY : "PROGRESO CURSOS"}</div>
         </div>
       </div>
 

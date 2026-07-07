@@ -17,6 +17,11 @@ interface TeamMember {
   score: number;
   lastAssessmentDate?: string;
   noEvaluado?: boolean;
+  cursosProgress?: number;
+  cursosAprobados?: number;
+  cursosTotal?: number;
+  cursosEnProgreso?: number;
+  cursosPendientes?: number;
 }
 
 interface TeamHistoryDialogProps {
@@ -185,7 +190,7 @@ export function TeamHistoryDialog({
   fechaCompromiso
 }: TeamHistoryDialogProps) {
   const [loading, setLoading] = useState(true);
-  const [activeSubTab, setActiveSubTab] = useState<"history" | "requirements">("history");
+  const [activeSubTab, setActiveSubTab] = useState<"history" | "requirements" | "progress">("history");
   const [datosGrafico, setDatosGrafico] = useState<MesProgreso[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -567,6 +572,70 @@ export function TeamHistoryDialog({
     );
   };
 
+  const renderProgressSection = () => {
+    const sortedMembers = [...members].sort((a, b) => {
+      const progA = a.cursosProgress ?? 0;
+      const progB = b.cursosProgress ?? 0;
+      if (progB !== progA) return progB - progA;
+      return a.name.localeCompare(b.name);
+    });
+
+    return (
+      <div className="flex-1 overflow-y-auto pr-1 mt-4 custom-scrollbar space-y-4">
+        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+          <Users className="h-3.5 w-3.5 text-[#1a4491]" />
+          <span>Progreso de Capacitación de Integrantes</span>
+        </h3>
+
+        <div className="rounded-xl border border-slate-200/60 overflow-hidden bg-white">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="bg-slate-100 text-[10px] font-black uppercase text-slate-500 tracking-wider sticky top-0">
+                <th className="p-3 border-b border-slate-200">Operador</th>
+                <th className="p-3 border-b border-slate-200">Puesto</th>
+                <th className="p-3 border-b border-slate-200 text-center">Cursos Aprobados</th>
+                <th className="p-3 border-b border-slate-200 text-center">Progreso</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+              {sortedMembers.map((member) => {
+                const total = member.cursosTotal || 0;
+                const aprobados = member.cursosAprobados || 0;
+                const progress = member.cursosProgress ?? 0;
+
+                return (
+                  <tr key={member.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="p-3 font-bold text-slate-900 flex items-center gap-1.5">
+                      <ChevronRight className="h-3 w-3 text-[#1a4491] opacity-40" />
+                      <span>{member.name}</span>
+                    </td>
+                    <td className="p-3 text-slate-500 uppercase font-semibold text-[10px]">{member.puesto}</td>
+                    <td className="p-3 text-center align-middle text-slate-600 font-bold">
+                      {total > 0 ? `${aprobados} / ${total}` : "0 / 0"}
+                    </td>
+                    <td className="p-3 align-middle">
+                      <div className="flex items-center gap-2 justify-center">
+                        <div className="h-2 w-24 rounded-full bg-slate-100 overflow-hidden shrink-0 border border-slate-200/40">
+                          <div 
+                            className="h-full bg-[#1a4491] rounded-full" 
+                            style={{ width: `${progress}%` }} 
+                          />
+                        </div>
+                        <span className="text-[11px] font-black text-slate-800 w-10 text-right tabular-nums">
+                          {progress}%
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col text-slate-800 h-full max-h-[calc(90vh-48px)] overflow-hidden">
       {/* 👥 CABECERA DEL MODAL */}
@@ -647,6 +716,15 @@ export function TeamHistoryDialog({
                 Requisitos de Fase
               </button>
             )}
+            <button
+              onClick={() => setActiveSubTab("progress")}
+              className={cn(
+                "pb-2 border-b-2 px-1 transition-colors focus:outline-none flex items-center gap-1.5",
+                activeSubTab === "progress" ? "border-[#1a4491] text-[#1a4491]" : "border-transparent text-slate-400 hover:text-slate-600"
+              )}
+            >
+              Progreso de Integrantes
+            </button>
           </div>
 
           {activeSubTab === "history" ? (
@@ -798,8 +876,10 @@ export function TeamHistoryDialog({
                 </div>
               </div>
             )
-          ) : (
+          ) : activeSubTab === "requirements" ? (
             renderRequirementsSection()
+          ) : (
+            renderProgressSection()
           )}
         </>
       )}

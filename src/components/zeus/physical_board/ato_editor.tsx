@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Check, Edit2 } from "lucide-react";
-import { doc, onSnapshot, setDoc } from "firebase/firestore";
+import { doc, onSnapshot, setDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 import{useAuth} from '@/lib/auth';
@@ -22,16 +22,59 @@ export function AtoEditor({ operator_id, operator_name, initial_ato, puedeEditar
   useEffect(() => {
     if (!usuario) return;
     const doc_ref = doc(db, "config_operadores", operator_id);
-    const unsubscribe = onSnapshot(doc_ref, (snap) => {
+
+    const getAlternativeIds = (id: string): string[] => {
+      const translations: Record<string, string[]> = {
+        "32173442": ["32043900"],
+        "32043900": ["32173442", "32045469"],
+        "32145333": ["32044316"],
+        "32044316": ["32145333"],
+        "32043835": ["32145333"],
+        "32045469": ["32043900"],
+        "32043301": ["32043739"],
+        "32043739": ["32043301", "32045769"],
+        "32043861": ["32043835"],
+        "32044301": ["32043861"],
+        "32045769": ["32044319", "32043739"],
+        "32044319": ["32045769"],
+      };
+      return translations[id] || [];
+    };
+
+    const unsubscribe = onSnapshot(doc_ref, async (snap) => {
       if (snap.exists()) {
         const data = snap.data();
         if (data.ato !== undefined) {
           set_ato_value(data.ato);
         }
+      } else {
+        const altIds = getAlternativeIds(operator_id);
+        for (const altId of altIds) {
+          try {
+            const altDocRef = doc(db, "config_operadores", altId);
+            const altSnapshot = await getDoc(altDocRef);
+            if (altSnapshot.exists()) {
+              const data = altSnapshot.data();
+              if (data.ato !== undefined) {
+                set_ato_value(data.ato);
+                
+                await setDoc(doc_ref, {
+                  ...data,
+                  operatorName: operator_name,
+                  updatedAt: new Date().toISOString()
+                }, { merge: true });
+                console.log(`Migrated config_operadores from ${altId} to ${operator_id}`);
+                break;
+              }
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        }
       }
     });
     return () => unsubscribe();
-  }, [operator_id]);
+  }, [operator_id, operator_name, usuario]);
 
   const update_ato = async (value: number) => {
     if (!puedeEditar) return;

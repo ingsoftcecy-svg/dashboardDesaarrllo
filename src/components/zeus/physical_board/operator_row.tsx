@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { OperatorHistoryDialog } from "./operator_history_dialog";
 import { TeamHistoryDialog } from "./team_history_dialog";
+import { OperatorCoursesDialog } from "./operator_courses_dialog";
 import type { Operator } from "@/data/zeus";
 import { OperatorAvatar } from "./operator_avatar";
 import { PreReqEditor } from "./pre_req_editor";
@@ -22,6 +23,7 @@ interface OperatorRowProps {
   full_team_members?: { id: string; name: string; puesto: string; score: number; lastAssessmentDate?: string }[];
   puedeEditar?: boolean; // Nueva prop para controlar la edición
   teamRankings?: any[];
+  metricMode?: "autonomia" | "cursos";
 }
 
 const obtenerLogoFallbacks = (name: string): string[] => {
@@ -60,7 +62,7 @@ const obtenerLogoFallbacks = (name: string): string[] => {
   return unique.map(item => `/logos/${item}.png`);
 };
 
-export function OperatorRow({ operator, original_index, visual_index, show_ato = true, team_members, full_team_members = [], puedeEditar = false, teamRankings = [] }: OperatorRowProps) {
+export function OperatorRow({ operator, original_index, visual_index, show_ato = true, team_members, full_team_members = [], puedeEditar = false, teamRankings = [], metricMode = "autonomia" }: OperatorRowProps) {
   const teamData = (teamRankings || []).find(r => r.name.trim().toUpperCase() === operator.equipoAutonomo?.trim().toUpperCase());
   const autonomy_score = ((operator.autonomyScore / 100) * 4).toFixed(2);
   const is_expired = is_assessment_expired(operator.lastAssessmentDate);
@@ -183,7 +185,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                 </DialogContent>
               </Dialog>
               {is_expired && (
-                <div className="flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-[8px] font-bold text-red-700 uppercase tracking-wider" title={`Última evaluación: ${operator.lastAssessmentDate}`}>
+                <div className="flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-[8px] font-bold text-red-700 uppercase tracking-wider animate-pulse" title={`Más de 2 meses transcurridos desde la última evaluación (${operator.lastAssessmentDate})`}>
                   <AlertTriangle className="h-2.5 w-2.5" />
                   {STRINGS.EXPIRED_ASSESSMENT}
                 </div>
@@ -346,27 +348,99 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
       </td>
 
       <td className="border-b p-3 align-middle text-center w-40">
-        <div className={cn(
-          "mx-auto flex w-16 flex-col items-center justify-center overflow-hidden rounded border border-[#1a4491] shadow-sm transition-all",
-          autonomy_score === "4.00" && "animate-glow-gold scale-110"
-        )}>
+        {metricMode === "autonomia" ? (
           <div className={cn(
-            "w-full py-1 text-center text-[10px] font-bold leading-tight text-white uppercase",
-            autonomy_score === "4.00" ? "bg-yellow-500" : "bg-[#1a4491]"
+            "mx-auto flex w-16 flex-col items-center justify-center overflow-hidden rounded border border-[#1a4491] shadow-sm transition-all",
+            autonomy_score === "4.00" && "animate-glow-gold scale-110"
           )}>
-            {STRINGS.AUTONOMY_LEVEL}
+            <div className={cn(
+              "w-full py-1 text-center text-[10px] font-bold leading-tight text-white uppercase",
+              autonomy_score === "4.00" ? "bg-yellow-500" : "bg-[#1a4491]"
+            )}>
+              {STRINGS.AUTONOMY_LEVEL}
+            </div>
+            <div className="flex w-full items-center justify-center bg-white py-1 text-[#1a4491] min-h-[36px]">
+              {operator.noEvaluado ? (
+                <div className="flex flex-col items-center justify-center leading-none">
+                  <span className="text-sm font-black text-slate-400">0.00</span>
+                  <span className="text-[6.5px] text-rose-500 font-black uppercase tracking-widest mt-0.5 whitespace-nowrap">Sin Evaluar</span>
+                </div>
+              ) : (
+                <span className="text-xl font-black">{autonomy_score}</span>
+              )}
+            </div>
           </div>
-          <div className="flex w-full items-center justify-center bg-white py-1 text-[#1a4491] min-h-[36px]">
-            {operator.noEvaluado ? (
-              <div className="flex flex-col items-center justify-center leading-none">
-                <span className="text-sm font-black text-slate-400">0.00</span>
-                <span className="text-[6.5px] text-rose-500 font-black uppercase tracking-widest mt-0.5 whitespace-nowrap">Sin Evaluar</span>
+        ) : (() => {
+          const progress = operator.cursosProgress ?? 0;
+          let colorHeader = "bg-[#1a4491]";
+          let colorBorder = "border-[#1a4491]";
+          let colorText = "text-[#1a4491]";
+
+          if (operator.cursosTotal > 0) {
+            if (progress === 100) {
+              colorHeader = "bg-yellow-500";
+              colorBorder = "border-yellow-500";
+              colorText = "text-yellow-600";
+            } else if (progress >= 80) {
+              colorHeader = "bg-emerald-600";
+              colorBorder = "border-emerald-600";
+              colorText = "text-emerald-700";
+            } else if (progress >= 50) {
+              colorHeader = "bg-amber-500";
+              colorBorder = "border-amber-500";
+              colorText = "text-amber-600";
+            } else {
+              colorHeader = "bg-rose-600";
+              colorBorder = "border-rose-600";
+              colorText = "text-rose-700";
+            }
+          }
+
+          const badgeEl = (
+            <div 
+              title={`Aprobados: ${operator.cursosAprobados || 0} / ${operator.cursosTotal || 0}\nEn progreso: ${operator.cursosEnProgreso || 0}\nPendientes: ${operator.cursosPendientes || 0}`}
+              className={cn(
+                "mx-auto flex w-20 flex-col items-center justify-center overflow-hidden rounded border shadow-sm transition-all cursor-help hover:scale-105 active:scale-95 duration-200",
+                colorBorder,
+                progress === 100 && "animate-glow-gold scale-110"
+              )}
+            >
+              <div className={cn(
+                "w-full py-1 text-center text-[9px] font-bold leading-tight text-white uppercase tracking-wider",
+                colorHeader
+              )}>
+                PROGRESO
               </div>
-            ) : (
-              <span className="text-xl font-black">{autonomy_score}</span>
-            )}
-          </div>
-        </div>
+              <div className={cn("flex w-full items-center justify-center bg-white py-1 min-h-[36px]", colorText)}>
+                {operator.cursosTotal === 0 ? (
+                  <div className="flex flex-col items-center justify-center leading-none">
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Sin Cursos</span>
+                  </div>
+                ) : (
+                  <span className="text-sm font-black tabular-nums">{progress}%</span>
+                )}
+              </div>
+            </div>
+          );
+
+          if (operator.cursosTotal === 0) {
+            return badgeEl;
+          }
+
+          return (
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="focus:outline-none block mx-auto">{badgeEl}</button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
+                <OperatorCoursesDialog 
+                  operatorName={operator.nombre}
+                  operatorId={operator.id}
+                />
+              </DialogContent>
+            </Dialog>
+          );
+        })()}
       </td>
 
     </motion.tr>

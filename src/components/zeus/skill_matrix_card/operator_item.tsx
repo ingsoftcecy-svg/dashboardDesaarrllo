@@ -28,7 +28,7 @@ export function OperatorItem({ operator }: OperatorItemProps) {
           <div className="flex items-center gap-1.5 flex-wrap">
             <div className="truncate text-sm font-semibold text-slate-800">{operator.nombre}</div>
             {is_expired && (
-              <div className="flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-[8px] font-bold text-red-700 uppercase tracking-wider" title={`Última evaluación: ${operator.lastAssessmentDate}`}>
+              <div className="flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-[8px] font-bold text-red-700 uppercase tracking-wider animate-pulse" title={`Más de 2 meses transcurridos desde la última evaluación (${operator.lastAssessmentDate})`}>
                 <AlertTriangle className="h-2.5 w-2.5" />
                 +2 Meses
               </div>

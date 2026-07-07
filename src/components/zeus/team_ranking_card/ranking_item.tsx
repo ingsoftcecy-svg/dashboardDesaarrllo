@@ -117,7 +117,12 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [] }:
       puesto: op.puesto,
       score: op.autonomyScore,
       lastAssessmentDate: op.lastAssessmentDate,
-      noEvaluado: op.noEvaluado
+      noEvaluado: op.noEvaluado,
+      cursosProgress: op.cursosProgress,
+      cursosAprobados: op.cursosAprobados,
+      cursosTotal: op.cursosTotal,
+      cursosEnProgreso: op.cursosEnProgreso,
+      cursosPendientes: op.cursosPendientes
     }));
   const handle_dialog_image_error = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const nextIndex = dialogFallbackIndex + 1;

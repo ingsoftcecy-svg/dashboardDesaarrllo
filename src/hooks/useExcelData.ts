@@ -105,6 +105,29 @@ export function useExcelData() {
           } catch (e) { console.error("Error loading fallback estructura_nueva.json:", e); }
         }
 
+        // Cargar cursos_resumen desde Firestore con fallback en archivo local (carga rápida)
+        let cursosResumen: Record<string, { t: number; a: number; e: number; p: number }> = {};
+        try {
+          const cursosDocRef = doc(db, "config_dashboard", "cursos_resumen");
+          const cursosDocSnap = await getDoc(cursosDocRef);
+          if (cursosDocSnap.exists() && cursosDocSnap.data().summary) {
+            cursosResumen = cursosDocSnap.data().summary;
+            console.log("Loaded courses summary from Firestore.");
+          } else {
+            const cursosRes = await fetch(`/cursos_resumen.json?t=${timestamp}`);
+            cursosResumen = await cursosRes.json();
+            console.log("Loaded courses summary from local fallback.");
+          }
+        } catch (e) {
+          console.error("Error loading courses summary, trying local fallback:", e);
+          try {
+            const cursosRes = await fetch(`/cursos_resumen.json?t=${timestamp}`);
+            cursosResumen = await cursosRes.json();
+          } catch (err) {
+            console.error("Local fallback for courses summary failed:", err);
+          }
+        }
+
         // Procesar Base Config (championMap)
         for (const row of baseRows) {
           const id = row["ID Sharp"] ? String(row["ID Sharp"]) : null;
@@ -508,6 +531,14 @@ export function useExcelData() {
             }
           }
 
+          const empCursos = cursosResumen[id] || { t: 0, a: 0, e: 0, p: 0 };
+          const totalC = empCursos.t;
+          const aprobadosC = empCursos.a;
+          const enProgresoC = empCursos.e;
+          const pendientesC = empCursos.p;
+          // Si un curso sigue en progreso se mantiene en pendientes para el porcentaje final
+          const cursosProgress = totalC > 0 ? parseFloat(((aprobadosC / totalC) * 100).toFixed(2)) : 0;
+
           return {
             id,
             nombre,
@@ -521,7 +552,12 @@ export function useExcelData() {
             lider: leaderName,
             lastAssessmentDate: row["Assessment Date"] || row["Last Assessment Date"] || null,
             ato: row["ATO"] || 4,
-            noEvaluado: !hasEvaluation || Number(autonomyScore.toFixed(2)) === 0
+            noEvaluado: !hasEvaluation || Number(autonomyScore.toFixed(2)) === 0,
+            cursosProgress,
+            cursosAprobados: aprobadosC,
+            cursosTotal: totalC,
+            cursosEnProgreso: enProgresoC,
+            cursosPendientes: pendientesC
           };
         };
 
@@ -625,22 +661,6 @@ export function useExcelData() {
             lider: op.lider
           }));
 
-          const evaluatedOps = ops.filter(op => !op.noEvaluado);
-          const totalScore = evaluatedOps.reduce((sum, op) => sum + op.autonomyScore, 0);
-          const excelenciaEquipo = evaluatedOps.length > 0 ? Number((totalScore / evaluatedOps.length).toFixed(2)) : 0;
-          const autonomia = Number(((excelenciaEquipo / 100) * 4).toFixed(2));
-          
-          let nivelLabel = "Nivel 1 — Inicial";
-          if (autonomia >= 3.5) nivelLabel = "Nivel 4 — Operación Autónoma";
-          else if (autonomia >= 2.5) nivelLabel = "Nivel 3 — Mejora Autónoma";
-          else if (autonomia >= 1.5) nivelLabel = "Nivel 2 — Mantenimiento Autónomo";
-
-          const logros = [
-            `${ops.filter(o => o.autonomyScore >= 80).length} operadores con autonomía ≥ 80%`,
-            `Promedio de autonomía del equipo: ${excelenciaEquipo}%`,
-            `Top 1: ${podio[0]?.nombre || "N/A"} (${podio[0]?.excelencia || 0}%)`
-          ];
-
           const teamsMap: Record<string, { sum: number, count: number, leader: string }> = {};
           ops.forEach(op => {
             const team = op.equipoAutonomo || "Sin Equipo";
@@ -709,6 +729,22 @@ export function useExcelData() {
               };
             })
             .sort((a, b) => b.avg - a.avg);
+
+          const excelenciaEquipo = teamRankings.length > 0
+            ? Number((teamRankings.reduce((sum, t) => sum + t.avg, 0) / teamRankings.length).toFixed(2))
+            : 0;
+          const autonomia = Number(((excelenciaEquipo / 100) * 4).toFixed(2));
+          
+          let nivelLabel = "Nivel 1 — Inicial";
+          if (autonomia >= 3.5) nivelLabel = "Nivel 4 — Operación Autónoma";
+          else if (autonomia >= 2.5) nivelLabel = "Nivel 3 — Mejora Autónoma";
+          else if (autonomia >= 1.5) nivelLabel = "Nivel 2 — Mantenimiento Autónomo";
+
+          const logros = [
+            `${ops.filter(o => o.autonomyScore >= 80).length} operadores con autonomía ≥ 80%`,
+            `Promedio de autonomía del equipo: ${excelenciaEquipo}%`,
+            `Top 1: ${podio[0]?.nombre || "N/A"} (${podio[0]?.excelencia || 0}%)`
+          ];
 
           const bestTeam = teamRankings[0] || undefined;
           const worstTeam = teamRankings[teamRankings.length - 1] || undefined;

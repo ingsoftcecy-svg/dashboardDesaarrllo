@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Star, Check } from "lucide-react";
-import { doc, onSnapshot, setDoc } from "firebase/firestore";
+import { doc, onSnapshot, setDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 import{useAuth} from '@/lib/auth';
@@ -29,15 +29,57 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos, puedeEdi
   useEffect(() => {
     if (!usuario) return;
     const doc_ref = doc(db, "multi_habilidades", operator_id);
-    const unsubscribe = onSnapshot(doc_ref, (snap) => {
+
+    const getAlternativeIds = (id: string): string[] => {
+      const translations: Record<string, string[]> = {
+        "32173442": ["32043900"],
+        "32043900": ["32173442", "32045469"],
+        "32145333": ["32044316"],
+        "32044316": ["32145333"],
+        "32043835": ["32145333"],
+        "32045469": ["32043900"],
+        "32043301": ["32043739"],
+        "32043739": ["32043301", "32045769"],
+        "32043861": ["32043835"],
+        "32044301": ["32043861"],
+        "32045769": ["32044319", "32043739"],
+        "32044319": ["32045769"],
+      };
+      return translations[id] || [];
+    };
+
+    const unsubscribe = onSnapshot(doc_ref, async (snap) => {
       if (snap.exists()) {
         const data = snap.data();
         set_config(data);
         localStorage.setItem(`mskill_${operator_id}`, JSON.stringify(data));
+      } else {
+        const altIds = getAlternativeIds(operator_id);
+        for (const altId of altIds) {
+          try {
+            const altDocRef = doc(db, "multi_habilidades", altId);
+            const altSnapshot = await getDoc(altDocRef);
+            if (altSnapshot.exists()) {
+              const data = altSnapshot.data();
+              set_config(data);
+              localStorage.setItem(`mskill_${operator_id}`, JSON.stringify(data));
+              
+              await setDoc(doc_ref, {
+                ...data,
+                operatorName: operator_name,
+                updatedAt: new Date().toISOString()
+              }, { merge: true });
+              console.log(`Migrated multi_habilidades from ${altId} to ${operator_id}`);
+              break;
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        }
       }
     });
     return () => unsubscribe();
-  }, [operator_id, usuario]);
+  }, [operator_id, operator_name, usuario]);
 
   const [is_saving, set_is_saving] = useState(false);
 

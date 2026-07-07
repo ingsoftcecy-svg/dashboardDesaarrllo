@@ -16,6 +16,11 @@ export interface Operator {
   lastAssessmentDate?: string;
   ato?: number;
   noEvaluado?: boolean;
+  cursosProgress?: number;
+  cursosAprobados?: number;
+  cursosTotal?: number;
+  cursosEnProgreso?: number;
+  cursosPendientes?: number;
 }
 
 export interface IPRow {

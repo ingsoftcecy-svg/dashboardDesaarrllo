@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Check } from "lucide-react";
-import { doc, onSnapshot, setDoc } from "firebase/firestore";
+import { doc, onSnapshot, setDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 import{useAuth} from '@/lib/auth';
@@ -29,9 +29,27 @@ export function PreReqEditor({ operator_id, operator_name, team_name, puedeEdita
 
     const document_reference = doc(db, "prerequisitos", operator_id);
     
+    const getAlternativeIds = (id: string): string[] => {
+      const translations: Record<string, string[]> = {
+        "32173442": ["32043900"],
+        "32043900": ["32173442", "32045469"],
+        "32145333": ["32044316"],
+        "32044316": ["32145333"],
+        "32043835": ["32145333"],
+        "32045469": ["32043900"],
+        "32043301": ["32043739"],
+        "32043739": ["32043301", "32045769"],
+        "32043861": ["32043835"],
+        "32044301": ["32043861"],
+        "32045769": ["32044319", "32043739"],
+        "32044319": ["32045769"],
+      };
+      return translations[id] || [];
+    };
+
     const unsubscribe = onSnapshot(
       document_reference, 
-      (document_snapshot) => {
+      async (document_snapshot) => {
         if (document_snapshot.exists()) {
           const data = document_snapshot.data();
           const reqs_only = { ...data };
@@ -40,6 +58,33 @@ export function PreReqEditor({ operator_id, operator_name, team_name, puedeEdita
           
           set_checked_items(reqs_only as Record<string, boolean>);
           localStorage.setItem(`prereqs_${operator_id}`, JSON.stringify(reqs_only));
+        } else {
+          const altIds = getAlternativeIds(operator_id);
+          for (const altId of altIds) {
+            try {
+              const altDocRef = doc(db, "prerequisitos", altId);
+              const altSnapshot = await getDoc(altDocRef);
+              if (altSnapshot.exists()) {
+                const data = altSnapshot.data();
+                const reqs_only = { ...data };
+                delete reqs_only.operatorName;
+                delete reqs_only.teamName;
+                
+                set_checked_items(reqs_only as Record<string, boolean>);
+                localStorage.setItem(`prereqs_${operator_id}`, JSON.stringify(reqs_only));
+                
+                await setDoc(document_reference, {
+                  ...data,
+                  operatorName: operator_name,
+                  teamName: team_name
+                }, { merge: true });
+                console.log(`Migrated prereqs from ${altId} to ${operator_id}`);
+                break;
+              }
+            } catch (err) {
+              console.error(err);
+            }
+          }
         }
       }, 
       (error) => {

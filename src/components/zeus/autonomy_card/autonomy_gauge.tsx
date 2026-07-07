@@ -9,6 +9,8 @@ interface AutonomyGaugeProps {
   size?: number;
   stroke_width?: number;
   show_text?: boolean;
+  customText?: string;
+  customSubText?: string;
 }
 
 export function AutonomyGauge({ 
@@ -17,7 +19,9 @@ export function AutonomyGauge({
   label, 
   size = 140, 
   stroke_width = 12,
-  show_text = true 
+  show_text = true,
+  customText,
+  customSubText
 }: AutonomyGaugeProps) {
   const percentage = Math.min(value / max, 1);
   const center = size / 2;
@@ -46,11 +50,24 @@ export function AutonomyGauge({
       </svg>
       {show_text && (
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className={cn("font-bold text-blue-900", size < 100 ? "text-sm" : "text-3xl")}>
-            {value.toFixed(2)}
-          </span>
-          {size >= 100 && (
-            <span className="text-[10px] uppercase tracking-wider text-slate-500">/ {max.toFixed(2)}</span>
+          {customText ? (
+            <>
+              <span className={cn("font-bold text-blue-900", size < 100 ? "text-xs" : "text-2xl")}>
+                {customText}
+              </span>
+              {customSubText && size >= 100 && (
+                <span className="text-[10px] uppercase tracking-wider text-slate-500">{customSubText}</span>
+              )}
+            </>
+          ) : (
+            <>
+              <span className={cn("font-bold text-blue-900", size < 100 ? "text-sm" : "text-3xl")}>
+                {value.toFixed(2)}
+              </span>
+              {size >= 100 && (
+                <span className="text-[10px] uppercase tracking-wider text-slate-500">/ {max.toFixed(2)}</span>
+              )}
+            </>
           )}
         </div>
       )}
