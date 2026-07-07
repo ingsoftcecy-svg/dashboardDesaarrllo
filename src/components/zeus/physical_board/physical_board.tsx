@@ -5,6 +5,7 @@ import type { Operator } from "@/data/zeus";
 import { OperatorRow } from "./operator_row";
 import { normalize_string } from "./utils";
 import { STRINGS } from "./constants";
+import { cn } from "@/lib/utils";
 
 
 export interface PhysicalBoardProps {
@@ -16,54 +17,60 @@ export interface PhysicalBoardProps {
 }
 
 export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false, teamRankings = [], metricMode = "autonomia" }: PhysicalBoardProps) {
-  const [search_query, set_search_query] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [visibleCount, setVisibleCount] = useState(10);
 
   useEffect(() => {
-    setVisibleCount(10);
-  }, [search_query]);
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setVisibleCount(10);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
-  const filtered_operators = useMemo(() => {
-    const indexed_operators = operadores.map((operator, index) => ({ operator, original_index: index }));
-
-    if (!search_query.trim()) {
-      return indexed_operators;
-    }
-
-    const normalized_query = normalize_string(search_query.trim());
-
-    return indexed_operators.filter(({ operator }) =>
-      normalize_string(operator.nombre).includes(normalized_query) ||
-      normalize_string(operator.equipoAutonomo || "").includes(normalized_query) ||
-      normalize_string(operator.lider || "").includes(normalized_query)
-    );
-  }, [operadores, search_query]);
+  const filteredOperadores = useMemo(() => {
+    const term = normalize_string(debouncedSearch.trim());
+    const indexed = operadores.map((operator, index) => ({ operator, original_index: index }));
+    if (!term) return indexed;
+    return indexed.filter(({ operator }) => {
+      return (
+        normalize_string(operator.nombre).includes(term) ||
+        normalize_string(operator.puesto || "").includes(term) ||
+        normalize_string(operator.equipoAutonomo || "").includes(term)
+      );
+    });
+  }, [operadores, debouncedSearch]);
 
   const visibleOperators = useMemo(() => {
-    return filtered_operators.slice(0, visibleCount);
-  }, [filtered_operators, visibleCount]);
+    return filteredOperadores.slice(0, visibleCount);
+  }, [filteredOperadores, visibleCount]);
+
+  const headerBgClass = metricMode === "cursos" ? "bg-purple-800" : "bg-[#1a4491]";
 
   return (
-    <div className="w-full space-y-3">
-      <div className="relative max-w-sm">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+    <div className="flex flex-col gap-4">
+      {/* 🔍 BARRA DE BÚSQUEDA */}
+      <div className="relative w-full max-w-md">
+        <Search className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-400" />
         <input
           type="text"
-          value={search_query}
-          onChange={(event) => set_search_query(event.target.value)}
           placeholder={STRINGS.SEARCH_PLACEHOLDER}
-          className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-10 text-sm text-slate-700 shadow-sm placeholder:text-slate-400 focus:border-[#1a4491] focus:outline-none focus:ring-2 focus:ring-[#1a4491]/20 transition-colors"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-10 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all placeholder:text-slate-400 focus:border-[#1a4491] focus:ring-1 focus:ring-[#1a4491] outline-none"
         />
-        {search_query && (
+        {searchTerm && (
           <button
-            onClick={() => set_search_query("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+            onClick={() => setSearchTerm("")}
+            className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 transition-colors"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4.5 w-4.5" />
           </button>
         )}
       </div>
 
+      {/* 📋 TABLA FÍSICA */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -74,17 +81,17 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
           style={{ minWidth: metricMode === "autonomia" ? (show_ato ? "1696px" : "1568px") : (show_ato ? "1328px" : "1200px") }}
         >
           <thead className="sticky top-0 z-30">
-            <tr className="bg-[#1a4491] text-xs font-bold text-white uppercase tracking-wider">
-              <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-16 text-center z-30">#</th>
-              <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-64 z-30">OPERADOR</th>
-              <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-40 text-center z-30">EQUIPO AUTONOMO</th>
-              <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-48 text-center z-30">HABILIDADES</th>
-              <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-48 z-30">MULTI-HABILIDAD</th>
-              {metricMode === "autonomia" && <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-28 text-center z-30">CHAMPIONS</th>}
-              {show_ato && <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-32 text-center z-30">ATO</th>}
-              <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-44 z-30">IPs ASIGNADOS</th>
-              {metricMode === "autonomia" && <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-64 z-30">USABILIDAD EN HERRAMIENTAS DIGITALES</th>}
-              <th className="sticky top-0 bg-[#1a4491] border-b p-3 w-40 text-center z-30">{metricMode === "autonomia" ? "NIVEL AUTONOMIA" : "PROGRESO CURSOS"}</th>
+            <tr className={cn("text-xs font-bold text-white uppercase tracking-wider", headerBgClass)}>
+              <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-16 text-center z-30 transition-colors duration-300", headerBgClass)}>#</th>
+              <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-64 z-30 transition-colors duration-300", headerBgClass)}>OPERADOR</th>
+              <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>EQUIPO AUTONOMO</th>
+              <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-48 text-center z-30 transition-colors duration-300", headerBgClass)}>HABILIDADES</th>
+              <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-48 z-30 transition-colors duration-300", headerBgClass)}>MULTI-HABILIDAD</th>
+              {metricMode === "autonomia" && <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-28 text-center z-30 transition-colors duration-300", headerBgClass)}>CHAMPIONS</th>}
+              {show_ato && <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-32 text-center z-30 transition-colors duration-300", headerBgClass)}>ATO</th>}
+              <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-44 z-30 transition-colors duration-300", headerBgClass)}>IPs ASIGNADOS</th>
+              {metricMode === "autonomia" && <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-64 z-30 transition-colors duration-300", headerBgClass)}>USABILIDAD EN HERRAMIENTAS DIGITALES</th>}
+              <th className={cn("sticky top-0 border-b border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>{metricMode === "autonomia" ? "NIVEL AUTONOMIA" : "PROGRESO CURSOS"}</th>
             </tr>
           </thead>
           <tbody>
@@ -125,17 +132,27 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
       </motion.div>
 
       {/* Botones de Paginación para Optimización de Rendimiento */}
-      {filtered_operators.length > visibleCount && (
+      {filteredOperadores.length > visibleCount && (
         <div className="flex justify-center items-center gap-3 pt-2">
           <button
             onClick={() => setVisibleCount(prev => prev + 10)}
-            className="px-5 py-2 text-xs font-black uppercase tracking-wider text-[#1a4491] bg-white border border-[#1a4491] rounded-lg shadow-sm hover:bg-slate-50 transition-colors cursor-pointer animate-fade-in"
+            className={cn(
+              "px-5 py-2 text-xs font-black uppercase tracking-wider bg-white border rounded-lg shadow-sm hover:bg-slate-50 transition-colors cursor-pointer animate-fade-in",
+              metricMode === "cursos" 
+                ? "text-purple-700 border-purple-700 hover:text-purple-800" 
+                : "text-[#1a4491] border-[#1a4491] hover:text-[#1a4491]/90"
+            )}
           >
-            Cargar 10 más (Mostrando {visibleCount} de {filtered_operators.length})
+            Cargar 10 más (Mostrando {visibleCount} de {filteredOperadores.length})
           </button>
           <button
-            onClick={() => setVisibleCount(filtered_operators.length)}
-            className="px-5 py-2 text-xs font-black uppercase tracking-wider text-white bg-[#1a4491] border border-transparent rounded-lg shadow-sm hover:bg-[#1a4491]/90 transition-colors cursor-pointer animate-fade-in"
+            onClick={() => setVisibleCount(filteredOperadores.length)}
+            className={cn(
+              "px-5 py-2 text-xs font-black uppercase tracking-wider text-white border border-transparent rounded-lg shadow-sm transition-colors cursor-pointer animate-fade-in",
+              metricMode === "cursos" 
+                ? "bg-purple-700 hover:bg-purple-800" 
+                : "bg-[#1a4491] hover:bg-[#1a4491]/90"
+            )}
           >
             Mostrar todos
           </button>

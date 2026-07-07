@@ -232,6 +232,8 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [], m
         </DialogTrigger>
 
         <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl max-h-[90vh] flex flex-col overflow-hidden">
+          <DialogTitle className="sr-only">Desempeño de Equipo: {team.name}</DialogTitle>
+          <DialogDescription className="sr-only">Información histórica y de progreso del equipo {team.name}</DialogDescription>
           <TeamHistoryDialog 
             teamName={team.name} 
             members={members} 

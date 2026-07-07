@@ -2,6 +2,7 @@ import { Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { STRINGS } from "./constants";
 import { RankingItem } from "./ranking_item";
+import { cn } from "@/lib/utils";
 
 interface TeamRanking {
   name: string;
@@ -23,7 +24,12 @@ export function TeamRankingCard({ rankings = [], operadores = [], metricMode = "
       whileHover={{ y: -5 }}
       className="flex h-full flex-col rounded-xl border border-white/40 bg-white/70 backdrop-blur-md shadow-xl transition hover:shadow-lg overflow-hidden"
     >
-      <header className="flex items-center gap-2 border-b border-slate-100 bg-gradient-to-r from-[#1a4491] to-blue-800 px-4 py-3 text-white">
+      <header className={cn(
+        "flex items-center gap-2 border-b border-slate-100 px-4 py-3 text-white transition-all duration-300",
+        metricMode === "cursos"
+          ? "bg-gradient-to-r from-purple-800 to-indigo-900"
+          : "bg-gradient-to-r from-[#1a4491] to-blue-800"
+      )}>
         <Users className="h-5 w-5 text-yellow-400" />
         <div>
           <h2 className="text-sm font-bold">{STRINGS.TITLE}</h2>

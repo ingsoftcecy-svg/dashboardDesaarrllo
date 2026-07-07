@@ -160,7 +160,7 @@ function Index() {
                     "rounded-md px-4 py-1.5 text-xs font-bold transition-all uppercase tracking-wider cursor-pointer",
                     metricMode === "autonomia"
                       ? "bg-[#1a4491] text-white shadow-md scale-[1.02]"
-                      : "text-slate-600 hover:bg-slate-350 hover:text-slate-800"
+                      : "text-slate-600 hover:bg-slate-300 hover:text-slate-800"
                   )}
                 >
                   Autonomía
@@ -170,8 +170,8 @@ function Index() {
                   className={cn(
                     "rounded-md px-4 py-1.5 text-xs font-bold transition-all uppercase tracking-wider cursor-pointer",
                     metricMode === "cursos"
-                      ? "bg-[#1a4491] text-white shadow-md scale-[1.02]"
-                      : "text-slate-600 hover:bg-slate-350 hover:text-slate-800"
+                      ? "bg-purple-700 text-white shadow-md scale-[1.02]"
+                      : "text-slate-600 hover:bg-slate-300 hover:text-slate-800"
                   )}
                 >
                   Cursos
@@ -187,6 +187,7 @@ function Index() {
                 podio={computedArea.podio}
                 logros={computedArea.logros}
                 excelenciaEquipo={computedArea.excelenciaEquipo}
+                metricMode={metricMode}
               />
               
               <TeamRankingCard rankings={computedArea.teamRankings} operadores={computedArea.operadores} metricMode={metricMode} />

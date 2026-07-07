@@ -177,6 +177,8 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                   </button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
+                  <DialogTitle className="sr-only">Historial de {operator.nombre}</DialogTitle>
+                  <DialogDescription className="sr-only">Detalles de evaluaciones históricas de {operator.nombre}</DialogDescription>
                   <OperatorHistoryDialog 
                     operatorName={operator.nombre} 
                     operatorId={operator.id} 
@@ -224,6 +226,8 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               </button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl max-h-[90vh] flex flex-col overflow-hidden">
+              <DialogTitle className="sr-only">Desempeño de Equipo: {operator.equipoAutonomo}</DialogTitle>
+              <DialogDescription className="sr-only">Información histórica y de progreso del equipo {operator.equipoAutonomo}</DialogDescription>
               <TeamHistoryDialog 
                 teamName={operator.equipoAutonomo} 
                 members={full_team_members} 
@@ -418,6 +422,8 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                 <button className="focus:outline-none block mx-auto">{badgeEl}</button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
+                <DialogTitle className="sr-only">Cursos de {operator.nombre}</DialogTitle>
+                <DialogDescription className="sr-only">Progreso de capacitación y estado de cursos de {operator.nombre}</DialogDescription>
                 <OperatorCoursesDialog 
                   operatorName={operator.nombre}
                   operatorId={operator.id}

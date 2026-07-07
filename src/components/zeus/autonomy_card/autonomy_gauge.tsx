@@ -11,6 +11,7 @@ interface AutonomyGaugeProps {
   show_text?: boolean;
   customText?: string;
   customSubText?: string;
+  color?: string;
 }
 
 export function AutonomyGauge({ 
@@ -21,7 +22,8 @@ export function AutonomyGauge({
   stroke_width = 12,
   show_text = true,
   customText,
-  customSubText
+  customSubText,
+  color
 }: AutonomyGaugeProps) {
   const percentage = Math.min(value / max, 1);
   const center = size / 2;
@@ -29,7 +31,7 @@ export function AutonomyGauge({
   const circumference = 2 * Math.PI * radius;
   const dash_array = circumference * percentage;
 
-  const ring_color = get_autonomy_color(value);
+  const ring_color = color || get_autonomy_color(value);
 
   return (
     <div className="relative inline-flex flex-col items-center">

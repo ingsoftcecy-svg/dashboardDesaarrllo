@@ -13,6 +13,7 @@ interface AutonomyCardProps {
 }
 
 import { Sparkline } from "@/components/zeus/sparkline";
+import { cn } from "@/lib/utils";
 
 export function AutonomyCard({ autonomia, nivel_label, trend = [], title, subtitle, customText, customSubText }: AutonomyCardProps) {
   const titleText = title || STRINGS.TITLE;
@@ -25,7 +26,12 @@ export function AutonomyCard({ autonomia, nivel_label, trend = [], title, subtit
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col rounded-xl border border-slate-200 bg-white shadow-xl overflow-hidden"
     >
-      <header className="flex items-center justify-between bg-gradient-to-r from-blue-700 to-blue-800 px-4 py-3 text-white">
+      <header className={cn(
+        "flex items-center justify-between px-4 py-3 text-white transition-all duration-300",
+        isCapacitacion
+          ? "bg-gradient-to-r from-purple-700 to-indigo-800"
+          : "bg-gradient-to-r from-blue-700 to-blue-800"
+      )}>
         <div className="flex items-center gap-3">
           <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20">
             <div className="absolute h-5 w-5 rounded-full border-2 border-yellow-400 opacity-50" />
@@ -47,7 +53,15 @@ export function AutonomyCard({ autonomia, nivel_label, trend = [], title, subtit
 
       <div className="flex flex-1 items-center gap-8 p-6">
         <div className="flex shrink-0 items-center justify-center">
-          <AutonomyGauge value={autonomia} max={4} size={130} stroke_width={15} customText={customText} customSubText={customSubText} />
+          <AutonomyGauge 
+            value={autonomia} 
+            max={4} 
+            size={130} 
+            stroke_width={15} 
+            customText={customText} 
+            customSubText={customSubText} 
+            color={isCapacitacion ? "#9333ea" : undefined}
+          />
         </div>
         
         <div className="flex flex-col justify-center space-y-2">
