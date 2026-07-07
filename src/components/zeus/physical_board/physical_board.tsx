@@ -83,7 +83,7 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-28 text-center z-30">CHAMPIONS</th>
               {show_ato && <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-32 text-center z-30">ATO</th>}
               <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-44 z-30">IPs ASIGNADOS</th>
-              <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-64 z-30">PRE REQUISITOS</th>
+              <th className="sticky top-0 bg-[#1a4491] border-b border-r border-slate-300 p-3 w-64 z-30">USABILIDAD EN HERRAMIENTAS DIGITALES</th>
               <th className="sticky top-0 bg-[#1a4491] border-b p-3 w-40 text-center z-30">{metricMode === "autonomia" ? "NIVEL AUTONOMIA" : "PROGRESO CURSOS"}</th>
             </tr>
           </thead>
