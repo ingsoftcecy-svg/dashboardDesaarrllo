@@ -189,7 +189,7 @@ function Index() {
                 excelenciaEquipo={computedArea.excelenciaEquipo}
               />
               
-              <TeamRankingCard rankings={computedArea.teamRankings} operadores={computedArea.operadores} />
+              <TeamRankingCard rankings={computedArea.teamRankings} operadores={computedArea.operadores} metricMode={metricMode} />
 
               <div className="flex flex-col gap-4">
                 <AutonomyCard
@@ -201,7 +201,7 @@ function Index() {
                   customText={`${computedArea.excelenciaEquipo}%`}
                   customSubText="/ 100%"
                 />
-                <PromedioPorFactorCard area={computedArea} />
+                {metricMode === "autonomia" && <PromedioPorFactorCard area={computedArea} />}
               </div>
             </div>
 

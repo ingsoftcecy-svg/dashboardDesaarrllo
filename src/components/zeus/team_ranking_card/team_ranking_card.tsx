@@ -12,9 +12,10 @@ interface TeamRanking {
 interface TeamRankingCardProps {
   rankings?: TeamRanking[];
   operadores?: any[];
+  metricMode?: "autonomia" | "cursos";
 }
 
-export function TeamRankingCard({ rankings = [], operadores = [] }: TeamRankingCardProps) {
+export function TeamRankingCard({ rankings = [], operadores = [], metricMode = "autonomia" }: TeamRankingCardProps) {
   return (
     <motion.section 
       initial={{ opacity: 0, scale: 0.95 }}
@@ -49,6 +50,7 @@ export function TeamRankingCard({ rankings = [], operadores = [] }: TeamRankingC
                   is_best={is_best} 
                   is_worst={is_worst} 
                   operadores={operadores}
+                  metricMode={metricMode}
                 />
               );
             })}

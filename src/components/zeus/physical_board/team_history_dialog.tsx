@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Tooltip as ShadcnTooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { OperatorHistoryDialog } from "./operator_history_dialog";
+import { AutonomyGauge } from "@/components/zeus/autonomy_card";
 
 
 interface TeamMember {
@@ -42,6 +43,7 @@ interface TeamHistoryDialogProps {
   faseActual?: string;
   fase2026?: number;
   fechaCompromiso?: string;
+  metricMode?: "autonomia" | "cursos";
 }
 
 interface EvaluacionPunto {
@@ -187,12 +189,19 @@ export function TeamHistoryDialog({
   autonomyFactors,
   faseActual,
   fase2026,
-  fechaCompromiso
+  fechaCompromiso,
+  metricMode = "autonomia"
 }: TeamHistoryDialogProps) {
   const [loading, setLoading] = useState(true);
-  const [activeSubTab, setActiveSubTab] = useState<"history" | "requirements" | "progress">("history");
+  const [activeSubTab, setActiveSubTab] = useState<"history" | "requirements" | "progress">(() => {
+    return metricMode === "cursos" ? "progress" : "history";
+  });
   const [datosGrafico, setDatosGrafico] = useState<MesProgreso[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setActiveSubTab(metricMode === "cursos" ? "progress" : "history");
+  }, [metricMode]);
 
   useEffect(() => {
     const cargarHistoricoEquipo = async () => {
@@ -510,6 +519,66 @@ export function TeamHistoryDialog({
           </div>
         </div>
 
+        {/* 📊 MATRIZ VISUAL DE FACTORES A NIVEL EQUIPO */}
+        <div className="bg-slate-50/60 rounded-2xl border border-slate-200/50 p-4">
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3.5 flex items-center gap-1.5">
+            <TrendingUp className="h-3.5 w-3.5 text-[#1a4491]" />
+            <span>Nivel por Factor del Equipo (Escala 0-4)</span>
+          </h3>
+
+          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-3">
+            {factorsList.map(f => {
+              const rawVal = (autonomyFactors as any)[f.key];
+              const isNA = esMantenimiento && (f.key === "ato" || f.key === "quas" || f.key === "multihab");
+              const valorActual = isNA ? siguienteFaseNum : (parseFloat(rawVal) || 0);
+              const cumple = valorActual >= siguienteFaseNum;
+
+              return (
+                <div 
+                  key={f.key}
+                  className={cn(
+                    "flex flex-col items-center justify-between p-2.5 rounded-xl border bg-white text-center shadow-sm relative overflow-hidden transition-all hover:shadow-md",
+                    isNA ? "border-slate-100 opacity-60" :
+                    cumple ? "border-emerald-100" : "border-rose-100"
+                  )}
+                >
+                  {/* Gauge */}
+                  <div className="relative flex items-center justify-center h-14 w-14 mt-1">
+                    {isNA ? (
+                      <div className="h-10 w-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[9px] font-black text-slate-400 uppercase tracking-wider">
+                        N/A
+                      </div>
+                    ) : (
+                      <AutonomyGauge 
+                        value={valorActual} 
+                        size={56} 
+                        stroke_width={5} 
+                        customText={valorActual.toFixed(2)} 
+                      />
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div className="mt-2.5 w-full">
+                    <div className="text-[8.5px] font-black text-slate-800 uppercase tracking-tight line-clamp-1" title={f.label}>
+                      {f.label.replace(/^\d+\.\s*/, "")}
+                    </div>
+                    <div className="mt-1 flex items-center justify-center">
+                      <span className={cn(
+                        "text-[7.5px] font-black px-1.5 py-0.2 rounded border uppercase tracking-wider",
+                        isNA ? "bg-slate-150 text-slate-400 border-slate-200" :
+                        cumple ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-rose-50 text-rose-800 border-rose-200"
+                      )}>
+                        {isNA ? "Exento" : `Fase ${Math.floor(valorActual)}`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Lista de factores */}
         <div className="space-y-2">
           {factorsList.map(f => {
@@ -641,9 +710,18 @@ export function TeamHistoryDialog({
       {/* 👥 CABECERA DEL MODAL */}
       <div className="border-b border-slate-100 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-slate-400 text-xs font-black uppercase tracking-widest">
+          <div className="flex items-center gap-2 text-slate-400 text-xs font-black uppercase tracking-widest flex-wrap">
             <Users className="h-3.5 w-3.5 text-[#1a4491]" />
             <span>Desempeño Histórico de Equipo</span>
+            <span className="text-slate-350 select-none">•</span>
+            <span className={cn(
+              "px-2 py-0.5 rounded text-[9px] font-black border uppercase tracking-wider",
+              metricMode === "autonomia" 
+                ? "bg-blue-50 text-[#1a4491] border-blue-200" 
+                : "bg-purple-50 text-purple-750 border-purple-200"
+            )}>
+              {metricMode === "autonomia" ? "Modo Autonomía" : "Modo Cursos (Capacitación)"}
+            </span>
           </div>
           <h2 className="text-2xl font-black text-[#1a4491] leading-tight uppercase">
             {teamName}
@@ -654,7 +732,7 @@ export function TeamHistoryDialog({
         </div>
 
         {/* 📈 INDICADOR DE CAMBIO NETO */}
-        {tieneDatos && (
+        {tieneDatos && metricMode === "autonomia" && (
           <div className="flex gap-4">
             <TooltipProvider>
               <ShadcnTooltip>
@@ -696,35 +774,40 @@ export function TeamHistoryDialog({
         <>
           {/* 📊 TABS DE NAVEGACIÓN */}
           <div className="flex border-b border-slate-100 pb-1 gap-4 text-xs font-black uppercase tracking-wider mb-4">
-            <button
-              onClick={() => setActiveSubTab("history")}
-              className={cn(
-                "pb-2 border-b-2 px-1 transition-colors focus:outline-none",
-                activeSubTab === "history" ? "border-[#1a4491] text-[#1a4491]" : "border-transparent text-slate-400 hover:text-slate-600"
-              )}
-            >
-              Historial e Integrantes
-            </button>
-            {autonomyFactors && (
+            {metricMode === "autonomia" ? (
+              <>
+                <button
+                  onClick={() => setActiveSubTab("history")}
+                  className={cn(
+                    "pb-2 border-b-2 px-1 transition-colors focus:outline-none cursor-pointer",
+                    activeSubTab === "history" ? "border-[#1a4491] text-[#1a4491]" : "border-transparent text-slate-400 hover:text-slate-600"
+                  )}
+                >
+                  Historial e Integrantes
+                </button>
+                {autonomyFactors && (
+                  <button
+                    onClick={() => setActiveSubTab("requirements")}
+                    className={cn(
+                      "pb-2 border-b-2 px-1 transition-colors focus:outline-none flex items-center gap-1.5 cursor-pointer",
+                      activeSubTab === "requirements" ? "border-[#1a4491] text-[#1a4491]" : "border-transparent text-slate-400 hover:text-slate-600"
+                    )}
+                  >
+                    Requisitos de Fase
+                  </button>
+                )}
+              </>
+            ) : (
               <button
-                onClick={() => setActiveSubTab("requirements")}
+                onClick={() => setActiveSubTab("progress")}
                 className={cn(
-                  "pb-2 border-b-2 px-1 transition-colors focus:outline-none flex items-center gap-1.5",
-                  activeSubTab === "requirements" ? "border-[#1a4491] text-[#1a4491]" : "border-transparent text-slate-400 hover:text-slate-600"
+                  "pb-2 border-b-2 px-1 transition-colors focus:outline-none flex items-center gap-1.5 cursor-pointer",
+                  activeSubTab === "progress" ? "border-[#1a4491] text-[#1a4491]" : "border-transparent text-slate-400 hover:text-slate-600"
                 )}
               >
-                Requisitos de Fase
+                Progreso de Cursos
               </button>
             )}
-            <button
-              onClick={() => setActiveSubTab("progress")}
-              className={cn(
-                "pb-2 border-b-2 px-1 transition-colors focus:outline-none flex items-center gap-1.5",
-                activeSubTab === "progress" ? "border-[#1a4491] text-[#1a4491]" : "border-transparent text-slate-400 hover:text-slate-600"
-              )}
-            >
-              Progreso de Integrantes
-            </button>
           </div>
 
           {activeSubTab === "history" ? (

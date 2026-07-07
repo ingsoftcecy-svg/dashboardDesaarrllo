@@ -64,7 +64,7 @@ const obtenerLogoFallbacks = (name: string): string[] => {
 
 export function OperatorRow({ operator, original_index, visual_index, show_ato = true, team_members, full_team_members = [], puedeEditar = false, teamRankings = [], metricMode = "autonomia" }: OperatorRowProps) {
   const teamData = (teamRankings || []).find(r => r.name.trim().toUpperCase() === operator.equipoAutonomo?.trim().toUpperCase());
-  const autonomy_score = ((operator.autonomyScore / 100) * 4).toFixed(2);
+  const autonomy_score_pct = `${operator.autonomyScore.toFixed(2)}%`;
   const is_expired = is_assessment_expired(operator.lastAssessmentDate);
   
   const get_podium_style = (index: number) => {
@@ -205,10 +205,10 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
 
       <td className="border-b border-r border-slate-200/50 p-3 align-middle text-center w-40">
         {operator.equipoAutonomo ? (
-          <div className="flex flex-col items-center gap-1">
-            <Dialog>
-              <DialogTrigger asChild>
-              <button className="h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg flex items-center justify-center p-1 transition-transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#1a4491]">
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className="flex flex-col items-center gap-1 mx-auto hover:opacity-85 active:scale-95 transition-all cursor-pointer focus:outline-none group">
+                <div className="h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg flex items-center justify-center p-1 group-hover:scale-105 transition-transform">
                   <img 
                     src={logo_fallbacks[0] || `/logos/${operator.equipoAutonomo.trim().toUpperCase()}.png`} 
                     alt={operator.equipoAutonomo}
@@ -217,43 +217,24 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                     data-index="0"
                     onError={handle_team_logo_error}
                   />
-                </button>
-              </DialogTrigger>
-              <DialogContent className="max-w-sm sm:max-w-md bg-white p-6 rounded-2xl border-none shadow-2xl flex flex-col items-center">
-                <div className="w-full aspect-square flex items-center justify-center p-4">
-                  <img 
-                    src={logo_fallbacks[0] || `/logos/${operator.equipoAutonomo.trim().toUpperCase()}.png`} 
-                    alt={operator.equipoAutonomo}
-                    className="max-h-full max-w-full object-contain drop-shadow-xl"
-                    data-fallbacks={JSON.stringify(logo_fallbacks)}
-                    data-index="0"
-                    onError={handle_team_logo_error}
-                  />
                 </div>
-                <div className="text-center mt-4">
-                  <DialogTitle className="text-2xl font-black text-[#1a4491] uppercase tracking-tight">{operator.equipoAutonomo}</DialogTitle>
-                  <DialogDescription className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">{STRINGS.TEAM_LOGO_OFFICIAL}</DialogDescription>
-                </div>
-              </DialogContent>
-            </Dialog>
-            <Dialog>
-              <DialogTrigger asChild>
-                <button className="text-[9px] font-bold text-[#1a4491] uppercase hover:underline cursor-pointer focus:outline-none leading-tight max-w-[100px] truncate">
+                <span className="text-[9px] font-bold text-[#1a4491] uppercase hover:underline leading-tight max-w-[100px] truncate block mt-0.5">
                   {operator.equipoAutonomo}
-                </button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl max-h-[90vh] flex flex-col overflow-hidden">
-                <TeamHistoryDialog 
-                  teamName={operator.equipoAutonomo} 
-                  members={full_team_members} 
-                  autonomyFactors={teamData?.autonomyFactors}
-                  faseActual={teamData?.faseActual}
-                  fase2026={teamData?.fase2026}
-                  fechaCompromiso={teamData?.fechaCompromiso}
-                />
-              </DialogContent>
-            </Dialog>
-          </div>
+                </span>
+              </button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl max-h-[90vh] flex flex-col overflow-hidden">
+              <TeamHistoryDialog 
+                teamName={operator.equipoAutonomo} 
+                members={full_team_members} 
+                autonomyFactors={teamData?.autonomyFactors}
+                faseActual={teamData?.faseActual}
+                fase2026={teamData?.fase2026}
+                fechaCompromiso={teamData?.fechaCompromiso}
+                metricMode={metricMode}
+              />
+            </DialogContent>
+          </Dialog>
         ) : (
           <span className="text-slate-400 italic font-normal text-[10px]">{STRINGS.NO_TEAM}</span>
         )}
@@ -291,32 +272,34 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
         />
       </td>
 
-      <td className="border-b border-r border-slate-200/50 p-2 align-middle w-28">
-        <div className="flex flex-col gap-1.5">
-          {operator.champions && operator.champions.length > 0 ? (
-            operator.champions.map((champion_role) => {
-              const Icon = CHAMPION_ICONS[champion_role];
-              let background_color = "bg-slate-200 text-slate-700";
-              if (champion_role === "seguridad") background_color = "bg-orange-500 text-white";
-              if (champion_role === "calidad") background_color = "bg-purple-600 text-white";
-              if (champion_role === "ambiental") background_color = "bg-green-600 text-white";
-              if (champion_role === "mantenimiento") background_color = "bg-blue-600 text-white";
-              if (champion_role === "gestion") background_color = "bg-purple-400 text-white";
-              if (champion_role === "gente") background_color = "bg-pink-500 text-white";
-              if (champion_role === "logistica") background_color = "bg-slate-500 text-white";
+      {metricMode === "autonomia" && (
+        <td className="border-b border-r border-slate-200/50 p-2 align-middle w-28">
+          <div className="flex flex-col gap-1.5">
+            {operator.champions && operator.champions.length > 0 ? (
+              operator.champions.map((champion_role) => {
+                const Icon = CHAMPION_ICONS[champion_role];
+                let background_color = "bg-slate-200 text-slate-700";
+                if (champion_role === "seguridad") background_color = "bg-orange-500 text-white";
+                if (champion_role === "calidad") background_color = "bg-purple-600 text-white";
+                if (champion_role === "ambiental") background_color = "bg-green-600 text-white";
+                if (champion_role === "mantenimiento") background_color = "bg-blue-600 text-white";
+                if (champion_role === "gestion") background_color = "bg-purple-400 text-white";
+                if (champion_role === "gente") background_color = "bg-pink-500 text-white";
+                if (champion_role === "logistica") background_color = "bg-slate-500 text-white";
 
-              return (
-                <div key={champion_role} className={cn("flex items-center gap-1.5 rounded px-2 py-1 text-[10px] font-bold uppercase shadow-sm leading-none", background_color)}>
-                  <Icon className="h-3 w-3" />
-                  {champion_role}
-                </div>
-              );
-            })
-          ) : (
-            <div className="text-xs text-slate-400 italic">{STRINGS.NOT_ASSIGNED}</div>
-          )}
-        </div>
-      </td>
+                return (
+                  <div key={champion_role} className={cn("flex items-center gap-1.5 rounded px-2 py-1 text-[10px] font-bold uppercase shadow-sm leading-none", background_color)}>
+                    <Icon className="h-3 w-3" />
+                    {champion_role}
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-xs text-slate-400 italic">{STRINGS.NOT_ASSIGNED}</div>
+            )}
+          </div>
+        </td>
+      )}
 
       {show_ato && (
         <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32">
@@ -338,35 +321,37 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
         />
       </td>
 
-      <td className="border-b border-r border-slate-200/50 p-2 align-middle w-64">
-        <PreReqEditor 
-          operator_id={operator.id}
-          operator_name={operator.nombre} 
-          team_name={operator.equipoAutonomo || STRINGS.NO_TEAM} 
-          puedeEditar={puedeEditar}
-        />
-      </td>
+      {metricMode === "autonomia" && (
+        <td className="border-b border-r border-slate-200/50 p-2 align-middle w-64">
+          <PreReqEditor 
+            operator_id={operator.id}
+            operator_name={operator.nombre} 
+            team_name={operator.equipoAutonomo || STRINGS.NO_TEAM} 
+            puedeEditar={puedeEditar}
+          />
+        </td>
+      )}
 
       <td className="border-b p-3 align-middle text-center w-40">
         {metricMode === "autonomia" ? (
           <div className={cn(
             "mx-auto flex w-16 flex-col items-center justify-center overflow-hidden rounded border border-[#1a4491] shadow-sm transition-all",
-            autonomy_score === "4.00" && "animate-glow-gold scale-110"
+            operator.autonomyScore === 100 && "animate-glow-gold scale-110"
           )}>
             <div className={cn(
               "w-full py-1 text-center text-[10px] font-bold leading-tight text-white uppercase",
-              autonomy_score === "4.00" ? "bg-yellow-500" : "bg-[#1a4491]"
+              operator.autonomyScore === 100 ? "bg-yellow-500" : "bg-[#1a4491]"
             )}>
               {STRINGS.AUTONOMY_LEVEL}
             </div>
             <div className="flex w-full items-center justify-center bg-white py-1 text-[#1a4491] min-h-[36px]">
               {operator.noEvaluado ? (
                 <div className="flex flex-col items-center justify-center leading-none">
-                  <span className="text-sm font-black text-slate-400">0.00</span>
+                  <span className="text-xs font-black text-slate-400">0.00%</span>
                   <span className="text-[6.5px] text-rose-500 font-black uppercase tracking-widest mt-0.5 whitespace-nowrap">Sin Evaluar</span>
                 </div>
               ) : (
-                <span className="text-xl font-black">{autonomy_score}</span>
+                <span className="text-xs font-black">{autonomy_score_pct}</span>
               )}
             </div>
           </div>
