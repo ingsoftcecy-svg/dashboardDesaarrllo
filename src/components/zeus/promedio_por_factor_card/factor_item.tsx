@@ -277,7 +277,7 @@ export function FactorItem({ factorKey, label, value, index, operadores, areaNam
               name: op.nombre,
               score: op.equipos?.length || 0,
               meet: (op.equipos?.length || 0) >= 1,
-              label: `${op.equipos?.length || 0} equipos`
+              label: `Nivel ${(op.equipos?.length || 0)}x${(op.equipos?.length || 0)}`
             }))
           };
         } else if (siguienteFase === 2) {
@@ -289,7 +289,7 @@ export function FactorItem({ factorKey, label, value, index, operadores, areaNam
               name: op.nombre,
               score: op.equipos?.length || 0,
               meet: (op.equipos?.length || 0) >= 1,
-              label: `${op.equipos?.length || 0} equipos ${(op.equipos?.length || 0) >= 2 ? "(Cumple 2x2)" : ""}`
+              label: `Nivel ${(op.equipos?.length || 0)}x${(op.equipos?.length || 0)}`
             }))
           };
         } else if (siguienteFase === 3) {
@@ -301,7 +301,7 @@ export function FactorItem({ factorKey, label, value, index, operadores, areaNam
               name: op.nombre,
               score: op.equipos?.length || 0,
               meet: (op.equipos?.length || 0) >= 2,
-              label: `${op.equipos?.length || 0} equipos ${(op.equipos?.length || 0) >= 3 ? "(Cumple 3x3)" : ""}`
+              label: `Nivel ${(op.equipos?.length || 0)}x${(op.equipos?.length || 0)}`
             }))
           };
         } else if (siguienteFase === 4) {
@@ -313,7 +313,7 @@ export function FactorItem({ factorKey, label, value, index, operadores, areaNam
               name: op.nombre,
               score: op.equipos?.length || 0,
               meet: (op.equipos?.length || 0) >= 3,
-              label: `${op.equipos?.length || 0} equipos`
+              label: `Nivel ${(op.equipos?.length || 0)}x${(op.equipos?.length || 0)}`
             }))
           };
         }

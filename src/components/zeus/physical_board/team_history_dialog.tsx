@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { Calendar, Users, TrendingUp, TrendingDown, Clock, Award, ChevronRight, CheckCircle2, AlertCircle, HelpCircle } from "lucide-react";
+import { Calendar, Users, TrendingUp, TrendingDown, Clock, Award, ChevronRight, CheckCircle2, AlertCircle, HelpCircle, FileSpreadsheet } from "lucide-react";
 import { obtenerTodoElHistorico } from "@/lib/fetchHistorico";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -110,6 +110,21 @@ const normalizarNombreEquipo = (name: string): string => {
   return n;
 };
 
+const TOOLKIT_LINKS: Record<string, string> = {
+  "NAHUALES": "https://anheuserbuschinbev.sharepoint.com/:x:/r/sites/MAZ3/bo/_layouts/15/Doc.aspx?sourcedoc=%7B023A848A-65DB-4CC8-B8D2-FEF404E8C084%7D&file=Toolkit%20Equipos%20Aut%C3%B3nomos%20ZAC%203.0%20(T%C3%89CNICO).xlsx&action=default&mobileredirect=true",
+  "MUNICH": "https://anheuserbuschinbev.sharepoint.com/:x:/r/sites/MAZ3/bo/_layouts/15/Doc.aspx?sourcedoc=%7B4FA54E10-7592-42E3-AEA6-D4F70A8611CA%7D&file=Toolkit%20Munich%202026%20(T%C3%89CNICO).xlsx&action=default&mobileredirect=true",
+  "CUCHILLA": "https://anheuserbuschinbev.sharepoint.com/:x:/r/sites/MAZ3/bo/_layouts/15/Doc.aspx?sourcedoc=%7BA5052DCB-05C7-424E-805C-7FEB5D11550B%7D&file=Toolkit%20Equipos%20Aut%C3%B3nomos%20ZAC%203.0%20(OPERADOR).xlsx&action=default&mobileredirect=true",
+  "PANCHITOS": "https://anheuserbuschinbev.sharepoint.com/:x:/r/sites/MAZ3/bo/_layouts/15/Doc.aspx?sourcedoc=%7B7F51F9B2-4837-4090-AD59-F7E3F0CFDDE5%7D&file=Toolkit%20Equipos%20Aut%C3%B3nomos%20ZAC%203.0_PANCHITOS_COC_2026_(OPERADOR).xlsx&action=default&mobileredirect=true",
+  "MASHRAINBOW": "https://anheuserbuschinbev.sharepoint.com/:x:/r/sites/MAZ3/bo/_layouts/15/Doc.aspx?sourcedoc=%7B65423A94-FF88-4FDD-AED3-6CDCBCF9E0B1%7D&file=Toolkit%20Equipos%20Aut%C3%B3nomos%20ZAC%203.0%20MASH-RAINBOW%202026.xlsx&action=default&mobileredirect=true",
+  "CAZADORES_AMARGOR": "https://anheuserbuschinbev.sharepoint.com/:x:/r/sites/MAZ3/bo/_layouts/15/Doc.aspx?sourcedoc=%7B52D27915-B646-48B8-AAC3-86B362DF3EDD%7D&file=Toolkit%20Equipos%20Aut%C3%B3nomos%20ZAC%203.0%20(OPERADOR).xlsx&action=default&mobileredirect=true",
+  "MOSTOBOYS": "https://anheuserbuschinbev.sharepoint.com/:x:/r/sites/MAZ3/bo/_layouts/15/Doc.aspx?sourcedoc=%7BA736F6A6-E58F-4694-B165-BCE530894EB2%7D&file=Toolkit%20Equipos%20Aut%C3%B3nomos%20ZAC%203.0%20(OPERADOR).xlsx&action=default&mobileredirect=true",
+  "REYES_MEZCLA": "https://anheuserbuschinbev.sharepoint.com/:x:/r/sites/MAZ3/bo/_layouts/15/Doc.aspx?sourcedoc=%7B4B558E90-2CE0-4988-BA37-60578F03E940%7D&file=Toolkit%20Reyes%20de%20la%20Mezcla%202026%20(OPERADOR).xlsx&action=default&mobileredirect=true",
+  "LOS_BRAVOS": "https://anheuserbuschinbev.sharepoint.com/:x:/r/sites/MAZ3/bo/_layouts/15/Doc.aspx?sourcedoc=%7B4DC7C1B7-2B1B-415B-989E-8C8083964AC7%7D&file=Toolkit%20Bravos%20del%20Frio%202026%20(OPERADOR).xlsx&action=default&mobileredirect=true",
+  "BRONCOS": "https://anheuserbuschinbev.sharepoint.com/:x:/r/sites/MAZ3/bo/_layouts/15/Doc.aspx?sourcedoc=%7B3981E100-4983-4AFF-BB09-53125FAB9118%7D&file=Toolkit%20Broncos%202026%20(OPERADOR).xlsx&action=default&mobileredirect=true",
+  "LOS_FUERTES": "https://anheuserbuschinbev.sharepoint.com/:x:/r/sites/MAZ3/bo/_layouts/15/Doc.aspx?sourcedoc=%7B74C66CDD-A96E-47B6-BC80-B8C44D1E6C13%7D&file=Toolkit%20Los%20Fuertes%202026%20(OPERADOR).xlsx&action=default&mobileredirect=true",
+  "ANDAMOS_CON_TODO ": "https://anheuserbuschinbev.sharepoint.com/:x:/r/sites/MAZ3/bo/_layouts/15/Doc.aspx?sourcedoc=%7B94BF09C1-62E5-4401-9B5C-55B514209C78%7D&file=Toolkit%20Andamos%20con%20todo%202026%20(OPERADOR).xlsx&action=default&mobileredirect=true"
+};
+
 // Normalizador y calculador de Autonomy Score
 const obtenerScoreNormalizado = (fila: any): { score: number; noEvaluado: boolean } | null => {
   if (!fila) return null;
@@ -192,6 +207,7 @@ export function TeamHistoryDialog({
   fechaCompromiso,
   metricMode = "autonomia"
 }: TeamHistoryDialogProps) {
+  const toolkitUrl = TOOLKIT_LINKS[normalizarNombreEquipo(teamName)];
   const [loading, setLoading] = useState(true);
   const [activeSubTab, setActiveSubTab] = useState<"history" | "requirements" | "progress">(() => {
     return metricMode === "cursos" ? "progress" : "history";
@@ -519,66 +535,6 @@ export function TeamHistoryDialog({
           </div>
         </div>
 
-        {/* 📊 MATRIZ VISUAL DE FACTORES A NIVEL EQUIPO */}
-        <div className="bg-slate-50/60 rounded-2xl border border-slate-200/50 p-4">
-          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3.5 flex items-center gap-1.5">
-            <TrendingUp className="h-3.5 w-3.5 text-[#1a4491]" />
-            <span>Nivel por Factor del Equipo (Escala 0-4)</span>
-          </h3>
-
-          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-3">
-            {factorsList.map(f => {
-              const rawVal = (autonomyFactors as any)[f.key];
-              const isNA = esMantenimiento && (f.key === "ato" || f.key === "quas" || f.key === "multihab");
-              const valorActual = isNA ? siguienteFaseNum : (parseFloat(rawVal) || 0);
-              const cumple = valorActual >= siguienteFaseNum;
-
-              return (
-                <div 
-                  key={f.key}
-                  className={cn(
-                    "flex flex-col items-center justify-between p-2.5 rounded-xl border bg-white text-center shadow-sm relative overflow-hidden transition-all hover:shadow-md",
-                    isNA ? "border-slate-100 opacity-60" :
-                    cumple ? "border-emerald-100" : "border-rose-100"
-                  )}
-                >
-                  {/* Gauge */}
-                  <div className="relative flex items-center justify-center h-14 w-14 mt-1">
-                    {isNA ? (
-                      <div className="h-10 w-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[9px] font-black text-slate-400 uppercase tracking-wider">
-                        N/A
-                      </div>
-                    ) : (
-                      <AutonomyGauge 
-                        value={valorActual} 
-                        size={56} 
-                        stroke_width={5} 
-                        customText={valorActual.toFixed(2)} 
-                      />
-                    )}
-                  </div>
-
-                  {/* Info */}
-                  <div className="mt-2.5 w-full">
-                    <div className="text-[8.5px] font-black text-slate-800 uppercase tracking-tight line-clamp-1" title={f.label}>
-                      {f.label.replace(/^\d+\.\s*/, "")}
-                    </div>
-                    <div className="mt-1 flex items-center justify-center">
-                      <span className={cn(
-                        "text-[7.5px] font-black px-1.5 py-0.2 rounded border uppercase tracking-wider",
-                        isNA ? "bg-slate-150 text-slate-400 border-slate-200" :
-                        cumple ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-rose-50 text-rose-800 border-rose-200"
-                      )}>
-                        {isNA ? "Exento" : `Fase ${Math.floor(valorActual)}`}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
         {/* Lista de factores */}
         <div className="space-y-2">
           {factorsList.map(f => {
@@ -623,13 +579,45 @@ export function TeamHistoryDialog({
                   <div className="text-[11px] font-semibold text-slate-500 leading-normal">
                     {isNA ? (
                       "Este factor está excluido de la evaluación para los equipos de Mantenimiento."
-                    ) : cumple ? (
-                      `¡Completado! El equipo ha alcanzado o superado el nivel requerido.`
                     ) : (
-                      <>
-                        <span className="font-extrabold text-rose-600">Pendiente para Fase {siguienteFaseNum}: </span>
-                        <span>{REQUISITOS_FASES[f.key]?.[siguienteFaseNum] || "Requisito no especificado."}</span>
-                      </>
+                      <div className="space-y-2 mt-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={cn(
+                            "text-[8.5px] font-extrabold px-1.5 py-0.2 rounded border uppercase tracking-wider",
+                            cumple ? "bg-emerald-50 text-emerald-800 border-emerald-250" : "bg-rose-50 text-rose-800 border-rose-250"
+                          )}>
+                            Meta Fase {siguienteFaseNum}: {cumple ? "Cumplido" : "Pendiente"}
+                          </span>
+                          <span className="text-slate-600 font-bold">
+                            {REQUISITOS_FASES[f.key]?.[siguienteFaseNum] || "Requisito no especificado."}
+                          </span>
+                        </div>
+
+                        {cumple ? (
+                          siguienteFaseNum < 4 ? (
+                            <div className="border-t border-slate-200 pt-2 mt-1.5 text-[10.5px] flex flex-col gap-1 bg-slate-100/50 p-2.5 rounded-lg border border-slate-200/50">
+                              <span className="font-extrabold text-blue-600 uppercase tracking-wide text-[8.5px] flex items-center gap-1">
+                                <TrendingUp className="h-3 w-3" />
+                                Reto Siguiente (Fase {siguienteFaseNum + 1}):
+                              </span>
+                              <span className="text-slate-700 font-medium leading-relaxed">
+                                {REQUISITOS_FASES[f.key]?.[siguienteFaseNum + 1] || "Requisito no especificado."}
+                              </span>
+                              <span className="text-slate-500 font-bold text-[9px] mt-0.5">
+                                Progreso actual del factor: {valorActual.toFixed(2)} de meta {(siguienteFaseNum + 1)}.00 ({Math.min(Math.round((valorActual / (siguienteFaseNum + 1)) * 100), 100)}%)
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="text-[9.5px] text-emerald-600 font-bold italic mt-1 bg-emerald-50/50 px-2 py-1 rounded border border-emerald-100/80 w-fit">
+                              ✨ ¡Nivel máximo de Autonomía alcanzado (Fase 4)!
+                            </div>
+                          )
+                        ) : (
+                          <div className="text-[9.5px] text-slate-400 font-bold mt-1">
+                            Progreso: {valorActual.toFixed(2)} de meta {siguienteFaseNum}.00 ({Math.min(Math.round((valorActual / siguienteFaseNum) * 100), 100)}%)
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -685,9 +673,9 @@ export function TeamHistoryDialog({
                     <td className="p-3 align-middle">
                       <div className="flex items-center gap-2 justify-center">
                         <div className="h-2 w-24 rounded-full bg-slate-100 overflow-hidden shrink-0 border border-slate-200/40">
-                          <div 
-                            className="h-full bg-[#1a4491] rounded-full" 
-                            style={{ width: `${progress}%` }} 
+                          <div
+                            className="h-full bg-[#1a4491] rounded-full"
+                            style={{ width: `${progress}%` }}
                           />
                         </div>
                         <span className="text-[11px] font-black text-slate-800 w-10 text-right tabular-nums">
@@ -716,8 +704,8 @@ export function TeamHistoryDialog({
             <span className="text-slate-350 select-none">•</span>
             <span className={cn(
               "px-2 py-0.5 rounded text-[9px] font-black border uppercase tracking-wider",
-              metricMode === "autonomia" 
-                ? "bg-blue-50 text-[#1a4491] border-blue-200" 
+              metricMode === "autonomia"
+                ? "bg-blue-50 text-[#1a4491] border-blue-200"
                 : "bg-purple-50 text-purple-750 border-purple-200"
             )}>
               {metricMode === "autonomia" ? "Modo Autonomía" : "Modo Cursos (Capacitación)"}
@@ -726,8 +714,24 @@ export function TeamHistoryDialog({
           <h2 className="text-2xl font-black text-[#1a4491] leading-tight uppercase">
             {teamName}
           </h2>
-          <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-            Integrantes en Planta: {members.length}
+          <div className="flex items-center gap-3.5 mt-1 flex-wrap">
+            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Integrantes en Planta: {members.length}
+            </div>
+            {toolkitUrl && (
+              <>
+                <span className="text-slate-300 select-none hidden sm:inline">•</span>
+                <a
+                  href={toolkitUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-black text-emerald-600 hover:text-emerald-700 transition-colors uppercase tracking-wider bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded shadow-sm focus:outline-none"
+                >
+                  <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
+                  <span>Toolkit de Equipo</span>
+                </a>
+              </>
+            )}
           </div>
         </div>
 
@@ -783,7 +787,7 @@ export function TeamHistoryDialog({
                     activeSubTab === "history" ? "border-[#1a4491] text-[#1a4491]" : "border-transparent text-slate-400 hover:text-slate-600"
                   )}
                 >
-                  Historial e Integrantes
+                  Progreso del equipo
                 </button>
                 {autonomyFactors && (
                   <button

@@ -5,6 +5,7 @@ import { db } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 import { useAuth } from '@/lib/auth';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { OPERATORS_MAX_SKILLS } from "@/data/zeus";
 
 interface MultiSkillEditorProps {
   operator_id: string;
@@ -178,6 +179,15 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos, puedeEdi
           "flex flex-col gap-1.5 w-full hover:bg-slate-100 p-1 rounded transition-colors text-left group",
           puedeEditar ? "cursor-pointer" : "cursor-default opacity-75"
         )}>
+          {sorted_equipos.length > 0 && (() => {
+            const actual = sorted_equipos.length;
+            const maxEq = OPERATORS_MAX_SKILLS[operator_id] || actual || 1;
+            return (
+              <div className="text-[9.5px] font-black text-slate-500 uppercase tracking-wide mb-0.5">
+                Nivel {actual}x{actual} / Máx: {maxEq}x{maxEq}
+              </div>
+            );
+          })()}
           {sorted_equipos.length > 0 ? (
             sorted_equipos.slice(0, 4).map((eq, i) => {
               const is_primary = config.primary === eq || (currentEquipos.length === 1);

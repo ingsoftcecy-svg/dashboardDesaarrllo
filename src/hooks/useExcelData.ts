@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import * as xlsx from "xlsx";
 import { collection, getDocs, doc, getDoc, query, orderBy, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Operator, ChampionKey, cocimientos as defaultCocimientos, bloqueFrio as defaultBloqueFrio, mantenimiento as defaultMantenimiento, AreaData } from "@/data/zeus";
+import { Operator, ChampionKey, cocimientos as defaultCocimientos, bloqueFrio as defaultBloqueFrio, mantenimiento as defaultMantenimiento, AreaData, OPERATORS_MAX_SKILLS } from "@/data/zeus";
 
 export const normalizarNombreEquipo = (name: string): string => {
   const n = name.trim().toUpperCase();
@@ -539,6 +539,10 @@ export function useExcelData() {
           // Si un curso sigue en progreso se mantiene en pendientes para el porcentaje final
           const cursosProgress = totalC > 0 ? parseFloat(((aprobadosC / totalC) * 100).toFixed(2)) : 0;
 
+          const eqStrVal = row["SKAP Position"] ? String(row["SKAP Position"]) : "";
+          const numEquiposActual = eqStrVal ? eqStrVal.split(",").map(e => e.trim()).filter(Boolean).length : 0;
+          const maxEquipos = OPERATORS_MAX_SKILLS[id] || numEquiposActual || 1;
+
           return {
             id,
             nombre,
@@ -550,6 +554,7 @@ export function useExcelData() {
             champions: championMap[id] || [],
             equipoAutonomo: eaData.equipo,
             lider: leaderName,
+            maxEquipos,
             lastAssessmentDate: row["Assessment Date"] || row["Last Assessment Date"] || null,
             ato: row["ATO"] || 4,
             noEvaluado: !hasEvaluation || Number(autonomyScore.toFixed(2)) === 0,
@@ -585,6 +590,7 @@ export function useExcelData() {
                  if (!ext.equipos!.includes(eq)) ext.equipos!.push(eq);
                }
             }
+            ext.maxEquipos = OPERATORS_MAX_SKILLS[parsed.id] || ext.equipos!.length || 1;
 
             for (const c of parsed.champions) {
                if (!ext.champions.includes(c)) ext.champions.push(c);
