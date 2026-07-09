@@ -505,9 +505,26 @@ export function useExcelData() {
             val = parseFloat(row[colScore]);
           }
 
-          const basico = calculateAverage(basicCols);
-          const intermedio = calculateAverage(intermediateCols);
-          const avanzado = calculateAverage(advancedCols);
+          const parseSkillValue = (val: any) => {
+            if (val === undefined || val === null || val === "-") return null;
+            if (typeof val === "number") {
+              return val <= 1.0 ? val * 100 : val;
+            }
+            if (typeof val === "string") {
+              const clean = val.replace("%", "").trim();
+              const num = parseFloat(clean);
+              return isNaN(num) ? null : num;
+            }
+            return null;
+          };
+
+          const rawBasico = parseSkillValue(row["Driver's License"]);
+          const rawIntermedio = parseSkillValue(row["Intermediate Capabilities"] || row["Intermediate"]);
+          const rawAvanzado = parseSkillValue(row["Advanced Capabilities"] || row["Advanced"]);
+
+          const basico = rawBasico !== null ? rawBasico : calculateAverage(basicCols);
+          const intermedio = rawIntermedio !== null ? rawIntermedio : calculateAverage(intermediateCols);
+          const avanzado = rawAvanzado !== null ? rawAvanzado : calculateAverage(advancedCols);
 
           if (val === null || isNaN(val) || (val === 0 && hasEvaluation)) {
             val = (basico * 0.5) + (intermedio * 0.35) + (avanzado * 0.15);

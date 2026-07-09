@@ -7,6 +7,7 @@ import { ExcellenceCard } from "@/components/zeus/excellence_card";
 import { TeamRankingCard } from "@/components/zeus/team_ranking_card";
 import { AutonomyCard } from "@/components/zeus/autonomy_card";
 import { PromedioPorFactorCard } from "@/components/zeus/promedio_por_factor_card";
+import { CursosCardDetails } from "@/components/zeus/cursos_card_details";
 import { useExcelData } from "@/hooks/useExcelData";
 import { DashboardSkeleton } from "@/components/zeus/dashboard_skeleton";
 import { Settings } from "lucide-react";
@@ -202,7 +203,11 @@ function Index() {
                   customText={`${computedArea.excelenciaEquipo}%`}
                   customSubText="/ 100%"
                 />
-                {metricMode === "autonomia" && <PromedioPorFactorCard area={computedArea} />}
+                {metricMode === "autonomia" ? (
+                  <PromedioPorFactorCard area={computedArea} />
+                ) : (
+                  <CursosCardDetails area={computedArea} />
+                )}
               </div>
             </div>
 
