@@ -180,6 +180,7 @@ function CargarDatos() {
   const [cursosResumen, setCursosResumen] = useState<Record<string, { t: number; a: number; e: number; p: number }>>({});
   const [selectedDepto, setSelectedDepto] = useState("Todos");
   const [selectedEquipo, setSelectedEquipo] = useState("Todos");
+  const [filtroEstadoCurso, setFiltroEstadoCurso] = useState<'todos' | 'progreso' | 'pendientes' | 'incompletos' | 'completados'>('todos');
 
   const [operators, setOperators] = useState<any[]>([]);
   const [selectedOperator, setSelectedOperator] = useState<any | null>(null);
@@ -2882,15 +2883,64 @@ function CargarDatos() {
                         </select>
                       </div>
                     </div>
+
+                    {/* Filtro por Cursos */}
+                    <div className="space-y-1 pt-1">
+                      <label className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Filtrar por Cursos</label>
+                      <select
+                        value={filtroEstadoCurso}
+                        onChange={(e) => {
+                          setFiltroEstadoCurso(e.target.value as any);
+                          setSelectedOperator(null);
+                        }}
+                        className="w-full px-2 py-1.5 border border-slate-200 rounded text-[9px] font-bold text-slate-700 bg-white focus:outline-none"
+                      >
+                        <option value="todos">Todos los Colaboradores</option>
+                        <option value="progreso">Con Cursos en Progreso (⌛)</option>
+                        <option value="pendientes">Con Cursos Pendientes (⚠️)</option>
+                        <option value="incompletos">Pendientes o En Progreso (Incompletos)</option>
+                        <option value="completados">100% de Avance (Completados)</option>
+                      </select>
+                    </div>
                   </div>
 
-                  <div className="h-[300px] overflow-y-auto divide-y border rounded-lg bg-slate-50/50">
+                  <div className="h-[260px] overflow-y-auto divide-y border rounded-lg bg-slate-50/50">
                     {operators
                       .filter(op => {
                         const matchesSearch = op.name.toLowerCase().includes(searchTerm.toLowerCase()) || op.id.includes(searchTerm);
                         const matchesDepto = selectedDepto === "Todos" || traducirArea(op.departamento) === selectedDepto;
                         const matchesEquipo = selectedEquipo === "Todos" || op.equipo === selectedEquipo;
-                        return matchesSearch && matchesDepto && matchesEquipo;
+                        
+                        if (!matchesSearch || !matchesDepto || !matchesEquipo) return false;
+                        
+                        const targetIds = getAlternativeIds(op.id);
+                        let sum = null;
+                        for (const tid of targetIds) {
+                          if (cursosResumen[tid]) {
+                            sum = cursosResumen[tid];
+                            break;
+                          }
+                        }
+
+                        const total = sum?.t || 0;
+                        const aprobados = sum?.a || 0;
+                        const enProgreso = sum?.e || 0;
+                        const pendientes = sum?.p || 0;
+                        const progress = total > 0 ? Math.round((aprobados / total) * 100) : 0;
+
+                        if (filtroEstadoCurso === 'progreso') {
+                          return enProgreso > 0;
+                        }
+                        if (filtroEstadoCurso === 'pendientes') {
+                          return pendientes > 0;
+                        }
+                        if (filtroEstadoCurso === 'incompletos') {
+                          return enProgreso > 0 || pendientes > 0;
+                        }
+                        if (filtroEstadoCurso === 'completados') {
+                          return total > 0 && progress === 100;
+                        }
+                        return true;
                       })
                       .map((op) => {
                         const targetIds = getAlternativeIds(op.id);
@@ -2915,8 +2965,17 @@ function CargarDatos() {
                               selectedOperator?.id === op.id && "bg-blue-50 hover:bg-blue-100 font-bold border-l-4 border-l-[#1a4491]"
                             )}
                           >
-                            <span className="font-bold text-slate-900 uppercase truncate leading-tight pr-20">{op.name}</span>
-                            <span className="text-[9px] font-black text-[#1a4491] uppercase tracking-widest">{op.id} — {op.puesto}</span>
+                            <span className="font-bold text-slate-900 uppercase truncate leading-tight pr-24">{op.name}</span>
+                            <div className="flex gap-2 items-center text-[9px] font-black text-[#1a4491] uppercase tracking-widest">
+                              <span>{op.id}</span>
+                              {sum && (sum.e > 0 || sum.p > 0) && (
+                                <span className="text-[8px] text-slate-500 font-bold lowercase tracking-normal">
+                                  ({sum.e > 0 ? `${sum.e} en prog.` : ''}
+                                  {sum.e > 0 && sum.p > 0 ? ', ' : ''}
+                                  {sum.p > 0 ? `${sum.p} pend.` : ''})
+                                </span>
+                              )}
+                            </div>
                             
                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
                               {total === 0 ? (
