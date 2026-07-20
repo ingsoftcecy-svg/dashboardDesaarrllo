@@ -24,7 +24,7 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
   const [search_term, set_search_term] = useState("");
 
   useEffect(() => {
-    if (!usuario) return;
+    // LECTURA: permitida sin sesión (datos del tablero son públicos)
     const unsubscribe_global = onSnapshot(doc(db, "config", "ips"), (snapshot) => {
       if (snapshot.exists()) {
         set_global_ips(snapshot.data().list || []);
@@ -63,12 +63,15 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
               const data = altSnapshot.data();
               set_assigned_ips(data.assigned || []);
               
-              await setDoc(doc_ref, {
-                ...data,
-                operatorName: operator_name,
-                updatedAt: new Date().toISOString()
-              }, { merge: true });
-              console.log(`Migrated operator_ips from ${altId} to ${operator_id}`);
+              // Solo migrar si hay sesión activa
+              if (usuario) {
+                await setDoc(doc_ref, {
+                  ...data,
+                  operatorName: operator_name,
+                  updatedAt: new Date().toISOString()
+                }, { merge: true });
+                console.log(`Migrated operator_ips from ${altId} to ${operator_id}`);
+              }
               break;
             }
           } catch (err) {
@@ -82,10 +85,10 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
       unsubscribe_global(); 
       unsubscribe_operator(); 
     };
-  }, [operator_id, operator_name, usuario]);
+  }, [operator_id, operator_name]);
 
   useEffect(() => {
-    if (!usuario) return;
+    // LECTURA de IPs del equipo: permitida sin sesión
     if (!team_members || team_members.length === 0) {
       set_team_ips([]);
       return;
@@ -101,9 +104,10 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
     );
 
     return () => unsubscribes.forEach(unsub => unsub());
-  }, [team_members, usuario]);
+  }, [team_members]);
 
   const toggle_assignment = async (ip_address: string) => {
+    if (!usuario) return; // Solo usuarios autenticados pueden editar IPs
     const next_assignments = assigned_ips.includes(ip_address) 
       ? assigned_ips.filter(ip => ip !== ip_address) 
       : [...assigned_ips, ip_address];

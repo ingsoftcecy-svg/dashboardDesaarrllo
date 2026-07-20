@@ -12,7 +12,7 @@ interface ExcellenceCardProps {
   podio: Podium[];
   logros: string[];
   excelenciaEquipo: number;
-  metricMode?: "autonomia" | "cursos";
+  metricMode?: "autonomia" | "cursos" | "guias";
 }
 
 export function ExcellenceCard({ podio, logros, excelenciaEquipo, metricMode = "autonomia" }: ExcellenceCardProps) {
@@ -27,7 +27,9 @@ export function ExcellenceCard({ podio, logros, excelenciaEquipo, metricMode = "
         "flex items-center gap-2 border-b border-slate-100 px-4 py-3 text-white transition-all duration-300",
         metricMode === "cursos"
           ? "bg-gradient-to-r from-purple-800 to-indigo-900"
-          : "bg-gradient-to-r from-blue-900 to-blue-800"
+          : metricMode === "guias"
+            ? "bg-gradient-to-r from-emerald-800 to-teal-900"
+            : "bg-gradient-to-r from-blue-900 to-blue-800"
       )}>
         <Trophy className="h-5 w-5 text-yellow-400" />
         <div>

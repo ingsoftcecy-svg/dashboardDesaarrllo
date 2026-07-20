@@ -13,6 +13,7 @@ import { AtoEditor } from "./ato_editor";
 import { get_capability_color, is_assessment_expired, get_initials } from "./utils";
 import { CHAMPION_ICONS, STRINGS } from "./constants";
 import { cn, getLeaderColor } from "@/lib/utils";
+import { GuiasEditorDialog } from "./guias_editor_dialog";
 
 interface OperatorRowProps {
   operator: Operator & { autonomyScore: number };
@@ -23,7 +24,7 @@ interface OperatorRowProps {
   full_team_members?: { id: string; name: string; puesto: string; score: number; lastAssessmentDate?: string }[];
   puedeEditar?: boolean; // Nueva prop para controlar la edición
   teamRankings?: any[];
-  metricMode?: "autonomia" | "cursos";
+  metricMode?: "autonomia" | "cursos" | "guias";
 }
 
 const obtenerLogoFallbacks = (name: string): string[] => {
@@ -80,7 +81,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
   const alternate_row_style = cn("border-l-4 border-l-transparent", visual_index % 2 === 0 ? "bg-white/40" : "bg-slate-50/30");
   
   let row_class = alternate_row_style;
-  if (is_expired) {
+  if (is_expired && metricMode === "autonomia") {
     row_class = "bg-red-50/50 hover:bg-red-100/80 border-l-4 border-l-red-500";
   } else if (podium_style) {
     row_class = cn(podium_style, original_index === 0 && "animate-glow-gold relative z-10");
@@ -179,14 +180,27 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                 <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
                   <DialogTitle className="sr-only">Historial de {operator.nombre}</DialogTitle>
                   <DialogDescription className="sr-only">Detalles de evaluaciones históricas de {operator.nombre}</DialogDescription>
-                  <OperatorHistoryDialog 
-                    operatorName={operator.nombre} 
-                    operatorId={operator.id} 
-                    operatorPuesto={operator.puesto} 
-                  />
+                  {metricMode === "cursos" ? (
+                    <OperatorCoursesDialog 
+                      operatorName={operator.nombre}
+                      operatorId={operator.id}
+                    />
+                  ) : (
+                    <OperatorHistoryDialog 
+                      operatorName={operator.nombre} 
+                      operatorId={operator.id} 
+                      operatorPuesto={operator.puesto} 
+                      metricMode={metricMode}
+                      guiasProgress={operator.guiasProgress}
+                      guiasL6Progress={operator.guiasL6Progress}
+                      guiasL7Progress={operator.guiasL7Progress}
+                      guiasL8Progress={operator.guiasL8Progress}
+                      guiasActiveLevel={operator.guiasActiveLevel}
+                    />
+                  )}
                 </DialogContent>
               </Dialog>
-              {is_expired && (
+              {is_expired && metricMode === "autonomia" && (
                 <div className="flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-[8px] font-bold text-red-700 uppercase tracking-wider animate-pulse" title={`Más de 2 meses transcurridos desde la última evaluación (${operator.lastAssessmentDate})`}>
                   <AlertTriangle className="h-2.5 w-2.5" />
                   {STRINGS.EXPIRED_ASSESSMENT}
@@ -244,96 +258,156 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
         )}
       </td>
 
-      <td className="border-b border-r border-slate-200/50 p-2 align-middle w-48">
-        <div className="flex flex-col gap-1.5 text-[11px] font-semibold text-slate-600">
-          <div className="flex items-center justify-between">
-            <span>{STRINGS.DRIVERS_LICENSE}</span>
-            <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.basico))}>
-              {operator.basico > 0 ? Math.round(operator.basico) : "-"}
+      {metricMode === "guias" ? (
+        <>
+          {/* L6 Column */}
+          <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32 font-black text-xs text-slate-700">
+            <span className={cn(
+              "px-2.5 py-1 rounded font-bold tabular-nums min-w-[48px] text-center shadow-sm text-xs border inline-block",
+              operator.guiasL6Progress === 100 
+                ? "bg-yellow-50 text-yellow-600 border-yellow-200" 
+                : (operator.guiasL6Progress ?? 0) >= 80 
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                  : (operator.guiasL6Progress ?? 0) >= 50 
+                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                    : (operator.guiasL6Progress ?? 0) > 0
+                      ? "bg-blue-50 text-blue-700 border-blue-200"
+                      : "bg-slate-50 text-slate-400 border-slate-200"
+            )}>
+              {operator.guiasL6Progress !== undefined ? `${operator.guiasL6Progress.toFixed(1)}%` : "0.0%"}
             </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span>{STRINGS.INTERMEDIATE}</span>
-            <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.intermedio))}>
-              {operator.intermedio > 0 ? Math.round(operator.intermedio) : "-"}
+          </td>
+
+          {/* L7 Column */}
+          <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32 font-black text-xs text-slate-700">
+            <span className={cn(
+              "px-2.5 py-1 rounded font-bold tabular-nums min-w-[48px] text-center shadow-sm text-xs border inline-block",
+              operator.guiasL7Progress === 100 
+                ? "bg-yellow-50 text-yellow-600 border-yellow-200" 
+                : (operator.guiasL7Progress ?? 0) >= 80 
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                  : (operator.guiasL7Progress ?? 0) >= 50 
+                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                    : (operator.guiasL7Progress ?? 0) > 0
+                      ? "bg-blue-50 text-blue-700 border-blue-200"
+                      : "bg-slate-50 text-slate-400 border-slate-200"
+            )}>
+              {operator.guiasL7Progress !== undefined ? `${operator.guiasL7Progress.toFixed(1)}%` : "0.0%"}
             </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span>{STRINGS.ADVANCED}</span>
-            <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.avanzado))}>
-              {operator.avanzado > 0 ? Math.round(operator.avanzado) : "-"}
+          </td>
+
+          {/* L8 Column */}
+          <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32 font-black text-xs text-slate-700">
+            <span className={cn(
+              "px-2.5 py-1 rounded font-bold tabular-nums min-w-[48px] text-center shadow-sm text-xs border inline-block",
+              operator.guiasL8Progress === 100 
+                ? "bg-yellow-50 text-yellow-600 border-yellow-200" 
+                : (operator.guiasL8Progress ?? 0) >= 80 
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                  : (operator.guiasL8Progress ?? 0) >= 50 
+                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                    : (operator.guiasL8Progress ?? 0) > 0
+                      ? "bg-blue-50 text-blue-700 border-blue-200"
+                      : "bg-slate-50 text-slate-400 border-slate-200"
+            )}>
+              {operator.guiasL8Progress !== undefined ? `${operator.guiasL8Progress.toFixed(1)}%` : "0.0%"}
             </span>
-          </div>
-        </div>
-      </td>
+          </td>
+        </>
+      ) : (
+        <>
+          <td className="border-b border-r border-slate-200/50 p-2 align-middle w-48">
+            <div className="flex flex-col gap-1.5 text-[11px] font-semibold text-slate-600">
+              <div className="flex items-center justify-between">
+                <span>{STRINGS.DRIVERS_LICENSE}</span>
+                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.basico))}>
+                  {operator.basico > 0 ? Math.round(operator.basico) : "-"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>{STRINGS.INTERMEDIATE}</span>
+                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.intermedio))}>
+                  {operator.intermedio > 0 ? Math.round(operator.intermedio) : "-"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>{STRINGS.ADVANCED}</span>
+                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.avanzado))}>
+                  {operator.avanzado > 0 ? Math.round(operator.avanzado) : "-"}
+                </span>
+              </div>
+            </div>
+          </td>
 
-      <td className="border-b border-r border-slate-200/50 p-2 align-middle w-48">
-        <MultiSkillEditor 
-          operator_id={operator.id} 
-          operator_name={operator.nombre} 
-          equipos={operator.equipos || []} 
-          puedeEditar={puedeEditar}
-        />
-      </td>
+          <td className="border-b border-r border-slate-200/50 p-2 align-middle w-48">
+            <MultiSkillEditor 
+              operator_id={operator.id} 
+              operator_name={operator.nombre} 
+              equipos={operator.equipos || []} 
+              puedeEditar={puedeEditar}
+            />
+          </td>
 
-      {metricMode === "autonomia" && (
-        <td className="border-b border-r border-slate-200/50 p-2 align-middle w-28">
-          <div className="flex flex-col gap-1.5">
-            {operator.champions && operator.champions.length > 0 ? (
-              operator.champions.map((champion_role) => {
-                const Icon = CHAMPION_ICONS[champion_role];
-                let background_color = "bg-slate-200 text-slate-700";
-                if (champion_role === "seguridad") background_color = "bg-orange-500 text-white";
-                if (champion_role === "calidad") background_color = "bg-purple-600 text-white";
-                if (champion_role === "ambiental") background_color = "bg-green-600 text-white";
-                if (champion_role === "mantenimiento") background_color = "bg-blue-600 text-white";
-                if (champion_role === "gestion") background_color = "bg-purple-400 text-white";
-                if (champion_role === "gente") background_color = "bg-pink-500 text-white";
-                if (champion_role === "logistica") background_color = "bg-slate-500 text-white";
+          {metricMode === "autonomia" && (
+            <td className="border-b border-r border-slate-200/50 p-2 align-middle w-28">
+              <div className="flex flex-col gap-1.5">
+                {operator.champions && operator.champions.length > 0 ? (
+                  operator.champions.map((champion_role) => {
+                    const Icon = CHAMPION_ICONS[champion_role];
+                    let background_color = "bg-slate-200 text-slate-700";
+                    if (champion_role === "seguridad") background_color = "bg-orange-500 text-white";
+                    if (champion_role === "calidad") background_color = "bg-purple-600 text-white";
+                    if (champion_role === "ambiental") background_color = "bg-green-600 text-white";
+                    if (champion_role === "mantenimiento") background_color = "bg-blue-600 text-white";
+                    if (champion_role === "gestion") background_color = "bg-purple-400 text-white";
+                    if (champion_role === "gente") background_color = "bg-pink-500 text-white";
+                    if (champion_role === "logistica") background_color = "bg-slate-500 text-white";
 
-                return (
-                  <div key={champion_role} className={cn("flex items-center gap-1.5 rounded px-2 py-1 text-[10px] font-bold uppercase shadow-sm leading-none", background_color)}>
-                    <Icon className="h-3 w-3" />
-                    {champion_role}
-                  </div>
-                );
-              })
-            ) : (
-              <div className="text-xs text-slate-400 italic">{STRINGS.NOT_ASSIGNED}</div>
-            )}
-          </div>
-        </td>
-      )}
+                    return (
+                      <div key={champion_role} className={cn("flex items-center gap-1.5 rounded px-2 py-1 text-[10px] font-bold uppercase shadow-sm leading-none", background_color)}>
+                        <Icon className="h-3 w-3" />
+                        {champion_role}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="text-xs text-slate-400 italic">{STRINGS.NOT_ASSIGNED}</div>
+                )}
+              </div>
+            </td>
+          )}
 
-      {show_ato && (
-        <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32">
-          <AtoEditor 
-            operator_id={operator.id} 
-            operator_name={operator.nombre} 
-            initial_ato={operator.ato || 4} 
-            puedeEditar={puedeEditar}
-          />
-        </td>
-      )}
+          {show_ato && (
+            <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32">
+              <AtoEditor 
+                operator_id={operator.id} 
+                operator_name={operator.nombre} 
+                initial_ato={operator.ato || 4} 
+                puedeEditar={puedeEditar}
+              />
+            </td>
+          )}
 
-      <td className="border-b border-r border-slate-200/50 p-2 align-middle w-44">
-        <IpMediator 
-          operator_id={operator.id} 
-          operator_name={operator.nombre} 
-          team_members={team_members}
-          puedeEditar={puedeEditar}
-        />
-      </td>
+          <td className="border-b border-r border-slate-200/50 p-2 align-middle w-44">
+            <IpMediator 
+              operator_id={operator.id} 
+              operator_name={operator.nombre} 
+              team_members={team_members}
+              puedeEditar={puedeEditar}
+            />
+          </td>
 
-      {metricMode === "autonomia" && (
-        <td className="border-b border-r border-slate-200/50 p-2 align-middle w-64">
-          <PreReqEditor 
-            operator_id={operator.id}
-            operator_name={operator.nombre} 
-            team_name={operator.equipoAutonomo || STRINGS.NO_TEAM} 
-            puedeEditar={puedeEditar}
-          />
-        </td>
+          {metricMode === "autonomia" && (
+            <td className="border-b border-r border-slate-200/50 p-2 align-middle w-64">
+              <PreReqEditor 
+                operator_id={operator.id}
+                operator_name={operator.nombre} 
+                team_name={operator.equipoAutonomo || STRINGS.NO_TEAM} 
+                puedeEditar={puedeEditar}
+              />
+            </td>
+          )}
+        </>
       )}
 
       <td className="border-b p-3 align-middle text-center w-40">
@@ -359,7 +433,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               )}
             </div>
           </div>
-        ) : (() => {
+        ) : metricMode === "cursos" ? (() => {
           const progress = operator.cursosProgress ?? 0;
           let colorHeader = "bg-[#1a4491]";
           let colorBorder = "border-[#1a4491]";
@@ -412,21 +486,64 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             </div>
           );
 
-          if (operator.cursosTotal === 0) {
-            return badgeEl;
+          return badgeEl;
+        })() : (() => {
+          const progress = operator.guiasProgress ?? 0;
+          const level = operator.guiasActiveLevel || "L6";
+          let colorHeader = "bg-slate-500";
+          let colorBorder = "border-slate-500";
+          let colorText = "text-slate-700";
+
+          if (progress === 100) {
+            colorHeader = "bg-yellow-500";
+            colorBorder = "border-yellow-500";
+            colorText = "text-yellow-600";
+          } else if (progress >= 80) {
+            colorHeader = "bg-emerald-600";
+            colorBorder = "border-emerald-600";
+            colorText = "text-emerald-700";
+          } else if (progress >= 50) {
+            colorHeader = "bg-amber-500";
+            colorBorder = "border-amber-500";
+            colorText = "text-amber-600";
+          } else if (progress > 0) {
+            colorHeader = "bg-blue-600";
+            colorBorder = "border-blue-600";
+            colorText = "text-blue-700";
           }
+
+          const badgeEl = (
+            <div 
+              title={`Nivel: ${level}\nProgreso: ${progress}%`}
+              className={cn(
+                "mx-auto flex w-20 flex-col items-center justify-center overflow-hidden rounded border shadow-sm transition-all cursor-pointer hover:scale-105 active:scale-95 duration-200",
+                colorBorder,
+                progress === 100 && "animate-glow-gold scale-110"
+              )}
+            >
+              <div className={cn(
+                "w-full py-1 text-center text-[10px] font-black leading-tight text-white uppercase tracking-widest",
+                colorHeader
+              )}>
+                TOTAL
+              </div>
+              <div className={cn("flex w-full items-center justify-center bg-white py-1 min-h-[36px]", colorText)}>
+                <span className="text-xs font-black tabular-nums">{progress.toFixed(2)}%</span>
+              </div>
+            </div>
+          );
 
           return (
             <Dialog>
               <DialogTrigger asChild>
                 <button className="focus:outline-none block mx-auto">{badgeEl}</button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
-                <DialogTitle className="sr-only">Cursos de {operator.nombre}</DialogTitle>
-                <DialogDescription className="sr-only">Progreso de capacitación y estado de cursos de {operator.nombre}</DialogDescription>
-                <OperatorCoursesDialog 
-                  operatorName={operator.nombre}
-                  operatorId={operator.id}
+              <DialogContent className="max-w-4xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+                <DialogTitle className="sr-only">Guías Técnicas de {operator.nombre}</DialogTitle>
+                <DialogDescription className="sr-only">Checklist y evaluaciones de guías técnicas para {operator.nombre}</DialogDescription>
+                <GuiasEditorDialog 
+                  operator={operator}
+                  puedeEditar={puedeEditar}
                 />
               </DialogContent>
             </Dialog>

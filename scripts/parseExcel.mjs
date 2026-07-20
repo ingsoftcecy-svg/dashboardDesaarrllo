@@ -32,6 +32,68 @@ function parseAndSave(filename, sheetName, outputFilename, options = {}) {
   }
 }
 
+function parseAndSaveGuias() {
+  const filename = '26_Guías-Técnicas-Elaboración-V2 2026.xlsx';
+  const outputFilename = 'guias_tecnicas.json';
+  const filePath = path.join(publicDir, filename);
+  
+  if (!fs.existsSync(filePath)) {
+    console.warn(`⚠️ File not found: ${filePath}`);
+    return;
+  }
+  
+  try {
+    const fileBuffer = fs.readFileSync(filePath);
+    const wb = XLSX.read(fileBuffer, { type: 'buffer' });
+    const result = {};
+
+    for (const sheetName of wb.SheetNames) {
+      const match = sheetName.match(/L\d+/);
+      if (!match) continue;
+      const levelKey = match[0];
+      
+      const sheet = wb.Sheets[sheetName];
+      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      
+      const categories = [];
+      let currentCategory = null;
+      
+      rows.forEach((row, index) => {
+        if (!row || row.length === 0) return;
+        if (index < 2) return;
+        
+        const col0 = row[0];
+        const col1 = row[1];
+        const col2 = row[2];
+        
+        const isCategory = !col0 && col1 && typeof col1 === 'string' && col1 === col1.toUpperCase() && (col2 === 0 || col2 === null || col2 === undefined || typeof col2 === 'string');
+        
+        if (isCategory) {
+          currentCategory = {
+            category: col1.trim(),
+            skills: []
+          };
+          categories.push(currentCategory);
+        } else {
+          if (col1 && typeof col1 === 'string' && col1.trim().length > 0) {
+            if (currentCategory) {
+              currentCategory.skills.push(col1.trim());
+            }
+          }
+        }
+      });
+      
+      result[levelKey] = categories;
+    }
+
+    const outputPath = path.join(publicDir, outputFilename);
+    fs.writeFileSync(outputPath, JSON.stringify(result, null, 2), 'utf-8');
+    console.log(`✅ Parsed ${filename} -> ${outputFilename}`);
+  } catch (error) {
+    console.error(`❌ Failed to parse ${filename}:`, error);
+  }
+}
+
 function parseAndOptimizeCursos() {
   const filename = 'Cursos.xlsx';
   const sheetName = 'Hoja1';
@@ -175,4 +237,8 @@ parseAndSave('DATOS.xlsx', null, 'datos.json');
 // "Cursos.xlsx" -> cursos.json (Optimizado y filtrado por IDs activos)
 parseAndOptimizeCursos();
 
+// "26_Guías-Técnicas-Elaboración-V2 2026.xlsx" -> guias_tecnicas.json
+parseAndSaveGuias();
+
 console.log('🎉 Done parsing Excel files.');
+

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TrendingUp, TrendingDown, Medal, Edit2, Check, X } from "lucide-react";
+import { Trophy, Shield, AlertCircle, Edit2, Check, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { get_initials } from "./utils";
@@ -29,7 +29,7 @@ interface RankingItemProps {
   is_best: boolean;
   is_worst: boolean;
   operadores?: any[];
-  metricMode?: "autonomia" | "cursos";
+  metricMode?: "autonomia" | "cursos" | "guias";
 }
 
 /**
@@ -219,7 +219,7 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [], m
                     is_worst ? "bg-rose-100 text-rose-800 border border-rose-200" :
                     "bg-blue-50 text-blue-800 border border-blue-100"
                   )}>
-                    {is_best ? <TrendingUp className="h-3 w-3" /> : is_worst ? <TrendingDown className="h-3 w-3" /> : <Medal className="h-3 w-3" />}
+                    {is_best ? <Trophy className="h-3 w-3" /> : is_worst ? <AlertCircle className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
                     {team.avg}%
                   </div>
                 </TooltipTrigger>

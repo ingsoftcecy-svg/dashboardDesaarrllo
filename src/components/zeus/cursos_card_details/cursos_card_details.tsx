@@ -113,35 +113,41 @@ export function CursosCardDetails({ area }: CursosCardDetailsProps) {
           </div>
 
           {/* Desglose de Cursos */}
-          <div className="grid grid-cols-3 gap-2 pt-1">
+          <div className="grid grid-cols-3 gap-1.5 pt-1">
             {/* Aprobados */}
-            <div className="flex flex-col rounded-lg bg-purple-50/50 p-2 border border-purple-100/50">
-              <div className="flex items-center gap-1.5 text-purple-700 mb-0.5">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Aprobados</span>
+            <div className="flex flex-col items-center justify-between rounded-lg bg-purple-50/50 p-2 border border-purple-100/50 min-w-0 text-center">
+              <div className="flex flex-col items-center gap-1 text-purple-700 mb-1.5">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider leading-tight">Aprobados</span>
               </div>
-              <span className="text-sm font-extrabold text-slate-700">{totalAprobados}</span>
-              <span className="text-[9px] font-semibold text-slate-400">{pctAprobados.toFixed(1)}%</span>
+              <div className="flex flex-col items-center">
+                <span className="text-xs sm:text-sm font-extrabold text-slate-700 leading-none">{totalAprobados}</span>
+                <span className="text-[8px] sm:text-[9px] font-semibold text-slate-400 mt-1 leading-none">{pctAprobados.toFixed(1)}%</span>
+              </div>
             </div>
 
             {/* En Progreso */}
-            <div className="flex flex-col rounded-lg bg-amber-50/50 p-2 border border-amber-100/50">
-              <div className="flex items-center gap-1.5 text-amber-600 mb-0.5">
-                <PlayCircle className="h-3.5 w-3.5" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">En Progreso</span>
+            <div className="flex flex-col items-center justify-between rounded-lg bg-amber-50/50 p-2 border border-amber-100/50 min-w-0 text-center">
+              <div className="flex flex-col items-center gap-1 text-amber-600 mb-1.5">
+                <PlayCircle className="h-4 w-4 shrink-0" />
+                <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider leading-tight">En Progreso</span>
               </div>
-              <span className="text-sm font-extrabold text-slate-700">{totalEnProgreso}</span>
-              <span className="text-[9px] font-semibold text-slate-400">{pctEnProgreso.toFixed(1)}%</span>
+              <div className="flex flex-col items-center">
+                <span className="text-xs sm:text-sm font-extrabold text-slate-700 leading-none">{totalEnProgreso}</span>
+                <span className="text-[8px] sm:text-[9px] font-semibold text-slate-400 mt-1 leading-none">{pctEnProgreso.toFixed(1)}%</span>
+              </div>
             </div>
 
             {/* Pendientes */}
-            <div className="flex flex-col rounded-lg bg-slate-50 p-2 border border-slate-150">
-              <div className="flex items-center gap-1.5 text-slate-500 mb-0.5">
-                <HelpCircle className="h-3.5 w-3.5" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Pendientes</span>
+            <div className="flex flex-col items-center justify-between rounded-lg bg-slate-50 p-2 border border-slate-150 min-w-0 text-center">
+              <div className="flex flex-col items-center gap-1 text-slate-500 mb-1.5">
+                <HelpCircle className="h-4 w-4 shrink-0" />
+                <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider leading-tight">Pendientes</span>
               </div>
-              <span className="text-sm font-extrabold text-slate-700">{totalPendientes}</span>
-              <span className="text-[9px] font-semibold text-slate-400">{pctPendientes.toFixed(1)}%</span>
+              <div className="flex flex-col items-center">
+                <span className="text-xs sm:text-sm font-extrabold text-slate-700 leading-none">{totalPendientes}</span>
+                <span className="text-[8px] sm:text-[9px] font-semibold text-slate-400 mt-1 leading-none">{pctPendientes.toFixed(1)}%</span>
+              </div>
             </div>
           </div>
         </div>

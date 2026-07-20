@@ -17,11 +17,18 @@ export interface Operator {
   lastAssessmentDate?: string;
   ato?: number;
   noEvaluado?: boolean;
+  autonomyScore?: number;
   cursosProgress?: number;
   cursosAprobados?: number;
   cursosTotal?: number;
   cursosEnProgreso?: number;
   cursosPendientes?: number;
+  guiasActiveLevel?: "L6" | "L7" | "L8";
+  guiasProgress?: number;
+  guiasL6Progress?: number;
+  guiasL7Progress?: number;
+  guiasL8Progress?: number;
+  guiasEvaluations?: Record<string, { checked: boolean[] }>;
 }
 
 export interface IPRow {

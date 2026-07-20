@@ -1,0 +1,251 @@
+{
+  "L6": [
+    {
+      "category": "MANEJO DE MATERIAS PRIMAS - TRANSPORTE -LIMPIEZA",
+      "skills": [
+        "Comprende el funcionamiento de los diferentes equipos que conforman el sistema de transporte y limpieza de materias primas, tales como filtros de polvo, transportadores, elevadores, limpiadoras de grano y básculas.",
+        "Comprende y explica las variables críticas de seguridad (manejo de polvo) y control de los sistemas de transporte de materias primas y las monitorea de manera rutinaria (Rutinas PM).",
+        "Comprende los controles del sistema de transporte y sus sistemas de seguridad.  Capaz de eliminar una falla en los HMI de los equipos, puede activar manualmente el sistema y ponerlo en automático.  Interactua con los sistema de mando locales, centralizados.",
+        "Conoce y esta en capacidad de realizar la regulación a las compuertas de descarga en la salida de silos",
+        "Conoce y esta en capacidad de realizar alineación y tensado en las cadenas de los transportadores",
+        "Conoce y esta en capacidad de realizar la medición en el flujo de aspiración y regularlo de ser necesario",
+        "Conoce y esta en capacidad verificar la alineación en la banda de un elevador, y realizar el ajuste de ser necesario.",
+        "Conoce y esta en capacidad de realizar la medición de tolerancia en las rotoesclusas del proceso de transporte",
+        "Cuenta con la habilidad de validar que los ajustes realizados al sistema, trabajen acorde a los requerimientos de proceso."
+      ]
+    },
+    {
+      "category": "MOLIENDA DE MATERIAS PRIMAS",
+      "skills": [
+        "Comprende el funcionamiento de los diferentes tipos de equipos que conforman el sistema de molienda, tal como molino de rodillos, martillos, sistemas de acondicionamiento de malta, mezcladores (si aplica).",
+        "Comprende y explica las variables críticas de seguridad (manejo de polvo) y control de los sistemas de molienda y las monitorea de manera rutinaria (Rutinas PM).",
+        "Comprende los controles del sistema de molienda y sus sistemas de seguridad.  Capaz de eliminar una falla en los HMI de los equipos, puede activar manualmente el sistema y ponerlo en automático.  Interactua con los sistema de mando locales, centralizados.",
+        "Conoce y esta en capacidad de realizar la regulación de alimentación de grano hacia el molino, así como la uniformidad de entrada de grano (Si aplica)",
+        "Conoce y esta en capacidad de realizar la medición de distancia entre rodillos (abertura), validar el desgaste presentado en su estriado, y realizar un ajuste de ser necesario (Si aplica)",
+        "Conoce y esta en capacidad de realizar la regulación del sistema de humectación de grano (Si aplica)",
+        "Conoce y esta en capacidad de realizar el ajuste por desgaste en la bomba de descargue de masas (Si aplica)",
+        "Conoce y esta en capacidad de realizar el cambio de la malla perforada, de acuerdo a los ajustes requeridos por parte del proceso (Si aplica)",
+        "Cuenta con la habilidad de validar que los ajustes realizados al sistema, trabajen acorde a los requerimientos de proceso."
+      ]
+    },
+    {
+      "category": "SISTEMAS DE COCIMIENTO",
+      "skills": [
+        "Comprende el funcionamiento mecánico de los diferentes equipos que conforman el ciclo de cocina, tales como ollas de maceración, filtros de mosto, olla de cocción, whirpool, evaporación y enfriamiento.",
+        "Comprende y explica las variables críticas de seguridad (SSM) y control de los sistemas de generación de mosto y las monitorea de manera rutinaria (Rutinas PM).",
+        "Comprende los controles del sistema de generación de mosto y los sistemas de seguridad.  Capaz de eliminar una falla en los HMI de los equipos, puede activar manualmente el equipo y ponerlo en automático.",
+        "Conoce y esta en capacidad de realizar la regulación del sistema de desalojo y remoción de bagazo en filtro lauter (Si aplica)",
+        "Conoce y esta en capacidad de realizar la regulación del sistema de limpieza y remoción de trup en whirpool (Si aplica)",
+        "Conoce y esta en capacidad de realizar la regulación del sistema de generación de vacío en evaporadores al vacío. (Si aplica)",
+        "Conoce y esta en capacidad de identificar la presión y flujo correcto en el suminsitro de vapor para las ollas de adjuntos, mezclas, cocción y calentadores externos (si aplica); y realizar su ajuste de ser necesario.",
+        "Conoce y esta en capacidad de identificar el correcto funcionameinto en los sistemas de trampeo de condensado y realizar los ajustes para normalizar el proceso (si aplica ajuste)",
+        "Cuenta con la habilidad de validar que los ajustes realizados al sistema, trabajen acorde a los requerimientos de proceso."
+      ]
+    },
+    {
+      "category": "SISTEMAS DE FERMENTACION Y MADURACION DE CERVEZA",
+      "skills": [
+        "Comprende el funcionamiento mecánico de los diferentes equipos que forman parte un sistema de fermenación y maduración de cerveza, tales como propagadores de levadura, centrífugas, tanques de fermentación y maduración, enfriadores de levadura, sistema CIP.",
+        "Comprende y explica las variables críticas de seguridad (PSM) y control de los sistemas de generación de frio (aplicados sen fermentación y maduración), y las monitorea de manera rutinaria (Rutinas PM).",
+        "Comprende los controles del sistema de fermentación y maduración.  Es capaz de eliminar una falla en los HMI de los equipos, puede activar manualmente el equipo y ponerlo en automático.",
+        "Conoce y esta en capacidad de realizar la regulación de la válvula de recuperación de CO2 en tanques fermentadores. (Si aplica)",
+        "Conoce y ejecuta el procedimiento de ajuste de faja(banda) de transmisión tazon - motor, para garantizar la valocidad nominal de operación de la centrifuga",
+        "Conoce y ajusta el sistema de regulación de presión de descarga en la centrifuga.",
+        "Conoce y ejecuta el procedimiento de ajuste para bombas del sistemas de preparación y dosificación de aditivos.",
+        "Conoce y ejecuta el procedimiento de ajuste para sistemas estabilizantes",
+        "Conoce y ejecuta el procedimiento de ajuste para sistemas de limpieza Caustic Shot (si aplica)",
+        "Conoce y ejecuta el procedimiento de ajuste para temperatura de autolisis en sistemas de recolección de levadura",
+        "Cuenta con la habilidad de validar que los ajustes realizados al sistema, trabajen acorde a los requerimientos de proceso."
+      ]
+    },
+    {
+      "category": "SISTEMAS DE FILTRACIÓN / CARBONATACIÓN",
+      "skills": [
+        "Comprende el funcionamiento mecánico de los diferentes equipos que conforman parte de sistemas de  filtración / mezclas / carbonatación de producto terminado, tales como filtros de cerveza, carbonatadores, mezcladores, sistemas de descarga de lodos, sistema CIP.",
+        "Comprende y explica las variables críticas de seguridad y control de los sistemas de filtración / mezclas / carbonatación de producto terminado, y las monitorea de manera rutinaria (Rutinas PM).",
+        "Comprende los controles de los sistemas de filtración / mezclas / carbonatación de producto terminado.  Capaz de eliminar una falla en los HMI de los equipos, puede activar manualmente el equipo y ponerlo en automático.",
+        "Conoce y esta en capacidad de realizar la regulación del sistema de regulación de inyección de tierra filtrante en filtros de cerveza. (Si aplica)",
+        "Conoce y esta en capacidad de realizar la medición y regulación del sistema hidráulico de giro en filtros de cerveza de placas para garantizar la velocidad de trabajo durante proceso de limpieza. (Si aplica)",
+        "Conoce y esta en capacidad de realizar la regulación de la válvula de recuperación de CO2 en tanques de gobierno. (Si aplica)",
+        "Conoce y esta en capacidad de realizar la regulación de la válvula de inyección de CO2 en sistemas de carbonatación. (Si aplica)",
+        "Conoce y esta en capacidad de realizar la regulación del sistema de mezcla (blending). (Si aplica)",
+        "Cuenta con la habilidad de validar que los ajustes realizados al sistema, trabajen acorde a los requerimientos de proceso."
+      ]
+    }
+  ],
+  "L7": [
+    {
+      "category": "MANEJO DE MATERIAS PRIMAS - TRANSPORTE",
+      "skills": [
+        "Conoce y esta en capacidad de identificar desgaste, realizar reemplazo, ajuste y regulación de las compuertas de descarga en la salida de silos.",
+        "Conoce y esta en capacidad de  indentificar desgaste, realizar reemplazo, ajuste y regulación del tensado de las cadenas en transportadores de grano.",
+        "Conoce y esta en capacidad de indentificar desgaste, realizar reemplazo, ajuste y regulación de la bomba de aspiración. Ejecuta el cambio de mangas.",
+        "Conoce y esta en capacidad de indentificar desgaste, realizar reemplazo de cangilones y faja en elevadores de cangilones. Realizar ajuste y regulación posterior al cambio.",
+        "Conoce y esta en capacidad de indeitificar desgaste, realizar reemplazo de las rotoesclusas asi como los componentes asociados al equipo.",
+        "Conoce y esta en capacidad de indeitificar desgaste, realizar reemplazo de tamices en sistema de limpieza de grano (zarandas, despedradoras).",
+        "Conoce y esta en la capacidad de realizar lectura técnica de esquemas y componentes del sistema de manejo de materias primas.",
+        "Ejecuta cambios de lubricantes en sistemas complejos: centralizados, periféricos.",
+        "Soluciona las fallas recurrentes en los equipos mediante intervenciones especializadas durante la operación o ventana de mantenimiento.",
+        "Conoce  los  tipos de motores que  se usan en los dif equipos de  Transporte  Materias Prmas",
+        "Es Capaz de identificar  fallas en los motores electricos(calentamiento, vibración o ruido anormal)",
+        "Identifica y conoce el funcionamiento del sistema electrico de seguridad  en los diferentes equipos de Transporte  Materias Primas",
+        "Es capaz de identificar  fallas en los equipos de seguridad",
+        "Conoce  el  sistema de control  de  procesos  SCADA - Braumat  - AVEVA - Factory Talk",
+        "Es capaz de identificar fallas en los sistemas SCADA",
+        "Conoce los sistema de instrumentación de Transporte de Materias Primas  - planos neumaticos",
+        "Es capaz de identificar fallas en los sistemas neumaticos"
+      ]
+    },
+    {
+      "category": "MOLIENDA DE MATRIAS PRIMAS",
+      "skills": [
+        "Conoce y esta en capacidad de verificar desgaste en piezas del alimentador de grano al molino, realizar reemplazo, ajuste y regulación. (Si aplica)",
+        "Conoce y esta en capacidad de realizar cambio de rodillos, rodamientos, verificar desgaste en piezas, reemplazo, ajuste y regulación. ( Si aplica)",
+        "Conoce y esta en capacidad de indentificar fallas y realizar el reemplazo de rociadores del sistema de humectación de grano (Si aplica)",
+        "Conoce y esta en capacidad de indentificar desgaste y realizar reemplazo de estator en la bomba de descargue de masas (Si aplica)",
+        "Conoce y esta en capacidad de identificar desgaste y realizar cambio de martillos, rodamientos, verificar desgaste en piezas, reemplazo, ajuste y regulación. (Si aplica)",
+        "Conoce y esta en la capacidad de realizar lectura técnica de esquemas y componentes del sistema de manejo de materias primas.",
+        "Ejecuta cambios de lubricantes en sistemas complejos: centralizados, periféricos.",
+        "Soluciona las fallas recurrentes en los equipos mediante intervenciones especializadas durante la operación o ventana de mantenimiento",
+        "Conoce  los  tipos de motores que  se usan en los sistemas de materias primas",
+        "Es Capaz de identificar  fallas en los motores electricos(calentamiento, vibración o ruido anormal)",
+        "Identifica y conoce el funcionamiento del sistema electrico de seguridad  en los diferentes equipos de Materias primas",
+        "Es capaz de identificar  fallas en los equipos de seguridad",
+        "Conoce  el  sistema de control  de  procesos  SCADA - Braumat  - AVEVA - Factory Talk",
+        "Es capaz de identificar fallas en los sistemas SCADA",
+        "Conoce los sistema de instrumentación de Materias primas  - planos neumaticos",
+        "Es capaz de identificar fallas en los sistemas neumaticos"
+      ]
+    },
+    {
+      "category": "COCIMIENTO",
+      "skills": [
+        "Conoce y esta en capacidad de indentificar desgaste y realizar reemplazo de cuchillas, barreadores para la remoción de bagazo en filtro lauter (Si aplica)",
+        "Conoce y esta en capacidad de realizar el reemplazo del sistema de limpieza y remoción de trup en whirpool (Si aplica)",
+        "Conoce y esta en capacidad de identificar desgaste en la bomba de vacio asi como realizar reemplazo de la misma en los sistema de generación de vacío en evaporadores al vacío. (Si aplica)",
+        "Conoce y esta en capacidad de indentificar desgaste en placas y empaques de intercambiadores de calor. Asi como tambien es capaz de realizar el procedimiento de desarmado, reemplazo y armado. (Si aplica)",
+        "Conoce y esta en capacidad de indentificar pérdida de eficiencia asi como pase de producto en intercambiadores de casco y tubo. Asi como tambien es capaz de realizar el procedimiento de desarmado, limpieza, reemplazo de componentes y armado. (Si aplica)",
+        "Conoce y esta en capacidad de identificar fallas los sistemas de trampeo de condensado y realizar reemplazo de trampas de vapor (total o de piezas) en caso fuera requerido.",
+        "Conoce y esta en capacidad de identificar fallas en bombas centrífugas, realizar mantenimiento o reemplazo (total o de piezas) en caso fuera requerido.",
+        "Conoce y esta en capacidad de identificar fallas en válvulas de proceso, realizar mantenimiento o reemplazo (total o de piazas) en caso fuera requerido.",
+        "Conoce y esta en capacidad de identificar obstrucción por suciedad y desgaste de espesor en tuberías de proceso.",
+        "Conoce y esta en capacidad de realizar cambio de empaques y juntas en tuberias de proceso asi como indentificar los materiales correctos para el empaque en cada aplicación.",
+        "Conoce y esta en la capacidad de realizar lectura técnica de esquemas y componentes del sistema de manejo de materias primas.",
+        "Ejecuta cambios de lubricantes en sistemas complejos: centralizados, periféricos.",
+        "Soluciona las fallas recurrentes en los equipos mediante intervenciones especializadas durante la operación o ventana de mantenimiento",
+        "Conoce  los  tipos de motores que  se usan en los dif equipos de Cocimiento",
+        "Es Capaz de identificar  fallas en los motores electricos(calentamiento, vibración o ruido anormal)",
+        "Identifica y conoce el funcionamiento del sistema electrico de seguridad  en los diferentes equipos de Cocimiento",
+        "Es capaz de identificar  fallas en los equipos de seguridad",
+        "Conoce  el  sistema de control  de  procesos  SCADA - Braumat  - AVEVA - Factory Talk",
+        "Es capaz de identificar fallas en los sistemas SCADA",
+        "Conoce los sistema de instrumentación de Cocimiento - planos neumaticos",
+        "Es capaz de identificar fallas en los sistemas neumaticos"
+      ]
+    },
+    {
+      "category": "SISTEMAS DE FERMENTACION Y MADURACION DE CERVEZA",
+      "skills": [
+        "Conoce y esta en capacidad de indentificar desgaste y realizar mantenimiento o reemplazo  (total o de piezas) de las válvulas de regulaciòn de presiòn de CO2 en tanques fermentadores. (Si aplica)",
+        "Conoce y esta en capacidad de realizar mantenimiento  intermedios y mayores en centrifuga. (Si aplica)",
+        "Conoce y esta en capacidad de indentificar desgaste y realizar mantenimiento o reemplazo (total o de pieas) de las bombas del sistemas de preparación y dosificación de aditivos.",
+        "Conoce y esta en capacidad de identificar fallas en intercambiadores de calor, realizar reemplazo de placas y empaques en caso fuera requerido.",
+        "Conoce y esta en capacidad de identificar fallas en válvulas de proceso, realizar mantenimiento o reemplazo (total o de piazas) en caso fuera requerido.",
+        "Conoce y esta en capacidad de identificar fallas en bombas de proceso, realizar mantenimiento o reemplazo (total o de compontenes) en caso fuera requerido.",
+        "Conoce y esta en capacidad de ejecutar cambio de empaquetaduras en Tanques Fermentadores, Maduradores, Propagadores y almacenamiento de levadura.",
+        "Conoce y esta en capacidad de ejecutar cambio de empaquetaduras en tanques de sistema CIP.",
+        "Conoce y esta en capacidad de identificar fallas, ejecutar cambio de kit de sellos en valvulas doble asiento de matrices. (Levadura, Cerveza). (Si aplica)",
+        "Ejecuta cambios de lubricantes en sistemas complejos: centralizados, periféricos.",
+        "Soluciona las fallas recurrentes en los equipos mediante intervenciones especializadas durante la operación o ventana de mantenimiento",
+        "Conoce  los  tipos de motores que  se usan en los dif equipos de Fermentación / Maduración",
+        "Es Capaz de identificar  fallas en los motores electricos(calentamiento, vibración o ruido anormal)",
+        "Identifica y conoce el funcionamiento del sistema electrico de seguridad  en los diferentes equipos de Fermentación / Maduración",
+        "Es capaz de identificar  fallas en los equipos de seguridad",
+        "Conoce  el  sistema de control  de  procesos  SCADA - Braumat  - AVEVA - Factory Talk",
+        "Es capaz de identificar fallas en los sistemas SCADA",
+        "Conoce los sistema de instrumentación de Fermentación / Maduración  - planos neumaticos",
+        "Es capaz de identificar fallas en los sistemas neumaticos"
+      ]
+    },
+    {
+      "category": "SISTEMAS DE FILTRACIÓN / CARBONATACIÓN",
+      "skills": [
+        "Conoce y esta en capacidad de indentificar desgaste y realizar mantenimiento o reemplazo  (total o de piezas) de las válvulas de regulaciòn de presiòn de CO2 en tanques de cerveza. (Si aplica)",
+        "Conoce y esta en capacidad de realizar mantenimiento de filtros de cerveza de placas. Reemplazo de empaquetaduras, cambio de mallas, partes molviles, rodamientos, sellos. (Si aplica)",
+        "Conoce y esta en capacidad de realizar mantenimiento de filtros de cerveza de bujìas. Reemplazo de empaquetaduras, cambio de bujìas, sellos. (Si aplica)",
+        "Conoce y esta en capacidad de indentificar desgaste y realizar mantenimiento o reemplazo (total o de pieas) del sistema de carbonataciòn.",
+        "Conoce y esta en capacidad de indentificar desgaste y realizar mantenimiento o reemplazo (total o de pieas) del sistema de diluciòn.",
+        "Conoce y esta en capacidad de ejecutar cambio de empaquetaduras en tanques de filtro, prefiltro, almacenamiento de cerveza.",
+        "Conoce y esta en capacidad de identificar fallas en bombas de proceso, realizar mantenimiento o reemplazo (total o de compontenes) en caso fuera requerido.",
+        "Conoce y esta en capacidad de identificar fallas en intercambiadores de calor, realizar reemplazo de placas y empaques en caso fuera requerido.",
+        "Conoce y esta en capacidad de ejecutar cambio de empaquetaduras en tanques de sistema CIP.",
+        "Conoce y esta en capacidad de identificar fallas en válvulas de proceso, realizar mantenimiento o reemplazo (total o de piazas) en caso fuera requerido.",
+        "Conoce y esta en capacidad de identificar fallas en sistema de dosificaciòn de tierra diatomeas, reelizar reemplazo de componentes y reparaciones en bombas de dosificaciòn.",
+        "Ejecuta cambios de lubricantes en sistemas complejos: centralizados, periféricos.",
+        "Soluciona las fallas recurrentes en los equipos mediante intervenciones especializadas durante la operación o ventana de mantenimiento",
+        "Conoce  los  tipos de motores que  se usan en los dif equipos de Filtración / Carbonatación",
+        "Es Capaz de identificar  fallas en los motores electricos(calentamiento, vibración o ruido anormal)",
+        "Identifica y conoce el funcionamiento del sistema electrico de seguridad  en los diferentes equipos de Filtración / Carbonatación",
+        "Es capaz de identificar  fallas en los equipos de seguridad",
+        "Conoce  el  sistema de control  de  procesos  SCADA - Braumat  - AVEVA - Factory Talk",
+        "Es capaz de identificar fallas en los sistemas SCADA",
+        "Conoce los sistema de instrumentación de Filtración / Carbonatación  - planos neumaticos",
+        "Es capaz de identificar fallas en los sistemas neumaticos"
+      ]
+    }
+  ],
+  "L8": [
+    {
+      "category": "MANEJO DE MATERIAS PRIMAS - TRANSPORTE",
+      "skills": [
+        "Ejecuta actividades de mantenimiento predictivo, utiliza equipos especializados de análsiis y conoce su aplicaciòn. Entiende los resultados y genera acciones de intervencion. (Vibraciòn, termografìa).",
+        "Esta en la capacidad de desarrollar RCM de los equipos que forman parte del sistema de transporte y manejo de manterias primas. (Aspiradores Polvo, Limpiadores de Grano, Elevadores de Grano)",
+        "Conoce y està en la capacidad de sugerir y realizar mejoras en los equipos que forman parte del sistema de transporte y manejo de materias primas. (Aplicar buenas pràcticas)",
+        "Conoce y esta en la capacidad de desarrollar intervenciones avanzadas en los elevadores de granos. (Reemplazos de reductor principal)."
+      ]
+    },
+    {
+      "category": "MOLIENDA DE MATRIAS PRIMAS",
+      "skills": [
+        "Ejecuta actividades de mantenimiento predictivo, utiliza equipos especializados de análisis y conoce su aplicaciòn. Entiende los resultados y genera acciones de intervencion. (Vibraciòn, termografìa).",
+        "Desarrolla RCM de los equipos que forman parte del sistema de molienda de materias primas. (Aspiradores Polvo, Limpiadores de Grano, Molinos)",
+        "Conoce y està en la capacidad de sugerir y realizar mejoras en los equipos que forman parte del sistema de molienda de materias primas. (Aplicar buenas pràcticas)",
+        "Conoce y esta en la capacidad de desarrollar intervenciones avanzadas en los molinos de malta, reemplazo de eje principal en molinos de martillos. (Si aplica)",
+        "Comprende la aplicación de CBM para transportadores en el sistema de molienda.  Entiende los resultados y genera acciones de intervencion."
+      ]
+    },
+    {
+      "category": "SISTEMAS DE COCIMIENTO",
+      "skills": [
+        "Ejecuta actividades de mantenimiento predictivo, utiliza equipos especializados de análisis y conoce su aplicaciòn. Entiende los resultados y genera acciones de intervencion. (Vibraciòn, termografìa, ultrasonido).",
+        "Desarrolla RCM de los equipos que forman parte del sistema de molienda de materias primas. (Filtro de mosto, Mezcladores, Ollas de Coccion)",
+        "Conoce y està en la capacidad de sugerir y realizar mejoras en los equipos que forman parte del sistema de cocimiento. (Aplicar buenas pràcticas)",
+        "Conoce y desarrolla intervenciones avanzadas en filtro lauter, reemplazo de eje principal, reductor principal. SI aplica.",
+        "Entiende CBM para valvulas y bombas.  Entiende los resultados y genera acciones de intervencion.",
+        "Conoce y y desarrolla interveciones avanzadas en filtro lauter, reemplazo de eje principal, reductor principal. SI aplica.",
+        "Conoce y  desarrolla interveciones avanzadas en filtro lauter, reemplazo de pistones hidraulicos. SI aplica."
+      ]
+    },
+    {
+      "category": "SISTEMAS DE FERMENTACION Y MADURACION DE CERVEZA",
+      "skills": [
+        "Ejecuta actividades de mantenimiento predictivo, utiliza equipos especializados de análsiis y conoce su aplicaciòn. Entiende los resultados y genera acciones de intervencion. (Vibraciòn, termografìa, ultrasonido).",
+        "Esta en la capacidad de desarrollar RCM de los equipos que forman parte del sistema de molienda de materias primas. (Centrifuga, propagador levadura, intercambiadores de calor)",
+        "Conoce y està en la capacidad de sugerir y realizar mejoras en los equipos que forman parte del sistema de cocimiento. (Aplicar buenas pràcticas)",
+        "Conoce y esta en la capacidad de desarrollar intervenciones avanzadas en filtro lauter, reemplazo de eje principal, reductor principal. SI aplica.",
+        "Comprende CBM para valvulas y bombas.  Entiende los resultados y genera acciones de intervencion.",
+        "Conoce y desarrolla interveciones avanzadas en centrifuga, reemplazo de tambor principal, centrifuga. SI aplica."
+      ]
+    },
+    {
+      "category": "SISTEMAS DE FILTRACIÓN / CARBONATACIÓN",
+      "skills": [
+        "Ejecuta actividades de mantenimiento predictivo, utiliza equipos especializados de análsiis y conoce su aplicaciòn. Entiende los resultados y genera acciones de intervencion. (Vibraciòn, termografìa, ultrasonido).",
+        "Esta en la capacidad de desarrollar RCM de los equipos que forman parte del sistema de molienda de materias primas. (filtros de cerveza, carbonatadores, blendeing)",
+        "Conoce y està en la capacidad de sugerir y realizar mejoras en los equipos que forman parte del sistema de cocimiento. (Aplicar buenas pràcticas)",
+        "Conoce y esta en la capacidad de desarrollar interveciones avanzadas en filtro de cerveza de placas, reemplazo de eje principal y unidad hidraulica, centrifuga. SI aplica.",
+        "Esta en la capacidad de entder CBM para valvulas y bombas.  Entiende los resultados y genera acciones de intervencion."
+      ]
+    }
+  ]
+}

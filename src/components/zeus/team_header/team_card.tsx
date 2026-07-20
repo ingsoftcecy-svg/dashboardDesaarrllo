@@ -20,7 +20,7 @@ interface TeamCardProps {
   variant: "best" | "worst";
   team?: TeamData;
   operadores?: any[];
-  metricMode?: "autonomia" | "cursos";
+  metricMode?: "autonomia" | "cursos" | "guias";
 }
 
 /**

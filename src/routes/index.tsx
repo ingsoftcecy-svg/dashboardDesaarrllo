@@ -34,7 +34,7 @@ function Index() {
   
   const usuario = useAuth();
   const puedeEditar = usuario?.rol === 'admin'; // Solo administradores pueden editar
-  const [metricMode, setMetricMode] = useState<"autonomia" | "cursos">("autonomia");
+  const [metricMode, setMetricMode] = useState<"autonomia" | "cursos" | "guias">("autonomia");
 
   const area = tab === "general" ? general : tab === "cocimientos" ? cocimientos : tab === "bloqueFrio" ? bloqueFrio : mantenimiento;
 
@@ -42,15 +42,24 @@ function Index() {
     // 1. Ordenar operadores
     const sortedOps = [...area.operadores].sort((a, b) => {
       if (metricMode === "autonomia") {
-        if (b.autonomyScore !== a.autonomyScore) {
-          return b.autonomyScore - a.autonomyScore;
+        const scoreA = a.autonomyScore ?? 0;
+        const scoreB = b.autonomyScore ?? 0;
+        if (scoreB !== scoreA) {
+          return scoreB - scoreA;
         }
         const timeA = a.lastAssessmentDate ? new Date(a.lastAssessmentDate).getTime() : 0;
         const timeB = b.lastAssessmentDate ? new Date(b.lastAssessmentDate).getTime() : 0;
         return (isNaN(timeB) ? 0 : timeB) - (isNaN(timeA) ? 0 : timeA);
-      } else {
+      } else if (metricMode === "cursos") {
         const progressA = a.cursosProgress ?? 0;
         const progressB = b.cursosProgress ?? 0;
+        if (progressB !== progressA) {
+          return progressB - progressA;
+        }
+        return a.nombre.localeCompare(b.nombre);
+      } else { // guias
+        const progressA = a.guiasProgress ?? 0;
+        const progressB = b.guiasProgress ?? 0;
         if (progressB !== progressA) {
           return progressB - progressA;
         }
@@ -62,7 +71,11 @@ function Index() {
     const podio = sortedOps.slice(0, 5).map(op => ({
       nombre: op.nombre,
       puesto: op.puesto,
-      excelencia: metricMode === "autonomia" ? op.autonomyScore : (op.cursosProgress ?? 0),
+      excelencia: metricMode === "autonomia" 
+        ? (op.autonomyScore ?? 0) 
+        : metricMode === "cursos" 
+          ? (op.cursosProgress ?? 0) 
+          : (op.guiasProgress ?? 0),
       lider: op.lider
     }));
 
@@ -74,22 +87,32 @@ function Index() {
       const teamOps = area.operadores.filter(
         op => op.equipoAutonomo?.trim().toUpperCase() === team.name.trim().toUpperCase()
       );
-      const opsWithC = teamOps.filter(op => op.cursosTotal && op.cursosTotal > 0);
-      const avgCursos = opsWithC.length > 0
-        ? Number((opsWithC.reduce((sum, op) => sum + (op.cursosProgress ?? 0), 0) / opsWithC.length).toFixed(2))
-        : 0;
-      return {
-        ...team,
-        avg: avgCursos
-      };
+      if (metricMode === "cursos") {
+        const opsWithC = teamOps.filter(op => op.cursosTotal && op.cursosTotal > 0);
+        const avgCursos = opsWithC.length > 0
+          ? Number((opsWithC.reduce((sum, op) => sum + (op.cursosProgress ?? 0), 0) / opsWithC.length).toFixed(2))
+          : 0;
+        return {
+          ...team,
+          avg: avgCursos
+        };
+      } else { // guias
+        const avgGuias = teamOps.length > 0
+          ? Number((teamOps.reduce((sum, op) => sum + (op.guiasProgress ?? 0), 0) / teamOps.length).toFixed(2))
+          : 0;
+        return {
+          ...team,
+          avg: avgGuias
+        };
+      }
     });
-    if (metricMode === "cursos") {
+    if (metricMode === "cursos" || metricMode === "guias") {
       teamRankings.sort((a, b) => b.avg - a.avg);
     }
 
     // 4. Promedio general de la métrica (excelenciaEquipo)
     let excelenciaEquipo = area.excelenciaEquipo;
-    if (metricMode === "cursos") {
+    if (metricMode === "cursos" || metricMode === "guias") {
       const activeTeams = teamRankings.filter(t => t.name !== "Sin Equipo");
       excelenciaEquipo = activeTeams.length > 0
         ? Number((activeTeams.reduce((sum, t) => sum + t.avg, 0) / activeTeams.length).toFixed(2))
@@ -105,6 +128,8 @@ function Index() {
     let nivelLabel = "";
     if (metricMode === "cursos") {
       nivelLabel = "Capacitación";
+    } else if (metricMode === "guias") {
+      nivelLabel = "Habilitación Técnica";
     } else {
       if (tab === "general") nivelLabel = "Autonomía General";
       else if (tab === "cocimientos") nivelLabel = "Autonomía de Cocimientos";
@@ -118,6 +143,12 @@ function Index() {
       logros = [
         `${sortedOps.filter(o => (o.cursosProgress ?? 0) >= 100).length} operadores al 100% de cursos`,
         `Promedio de cumplimiento: ${excelenciaEquipo}%`,
+        `Top 1: ${podio[0]?.nombre || "N/A"} (${podio[0]?.excelencia || 0}%)`
+      ];
+    } else if (metricMode === "guias") {
+      logros = [
+        `${sortedOps.filter(o => (o.guiasProgress ?? 0) >= 100).length} operadores al 100% de guías`,
+        `Promedio de habilitación: ${excelenciaEquipo}%`,
         `Top 1: ${podio[0]?.nombre || "N/A"} (${podio[0]?.excelencia || 0}%)`
       ];
     }
@@ -177,6 +208,17 @@ function Index() {
                 >
                   Cursos
                 </button>
+                <button
+                  onClick={() => setMetricMode("guias")}
+                  className={cn(
+                    "rounded-md px-4 py-1.5 text-xs font-bold transition-all uppercase tracking-wider cursor-pointer",
+                    metricMode === "guias"
+                      ? "bg-emerald-700 text-white shadow-md scale-[1.02]"
+                      : "text-slate-600 hover:bg-slate-300 hover:text-slate-800"
+                  )}
+                >
+                  Guías
+                </button>
               </div>
             </div>
 
@@ -198,16 +240,16 @@ function Index() {
                   autonomia={computedArea.autonomia}
                   nivel_label={computedArea.nivelLabel}
                   trend={computedArea.cumplimientoPorHora.map(h => h.cumplimiento)}
-                  title={metricMode === "autonomia" ? "Nivel de Autonomía" : "Capacitación de Planta"}
-                  subtitle={metricMode === "autonomia" ? "Progreso actual del departamento" : "Progreso actual de cursos"}
+                  title={metricMode === "autonomia" ? "Nivel de Autonomía" : metricMode === "cursos" ? "Capacitación de Planta" : "Guías Técnicas"}
+                  subtitle={metricMode === "autonomia" ? "Progreso actual del departamento" : metricMode === "cursos" ? "Progreso actual de cursos" : "Habilitación técnica"}
                   customText={`${computedArea.excelenciaEquipo}%`}
                   customSubText="/ 100%"
                 />
                 {metricMode === "autonomia" ? (
                   <PromedioPorFactorCard area={computedArea} />
-                ) : (
+                ) : metricMode === "cursos" ? (
                   <CursosCardDetails area={computedArea} />
-                )}
+                ) : null}
               </div>
             </div>
 

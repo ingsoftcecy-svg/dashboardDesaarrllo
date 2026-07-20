@@ -8,6 +8,12 @@ interface OperatorHistoryDialogProps {
   operatorName: string;
   operatorId: string;
   operatorPuesto: string;
+  metricMode?: "autonomia" | "cursos" | "guias";
+  guiasProgress?: number;
+  guiasL6Progress?: number;
+  guiasL7Progress?: number;
+  guiasL8Progress?: number;
+  guiasActiveLevel?: "L6" | "L7" | "L8";
 }
 
 interface EvaluacionPunto {
@@ -139,13 +145,27 @@ const obtenerNivelDeScore = (score: number) => {
   return "Nivel 1";
 };
 
-export function OperatorHistoryDialog({ operatorName, operatorId, operatorPuesto }: OperatorHistoryDialogProps) {
+export function OperatorHistoryDialog({ 
+  operatorName, 
+  operatorId, 
+  operatorPuesto,
+  metricMode = "autonomia",
+  guiasProgress = 0,
+  guiasL6Progress = 0,
+  guiasL7Progress = 0,
+  guiasL8Progress = 0,
+  guiasActiveLevel = "L6"
+}: OperatorHistoryDialogProps) {
   const [loading, setLoading] = useState(true);
   const [evaluaciones, setEvaluaciones] = useState<EvaluacionPunto[]>([]);
   const [datosGrafico, setDatosGrafico] = useState<MesProgreso[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (metricMode === "guias") {
+      setLoading(false);
+      return;
+    }
     const cargarHistorico = async () => {
       try {
         setLoading(true);
@@ -296,8 +316,17 @@ export function OperatorHistoryDialog({ operatorName, operatorId, operatorPuesto
       <div className="border-b border-slate-100 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-slate-400 text-xs font-black uppercase tracking-widest">
-            <User className="h-3.5 w-3.5 text-[#1a4491]" />
-            <span>Perfil Histórico de Autonomía</span>
+            {metricMode === "guias" ? (
+              <>
+                <Award className="h-3.5 w-3.5 text-emerald-600" />
+                <span>Estado de Guías Técnicas</span>
+              </>
+            ) : (
+              <>
+                <User className="h-3.5 w-3.5 text-[#1a4491]" />
+                <span>Perfil Histórico de Autonomía</span>
+              </>
+            )}
           </div>
           <h2 className="text-2xl font-black text-[#1a4491] leading-tight uppercase">
             {operatorName}
@@ -313,8 +342,15 @@ export function OperatorHistoryDialog({ operatorName, operatorId, operatorPuesto
           </div>
         </div>
 
-        {/* 📈 INDICADOR DE CAMBIO NETO */}
-        {tieneDatos && (
+        {/* 📈 INDICADOR DE CAMBIO NETO / HABILITACIÓN */}
+        {metricMode === "guias" ? (
+          <div className="flex gap-4">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2 text-center flex flex-col justify-center min-w-[120px]">
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Habilitación Total</span>
+              <span className="text-lg font-black text-emerald-800">{guiasProgress.toFixed(1)}%</span>
+            </div>
+          </div>
+        ) : tieneDatos && (
           <div className="flex gap-4">
             <div className="bg-slate-50 border border-slate-200/60 rounded-xl px-4 py-2 text-center flex flex-col justify-center min-w-[100px]">
               <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Último Score</span>
@@ -346,6 +382,101 @@ export function OperatorHistoryDialog({ operatorName, operatorId, operatorPuesto
       ) : error ? (
         <div className="h-40 flex items-center justify-center text-center">
           <p className="text-sm font-bold text-rose-600 uppercase tracking-wider">{error}</p>
+        </div>
+      ) : metricMode === "guias" ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
+          {/* L6 Progress Card */}
+          <div className="bg-white border border-slate-200 p-4 rounded-xl flex flex-col items-center text-center shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-yellow-400" />
+            <div className="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">Nivel L6</div>
+            <div className="text-[9px] text-slate-400 font-bold mb-3 uppercase tracking-wider">Entendimiento y Operación</div>
+            <div className="relative flex items-center justify-center h-20 w-20">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                <path
+                  className="text-slate-100"
+                  strokeWidth="3.5"
+                  stroke="currentColor"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path
+                  className="text-yellow-500 transition-all duration-500"
+                  strokeDasharray={`${guiasL6Progress}, 100`}
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  stroke="currentColor"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+              </svg>
+              <div className="absolute text-xs font-black text-slate-700">{guiasL6Progress.toFixed(1)}%</div>
+            </div>
+            <div className="text-[10px] text-slate-500 font-black mt-3 bg-slate-50 px-2 py-0.5 rounded border uppercase">
+              {Math.round((guiasL6Progress / 100) * 54)} / 54 Habilidades
+            </div>
+          </div>
+
+          {/* L7 Progress Card */}
+          <div className="bg-white border border-slate-200 p-4 rounded-xl flex flex-col items-center text-center shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500" />
+            <div className="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">Nivel L7</div>
+            <div className="text-[9px] text-slate-400 font-bold mb-3 uppercase tracking-wider">Mantenimiento Autónomo</div>
+            <div className="relative flex items-center justify-center h-20 w-20">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                <path
+                  className="text-slate-100"
+                  strokeWidth="3.5"
+                  stroke="currentColor"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path
+                  className="text-emerald-500 transition-all duration-500"
+                  strokeDasharray={`${guiasL7Progress}, 100`}
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  stroke="currentColor"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+              </svg>
+              <div className="absolute text-xs font-black text-slate-700">{guiasL7Progress.toFixed(1)}%</div>
+            </div>
+            <div className="text-[10px] text-slate-500 font-black mt-3 bg-slate-50 px-2 py-0.5 rounded border uppercase">
+              {Math.round((guiasL7Progress / 100) * 101)} / 101 Habilidades
+            </div>
+          </div>
+
+          {/* L8 Progress Card */}
+          <div className="bg-white border border-slate-200 p-4 rounded-xl flex flex-col items-center text-center shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-blue-500" />
+            <div className="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">Nivel L8</div>
+            <div className="text-[9px] text-slate-400 font-bold mb-3 uppercase tracking-wider">Especialista y Confiabilidad</div>
+            <div className="relative flex items-center justify-center h-20 w-20">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                <path
+                  className="text-slate-100"
+                  strokeWidth="3.5"
+                  stroke="currentColor"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path
+                  className="text-blue-500 transition-all duration-500"
+                  strokeDasharray={`${guiasL8Progress}, 100`}
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  stroke="currentColor"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+              </svg>
+              <div className="absolute text-xs font-black text-slate-700">{guiasL8Progress.toFixed(1)}%</div>
+            </div>
+            <div className="text-[10px] text-slate-500 font-black mt-3 bg-slate-50 px-2 py-0.5 rounded border uppercase">
+              {Math.round((guiasL8Progress / 100) * 34)} / 34 Habilidades
+            </div>
+          </div>
         </div>
       ) : !tieneDatos ? (
         <div className="h-48 bg-slate-50 border border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center p-6 space-y-2">

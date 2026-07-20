@@ -19,6 +19,7 @@ export function AutonomyCard({ autonomia, nivel_label, trend = [], title, subtit
   const titleText = title || STRINGS.TITLE;
   const subtitleText = subtitle || STRINGS.SUBTITLE;
   const isCapacitacion = titleText.toLowerCase().includes("capacitac") || titleText.toLowerCase().includes("curso");
+  const isGuias = titleText.toLowerCase().includes("guía") || titleText.toLowerCase().includes("técnica");
 
   return (
     <motion.section 
@@ -30,7 +31,9 @@ export function AutonomyCard({ autonomia, nivel_label, trend = [], title, subtit
         "flex items-center justify-between px-4 py-3 text-white transition-all duration-300",
         isCapacitacion
           ? "bg-gradient-to-r from-purple-700 to-indigo-800"
-          : "bg-gradient-to-r from-blue-700 to-blue-800"
+          : isGuias
+            ? "bg-gradient-to-r from-emerald-700 to-teal-800"
+            : "bg-gradient-to-r from-blue-700 to-blue-800"
       )}>
         <div className="flex items-center gap-3">
           <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20">

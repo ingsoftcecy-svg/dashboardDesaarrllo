@@ -15,6 +15,13 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == 'admin';
     }
 
+    function esAdminODesarrollador() {
+      return estaAutenticado()
+        && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid))
+        && (get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == 'admin'
+          || get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == 'desarrollador');
+    }
+
     // ── Colección: usuarios ────────────────────────────────────────────────
     // Cada usuario puede leer solo su propio perfil.
     // Solo un admin puede crear, modificar o eliminar perfiles.
@@ -24,23 +31,61 @@ service cloud.firestore {
     }
 
     // ── Colección: historicos_excel ────────────────────────────────────────
-    // Lectura: cualquier usuario autenticado.
+    // Lectura: pública (dashboard visible sin login).
     // Escritura: solo administradores.
     match /historicos_excel/{docId} {
-      allow read: if estaAutenticado();
+      allow read: if true;
       allow write: if esAdmin();
     }
 
     // ── Colección: historicos_mensuales ────────────────────────────────────
     match /historicos_mensuales/{docId} {
-      allow read: if estaAutenticado();
+      allow read: if true;
       allow write: if esAdmin();
     }
 
     // ── Colección: config_dashboard ────────────────────────────────────────
     match /config_dashboard/{docId} {
-      allow read: if estaAutenticado();
+      allow read: if true;
       allow write: if esAdmin();
+    }
+
+    // ── Colección: prerequisitos (Herramientas Digitales) ──────────────────
+    // Lectura: pública (visible en el tablero sin login).
+    // Escritura: solo usuarios autenticados.
+    match /prerequisitos/{docId} {
+      allow read: if true;
+      allow write: if estaAutenticado();
+    }
+
+    // ── Colección: operator_ips (IPs Asignados) ────────────────────────────
+    // Lectura: pública (visible en el tablero sin login).
+    // Escritura: solo usuarios autenticados.
+    match /operator_ips/{docId} {
+      allow read: if true;
+      allow write: if estaAutenticado();
+    }
+
+    // ── Colección: config (IPs globales) ───────────────────────────────────
+    match /config/{docId} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
+    // ── Colección: evaluaciones_guias_tecnicas ─────────────────────────────
+    // Lectura: pública (progreso visible en tablero sin login).
+    // Escritura: solo usuarios autenticados.
+    match /evaluaciones_guias_tecnicas/{docId} {
+      allow read: if true;
+      allow write: if estaAutenticado();
+    }
+
+    // ── Colección: operadores_modificados ──────────────────────────────────
+    // Lectura: pública (para que el dashboard refleje cambios sin login).
+    // Escritura: solo admin o desarrollador.
+    match /operadores_modificados/{docId} {
+      allow read: if true;
+      allow write: if esAdminODesarrollador();
     }
 
     // ── Colección: audit_logs ──────────────────────────────────────────────

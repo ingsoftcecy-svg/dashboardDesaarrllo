@@ -13,7 +13,7 @@ export interface PhysicalBoardProps {
   show_ato?: boolean;
   puedeEditar?: boolean; // Nueva prop para controlar la edición
   teamRankings?: any[];
-  metricMode?: "autonomia" | "cursos";
+  metricMode?: "autonomia" | "cursos" | "guias";
 }
 
 export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false, teamRankings = [], metricMode = "autonomia" }: PhysicalBoardProps) {
@@ -46,7 +46,7 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
     return filteredOperadores.slice(0, visibleCount);
   }, [filteredOperadores, visibleCount]);
 
-  const headerBgClass = metricMode === "cursos" ? "bg-purple-800" : "bg-[#1a4491]";
+  const headerBgClass = metricMode === "cursos" ? "bg-purple-800" : metricMode === "guias" ? "bg-emerald-800" : "bg-[#1a4491]";
 
   return (
     <div className="flex flex-col gap-4">
@@ -78,20 +78,32 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
       >
         <table
           className="w-full table-fixed border-collapse text-left text-sm"
-          style={{ minWidth: metricMode === "autonomia" ? (show_ato ? "1696px" : "1568px") : (show_ato ? "1328px" : "1200px") }}
+          style={{ minWidth: metricMode === "autonomia" ? (show_ato ? "1696px" : "1568px") : metricMode === "cursos" ? (show_ato ? "1328px" : "1200px") : "1024px" }}
         >
           <thead className="sticky top-0 z-30">
             <tr className={cn("text-xs font-bold text-white uppercase tracking-wider", headerBgClass)}>
               <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-16 text-center z-30 transition-colors duration-300", headerBgClass)}>#</th>
               <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-64 z-30 transition-colors duration-300", headerBgClass)}>OPERADOR</th>
               <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>EQUIPO AUTONOMO</th>
-              <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-48 text-center z-30 transition-colors duration-300", headerBgClass)}>HABILIDADES</th>
-              <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-48 z-30 transition-colors duration-300", headerBgClass)}>MULTI-HABILIDAD</th>
-              {metricMode === "autonomia" && <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-28 text-center z-30 transition-colors duration-300", headerBgClass)}>CHAMPIONS</th>}
-              {show_ato && <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-32 text-center z-30 transition-colors duration-300", headerBgClass)}>ATO</th>}
-              <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-44 z-30 transition-colors duration-300", headerBgClass)}>IPs ASIGNADOS</th>
-              {metricMode === "autonomia" && <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-64 z-30 transition-colors duration-300", headerBgClass)}>USABILIDAD EN HERRAMIENTAS DIGITALES</th>}
-              <th className={cn("sticky top-0 border-b border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>{metricMode === "autonomia" ? "NIVEL AUTONOMIA" : "PROGRESO CURSOS"}</th>
+              
+              {metricMode === "guias" ? (
+                <>
+                  <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-32 text-center z-30 transition-colors duration-300", headerBgClass)}>L6</th>
+                  <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-32 text-center z-30 transition-colors duration-300", headerBgClass)}>L7</th>
+                  <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-32 text-center z-30 transition-colors duration-300", headerBgClass)}>L8</th>
+                </>
+              ) : (
+                <>
+                  <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-48 text-center z-30 transition-colors duration-300", headerBgClass)}>HABILIDADES</th>
+                  <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-48 z-30 transition-colors duration-300", headerBgClass)}>MULTI-HABILIDAD</th>
+                  {metricMode === "autonomia" && <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-28 text-center z-30 transition-colors duration-300", headerBgClass)}>CHAMPIONS</th>}
+                  {show_ato && <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-32 text-center z-30 transition-colors duration-300", headerBgClass)}>ATO</th>}
+                  <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-44 z-30 transition-colors duration-300", headerBgClass)}>IPs ASIGNADOS</th>
+                  {metricMode === "autonomia" && <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-64 z-30 transition-colors duration-300", headerBgClass)}>USABILIDAD EN HERRAMIENTAS DIGITALES</th>}
+                </>
+              )}
+              
+              <th className={cn("sticky top-0 border-b border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>{metricMode === "autonomia" ? "NIVEL AUTONOMIA" : metricMode === "cursos" ? "PROGRESO CURSOS" : "PROGRESO TOTAL"}</th>
             </tr>
           </thead>
           <tbody>
@@ -122,7 +134,12 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
                     cursosAprobados: op.cursosAprobados,
                     cursosTotal: op.cursosTotal,
                     cursosEnProgreso: op.cursosEnProgreso,
-                    cursosPendientes: op.cursosPendientes
+                    cursosPendientes: op.cursosPendientes,
+                    guiasProgress: op.guiasProgress,
+                    guiasL6Progress: op.guiasL6Progress,
+                    guiasL7Progress: op.guiasL7Progress,
+                    guiasL8Progress: op.guiasL8Progress,
+                    guiasActiveLevel: op.guiasActiveLevel
                   }))
                 }
               />
@@ -140,7 +157,9 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
               "px-5 py-2 text-xs font-black uppercase tracking-wider bg-white border rounded-lg shadow-sm hover:bg-slate-50 transition-colors cursor-pointer animate-fade-in",
               metricMode === "cursos" 
                 ? "text-purple-700 border-purple-700 hover:text-purple-800" 
-                : "text-[#1a4491] border-[#1a4491] hover:text-[#1a4491]/90"
+                : metricMode === "guias"
+                  ? "text-emerald-700 border-emerald-700 hover:text-emerald-800"
+                  : "text-[#1a4491] border-[#1a4491] hover:text-[#1a4491]/90"
             )}
           >
             Cargar 10 más (Mostrando {visibleCount} de {filteredOperadores.length})
@@ -151,7 +170,9 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
               "px-5 py-2 text-xs font-black uppercase tracking-wider text-white border border-transparent rounded-lg shadow-sm transition-colors cursor-pointer animate-fade-in",
               metricMode === "cursos" 
                 ? "bg-purple-700 hover:bg-purple-800" 
-                : "bg-[#1a4491] hover:bg-[#1a4491]/90"
+                : metricMode === "guias"
+                  ? "bg-emerald-700 hover:bg-emerald-800"
+                  : "bg-[#1a4491] hover:bg-[#1a4491]/90"
             )}
           >
             Mostrar todos

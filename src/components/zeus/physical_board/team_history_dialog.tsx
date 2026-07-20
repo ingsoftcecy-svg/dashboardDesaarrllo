@@ -9,6 +9,7 @@ import { Tooltip as ShadcnTooltip, TooltipTrigger, TooltipContent, TooltipProvid
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { OperatorHistoryDialog } from "./operator_history_dialog";
 import { AutonomyGauge } from "@/components/zeus/autonomy_card";
+import { OperatorCoursesDialog } from "./operator_courses_dialog";
 
 
 interface TeamMember {
@@ -23,6 +24,11 @@ interface TeamMember {
   cursosTotal?: number;
   cursosEnProgreso?: number;
   cursosPendientes?: number;
+  guiasProgress?: number;
+  guiasL6Progress?: number;
+  guiasL7Progress?: number;
+  guiasL8Progress?: number;
+  guiasActiveLevel?: "L6" | "L7" | "L8";
 }
 
 interface TeamHistoryDialogProps {
@@ -43,7 +49,7 @@ interface TeamHistoryDialogProps {
   faseActual?: string;
   fase2026?: number;
   fechaCompromiso?: string;
-  metricMode?: "autonomia" | "cursos";
+  metricMode?: "autonomia" | "cursos" | "guias";
 }
 
 interface EvaluacionPunto {
@@ -916,11 +922,24 @@ export function TeamHistoryDialog({
                                     </button>
                                   </DialogTrigger>
                                   <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
-                                    <OperatorHistoryDialog
-                                      operatorName={member.name}
-                                      operatorId={member.id}
-                                      operatorPuesto={member.puesto}
-                                    />
+                                    {metricMode === "cursos" ? (
+                                      <OperatorCoursesDialog 
+                                        operatorName={member.name}
+                                        operatorId={member.id}
+                                      />
+                                    ) : (
+                                      <OperatorHistoryDialog
+                                        operatorName={member.name}
+                                        operatorId={member.id}
+                                        operatorPuesto={member.puesto}
+                                        metricMode={metricMode}
+                                        guiasProgress={member.guiasProgress}
+                                        guiasL6Progress={member.guiasL6Progress}
+                                        guiasL7Progress={member.guiasL7Progress}
+                                        guiasL8Progress={member.guiasL8Progress}
+                                        guiasActiveLevel={member.guiasActiveLevel}
+                                      />
+                                    )}
                                   </DialogContent>
                                 </Dialog>
                               </td>

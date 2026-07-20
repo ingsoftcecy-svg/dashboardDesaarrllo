@@ -308,13 +308,31 @@ function AnalisisComparativoSemanas() {
     // Agregamos 'GENERAL' como primera opción por defecto
     equipos.add('GENERAL');
     
+    const EQUIPOS_VALIDOS = new Set([
+      "CAZADORES_AMARGOR",
+      "REYES_MEZCLA",
+      "CUCHILLA",
+      "MASHRAINBOW",
+      "MOSTOBOYS",
+      "PANCHITOS",
+      "BRONCOS",
+      "LOS_BRAVOS",
+      "LOS_FUERTES",
+      "MUNICH",
+      "NAHUALES",
+      "ANDAMOS_CON_TODO"
+    ]);
+
     Object.values(mapaOperadorEquipo).forEach(eq => {
       const nombreLimpio = String(eq).trim().toUpperCase();
+      const normalized = normalizarNombreEquipo(nombreLimpio).trim();
+      
       if (
         nombreLimpio && 
         nombreLimpio !== 'SIN EQUIPO' && 
         nombreLimpio !== 'SIN_EQUIPO' && 
-        nombreLimpio !== 'BREWMAN' // Reemplazamos el equipo BREWMAN (sin datos) por la vista GENERAL
+        nombreLimpio !== 'BREWMAN' &&
+        EQUIPOS_VALIDOS.has(normalized)
       ) {
         equipos.add(nombreLimpio);
       }
@@ -1054,7 +1072,7 @@ function AnalisisComparativoSemanas() {
               </div>
             </div>
 
-            {/* Fila superior: Área (Líneas) y Fases (Barras Apiladas) */}
+            {/* Grid de 2 columnas: Área (Líneas) y Equipo (Líneas) */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               
               {/* Card 1: Desempeño Histórico por Área / Sector */}
@@ -1073,8 +1091,8 @@ function AnalisisComparativoSemanas() {
                   </div>
                 </div>
                 
-                <div className="p-6 bg-white flex-1 min-h-[350px]">
-                  <ResponsiveContainer width="100%" height={320}>
+                <div className="p-6 bg-white flex-1 min-h-[420px]">
+                  <ResponsiveContainer width="100%" height={380}>
                     <LineChart data={getTrendDataArea()} margin={{ top: 15, right: 15, left: -25, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                       <XAxis dataKey="name" tick={{ fontSize: 9, fontWeight: '900', fill: '#1e293b' }} />
@@ -1098,142 +1116,88 @@ function AnalisisComparativoSemanas() {
                 </div>
               </div>
 
-              {/* Card 2: Distribución Histórica de Fases de Autonomía */}
+              {/* Card 2: Evolución del equipo seleccionado (Línea de 8 colores) */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-                <div className="bg-[#1a4491] px-6 py-3.5 flex items-center justify-between border-b border-blue-900 text-white">
+                <div className="bg-[#1a4491] px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-blue-900 text-white">
                   <div>
                     <h3 className="text-xs font-black uppercase tracking-wider">
-                      Madurez de Operadores (Niveles)
+                      Evolución Histórica por Equipo (%)
                     </h3>
                     <p className="text-blue-200 text-[10px] font-medium uppercase tracking-tight">
-                      Distribución acumulada de operadores por nivel de autonomía
+                      Auditoría del progreso de las 8 categorías reales de habilidades de operarios
                     </p>
                   </div>
-                  <div className="bg-blue-950/50 border border-blue-700 text-[9px] font-black uppercase px-2 py-0.5 rounded tracking-widest">
-                    MATURITY
+                  
+                  {/* Selector de Equipo */}
+                  <div className="flex items-center gap-2 bg-blue-950/50 border border-blue-700 px-3 py-1.5 rounded-xl text-white">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-blue-200">Equipo:</span>
+                    <select 
+                      value={equipoSeleccionado} 
+                      onChange={(e) => setEquipoSeleccionado(e.target.value)} 
+                      className="bg-transparent text-xs font-black outline-none cursor-pointer text-white animate-fade-in"
+                    >
+                      {listaEquipos.length === 0
+                        ? <option value="" className="bg-slate-800 text-white">No hay equipos</option>
+                        : listaEquipos.map(eq => (
+                            <option key={eq} value={eq} className="bg-slate-800 text-white font-bold">{eq}</option>
+                          ))
+                      }
+                    </select>
                   </div>
                 </div>
 
-                <div className="p-6 bg-white flex-1 min-h-[350px]">
-                  <ResponsiveContainer width="100%" height={320}>
-                    <BarChart data={getTrendDataFases().dataPoints} margin={{ top: 15, right: 15, left: -25, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-                      <XAxis dataKey="name" tick={{ fontSize: 9, fontWeight: '900', fill: '#1e293b' }} />
-                      <YAxis tickCount={5} tick={{ fontSize: 10, fontWeight: '900', fill: '#1e293b' }} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#ffffff', 
-                          borderColor: '#cbd5e1', 
-                          borderRadius: '8px', 
-                          fontSize: '11px',
-                          fontWeight: '800'
-                        }} 
-                      />
-                      <Legend wrapperStyle={{ fontSize: '10px', fontWeight: '900', paddingTop: '15px', textTransform: 'uppercase' }} />
-                      
-                      {getTrendDataFases().listaFases.map((fase, i) => {
-                        const coloresFases = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981']; // Red (1), Amber (2), Blue (3), Green (4)
-                        const color = coloresFases[i % coloresFases.length];
-                        return (
-                          <Bar 
-                            key={fase} 
-                            dataKey={fase} 
-                            stackId="a" 
-                            fill={color} 
-                            name={fase} 
-                            radius={[0, 0, 0, 0]}
-                          />
-                        );
-                      })}
-                    </BarChart>
-                  </ResponsiveContainer>
+                <div className="p-6 bg-white min-h-[420px]">
+                  {listaEquipos.length === 0 ? (
+                    <div className="flex h-64 items-center justify-center">
+                      <p className="text-slate-400 text-xs font-black uppercase tracking-wider">Sin datos de equipos para graficar tendencias.</p>
+                    </div>
+                  ) : (
+                    <ResponsiveContainer width="100%" height={380}>
+                      <LineChart data={getTrendDataEquipo()} margin={{ top: 15, right: 15, left: -25, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                        <XAxis dataKey="name" tick={{ fontSize: 9, fontWeight: '900', fill: '#1e293b' }} />
+                        <YAxis domain={[0, 100]} tickFormatter={val => `${val}%`} tickCount={6} tick={{ fontSize: 10, fontWeight: '900', fill: '#1e293b' }} />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: '#ffffff', 
+                            borderColor: '#cbd5e1', 
+                            borderRadius: '8px', 
+                            fontSize: '11px',
+                            fontWeight: '800'
+                          }} 
+                        />
+                        <Legend wrapperStyle={{ fontSize: '9px', fontWeight: '900', paddingTop: '15px', textTransform: 'uppercase' }} />
+                        
+                        {CATEGORIAS_OPERARIOS.map((cat, i) => {
+                          const coloresCategorias = [
+                            '#1e3a8a', // Seguridad
+                            '#3b82f6', // Calidad
+                            '#f59e0b', // Medio ambiente
+                            '#10b981', // Gestión
+                            '#ef4444', // Gente
+                            '#8b5cf6', // Mantenimiento
+                            '#ec4899', // Logística
+                            '#14b8a6', // Operación
+                          ];
+                          const color = coloresCategorias[i % coloresCategorias.length];
+                          return (
+                            <Line 
+                              key={cat.tag} 
+                              type="monotone" 
+                              dataKey={cat.tag} 
+                              stroke={color} 
+                              strokeWidth={2.5}
+                              activeDot={{ r: 5 }} 
+                              dot={{ r: 2.5 }} 
+                            />
+                          );
+                        })}
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )}
                 </div>
-              </div>
-
-            </div>
-
-            {/* Fila inferior: Evolución del equipo seleccionado (Línea de 8 colores) */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-              <div className="bg-[#1a4491] px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-blue-900 text-white">
-                <div>
-                  <h3 className="text-xs font-black uppercase tracking-wider">
-                    Evolución Histórica por Equipo (%)
-                  </h3>
-                  <p className="text-blue-200 text-[10px] font-medium uppercase tracking-tight">
-                    Auditoría del progreso de las 8 categorías reales de habilidades de operarios
-                  </p>
-                </div>
-                
-                {/* Selector de Equipo */}
-                <div className="flex items-center gap-2 bg-blue-950/50 border border-blue-700 px-3 py-1.5 rounded-xl text-white">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-blue-200">Equipo:</span>
-                  <select 
-                    value={equipoSeleccionado} 
-                    onChange={(e) => setEquipoSeleccionado(e.target.value)} 
-                    className="bg-transparent text-xs font-black outline-none cursor-pointer text-white"
-                  >
-                    {listaEquipos.length === 0
-                      ? <option value="" className="bg-slate-800 text-white">No hay equipos</option>
-                      : listaEquipos.map(eq => (
-                          <option key={eq} value={eq} className="bg-slate-800 text-white font-bold">{eq}</option>
-                        ))
-                    }
-                  </select>
-                </div>
-              </div>
-
-              <div className="p-6 bg-white min-h-[420px]">
-                {listaEquipos.length === 0 ? (
-                  <div className="flex h-64 items-center justify-center">
-                    <p className="text-slate-400 text-xs font-black uppercase tracking-wider">Sin datos de equipos para graficar tendencias.</p>
-                  </div>
-                ) : (
-                  <ResponsiveContainer width="100%" height={380}>
-                    <LineChart data={getTrendDataEquipo()} margin={{ top: 15, right: 15, left: -25, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-                      <XAxis dataKey="name" tick={{ fontSize: 9, fontWeight: '900', fill: '#1e293b' }} />
-                      <YAxis domain={[0, 100]} tickFormatter={val => `${val}%`} tickCount={6} tick={{ fontSize: 10, fontWeight: '900', fill: '#1e293b' }} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#ffffff', 
-                          borderColor: '#cbd5e1', 
-                          borderRadius: '8px', 
-                          fontSize: '11px',
-                          fontWeight: '800'
-                        }} 
-                      />
-                      <Legend wrapperStyle={{ fontSize: '9px', fontWeight: '900', paddingTop: '15px', textTransform: 'uppercase' }} />
-                      
-                      {CATEGORIAS_OPERARIOS.map((cat, i) => {
-                        const coloresCategorias = [
-                          '#1e3a8a', // Seguridad
-                          '#3b82f6', // Calidad
-                          '#f59e0b', // Medio ambiente
-                          '#10b981', // Gestión
-                          '#ef4444', // Gente
-                          '#8b5cf6', // Mantenimiento
-                          '#ec4899', // Logística
-                          '#14b8a6', // Operación
-                        ];
-                        const color = coloresCategorias[i % coloresCategorias.length];
-                        return (
-                          <Line 
-                            key={cat.tag} 
-                            type="monotone" 
-                            dataKey={cat.tag} 
-                            stroke={color} 
-                            strokeWidth={2.5}
-                            activeDot={{ r: 5 }} 
-                            dot={{ r: 2.5 }} 
-                          />
-                        );
-                      })}
-                    </LineChart>
-                  </ResponsiveContainer>
-                )}
               </div>
             </div>
-
           </div>
         )}
       </main>

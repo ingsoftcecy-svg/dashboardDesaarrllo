@@ -6,7 +6,7 @@ import { STRINGS } from "./constants";
 
 interface TeamHeaderProps {
   area: AreaData;
-  metricMode?: "autonomia" | "cursos";
+  metricMode?: "autonomia" | "cursos" | "guias";
 }
 
 export function TeamHeader({ area, metricMode = "autonomia" }: TeamHeaderProps) {

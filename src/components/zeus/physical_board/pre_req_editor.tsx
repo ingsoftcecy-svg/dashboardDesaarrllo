@@ -25,8 +25,7 @@ export function PreReqEditor({ operator_id, operator_name, team_name, puedeEdita
   });
 
   useEffect(() => {
-    if (!usuario) return;
-
+    // LECTURA: se permite aunque no haya sesión (datos públicos del tablero)
     const document_reference = doc(db, "prerequisitos", operator_id);
     
     const getAlternativeIds = (id: string): string[] => {
@@ -73,12 +72,15 @@ export function PreReqEditor({ operator_id, operator_name, team_name, puedeEdita
                 set_checked_items(reqs_only as Record<string, boolean>);
                 localStorage.setItem(`prereqs_${operator_id}`, JSON.stringify(reqs_only));
                 
-                await setDoc(document_reference, {
-                  ...data,
-                  operatorName: operator_name,
-                  teamName: team_name
-                }, { merge: true });
-                console.log(`Migrated prereqs from ${altId} to ${operator_id}`);
+                // Solo migrar si hay sesión activa
+                if (usuario) {
+                  await setDoc(document_reference, {
+                    ...data,
+                    operatorName: operator_name,
+                    teamName: team_name
+                  }, { merge: true });
+                  console.log(`Migrated prereqs from ${altId} to ${operator_id}`);
+                }
                 break;
               }
             } catch (err) {
@@ -136,8 +138,8 @@ export function PreReqEditor({ operator_id, operator_name, team_name, puedeEdita
         >
           <div className={cn(
             "flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[2px] border transition-all",
-            checked_items[requirement] ?
-              (puedeEditar ? "bg-[#1a4491] border-[#1a4491] text-white" : "border-slate-300 bg-white")
+            checked_items[requirement]
+              ? "bg-[#1a4491] border-[#1a4491] text-white"
               : "border-slate-300 bg-white"
           )}>
             {checked_items[requirement] && <Check className="h-2 w-2" strokeWidth={3} />}
