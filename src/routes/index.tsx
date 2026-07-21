@@ -156,6 +156,19 @@ function Index() {
     const bestTeam = teamRankings[0] || undefined;
     const worstTeam = teamRankings.length > 1 ? teamRankings[teamRankings.length - 1] : undefined;
 
+    let guiasL6Avg = 0;
+    let guiasL7Avg = 0;
+    let guiasL8Avg = 0;
+    if (metricMode === "guias") {
+      const ops = area.operadores;
+      const count = ops.length;
+      if (count > 0) {
+        guiasL6Avg = Number((ops.reduce((sum, op) => sum + (op.guiasL6Progress ?? 0), 0) / count).toFixed(2));
+        guiasL7Avg = Number((ops.reduce((sum, op) => sum + (op.guiasL7Progress ?? 0), 0) / count).toFixed(2));
+        guiasL8Avg = Number((ops.reduce((sum, op) => sum + (op.guiasL8Progress ?? 0), 0) / count).toFixed(2));
+      }
+    }
+
     return {
       ...area,
       operadores: sortedOps,
@@ -166,7 +179,10 @@ function Index() {
       worstTeam,
       autonomia,
       nivelLabel,
-      logros
+      logros,
+      guiasL6Avg,
+      guiasL7Avg,
+      guiasL8Avg
     };
   }, [area, metricMode]);
 
@@ -236,15 +252,18 @@ function Index() {
               <TeamRankingCard rankings={computedArea.teamRankings} operadores={computedArea.operadores} metricMode={metricMode} />
 
               <div className="flex flex-col gap-4">
-                <AutonomyCard
-                  autonomia={computedArea.autonomia}
-                  nivel_label={computedArea.nivelLabel}
-                  trend={computedArea.cumplimientoPorHora.map(h => h.cumplimiento)}
-                  title={metricMode === "autonomia" ? "Nivel de Autonomía" : metricMode === "cursos" ? "Capacitación de Planta" : "Guías Técnicas"}
-                  subtitle={metricMode === "autonomia" ? "Progreso actual del departamento" : metricMode === "cursos" ? "Progreso actual de cursos" : "Habilitación técnica"}
-                  customText={`${computedArea.excelenciaEquipo}%`}
-                  customSubText="/ 100%"
-                />
+                 <AutonomyCard
+                   autonomia={computedArea.autonomia}
+                   nivel_label={computedArea.nivelLabel}
+                   trend={computedArea.cumplimientoPorHora.map(h => h.cumplimiento)}
+                   title={metricMode === "autonomia" ? "Nivel de Autonomía" : metricMode === "cursos" ? "Capacitación de Planta" : "Guías Técnicas"}
+                   subtitle={metricMode === "autonomia" ? "Progreso actual del departamento" : metricMode === "cursos" ? "Progreso actual de cursos" : "Habilitación técnica"}
+                   customText={`${computedArea.excelenciaEquipo}%`}
+                   customSubText="/ 100%"
+                   guiasL6={computedArea.guiasL6Avg}
+                   guiasL7={computedArea.guiasL7Avg}
+                   guiasL8={computedArea.guiasL8Avg}
+                 />
                 {metricMode === "autonomia" ? (
                   <PromedioPorFactorCard area={computedArea} />
                 ) : metricMode === "cursos" ? (

@@ -10,12 +10,26 @@ interface AutonomyCardProps {
   subtitle?: string;
   customText?: string;
   customSubText?: string;
+  guiasL6?: number;
+  guiasL7?: number;
+  guiasL8?: number;
 }
 
 import { Sparkline } from "@/components/zeus/sparkline";
 import { cn } from "@/lib/utils";
 
-export function AutonomyCard({ autonomia, nivel_label, trend = [], title, subtitle, customText, customSubText }: AutonomyCardProps) {
+export function AutonomyCard({ 
+  autonomia, 
+  nivel_label, 
+  trend = [], 
+  title, 
+  subtitle, 
+  customText, 
+  customSubText,
+  guiasL6,
+  guiasL7,
+  guiasL8
+}: AutonomyCardProps) {
   const titleText = title || STRINGS.TITLE;
   const subtitleText = subtitle || STRINGS.SUBTITLE;
   const isCapacitacion = titleText.toLowerCase().includes("capacitac") || titleText.toLowerCase().includes("curso");
@@ -54,7 +68,7 @@ export function AutonomyCard({ autonomia, nivel_label, trend = [], title, subtit
         )}
       </header>
 
-      <div className="flex flex-1 items-center gap-8 p-6">
+      <div className="flex flex-1 items-center gap-6 p-6">
         <div className="flex shrink-0 items-center justify-center">
           <AutonomyGauge 
             value={autonomia} 
@@ -63,14 +77,49 @@ export function AutonomyCard({ autonomia, nivel_label, trend = [], title, subtit
             stroke_width={15} 
             customText={customText} 
             customSubText={customSubText} 
-            color={isCapacitacion ? "#9333ea" : undefined}
+            color={isGuias ? "#0d9488" : isCapacitacion ? "#9333ea" : undefined}
           />
         </div>
         
-        <div className="flex flex-col justify-center space-y-2">
+        <div className="flex flex-col justify-center space-y-2 flex-1">
           <h3 className="text-xl font-black text-[#1a4491] uppercase tracking-tight leading-tight">
             {nivel_label}
           </h3>
+
+          {isGuias && (guiasL6 !== undefined || guiasL7 !== undefined || guiasL8 !== undefined) ? (
+            <div className="space-y-1.5 pt-0.5 max-w-[200px]">
+              <div className="space-y-0.5">
+                <div className="flex justify-between text-[8px] font-black text-slate-500 uppercase tracking-wide">
+                  <span>L6 (Básico)</span>
+                  <span className="text-emerald-700">{guiasL6?.toFixed(1)}%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-1 overflow-hidden border border-slate-200">
+                  <div className="bg-emerald-600 h-full rounded-full" style={{ width: `${guiasL6}%` }} />
+                </div>
+              </div>
+
+              <div className="space-y-0.5">
+                <div className="flex justify-between text-[8px] font-black text-slate-500 uppercase tracking-wide">
+                  <span>L7 (Intermedio)</span>
+                  <span className="text-teal-700">{guiasL7?.toFixed(1)}%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-1 overflow-hidden border border-slate-200">
+                  <div className="bg-teal-600 h-full rounded-full" style={{ width: `${guiasL7}%` }} />
+                </div>
+              </div>
+
+              <div className="space-y-0.5">
+                <div className="flex justify-between text-[8px] font-black text-slate-500 uppercase tracking-wide">
+                  <span>L8 (Avanzado)</span>
+                  <span className="text-cyan-700">{guiasL8?.toFixed(1)}%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-1 overflow-hidden border border-slate-200">
+                  <div className="bg-cyan-600 h-full rounded-full" style={{ width: `${guiasL8}%` }} />
+                </div>
+              </div>
+            </div>
+          ) : null}
+          
           <div className="inline-flex w-fit items-center rounded-full bg-yellow-100 px-3 py-1 border border-yellow-200">
             <span className="text-[10px] font-black text-yellow-800 uppercase tracking-widest">
               META ESPERADA: 100%
