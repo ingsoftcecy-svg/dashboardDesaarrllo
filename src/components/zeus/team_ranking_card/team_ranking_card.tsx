@@ -14,15 +14,16 @@ interface TeamRankingCardProps {
   rankings?: TeamRanking[];
   operadores?: any[];
   metricMode?: "autonomia" | "cursos" | "guias";
+  className?: string;
 }
 
-export function TeamRankingCard({ rankings = [], operadores = [], metricMode = "autonomia" }: TeamRankingCardProps) {
+export function TeamRankingCard({ rankings = [], operadores = [], metricMode = "autonomia", className }: TeamRankingCardProps) {
   return (
     <motion.section 
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ y: -5 }}
-      className="flex h-full flex-col rounded-xl border border-white/40 bg-white/70 backdrop-blur-md shadow-xl transition hover:shadow-lg overflow-hidden"
+      className={cn("flex flex-col rounded-xl border border-white/40 bg-white/70 backdrop-blur-md shadow-xl transition hover:shadow-lg overflow-hidden", className || "h-full")}
     >
       <header className={cn(
         "flex items-center gap-2 border-b border-slate-100 px-4 py-3 text-white transition-all duration-300",

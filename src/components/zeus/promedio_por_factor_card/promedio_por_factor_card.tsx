@@ -7,9 +7,12 @@ import { FactorItem } from "./factor_item";
 
 interface PromedioPorFactorCardProps {
   area: AreaData;
+  className?: string;
 }
 
-export function PromedioPorFactorCard({ area }: PromedioPorFactorCardProps) {
+import { cn } from "@/lib/utils";
+
+export function PromedioPorFactorCard({ area, className }: PromedioPorFactorCardProps) {
   const [selectedTeam, setSelectedTeam] = useState<string>("general");
 
   // Reiniciar a "general" al cambiar de departamento/área
@@ -53,7 +56,7 @@ export function PromedioPorFactorCard({ area }: PromedioPorFactorCardProps) {
     <motion.section
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col rounded-xl border border-slate-200 bg-white shadow-xl overflow-hidden"
+      className={cn("flex flex-col rounded-xl border border-slate-200 bg-white shadow-xl overflow-hidden", className)}
     >
       <header className="flex items-center justify-between bg-[#0f172a] px-4 py-3 text-white">
         <div className="flex items-center gap-2">

@@ -31,7 +31,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const [tab, setTab] = useState<AreaTab>("general");
   const { general, cocimientos, bloqueFrio, mantenimiento, loading } = useExcelData();
-  
+
   const usuario = useAuth();
   const puedeEditar = usuario?.rol === 'admin'; // Solo administradores pueden editar
   const [metricMode, setMetricMode] = useState<"autonomia" | "cursos" | "guias">("autonomia");
@@ -71,10 +71,10 @@ function Index() {
     const podio = sortedOps.slice(0, 5).map(op => ({
       nombre: op.nombre,
       puesto: op.puesto,
-      excelencia: metricMode === "autonomia" 
-        ? (op.autonomyScore ?? 0) 
-        : metricMode === "cursos" 
-          ? (op.cursosProgress ?? 0) 
+      excelencia: metricMode === "autonomia"
+        ? (op.autonomyScore ?? 0)
+        : metricMode === "cursos"
+          ? (op.cursosProgress ?? 0)
           : (op.guiasProgress ?? 0),
       lider: op.lider
     }));
@@ -120,8 +120,8 @@ function Index() {
     }
 
     // 5. Autonomia (escala 0-4) para el Gauge
-    const autonomia = metricMode === "autonomia" 
-      ? area.autonomia 
+    const autonomia = metricMode === "autonomia"
+      ? area.autonomia
       : Number(((excelenciaEquipo / 100) * 4).toFixed(2));
 
     // 6. Nivel label
@@ -189,7 +189,7 @@ function Index() {
   return (
     <div className="flex h-screen flex-col bg-slate-100 overflow-hidden">
       <TopNav tab={tab} onTabChange={setTab} />
-      
+
       <main id="dashboard-content" className="flex-1 overflow-auto">
         {loading ? (
           <DashboardSkeleton />
@@ -239,7 +239,7 @@ function Index() {
             </div>
 
             <TeamHeader area={computedArea} metricMode={metricMode} />
-            
+
             {/* Top Section Grid */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 mb-4">
               <ExcellenceCard
@@ -248,48 +248,81 @@ function Index() {
                 excelenciaEquipo={computedArea.excelenciaEquipo}
                 metricMode={metricMode}
               />
-              
-              <TeamRankingCard rankings={computedArea.teamRankings} operadores={computedArea.operadores} metricMode={metricMode} />
+              <div className="flex flex-col gap-4">
+                {metricMode === "autonomia" ? (
+                  <TeamRankingCard
+                    rankings={computedArea.teamRankings}
+                    operadores={computedArea.operadores}
+                    metricMode={metricMode}
+                    className="flex-1 min-h-[480px] h-full"
+                  />
+                ) : metricMode === "cursos" ? (
+                  <CursosCardDetails area={computedArea} className="flex-1 min-h-[480px] h-full" />
+                ) : (
+                  <AutonomyCard
+                    autonomia={computedArea.autonomia}
+                    nivel_label={computedArea.nivelLabel}
+                    trend={computedArea.cumplimientoPorHora.map(h => h.cumplimiento)}
+                    title="Guías Técnicas"
+                    subtitle="Habilitación técnica"
+                    customText={`${computedArea.excelenciaEquipo}%`}
+                    customSubText="/ 100%"
+                    guiasL6={computedArea.guiasL6Avg}
+                    guiasL7={computedArea.guiasL7Avg}
+                    guiasL8={computedArea.guiasL8Avg}
+                  />
+                )}
+              </div>
 
               <div className="flex flex-col gap-4">
-                 <AutonomyCard
-                   autonomia={computedArea.autonomia}
-                   nivel_label={computedArea.nivelLabel}
-                   trend={computedArea.cumplimientoPorHora.map(h => h.cumplimiento)}
-                   title={metricMode === "autonomia" ? "Nivel de Autonomía" : metricMode === "cursos" ? "Capacitación de Planta" : "Guías Técnicas"}
-                   subtitle={metricMode === "autonomia" ? "Progreso actual del departamento" : metricMode === "cursos" ? "Progreso actual de cursos" : "Habilitación técnica"}
-                   customText={`${computedArea.excelenciaEquipo}%`}
-                   customSubText="/ 100%"
-                   guiasL6={computedArea.guiasL6Avg}
-                   guiasL7={computedArea.guiasL7Avg}
-                   guiasL8={computedArea.guiasL8Avg}
-                 />
+                {metricMode !== "guias" && (
+                  <AutonomyCard
+                    autonomia={computedArea.autonomia}
+                    nivel_label={computedArea.nivelLabel}
+                    trend={computedArea.cumplimientoPorHora.map(h => h.cumplimiento)}
+                    title={metricMode === "autonomia" ? "Nivel de Autonomía" : "Capacitación de Planta"}
+                    subtitle={metricMode === "autonomia" ? "Progreso actual del departamento" : "Progreso actual de cursos"}
+                    customText={`${computedArea.excelenciaEquipo}%`}
+                    customSubText="/ 100%"
+                  />
+                )}
                 {metricMode === "autonomia" ? (
-                  <PromedioPorFactorCard area={computedArea} />
-                ) : metricMode === "cursos" ? (
-                  <CursosCardDetails area={computedArea} />
-                ) : null}
+                  <PromedioPorFactorCard area={computedArea} className="flex-1 min-h-[480px] h-full" />
+                ) : (
+                  <TeamRankingCard
+                    rankings={computedArea.teamRankings}
+                    operadores={computedArea.operadores}
+                    metricMode={metricMode}
+                    className={
+                      computedArea.team !== "Vista General"
+                        ? "h-auto"
+                        : metricMode === "cursos"
+                          ? "h-[400px]"
+                          : "h-[530px]"
+                    }
+                  />
+                )}
               </div>
             </div>
 
             {/* Bottom Section: Full-Width SKAP Matrix */}
             <div className="mt-4">
               <h3 className="mb-3 text-lg font-bold text-slate-800 uppercase tracking-tight">Matriz SKAP</h3>
-              <PhysicalBoard 
-                operadores={computedArea.operadores as any} 
+              <PhysicalBoard
+                operadores={computedArea.operadores as any}
                 show_ato={tab !== "mantenimiento"}
                 puedeEditar={puedeEditar}
                 teamRankings={computedArea.teamRankings}
                 metricMode={metricMode}
               />
             </div>
-            
+
           </div>
-          
+
         )}
       </main>
     </div>
   );
 }
- 
+
 

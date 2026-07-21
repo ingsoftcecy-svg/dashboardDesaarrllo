@@ -512,11 +512,11 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             colorText = "text-blue-700";
           }
 
-          const badgeEl = (
+           const badgeEl = (
             <div 
               title={`Nivel: ${level}\nProgreso: ${progress}%`}
               className={cn(
-                "mx-auto flex w-20 flex-col items-center justify-center overflow-hidden rounded border shadow-sm transition-all cursor-pointer hover:scale-105 active:scale-95 duration-200",
+                "mx-auto flex w-20 flex-col items-center justify-center overflow-hidden rounded border shadow-sm transition-all cursor-pointer hover:scale-105 active:scale-95 duration-200 group",
                 colorBorder,
                 progress === 100 && "animate-glow-gold scale-110"
               )}
@@ -527,8 +527,11 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               )}>
                 TOTAL
               </div>
-              <div className={cn("flex w-full items-center justify-center bg-white py-1 min-h-[36px]", colorText)}>
+              <div className={cn("flex w-full items-center justify-center bg-white py-1 min-h-[30px]", colorText)}>
                 <span className="text-xs font-black tabular-nums">{progress.toFixed(2)}%</span>
+              </div>
+              <div className="w-full bg-slate-50 border-t border-slate-100 py-0.5 text-center text-[7px] font-black uppercase text-slate-400 tracking-wider group-hover:text-[#1a4491] group-hover:bg-slate-100 transition-all">
+                ver detalles
               </div>
             </div>
           );
