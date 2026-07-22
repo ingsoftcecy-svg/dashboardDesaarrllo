@@ -413,11 +413,11 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
       <td className="border-b p-3 align-middle text-center w-40">
         {metricMode === "autonomia" ? (
           <div className={cn(
-            "mx-auto flex w-16 flex-col items-center justify-center overflow-hidden rounded border border-[#1a4491] shadow-sm transition-all",
+            "mx-auto flex w-20 flex-col items-center justify-center overflow-hidden rounded border border-[#1a4491] shadow-sm transition-all",
             operator.autonomyScore === 100 && "animate-glow-gold scale-110"
           )}>
             <div className={cn(
-              "w-full py-1 text-center text-[10px] font-bold leading-tight text-white uppercase",
+              "w-full py-1 text-center text-[8px] font-bold leading-none text-white uppercase tracking-tighter px-0.5",
               operator.autonomyScore === 100 ? "bg-yellow-500" : "bg-[#1a4491]"
             )}>
               {STRINGS.AUTONOMY_LEVEL}
@@ -439,7 +439,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
           let colorBorder = "border-[#1a4491]";
           let colorText = "text-[#1a4491]";
 
-          if (operator.cursosTotal > 0) {
+          if ((operator.cursosTotal ?? 0) > 0) {
             if (progress === 100) {
               colorHeader = "bg-yellow-500";
               colorBorder = "border-yellow-500";

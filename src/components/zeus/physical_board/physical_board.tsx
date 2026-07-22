@@ -103,7 +103,7 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
                 </>
               )}
               
-              <th className={cn("sticky top-0 border-b border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>{metricMode === "autonomia" ? "NIVEL AUTONOMIA" : metricMode === "cursos" ? "PROGRESO CURSOS" : "PROGRESO TOTAL"}</th>
+              <th className={cn("sticky top-0 border-b border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>{metricMode === "autonomia" ? "PROMEDIO DE HABILIDADES" : metricMode === "cursos" ? "PROGRESO CURSOS" : "PROGRESO TOTAL"}</th>
             </tr>
           </thead>
           <tbody>

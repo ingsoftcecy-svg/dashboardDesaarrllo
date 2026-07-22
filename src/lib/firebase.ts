@@ -35,8 +35,8 @@ const firebaseConfig = {
 // Initialize Firebase only if config is present (prevents build crashes during SSR)
 const app = firebaseConfig.apiKey ? initializeApp(firebaseConfig) : null;
 const analytics = app && typeof window !== 'undefined' ? getAnalytics(app) : null;
-const db = app ? getFirestore(app) : null;
-const auth = app ? getAuth(app) : null;
+const db = app ? getFirestore(app) : null as unknown as ReturnType<typeof getFirestore>;
+const auth = app ? getAuth(app) : null as unknown as ReturnType<typeof getAuth>;
 
 // Activar token de depuración para desarrollo local
 if (import.meta.env.DEV && typeof window !== 'undefined') {

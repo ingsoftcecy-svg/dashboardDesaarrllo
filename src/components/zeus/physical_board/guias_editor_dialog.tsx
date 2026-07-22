@@ -320,6 +320,7 @@ export function GuiasEditorDialog({ operator, puedeEditar }: GuiasEditorDialogPr
         <div className="flex justify-end gap-2">
           {puedeEditar && (
             <>
+              {/* Temporariamente oculto
               <button
                 onClick={() => handleToggleAll(checkedCount < flatSkillsCount)}
                 className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-bold rounded-lg border bg-white text-slate-700 border-slate-200 hover:bg-slate-50 cursor-pointer shadow-sm transition-colors"
@@ -336,6 +337,7 @@ export function GuiasEditorDialog({ operator, puedeEditar }: GuiasEditorDialogPr
                   </>
                 )}
               </button>
+              */}
 
               <button
                 onClick={() => setShowImporter(!showImporter)}

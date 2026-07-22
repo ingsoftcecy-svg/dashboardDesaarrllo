@@ -131,10 +131,10 @@ function Index() {
     } else if (metricMode === "guias") {
       nivelLabel = "Habilitación Técnica";
     } else {
-      if (tab === "general") nivelLabel = "Autonomía General";
-      else if (tab === "cocimientos") nivelLabel = "Autonomía de Cocimientos";
-      else if (tab === "bloqueFrio") nivelLabel = "Autonomía de Bloque Frío";
-      else if (tab === "mantenimiento") nivelLabel = "Autonomía de Mantenimiento";
+      if (tab === "general") nivelLabel = "Promedio de Habilidades General";
+      else if (tab === "cocimientos") nivelLabel = "Promedio de Habilidades de Cocimientos";
+      else if (tab === "bloqueFrio") nivelLabel = "Promedio de Habilidades de Bloque Frío";
+      else if (tab === "mantenimiento") nivelLabel = "Promedio de Habilidades de Mantenimiento";
     }
 
     // 7. Logros
@@ -199,7 +199,7 @@ function Index() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border border-white/50 bg-white/60 backdrop-blur-md p-4 rounded-xl shadow-sm gap-4">
               <div className="flex flex-col">
                 <h1 className="text-lg font-black text-slate-800 uppercase tracking-tight">Tablero de Control</h1>
-                <p className="text-xs text-slate-500 font-semibold">Visualiza la autonomía de la planta o el avance del plan de capacitación.</p>
+                <p className="text-xs text-slate-500 font-semibold">Visualiza el promedio de habilidades de la planta o el avance del plan de capacitación.</p>
               </div>
               <div className="flex gap-1 rounded-lg bg-slate-200/60 p-1 shrink-0 self-end sm:self-center shadow-inner">
                 <button
@@ -211,7 +211,7 @@ function Index() {
                       : "text-slate-600 hover:bg-slate-300 hover:text-slate-800"
                   )}
                 >
-                  Autonomía
+                  Habilidades
                 </button>
                 <button
                   onClick={() => setMetricMode("cursos")}
@@ -280,8 +280,8 @@ function Index() {
                     autonomia={computedArea.autonomia}
                     nivel_label={computedArea.nivelLabel}
                     trend={computedArea.cumplimientoPorHora.map(h => h.cumplimiento)}
-                    title={metricMode === "autonomia" ? "Nivel de Autonomía" : "Capacitación de Planta"}
-                    subtitle={metricMode === "autonomia" ? "Progreso actual del departamento" : "Progreso actual de cursos"}
+                    title={metricMode === "autonomia" ? "Promedio de Habilidades" : "Capacitación de Planta"}
+                    subtitle={metricMode === "autonomia" ? "Promedio actual del departamento" : "Progreso actual de cursos"}
                     customText={`${computedArea.excelenciaEquipo}%`}
                     customSubText="/ 100%"
                   />
