@@ -645,16 +645,24 @@ export function useExcelData() {
                 const checked = levelEval.checked || [];
                 const checkedCount = checked.filter(Boolean).length;
                 const totalSkills = guiasTotals[level as keyof typeof guiasTotals] || (level === "L6" ? 54 : level === "L7" ? 101 : 34);
-                return totalSkills > 0 ? parseFloat(((checkedCount / totalSkills) * 100).toFixed(2)) : 0;
+                return {
+                  checkedCount,
+                  totalSkills,
+                  progress: totalSkills > 0 ? parseFloat(((checkedCount / totalSkills) * 100).toFixed(2)) : 0
+                };
               };
 
-              const guiasL6Progress = calcGuiasProgress("L6");
-              const guiasL7Progress = calcGuiasProgress("L7");
-              const guiasL8Progress = calcGuiasProgress("L8");
+              const guiasL6Eval = calcGuiasProgress("L6");
+              const guiasL7Eval = calcGuiasProgress("L7");
+              const guiasL8Eval = calcGuiasProgress("L8");
+
+              const guiasL6Progress = guiasL6Eval.progress;
+              const guiasL7Progress = guiasL7Eval.progress;
+              const guiasL8Progress = guiasL8Eval.progress;
 
               // Determinación inteligente del nivel activo
               let guiasActiveLevel: "L6" | "L7" | "L8" = (guiasData.activeLevel as "L6" | "L7" | "L8") || "L6";
-              if (calcGuiasProgress(guiasActiveLevel) === 0) {
+              if (calcGuiasProgress(guiasActiveLevel).progress === 0) {
                 if (guiasL6Progress > 0) guiasActiveLevel = "L6";
                 else if (guiasL7Progress > 0) guiasActiveLevel = "L7";
                 else if (guiasL8Progress > 0) guiasActiveLevel = "L8";
@@ -667,8 +675,12 @@ export function useExcelData() {
                 }
               }
 
-              // Promedio general de Habilitación por Guías Técnicas (L6 + L7 + L8) / 3
-              const guiasProgress = parseFloat(((guiasL6Progress + guiasL7Progress + guiasL8Progress) / 3).toFixed(2));
+              // Porcentaje de Habilitación Total Absoluta (total guías marcadas en L6+L7+L8 / total guías programa)
+              const totalCheckedSkills = guiasL6Eval.checkedCount + guiasL7Eval.checkedCount + guiasL8Eval.checkedCount;
+              const grandTotalSkills = guiasL6Eval.totalSkills + guiasL7Eval.totalSkills + guiasL8Eval.totalSkills;
+              const guiasProgress = grandTotalSkills > 0 
+                ? parseFloat(((totalCheckedSkills / grandTotalSkills) * 100).toFixed(2)) 
+                : 0;
 
               const maxEquipos = OPERATORS_MAX_SKILLS[id] || 1;
 
