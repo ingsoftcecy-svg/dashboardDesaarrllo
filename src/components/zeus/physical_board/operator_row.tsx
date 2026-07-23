@@ -522,10 +522,10 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               )}
             >
               <div className={cn(
-                "w-full py-1 text-center text-[10px] font-black leading-tight text-white uppercase tracking-widest",
+                "w-full py-1 text-center text-[9px] font-black leading-tight text-white uppercase tracking-wider",
                 colorHeader
               )}>
-                TOTAL
+                PROMEDIO
               </div>
               <div className={cn("flex w-full items-center justify-center bg-white py-1 min-h-[30px]", colorText)}>
                 <span className="text-xs font-black tabular-nums">{progress.toFixed(2)}%</span>

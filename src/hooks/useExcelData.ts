@@ -654,9 +654,7 @@ export function useExcelData() {
 
               // Determinación inteligente del nivel activo
               let guiasActiveLevel: "L6" | "L7" | "L8" = (guiasData.activeLevel as "L6" | "L7" | "L8") || "L6";
-              const savedProgress = calcGuiasProgress(guiasActiveLevel);
-
-              if (savedProgress === 0) {
+              if (calcGuiasProgress(guiasActiveLevel) === 0) {
                 if (guiasL6Progress > 0) guiasActiveLevel = "L6";
                 else if (guiasL7Progress > 0) guiasActiveLevel = "L7";
                 else if (guiasL8Progress > 0) guiasActiveLevel = "L8";
@@ -669,8 +667,8 @@ export function useExcelData() {
                 }
               }
 
-              // Progreso del nivel activo
-              const guiasProgress = calcGuiasProgress(guiasActiveLevel);
+              // Promedio general de Habilitación por Guías Técnicas (L6 + L7 + L8) / 3
+              const guiasProgress = parseFloat(((guiasL6Progress + guiasL7Progress + guiasL8Progress) / 3).toFixed(2));
 
               const maxEquipos = OPERATORS_MAX_SKILLS[id] || 1;
 
