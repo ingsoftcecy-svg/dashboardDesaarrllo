@@ -638,21 +638,38 @@ export function useExcelData() {
 
               // Guías Técnicas properties calculation — per level
               const guiasData = guiasMap[id] || {};
-              const guiasActiveLevel = guiasData.activeLevel || "L6";
               const guiasEvaluations = guiasData.evaluations || {};
 
               const calcGuiasProgress = (level: string) => {
                 const levelEval = guiasEvaluations[level] || {};
                 const checked = levelEval.checked || [];
                 const checkedCount = checked.filter(Boolean).length;
-                const totalSkills = guiasTotals[level as keyof typeof guiasTotals] || (level === "L6" ? 54 : level === "L7" ? 101 : 155);
+                const totalSkills = guiasTotals[level as keyof typeof guiasTotals] || (level === "L6" ? 54 : level === "L7" ? 101 : 34);
                 return totalSkills > 0 ? parseFloat(((checkedCount / totalSkills) * 100).toFixed(2)) : 0;
               };
 
               const guiasL6Progress = calcGuiasProgress("L6");
               const guiasL7Progress = calcGuiasProgress("L7");
               const guiasL8Progress = calcGuiasProgress("L8");
-              // Progreso del nivel activo (para compatibilidad con otros componentes)
+
+              // Determinación inteligente del nivel activo
+              let guiasActiveLevel: "L6" | "L7" | "L8" = (guiasData.activeLevel as "L6" | "L7" | "L8") || "L6";
+              const savedProgress = calcGuiasProgress(guiasActiveLevel);
+
+              if (savedProgress === 0) {
+                if (guiasL6Progress > 0) guiasActiveLevel = "L6";
+                else if (guiasL7Progress > 0) guiasActiveLevel = "L7";
+                else if (guiasL8Progress > 0) guiasActiveLevel = "L8";
+              } else {
+                if (guiasL6Progress === 100 && guiasL7Progress > 0 && guiasActiveLevel === "L6") {
+                  guiasActiveLevel = "L7";
+                }
+                if (guiasL7Progress === 100 && guiasL8Progress > 0 && guiasActiveLevel === "L7") {
+                  guiasActiveLevel = "L8";
+                }
+              }
+
+              // Progreso del nivel activo
               const guiasProgress = calcGuiasProgress(guiasActiveLevel);
 
               const maxEquipos = OPERATORS_MAX_SKILLS[id] || 1;
