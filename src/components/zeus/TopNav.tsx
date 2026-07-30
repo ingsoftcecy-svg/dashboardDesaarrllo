@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Beer, Clock, Settings } from "lucide-react";
+import { Beer, Clock, Settings, Terminal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate, Link } from '@tanstack/react-router';
 import { ScriptPortalDialog } from "./ScriptPortalDialog";

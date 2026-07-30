@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Medal, AlertCircle, Edit2, Check, X } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -129,15 +130,20 @@ export function TeamCard({ variant, team, operadores = [], metricMode = "autonom
   }, [is_best]);
 
   
-  const icon = is_best ? <Medal className="h-3.5 w-3.5 text-emerald-600" /> : <AlertCircle className="h-3.5 w-3.5 text-rose-600" />;
+  const team_score = team?.avg || 0;
+  const is_green = is_best || team_score >= 90;
+
+  const icon = is_best 
+    ? <Medal className="h-3.5 w-3.5 text-emerald-600" /> 
+    : <AlertCircle className={cn("h-3.5 w-3.5", is_green ? "text-emerald-600" : "text-rose-600")} />;
   const label = is_best ? STRINGS.BEST_TEAM : STRINGS.WORST_TEAM;
-  const label_color = is_best ? "text-emerald-600" : "text-rose-600";
-  const bg_gradient = is_best ? "from-emerald-500/10 to-teal-500/5 border-emerald-500/20" : "from-rose-500/10 to-orange-500/5 border-rose-500/20";
-  const avatar_border = is_best ? "border-emerald-500/20 group-hover:border-emerald-500/50 bg-emerald-500" : "border-rose-500/20 group-hover:border-rose-500/50 bg-rose-500";
-  const progress_bg = is_best ? "bg-emerald-100" : "bg-rose-100";
-  const progress_fill = is_best ? "bg-emerald-500" : "bg-rose-500";
-  const progress_text = is_best ? "text-emerald-600" : "text-rose-600";
-  const progress_label = is_best ? "text-emerald-700/40" : "text-rose-700/40";
+  const label_color = is_green ? "text-emerald-600" : "text-rose-600";
+  const bg_gradient = is_green ? "from-emerald-500/10 to-teal-500/5 border-emerald-500/20" : "from-rose-500/10 to-orange-500/5 border-rose-500/20";
+  const avatar_border = is_green ? "border-emerald-500/20 group-hover:border-emerald-500/50 bg-emerald-500" : "border-rose-500/20 group-hover:border-rose-500/50 bg-rose-500";
+  const progress_bg = is_green ? "bg-emerald-100" : "bg-rose-100";
+  const progress_fill = is_green ? "bg-emerald-500" : "bg-rose-500";
+  const progress_text = is_green ? "text-emerald-600" : "text-rose-600";
+  const progress_label = is_green ? "text-emerald-700/40" : "text-rose-700/40";
   
   const leader_subtitle = is_best ? STRINGS.LEADER_BEST : STRINGS.LEADER_WORST;
   const team_subtitle = is_best ? STRINGS.BEST_TEAM_SUBTITLE : STRINGS.WORST_TEAM_SUBTITLE;
@@ -278,12 +284,20 @@ export function TeamCard({ variant, team, operadores = [], metricMode = "autonom
         x: 0,
         ...(!is_best && {
           scale: [1, 1.01, 1],
-          borderColor: [
+          borderColor: is_green ? [
+            "rgba(16, 185, 129, 0.2)",
+            "rgba(16, 185, 129, 0.5)",
+            "rgba(16, 185, 129, 0.2)"
+          ] : [
             "rgba(244, 63, 94, 0.2)",
             "rgba(245, 158, 11, 0.6)",
             "rgba(244, 63, 94, 0.2)"
           ],
-          boxShadow: [
+          boxShadow: is_green ? [
+            "0 0 0px 0px rgba(16, 185, 129, 0)",
+            "0 0 15px 3px rgba(16, 185, 129, 0.2)",
+            "0 0 0px 0px rgba(16, 185, 129, 0)"
+          ] : [
             "0 0 0px 0px rgba(245, 158, 11, 0)",
             "0 0 15px 3px rgba(245, 158, 11, 0.25)",
             "0 0 0px 0px rgba(245, 158, 11, 0)"
