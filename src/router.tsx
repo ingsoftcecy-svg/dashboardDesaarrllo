@@ -16,6 +16,7 @@ function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => vo
             stroke="currentColor"
             strokeWidth={2}
           >
+
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

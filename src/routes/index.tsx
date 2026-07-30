@@ -307,7 +307,19 @@ function Index() {
 
             {/* Bottom Section: Full-Width SKAP Matrix */}
             <div className="mt-4">
-              <h3 className="mb-3 text-lg font-bold text-slate-800 uppercase tracking-tight">Matriz SKAP</h3>
+              <div className="flex items-center gap-2 mb-3">
+                <span className={cn(
+                  "w-2.5 h-6 rounded-full inline-block transition-colors duration-300",
+                  metricMode === "cursos" ? "bg-purple-700" : metricMode === "guias" ? "bg-emerald-700" : "bg-[#1a4491]"
+                )} />
+                <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">
+                  {metricMode === "autonomia"
+                    ? `Matriz SKAP (Autonomía) — ${tab === "general" ? "General" : tab === "cocimientos" ? "Cocimientos" : tab === "bloqueFrio" ? "Bloque Frío" : "Mantenimiento"}`
+                    : metricMode === "cursos"
+                      ? `Matriz de Cursos y Capacitación — ${tab === "general" ? "General" : tab === "cocimientos" ? "Cocimientos" : tab === "bloqueFrio" ? "Bloque Frío" : "Mantenimiento"}`
+                      : `Matriz de Guías Técnicas (L6, L7, L8) — ${tab === "general" ? "General" : tab === "cocimientos" ? "Cocimientos" : tab === "bloqueFrio" ? "Bloque Frío" : "Mantenimiento"}`}
+                </h3>
+              </div>
               <PhysicalBoard
                 operadores={computedArea.operadores as any}
                 show_ato={tab !== "mantenimiento"}

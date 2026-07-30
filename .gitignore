@@ -36,3 +36,9 @@ dist-ssr
 # Security
 SECURITY.md
 
+# Firebase & Local Outputs
+.firebase
+.firebase/**
+scripts/resultado_extraccion.json
+resultado_extraccion.json
+

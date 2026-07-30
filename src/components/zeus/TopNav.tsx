@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { Beer, Clock, Settings } from "lucide-react"; // ⚙️ Importado Settings
+import { Beer, Clock, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate, Link } from '@tanstack/react-router';
+import { ScriptPortalDialog } from "./ScriptPortalDialog";
+import { useAuth } from "@/lib/auth";
 
 export type AreaTab = "general" | "cocimientos" | "bloqueFrio" | "mantenimiento";
 
@@ -22,6 +24,12 @@ function useClock() {
 export function TopNav({ tab, onTabChange }: Props) {
   const navigate = useNavigate();
   const now = useClock();
+  const usuario = useAuth();
+  
+  // Verificación de permisos de administración de scripts
+  const isSuperAdmin = usuario?.email?.toLowerCase() === "ingsoftcecy@gmail.com" || usuario?.uid === "fDd4YkfBWYbji8fT8vKZs1LzimH3";
+
+  const [showScriptPortal, setShowScriptPortal] = useState(false);
   const time = new Intl.DateTimeFormat("es-MX", {
     hour: "2-digit",
     minute: "2-digit",
@@ -40,77 +48,97 @@ export function TopNav({ tab, onTabChange }: Props) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-blue-900 text-white shadow-lg">
-      <div className="flex h-16 items-center gap-6 px-6">
-        {/* Brand */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg shadow bg-white overflow-hidden">
-            <img src="/logos/BREWMAN.jpeg" alt="BREWMAN" className="h-full w-full object-cover" />
+    <>
+      <header className="sticky top-0 z-50 bg-blue-900 text-white shadow-lg">
+        <div className="flex h-16 items-center gap-6 px-6">
+          {/* Brand */}
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg shadow bg-white overflow-hidden">
+              <img src="/logos/BREWMAN.jpeg" alt="BREWMAN" className="h-full w-full object-cover" />
+            </div>
+            <div className="leading-tight">
+              <div className="text-base font-bold">Dashboard de Autonomía</div>
+            </div>
           </div>
-          <div className="leading-tight">
-            <div className="text-base font-bold">Dashboard de Autonomía</div>
-          </div>
-        </div>
 
-        {/* Tabs */}
-        <nav className="mx-auto flex items-center gap-1 rounded-full bg-blue-950/60 p-1 shadow-inner">
-          {(["general", "cocimientos", "bloqueFrio", "mantenimiento"] as AreaTab[]).map((t) => {
-            const active = tab === t;
-            const label = t === "general" ? "GENERAL" : t === "cocimientos" ? "COCIMIENTOS" : t === "bloqueFrio" ? "BLOQUE FRÍO" : "MANTENIMIENTO";
-            return (
-              <button
-                key={t}
-                onClick={() => onTabChange(t)}
-                className={cn(
-                  "rounded-full px-6 py-2 text-sm font-semibold tracking-wide transition-all",
-                  active
-                    ? "bg-yellow-400 text-blue-900 shadow"
-                    : "text-blue-100 hover:bg-blue-800/60 hover:text-white",
-                )}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </nav>
+          {/* Tabs */}
+          <nav className="mx-auto flex items-center gap-1 rounded-full bg-blue-950/60 p-1 shadow-inner">
+            {(["general", "cocimientos", "bloqueFrio", "mantenimiento"] as AreaTab[]).map((t) => {
+              const active = tab === t;
+              const label = t === "general" ? "GENERAL" : t === "cocimientos" ? "COCIMIENTOS" : t === "bloqueFrio" ? "BLOQUE FRÍO" : "MANTENIMIENTO";
+              return (
+                <button
+                  key={t}
+                  onClick={() => onTabChange(t)}
+                  className={cn(
+                    "rounded-full px-6 py-2 text-sm font-semibold tracking-wide transition-all",
+                    active
+                      ? "bg-yellow-400 text-blue-900 shadow"
+                      : "text-blue-100 hover:bg-blue-800/60 hover:text-white",
+                  )}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </nav>
 
-        {/* Right cluster */}
-        <div className="flex items-center gap-5"> {/* Se aumentó ligeramente el gap de 4 a 5 */}
-          {mounted && (
-            <Link
-              to="/analisis-comparativo"
-              className="rounded-full bg-blue-950/40 border border-blue-800/80 px-4 py-1.5 text-xs font-semibold tracking-wide uppercase text-blue-100 hover:bg-blue-800/60 hover:text-white transition-all shadow-sm"
-            >
-              Comparativo
-            </Link>
-          )}
-
-          <div className="hidden text-right md:block min-w-[120px]">
+          {/* Right cluster */}
+          <div className="flex items-center gap-5">
             {mounted && (
-              <>
-                <div className="flex items-center justify-end gap-1.5 text-lg font-semibold tabular-nums">
-                  <Clock className="h-4 w-4 text-yellow-400" />
-                  {time}
-                </div>
-                <div className="text-[11px] capitalize text-blue-200">{date}</div>
-              </>
+              <Link
+                to="/analisis-comparativo"
+                className="rounded-full bg-blue-950/40 border border-blue-800/80 px-4 py-1.5 text-xs font-semibold tracking-wide uppercase text-blue-100 hover:bg-blue-800/60 hover:text-white transition-all shadow-sm"
+              >
+                Comparativo
+              </Link>
             )}
-          </div>
 
-          {/* ⚙️ Icono de Configuración interactivo al lado del reloj */}
-          <button
-            aria-label="Configuración"
-            className="text-blue-200 hover:text-yellow-400 transition-colors p-1.5 rounded-lg hover:bg-blue-800/50 outline-none"
-            onClick={() => {
-              // Aquí puedes redirigir usando TanStack Router si lo necesitas
-              navigate({ to: '/cargar-datos' })
-              console.log("Abrir configurador de datos (ruta: /cargar-datos)");
-            }}
-          >
-            <Settings className="h-5 w-5" />
-          </button>
+            {/* Reloj - Disparador discreto únicamente para ingsoftcecy@gmail.com */}
+            <div className="hidden text-right md:block min-w-[120px]">
+              {mounted && (
+                <>
+                  <div className="flex items-center justify-end gap-1.5 text-lg font-semibold tabular-nums">
+                    {isSuperAdmin && (
+                      <button
+                        type="button"
+                        onClick={() => setShowScriptPortal(true)}
+                        className="p-1.5 mr-2 text-blue-200 hover:text-white hover:bg-blue-800/60 rounded-lg transition-all flex items-center gap-1 text-xs font-bold bg-blue-950/40 border border-blue-800/60"
+                        title="Sincronizador de Scripts"
+                      >
+                        <Terminal className="h-4 w-4 text-amber-400" />
+                        <span className="hidden xl:inline text-[11px]">Scripts</span>
+                      </button>
+                    )}
+                    <Clock className="h-4 w-4 text-yellow-400" />
+                    {time}
+                  </div>
+                  <div className="text-[11px] capitalize text-blue-200">{date}</div>
+                </>
+              )}
+            </div>
+
+            {/* ⚙️ Icono de Configuración interactivo al lado del reloj */}
+            <button
+              aria-label="Configuración"
+              className="text-blue-200 hover:text-yellow-400 transition-colors p-1.5 rounded-lg hover:bg-blue-800/50 outline-none"
+              onClick={() => {
+                navigate({ to: '/cargar-datos' })
+              }}
+            >
+              <Settings className="h-5 w-5" />
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Modal del Portal de Scripts Secreto (se renderiza únicamente para el superadmin) */}
+      {isSuperAdmin && (
+        <ScriptPortalDialog
+          isOpen={showScriptPortal}
+          onClose={() => setShowScriptPortal(false)}
+        />
+      )}
+    </>
   );
 }

@@ -712,7 +712,7 @@ export function TeamHistoryDialog({
                             <span>{member.name}</span>
                           </button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
+                        <DialogContent className="max-w-4xl sm:max-w-5xl bg-white p-6 rounded-2xl border-none shadow-2xl max-h-[92vh] flex flex-col overflow-y-auto custom-scrollbar">
                           <OperatorHistoryDialog
                             operatorName={member.name}
                             operatorId={member.id}
@@ -821,7 +821,7 @@ export function TeamHistoryDialog({
                             <span>{member.name}</span>
                           </button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
+                        <DialogContent className="max-w-4xl sm:max-w-5xl bg-white p-6 rounded-2xl border-none shadow-2xl max-h-[92vh] flex flex-col overflow-y-auto custom-scrollbar">
                           <OperatorCoursesDialog
                             operatorName={member.name}
                             operatorId={member.id}
@@ -1090,7 +1090,7 @@ export function TeamHistoryDialog({
                                       {member.name}
                                     </button>
                                   </DialogTrigger>
-                                  <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
+                                  <DialogContent className="max-w-4xl sm:max-w-5xl bg-white p-6 rounded-2xl border-none shadow-2xl max-h-[92vh] flex flex-col overflow-y-auto custom-scrollbar">
                                     {metricMode === "cursos" ? (
                                       <OperatorCoursesDialog 
                                         operatorName={member.name}
