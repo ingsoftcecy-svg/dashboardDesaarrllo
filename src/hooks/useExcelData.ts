@@ -682,16 +682,21 @@ export function useExcelData() {
               else if (guiasL7Progress > 0 && guiasL7Progress < 100) guiasActiveLevel = "L7";
               else if (guiasL8Progress > 0) guiasActiveLevel = "L8";
 
-              // Porcentaje de Habilitación Total Absoluta
-              const totalCheckedSkills = guiasL6Eval.checkedCount + guiasL7Eval.checkedCount + guiasL8Eval.checkedCount;
-              const grandTotalSkills = guiasL6Eval.totalSkills + guiasL7Eval.totalSkills + guiasL8Eval.totalSkills;
-              const guiasProgressCalculated = grandTotalSkills > 0 
-                ? parseFloat(((totalCheckedSkills / grandTotalSkills) * 100).toFixed(2)) 
-                : 0;
+              const tipoGuia = guiasData.tipoGuia || "COMPETENTE";
 
-              const guiasProgress = (guiasL6Progress > 0 || guiasL7Progress > 0 || guiasL8Progress > 0)
-                ? parseFloat(((guiasL6Progress + guiasL7Progress + guiasL8Progress) / 3).toFixed(2))
-                : guiasProgressCalculated;
+              // Porcentaje de Habilitación Total Absoluta según tipo de guía
+              let guiasProgress = (guiasL6Progress + guiasL7Progress + guiasL8Progress) / 3;
+              if (tipoGuia === "COMPETENTE") {
+                guiasProgress = guiasL6Progress;
+              } else if (guiasL7Progress > 0 || guiasL8Progress > 0) {
+                const activeLevels = [guiasL6Progress, guiasL7Progress, guiasL8Progress].filter(p => p > 0);
+                if (activeLevels.length > 0) {
+                  guiasProgress = activeLevels.reduce((a, b) => a + b, 0) / activeLevels.length;
+                }
+              }
+              guiasProgress = parseFloat(guiasProgress.toFixed(2));
+
+              const guiasProgressFinal = typeof guiasData.overallProgress === 'number' ? guiasData.overallProgress : guiasProgress;
 
               const maxEquipos = OPERATORS_MAX_SKILLS[id] || 1;
 

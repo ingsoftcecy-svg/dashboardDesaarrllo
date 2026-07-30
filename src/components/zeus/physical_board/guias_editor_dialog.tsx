@@ -103,6 +103,15 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               OneDrive Auto-Sync
             </span>
+            {importedData?.tipoGuia === "COMPETENTE" ? (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-800 border border-blue-300 uppercase tracking-tight">
+                COMPETENTE (Solo L6)
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-100 text-purple-800 border border-purple-300 uppercase tracking-tight">
+                MEJORADO (L6, L7, L8)
+              </span>
+            )}
           </div>
           <p className="text-xs font-semibold text-slate-500 mt-0.5">
             {operator.puesto || "Operador"} | Ficha SHARP: <span className="font-mono font-bold text-slate-700">{operator.id}</span>
@@ -114,20 +123,27 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
 
         {/* Selector de Nivel */}
         <div className="flex rounded-xl bg-slate-100 p-1 border shadow-inner">
-          {(["L6", "L7", "L8"] as const).map((lvl) => (
-            <button
-              key={lvl}
-              onClick={() => setActiveLevel(lvl)}
-              className={cn(
-                "rounded-lg px-4 py-1.5 text-xs font-black transition-all cursor-pointer",
-                activeLevel === lvl
-                  ? "bg-emerald-600 text-white shadow-md scale-105"
-                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-200/50"
-              )}
-            >
-              {lvl}
-            </button>
-          ))}
+          {(["L6", "L7", "L8"] as const).map((lvl) => {
+            const isDisabled = importedData?.tipoGuia === "COMPETENTE" && (lvl === "L7" || lvl === "L8");
+            return (
+              <button
+                key={lvl}
+                disabled={isDisabled}
+                onClick={() => !isDisabled && setActiveLevel(lvl)}
+                className={cn(
+                  "rounded-lg px-4 py-1.5 text-xs font-black transition-all cursor-pointer",
+                  activeLevel === lvl
+                    ? "bg-emerald-600 text-white shadow-md scale-105"
+                    : isDisabled
+                    ? "opacity-40 text-slate-400 cursor-not-allowed bg-slate-200/40"
+                    : "text-slate-600 hover:text-slate-800 hover:bg-slate-200/50"
+                )}
+                title={isDisabled ? "Pestaña N/A para colaboradores Competente" : `Nivel ${lvl}`}
+              >
+                {lvl} {isDisabled && "(N/A)"}
+              </button>
+            );
+          })}
         </div>
       </div>
 

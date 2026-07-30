@@ -1,4 +1,4 @@
-# Sincronizador de Guias Tecnicas (Cocimientos) - Proxy Nativo & Dual Sync
+# Sincronizador de Guias Tecnicas (Cocimientos) - Delta Sync & Clasificacion Competente/Mejorado
 param (
     [string]$OneDrivePath = "",
     [string]$ProjectId = "preview-bbe71",
@@ -21,6 +21,11 @@ if (-not $OneDrivePath) {
     try {
         $OneDrivePath = (Get-Item "$env:USERPROFILE\OneDrive - Anheuser-Busch InBev\Brewery Operations - *\5.0  Mantto\2026\04 ATO\03 ATO MEJORADO\Guias Tecnicas" -ErrorAction SilentlyContinue).FullName
     } catch {}
+    if (-not $OneDrivePath) {
+        try {
+            $OneDrivePath = (Get-Item "$env:USERPROFILE\OneDrive - Anheuser-Busch InBev\Brewery Operations - *\5.0  Mantto\2026\04 ATO\*\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+        } catch {}
+    }
 }
 
 if (-not $OneDrivePath -or -not (Test-Path -Path $OneDrivePath)) {
@@ -32,9 +37,78 @@ $OutputFile = Join-Path -Path $PSScriptRoot -ChildPath "resultado_extraccion.jso
 Write-Host "[INFO] Carpeta Encontrada: $OneDrivePath" -ForegroundColor Green
 Write-Host ""
 
-$excelFiles = Get-ChildItem -Path $OneDrivePath -Recurse -Filter "*.xlsx" -ErrorAction SilentlyContinue | Where-Object { $_.Name -notlike "~$*" }
-Write-Host "[INFO] Archivos encontrados: $($excelFiles.Count)" -ForegroundColor Green
+# ----------------------------------------------------------
+# FASE 0: OBTENER MARCAS DE TIEMPO EXISTENTES EN FIRESTORE
+# ----------------------------------------------------------
+$firestoreCache = @{}
+if (-not $SoloLocal) {
+    Write-Host "[INFO] Consultando estado previo en Firestore (Batch Check)..." -ForegroundColor Yellow
+    try {
+        $listUrl = "https://firestore.googleapis.com/v1/projects/" + $ProjectId + "/databases/(default)/documents/evaluaciones_guias_tecnicas?pageSize=300"
+        $fsResponse = Invoke-RestMethod -Uri $listUrl -Method Get -TimeoutSec 10 -UseBasicParsing
+        if ($fsResponse.documents) {
+            foreach ($doc in $fsResponse.documents) {
+                $docName = [System.IO.Path]::GetFileName($doc.name)
+                $lastMod = ""
+                if ($doc.fields.fileLastModified -and $doc.fields.fileLastModified.stringValue) {
+                    $lastMod = $doc.fields.fileLastModified.stringValue
+                }
+                $firestoreCache[$docName] = $lastMod
+            }
+            Write-Host "[OK] Metadatos cargados de Firestore: $($firestoreCache.Count) documentos." -ForegroundColor Green
+        }
+    } catch {
+        Write-Host "[WARN] No se pudo consultar Firestore en lote. Se procesaran todos los archivos." -ForegroundColor Yellow
+    }
+}
+
 Write-Host ""
+
+$excelFiles = Get-ChildItem -Path $OneDrivePath -Recurse -Filter "*.xlsx" -ErrorAction SilentlyContinue | Where-Object { $_.Name -notlike "~$*" }
+Write-Host "[INFO] Archivos encontrados en OneDrive: $($excelFiles.Count)" -ForegroundColor Green
+Write-Host ""
+
+# Filtrar archivos que requieren procesamiento (Delta Filter)
+$pendingFiles = @()
+foreach ($file in $excelFiles) {
+    $fileNameRaw = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
+    $sharpId = ""
+    $operatorName = $fileNameRaw
+    if ($fileNameRaw -match '^(\d{7,10})\s+(.+)$') {
+        $sharpId = $matches[1]
+        $operatorName = $matches[2]
+    }
+    $docId = if ($sharpId) { $sharpId } else { $operatorName -replace '[^a-zA-Z0-9_-]', '_' }
+
+    $localLastMod = $file.LastWriteTimeUtc.ToString("o")
+    
+    if (-not $SoloLocal -and $firestoreCache.ContainsKey($docId) -and $firestoreCache[$docId]) {
+        $remoteTime = $firestoreCache[$docId]
+        if ($localLastMod -le $remoteTime) {
+            Write-Host "[SIN CAMBIOS - OMITIDO] $($file.Name) (SHARP: $docId)" -ForegroundColor Gray
+            continue
+        }
+    }
+    
+    $pendingFiles += [pscustomobject]@{
+        File = $file
+        DocId = $docId
+        SharpId = $sharpId
+        OperatorName = $operatorName
+        LocalLastMod = $localLastMod
+    }
+}
+
+Write-Host ""
+Write-Host "[INFO] Archivos pendientes de lectura y sync: $($pendingFiles.Count)" -ForegroundColor Cyan
+Write-Host ""
+
+if ($pendingFiles.Count -eq 0) {
+    Write-Host "==========================================================" -ForegroundColor Cyan
+    Write-Host "   TODOS LOS ARCHIVOS ESTAN AL DIA. NADA QUE SUBIR.      " -ForegroundColor Green
+    Write-Host "==========================================================" -ForegroundColor Cyan
+    exit 0
+}
 
 # Configuracion Anti-Bloqueos de Excel COM
 $excel = New-Object -ComObject Excel.Application
@@ -49,25 +123,18 @@ $processedOperators = [ordered]@{}
 $processedCount = 0
 
 Write-Host "----------------------------------------------------------" -ForegroundColor Gray
-Write-Host " FASE 1: LECTURA LOCAL DE ARCHIVOS EXCEL                  " -ForegroundColor Yellow
+Write-Host " FASE 1: LECTURA DINAMICA DE EXCEL (COCIMIENTOS)          " -ForegroundColor Yellow
 Write-Host "----------------------------------------------------------" -ForegroundColor Gray
 
-foreach ($file in $excelFiles) {
+foreach ($item in $pendingFiles) {
+    $file = $item.File
+    $docId = $item.DocId
+    $sharpId = $item.SharpId
+    $operatorName = $item.OperatorName
     $wb = $null
+    
     try {
-        $fileNameRaw = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
-        
-        $sharpId = ""
-        $operatorName = $fileNameRaw
-        if ($fileNameRaw -match '^(\d{7,10})\s+(.+)$') {
-            $sharpId = $matches[1]
-            $operatorName = $matches[2]
-        }
-        
-        $docId = if ($sharpId) { $sharpId } else { $operatorName -replace '[^a-zA-Z0-9_-]', '_' }
-        
         if ($processedOperators.Contains($docId)) {
-            Write-Host "[OMITIDO] $fileNameRaw (SHARP $docId ya procesado)" -ForegroundColor Yellow
             continue
         }
         
@@ -76,8 +143,17 @@ foreach ($file in $excelFiles) {
         $equipo = if ($pathParts.Count -gt 1) { $pathParts[0] } else { "Cocimientos" }
         $subcarpeta = if ($pathParts.Count -gt 2) { $pathParts[1] } else { "General" }
         
+        # Determinar tipo de guia: COMPETENTE vs MEJORADO
+        $tipoGuia = "COMPETENTE"
+        $pathLower = $relativePath.ToLower()
+        if ($pathLower -like "*mejorado*") {
+            $tipoGuia = "MEJORADO"
+        } elseif ($pathLower -like "*competente*") {
+            $tipoGuia = "COMPETENTE"
+        }
+        
         $processedCount++
-        Write-Host "[$processedCount/$($excelFiles.Count)] Leido: $($file.Name)" -ForegroundColor White
+        Write-Host "[$processedCount/$($pendingFiles.Count)] Leido: $($file.Name) ($tipoGuia)" -ForegroundColor White
         
         $wb = $excel.Workbooks.Open($file.FullName, 0, $true, 5, "", "", $true)
         
@@ -88,6 +164,8 @@ foreach ($file in $excelFiles) {
             equipo = $equipo
             area = "Cocimientos"
             subcarpeta = $subcarpeta
+            tipoGuia = $tipoGuia
+            fileLastModified = $item.LocalLastMod
             archivo = $file.Name
             l6Pct = 0
             l7Pct = 0
@@ -102,6 +180,11 @@ foreach ($file in $excelFiles) {
             if ($sheetName -like "*L6*" -or $sheetName -like "*N6*" -or $sheetName -like "*6*") { $detectedLevel = "L6" }
             elseif ($sheetName -like "*L7*" -or $sheetName -like "*N7*" -or $sheetName -like "*7*") { $detectedLevel = "L7" }
             elseif ($sheetName -like "*L8*" -or $sheetName -like "*N8*" -or $sheetName -like "*8*") { $detectedLevel = "L8" }
+            
+            # Para COMPETENTE, omitir L7 y L8
+            if ($tipoGuia -eq "COMPETENTE" -and ($detectedLevel -eq "L7" -or $detectedLevel -eq "L8")) {
+                continue
+            }
             
             if ($detectedLevel -and -not $operatorRecord.niveles[$detectedLevel]) {
                 $totalPreguntas = 0
@@ -121,14 +204,18 @@ foreach ($file in $excelFiles) {
                     }
                 } catch {}
                 
-                for ($row = 3; $row -le 120; $row++) {
+                for ($row = 3; $row -le 150; $row++) {
                     $textB = "$($ws.Cells.Item($row, 2).Value2)".Trim()
                     $cellC = "$($ws.Cells.Item($row, 3).Value2)".Trim()
                     
                     if ($textB.Length -gt 0 -and $textB -notlike "*INSTRUCCIONES*" -notlike "*COMPETENCIAS*") {
                         
+                        # Deteccion Inteligente de Categorias (Mayusculas + Negrita o %)
                         $isHeader = $false
-                        if ($cellC -like "*%" -or ($ws.Cells.Item($row, 2).Font.Bold -and $cellC -ne "")) {
+                        $isFontBold = $false
+                        try { $isFontBold = [bool]($ws.Cells.Item($row, 2).Font.Bold) } catch {}
+                        
+                        if ($cellC -like "*%" -or ($isFontBold -and $textB -eq $textB.ToUpper() -and $textB.Length -gt 3)) {
                             $isHeader = $true
                         }
                         
@@ -146,7 +233,7 @@ foreach ($file in $excelFiles) {
                             }
                             $categoriasList += $currentCategory
                         }
-                        elseif ($textB.Length -gt 8) {
+                        elseif ($textB.Length -gt 6) {
                             $totalPreguntas++
                             $isChecked = $false
                             
@@ -178,6 +265,14 @@ foreach ($file in $excelFiles) {
                     }
                 }
                 
+                # Filtrar solo categorias que tengan habilidades o porcentaje evaluado
+                $filteredCategories = @()
+                foreach ($cat in $categoriasList) {
+                    if ($cat.habilidades.Count -gt 0 -or ($cat.porcentajeOficial -and $cat.porcentajeOficial -ne "0%")) {
+                        $filteredCategories += $cat
+                    }
+                }
+                
                 $porcentajeCalculado = 0
                 if ($totalPreguntas -gt 0) {
                     $porcentajeCalculado = [math]::Round(($marcadasSI / $totalPreguntas) * 100, 1)
@@ -192,7 +287,7 @@ foreach ($file in $excelFiles) {
                     porcentajeAvanceGlobal = "$porcentajeCalculado%"
                     totalHabilidades = $totalPreguntas
                     habilidadesAprobadas = $marcadasSI
-                    categorias = $categoriasList
+                    categorias = $filteredCategories
                 }
             }
         }
@@ -207,19 +302,19 @@ foreach ($file in $excelFiles) {
     }
 }
 
-# Cerrar Excel COM inmediatamente para liberar memoria
+# Cerrar Excel COM
 $excel.Quit()
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel) | Out-Null
 [System.GC]::Collect()
 
-# Guardar resultado_extraccion.json localmente siempre
+# Guardar resultado_extraccion.json localmente
 $allDataList = @($processedOperators.Values)
 $jsonResult = $allDataList | ConvertTo-Json -Depth 8
 [System.IO.File]::WriteAllText($OutputFile, $jsonResult, [System.Text.Encoding]::UTF8)
 
 Write-Host ""
 Write-Host "----------------------------------------------------------" -ForegroundColor Gray
-Write-Host " FASE 2: ENVIANDO DATOS A FIREBASE                        " -ForegroundColor Yellow
+Write-Host " FASE 2: ENVIANDO DATOS MODIFICADOS A FIREBASE            " -ForegroundColor Yellow
 Write-Host "----------------------------------------------------------" -ForegroundColor Gray
 
 $uploadCount = 0
@@ -228,7 +323,7 @@ if (-not $SoloLocal) {
         $op = $processedOperators[$docId]
         try {
             $evalJson = $op | ConvertTo-Json -Depth 8 -Compress
-            $firestoreUrl = "https://firestore.googleapis.com/v1/projects/" + $ProjectId + "/databases/(default)/documents/evaluaciones_guias_tecnicas/" + $docId + "?updateMask.fieldPaths=sharpId&updateMask.fieldPaths=nombre&updateMask.fieldPaths=equipo&updateMask.fieldPaths=area&updateMask.fieldPaths=evaluationsJson&updateMask.fieldPaths=updatedAt&updateMask.fieldPaths=l6Progress&updateMask.fieldPaths=l7Progress&updateMask.fieldPaths=l8Progress"
+            $firestoreUrl = "https://firestore.googleapis.com/v1/projects/" + $ProjectId + "/databases/(default)/documents/evaluaciones_guias_tecnicas/" + $docId + "?updateMask.fieldPaths=sharpId&updateMask.fieldPaths=nombre&updateMask.fieldPaths=equipo&updateMask.fieldPaths=area&updateMask.fieldPaths=tipoGuia&updateMask.fieldPaths=fileLastModified&updateMask.fieldPaths=evaluationsJson&updateMask.fieldPaths=updatedAt&updateMask.fieldPaths=l6Progress&updateMask.fieldPaths=l7Progress&updateMask.fieldPaths=l8Progress"
             
             $bodyObj = @{
                 fields = @{
@@ -236,6 +331,8 @@ if (-not $SoloLocal) {
                     nombre = @{ stringValue = "$($op.nombre)" }
                     equipo = @{ stringValue = "$($op.equipo)" }
                     area = @{ stringValue = "Cocimientos" }
+                    tipoGuia = @{ stringValue = "$($op.tipoGuia)" }
+                    fileLastModified = @{ stringValue = "$($op.fileLastModified)" }
                     l6Progress = @{ doubleValue = [double]$op.l6Pct }
                     l7Progress = @{ doubleValue = [double]$op.l7Pct }
                     l8Progress = @{ doubleValue = [double]$op.l8Pct }
@@ -244,11 +341,11 @@ if (-not $SoloLocal) {
                 }
             } | ConvertTo-Json -Depth 10 -Compress
             
-            $response = Invoke-RestMethod -Uri $firestoreUrl -Method Patch -ContentType "application/json; charset=utf-8" -Body $bodyObj -TimeoutSec 5 -UseBasicParsing
+            $response = Invoke-RestMethod -Uri $firestoreUrl -Method Patch -ContentType "application/json; charset=utf-8" -Body $bodyObj -TimeoutSec 10 -UseBasicParsing
             $uploadCount++
-            Write-Host "[OK] Firebase -> SHARP: $($op.sharpId) | L6: $($op.l6Pct)% | L7: $($op.l7Pct)% | L8: $($op.l8Pct)%" -ForegroundColor Green
+            Write-Host "[OK Firebase] SHARP: $($op.sharpId) | $($op.nombre) | Type: $($op.tipoGuia) | L6: $($op.l6Pct)%" -ForegroundColor Green
         } catch {
-            Write-Host "[WARN] Red diferida para SHARP $($op.sharpId) -> Usar boton 'Cargar JSON' en el Dashboard." -ForegroundColor Yellow
+            Write-Host "[WARN] Red diferida para SHARP $($op.sharpId) -> $_" -ForegroundColor Yellow
         }
     }
 }
@@ -256,8 +353,8 @@ if (-not $SoloLocal) {
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "   EXTRACCION Y SINCRONIZACION COMPLETADAS               " -ForegroundColor Cyan
-Write-Host "   Total Procesados : $processedCount" -ForegroundColor Green
-Write-Host "   Subidos Directos : $uploadCount" -ForegroundColor Green
-Write-Host "   Archivo JSON     : $OutputFile" -ForegroundColor White
+Write-Host "   Nuevos / Modificados : $processedCount" -ForegroundColor Green
+Write-Host "   Subidos Directos     : $uploadCount" -ForegroundColor Green
+Write-Host "   Archivo JSON         : $OutputFile" -ForegroundColor White
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host ""
