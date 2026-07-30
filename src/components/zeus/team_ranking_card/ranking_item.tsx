@@ -123,7 +123,12 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [], m
       cursosAprobados: op.cursosAprobados,
       cursosTotal: op.cursosTotal,
       cursosEnProgreso: op.cursosEnProgreso,
-      cursosPendientes: op.cursosPendientes
+      cursosPendientes: op.cursosPendientes,
+      guiasProgress: op.guiasProgress,
+      guiasL6Progress: op.guiasL6Progress,
+      guiasL7Progress: op.guiasL7Progress,
+      guiasL8Progress: op.guiasL8Progress,
+      guiasActiveLevel: op.guiasActiveLevel
     }));
   const handle_dialog_image_error = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const nextIndex = dialogFallbackIndex + 1;

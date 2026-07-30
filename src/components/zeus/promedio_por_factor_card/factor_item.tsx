@@ -215,12 +215,12 @@ export function FactorItem({ factorKey, label, value, index, operadores, areaNam
       }
 
       case "ato": {
-        const meetAto4 = evaluatedOps.filter(op => op.ato >= 4);
-        const meetAto8 = evaluatedOps.filter(op => op.ato >= 8);
+        const meetAto4 = evaluatedOps.filter(op => (op.ato ?? 0) >= 4);
+        const meetAto8 = evaluatedOps.filter(op => (op.ato ?? 0) >= 8);
         const pctAto4 = (meetAto4.length / totalOps) * 100;
         const pctAto8 = (meetAto8.length / totalOps) * 100;
 
-        const avgAto = evaluatedOps.reduce((sum, op) => sum + op.ato, 0) / totalOps;
+        const avgAto = evaluatedOps.reduce((sum, op) => sum + (op.ato ?? 0), 0) / totalOps;
 
         if (targetFase === 1) {
           const ok = pctAto4 >= 25;
@@ -231,10 +231,10 @@ export function FactorItem({ factorKey, label, value, index, operadores, areaNam
             detalle: `Meta: ATO Nivel 4 en ≥ 25% de operadores (mínimo ${reqCount} operador(es)). Progreso actual: ${pctAto4.toFixed(0)}% (${meetAto4.length} de ${totalOps} operadores) | Promedio del equipo: Nivel ${avgAto.toFixed(1)}. ${ok ? "¡Completado!" : `Falta certificar a ${missing} operador(es).`}`,
             items: evaluatedOps.map(op => ({
               name: op.nombre,
-              score: op.ato,
-              meet: op.ato >= 4,
-              label: `Nivel ATO: ${op.ato}`,
-              missingText: op.ato >= 4 ? "Cumple Nivel 4" : `Falta certificar ATO Nivel 4 (tiene Nivel ${op.ato})`
+              score: op.ato ?? 0,
+              meet: (op.ato ?? 0) >= 4,
+              label: `Nivel ATO: ${op.ato ?? 0}`,
+              missingText: (op.ato ?? 0) >= 4 ? "Cumple Nivel 4" : `Falta certificar ATO Nivel 4 (tiene Nivel ${op.ato ?? 0})`
             }))
           };
         } else if (targetFase === 2) {
@@ -246,10 +246,10 @@ export function FactorItem({ factorKey, label, value, index, operadores, areaNam
             detalle: `Meta: ATO Nivel 4 en ≥ 75% de operadores (mínimo ${reqCount} operador(es)). Progreso actual: ${pctAto4.toFixed(0)}% (${meetAto4.length} de ${totalOps} operadores) | Promedio del equipo: Nivel ${avgAto.toFixed(1)}. ${ok ? "¡Completado!" : `Falta certificar a ${missing} operador(es).`}`,
             items: evaluatedOps.map(op => ({
               name: op.nombre,
-              score: op.ato,
-              meet: op.ato >= 4,
-              label: `Nivel ATO: ${op.ato}`,
-              missingText: op.ato >= 4 ? "Cumple Nivel 4" : `Falta certificar ATO Nivel 4 (tiene Nivel ${op.ato})`
+              score: op.ato ?? 0,
+              meet: (op.ato ?? 0) >= 4,
+              label: `Nivel ATO: ${op.ato ?? 0}`,
+              missingText: (op.ato ?? 0) >= 4 ? "Cumple Nivel 4" : `Falta certificar ATO Nivel 4 (tiene Nivel ${op.ato ?? 0})`
             }))
           };
         } else if (targetFase === 3) {
@@ -261,13 +261,13 @@ export function FactorItem({ factorKey, label, value, index, operadores, areaNam
             cumple: ok,
             detalle: `Meta: ATO Nivel 4 al 100% de operadores y Nivel 8 al ≥ 50% (mínimo ${reqCountAto8} operador(es)). Progreso actual: Nivel 4: ${pctAto4.toFixed(0)}%, Nivel 8: ${pctAto8.toFixed(0)}% | Promedio del equipo: Nivel ${avgAto.toFixed(1)}. ${ok ? "¡Completado!" : `Falta: ${missingAto4 > 0 ? `${missingAto4} op. en Nivel 4` : ""}${missingAto4 > 0 && missingAto8 > 0 ? " y " : ""}${missingAto8 > 0 ? `${missingAto8} op. en Nivel 8` : ""}.`}`,
             items: evaluatedOps.map(op => {
-              const compliesAto8 = op.ato >= 8;
-              const compliesAto4 = op.ato >= 4;
+              const compliesAto8 = (op.ato ?? 0) >= 8;
+              const compliesAto4 = (op.ato ?? 0) >= 4;
               return {
                 name: op.nombre,
-                score: op.ato,
+                score: op.ato ?? 0,
                 meet: compliesAto8,
-                label: `Nivel ATO: ${op.ato}`,
+                label: `Nivel ATO: ${op.ato ?? 0}`,
                 missingText: compliesAto8 ? "Cumple Nivel 8" : compliesAto4 ? "Falta Nivel 8 (tiene Nivel 4)" : "Falta certificar Nivel 4 y Nivel 8"
               };
             })
@@ -281,10 +281,10 @@ export function FactorItem({ factorKey, label, value, index, operadores, areaNam
             detalle: `Meta: ATO Nivel 8 en ≥ 75% de operadores (mínimo ${reqCount} operador(es)). Progreso actual: ${pctAto8.toFixed(0)}% (${meetAto8.length} de ${totalOps} operadores) | Promedio del equipo: Nivel ${avgAto.toFixed(1)}. ${ok ? "¡Completado!" : `Falta certificar a ${missing} operador(es).`}`,
             items: evaluatedOps.map(op => ({
               name: op.nombre,
-              score: op.ato,
-              meet: op.ato >= 8,
-              label: `Nivel ATO: ${op.ato}`,
-              missingText: op.ato >= 8 ? "Cumple Nivel 8" : `Falta certificar ATO Nivel 8 (tiene Nivel ${op.ato})`
+              score: op.ato ?? 0,
+              meet: (op.ato ?? 0) >= 8,
+              label: `Nivel ATO: ${op.ato ?? 0}`,
+              missingText: (op.ato ?? 0) >= 8 ? "Cumple Nivel 8" : `Falta certificar ATO Nivel 8 (tiene Nivel ${op.ato ?? 0})`
             }))
           };
         }

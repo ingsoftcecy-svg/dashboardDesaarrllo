@@ -324,7 +324,7 @@ export function OperatorHistoryDialog({
             ) : (
               <>
                 <User className="h-3.5 w-3.5 text-[#1a4491]" />
-                <span>Perfil Histórico de Autonomía</span>
+                <span>Perfil Histórico de Habilidades</span>
               </>
             )}
           </div>
@@ -491,7 +491,7 @@ export function OperatorHistoryDialog({
           <div className="bg-slate-50/60 rounded-2xl border border-slate-200/50 p-4">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-1.5">
               <TrendingUp className="h-3.5 w-3.5 text-[#1a4491]" />
-              <span>Progreso de Autonomía Mensual</span>
+              <span>Progreso de Habilidades Mensual</span>
             </h3>
             
             <div className="h-[200px] w-full text-[10px] font-black">
@@ -499,7 +499,7 @@ export function OperatorHistoryDialog({
                 <div className="h-full w-full flex flex-col items-center justify-center space-y-1">
                   <Award className="h-6 w-6 text-amber-500" />
                   <p className="text-[11px] font-black uppercase text-slate-600">Primera evaluación registrada</p>
-                  <p className="text-[10px] text-slate-400 font-medium">Autonomía de {datosGrafico[0].score}% en {datosGrafico[0].name}</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Promedio de habilidades de {datosGrafico[0].score}% en {datosGrafico[0].name}</p>
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
@@ -553,7 +553,7 @@ export function OperatorHistoryDialog({
                   <tr className="bg-slate-100 text-[10px] font-black uppercase text-slate-500 tracking-wider sticky top-0">
                     <th className="p-3 border-b border-slate-200">Fecha</th>
                     <th className="p-3 border-b border-slate-200">Puesto Evaluado</th>
-                    <th className="p-3 border-b border-slate-200 text-center">Autonomía</th>
+                    <th className="p-3 border-b border-slate-200 text-center">Promedio Habilidades</th>
                     <th className="p-3 border-b border-slate-200 text-center">Nivel</th>
                     <th className="p-3 border-b border-slate-200">Evaluador</th>
                   </tr>

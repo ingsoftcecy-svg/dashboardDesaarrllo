@@ -73,11 +73,9 @@ service cloud.firestore {
     }
 
     // ── Colección: evaluaciones_guias_tecnicas ─────────────────────────────
-    // Lectura: pública (progreso visible en tablero sin login).
-    // Escritura: solo usuarios autenticados.
+    // Lectura: pública. Escritura: pública para guardar evaluaciones y links de SharePoint.
     match /evaluaciones_guias_tecnicas/{docId} {
-      allow read: if true;
-      allow write: if estaAutenticado();
+      allow read, write: if true;
     }
 
     // ── Colección: operadores_modificados ──────────────────────────────────

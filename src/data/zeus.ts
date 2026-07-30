@@ -2,6 +2,16 @@ export type SystemKey = "SAP" | "MES" | "ACADIA" | "WVD" | "MANGYVER";
 export type ChampionKey = "seguridad" | "calidad" | "ambiental" | "mantenimiento" | "gestion" | "gente" | "logistica";
 export type Status = "ok" | "warn" | "fail";
 
+export interface EvaluacionDetalle {
+  puesto: string;
+  score: number;
+  basico?: number;
+  intermedio?: number;
+  avanzado?: number;
+  date?: string;
+  evaluator?: string;
+}
+
 export interface Operator {
   id: string;
   nombre: string;
@@ -18,6 +28,7 @@ export interface Operator {
   ato?: number;
   noEvaluado?: boolean;
   autonomyScore?: number;
+  evaluacionesDetalle?: EvaluacionDetalle[];
   cursosProgress?: number;
   cursosAprobados?: number;
   cursosTotal?: number;

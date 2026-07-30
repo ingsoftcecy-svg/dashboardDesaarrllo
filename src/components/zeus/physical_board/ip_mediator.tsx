@@ -177,7 +177,7 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
             <ClipboardList className="h-3.5 w-3.5" />
           </button>
         </DialogTrigger>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-4xl sm:max-w-5xl bg-white p-6 rounded-2xl border-none shadow-2xl max-h-[92vh] flex flex-col overflow-y-auto custom-scrollbar">
           <DialogTitle>{STRINGS.MANAGE_IPS_TITLE} - {operator_name}</DialogTitle>
           <div className="relative mt-2">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
@@ -186,7 +186,7 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
               placeholder="Buscar IP..."
               value={search_term}
               onChange={(e) => set_search_term(e.target.value)}
-              className="w-full pl-8 pr-10 py-1.5 text-xs border rounded-md outline-none focus:ring-1 focus:ring-[#1a4491] transition-all"
+              className="w-full pl-8 pr-10 py-2 text-xs border rounded-lg outline-none focus:ring-2 focus:ring-[#1a4491] transition-all"
             />
             {search_term && (
               <button
@@ -198,20 +198,20 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
             )}
           </div>
 
-          <div className="space-y-4 py-4">
+          <div className="space-y-5 py-4">
             {filtered_suggestions.length > 0 && (
-              <div className="bg-amber-50/50 p-2.5 rounded-xl border border-amber-100/50 shadow-sm">
+              <div className="bg-amber-50/50 p-3 rounded-xl border border-amber-100/50 shadow-sm">
                 <h4 className="text-[10px] font-black uppercase text-amber-600 mb-2 flex items-center gap-1.5">
                   <Sparkles className="h-3.5 w-3.5" /> {STRINGS.TEAM_SUGGESTIONS || "Sugerencias de tu equipo"}
                 </h4>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-2">
                   {filtered_suggestions.map(ip_address => (
                     <button
                       key={ip_address}
                       onClick={() => toggle_assignment(ip_address)}
-                      className="px-2 py-1 rounded-md text-[10px] font-bold uppercase bg-white text-amber-700 border border-amber-200 hover:bg-amber-100 hover:border-amber-300 transition-all shadow-sm flex items-center gap-1"
+                      className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase bg-white text-amber-700 border border-amber-200 hover:bg-amber-100 hover:border-amber-300 transition-all shadow-sm flex items-center gap-1 cursor-pointer"
                     >
-                      <span className="text-amber-400 font-black">+</span> {ip_address}
+                      <span className="text-amber-500 font-black text-xs">+</span> {ip_address}
                     </button>
                   ))}
                 </div>
@@ -220,14 +220,14 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
 
             <div>
               <h4 className="text-xs font-bold uppercase text-slate-400 mb-2">{STRINGS.SELECT_IPS_SUBTITLE}</h4>
-              <div className="flex flex-wrap gap-2 max-h-[150px] overflow-y-auto p-1 custom-scrollbar">
+              <div className="flex flex-wrap gap-2 max-h-[220px] overflow-y-auto p-1 custom-scrollbar">
                 {filtered_ips.map(ip_address => (
                   <button
                     key={ip_address}
                     onClick={() => toggle_assignment(ip_address)}
                     className={cn(
-                      "px-2 py-1 rounded text-[10px] font-bold uppercase transition-all",
-                      assigned_ips.includes(ip_address) ? "bg-[#1a4491] text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                      "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all cursor-pointer shadow-sm",
+                      assigned_ips.includes(ip_address) ? "bg-[#1a4491] text-white shadow-blue-900/20" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                     )}
                   >
                     {ip_address}
@@ -244,21 +244,21 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
                   value={new_ip_input}
                   onChange={(e) => set_new_ip_input(e.target.value)}
                   placeholder="Nueva IP..." 
-                  className="flex-1 text-xs border rounded px-2 py-1"
+                  className="flex-1 text-xs border rounded-lg px-3 py-1.5 outline-none focus:ring-1 focus:ring-emerald-500"
                   onKeyDown={handle_key_down}
                 />
                 <button 
                   onClick={add_global_ip}
-                  className="bg-green-600 text-white text-[10px] px-2 py-1 rounded font-bold"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-4 py-1.5 rounded-lg font-bold transition-colors cursor-pointer"
                 >
                   {STRINGS.ADD_BUTTON}
                 </button>
               </div>
-              <div className="space-y-1 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[260px] overflow-y-auto pr-1 custom-scrollbar">
                 {filtered_ips.map(ip_address => (
-                  <div key={ip_address} className="flex items-center justify-between bg-slate-50 p-1.5 rounded text-[10px] font-medium">
-                    {ip_address}
-                    <button onClick={() => remove_global_ip(ip_address)} className="text-red-500 hover:text-red-700 font-bold">
+                  <div key={ip_address} className="flex items-center justify-between bg-slate-50 border border-slate-200/60 p-2 rounded-lg text-xs font-semibold">
+                    <span className="truncate">{ip_address}</span>
+                    <button onClick={() => remove_global_ip(ip_address)} className="text-red-500 hover:text-red-700 font-bold text-[10px] uppercase ml-2 cursor-pointer">
                       {STRINGS.REMOVE_BUTTON}
                     </button>
                   </div>

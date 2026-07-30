@@ -216,13 +216,13 @@ export function TeamHistoryDialog({
   const toolkitUrl = TOOLKIT_LINKS[normalizarNombreEquipo(teamName)];
   const [loading, setLoading] = useState(true);
   const [activeSubTab, setActiveSubTab] = useState<"history" | "requirements" | "progress">(() => {
-    return metricMode === "cursos" ? "progress" : "history";
+    return metricMode !== "autonomia" ? "progress" : "history";
   });
   const [datosGrafico, setDatosGrafico] = useState<MesProgreso[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setActiveSubTab(metricMode === "cursos" ? "progress" : "history");
+    setActiveSubTab(metricMode !== "autonomia" ? "progress" : "history");
   }, [metricMode]);
 
   useEffect(() => {
@@ -635,7 +635,152 @@ export function TeamHistoryDialog({
     );
   };
 
+  const renderGuiasSection = () => {
+    if (members.length === 0) {
+      return (
+        <div className="h-48 bg-slate-50 border border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center p-6 space-y-2 mt-4">
+          <Users className="h-8 w-8 text-slate-300" />
+          <p className="text-xs font-black uppercase text-slate-500 tracking-wider">Sin integrantes registrados</p>
+          <p className="text-[11px] text-slate-400 max-w-xs font-medium">No se encontraron operadores asignados a este equipo para Guías Técnicas.</p>
+        </div>
+      );
+    }
+
+    const sortedMembers = [...members].sort((a, b) => {
+      const progA = a.guiasProgress ?? 0;
+      const progB = b.guiasProgress ?? 0;
+      if (progB !== progA) return progB - progA;
+      return a.name.localeCompare(b.name);
+    });
+
+    const count = members.length;
+    const avgL6 = count > 0 ? (members.reduce((sum, m) => sum + (m.guiasL6Progress ?? 0), 0) / count).toFixed(1) : "0.0";
+    const avgL7 = count > 0 ? (members.reduce((sum, m) => sum + (m.guiasL7Progress ?? 0), 0) / count).toFixed(1) : "0.0";
+    const avgL8 = count > 0 ? (members.reduce((sum, m) => sum + (m.guiasL8Progress ?? 0), 0) / count).toFixed(1) : "0.0";
+
+    return (
+      <div className="flex-1 overflow-y-auto pr-1 mt-4 custom-scrollbar space-y-4">
+        {/* KPI Cards Summary for Guías Técnicas */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 text-center">
+            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Promedio L6 (Básico)</span>
+            <span className="text-base font-black text-slate-800 tabular-nums">{avgL6}%</span>
+          </div>
+          <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 text-center">
+            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Promedio L7 (Autónomo)</span>
+            <span className="text-base font-black text-slate-800 tabular-nums">{avgL7}%</span>
+          </div>
+          <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 text-center">
+            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Promedio L8 (Técnico)</span>
+            <span className="text-base font-black text-slate-800 tabular-nums">{avgL8}%</span>
+          </div>
+        </div>
+
+        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5 pt-1">
+          <Users className="h-3.5 w-3.5 text-emerald-600" />
+          <span>Habilitación Técnica de Integrantes</span>
+        </h3>
+
+        <div className="rounded-xl border border-slate-200/60 overflow-hidden bg-white">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="bg-slate-100 text-[10px] font-black uppercase text-slate-500 tracking-wider sticky top-0">
+                <th className="p-3 border-b border-slate-200">Operador</th>
+                <th className="p-3 border-b border-slate-200">Puesto</th>
+                <th className="p-3 border-b border-slate-200 text-center">Nivel Activo</th>
+                <th className="p-3 border-b border-slate-200 text-center">Progreso L6</th>
+                <th className="p-3 border-b border-slate-200 text-center">Progreso L7</th>
+                <th className="p-3 border-b border-slate-200 text-center">Progreso L8</th>
+                <th className="p-3 border-b border-slate-200 text-center">Habilitación</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+              {sortedMembers.map((member) => {
+                const progTotal = member.guiasProgress ?? 0;
+                const l6 = member.guiasL6Progress ?? 0;
+                const l7 = member.guiasL7Progress ?? 0;
+                const l8 = member.guiasL8Progress ?? 0;
+                const level = member.guiasActiveLevel || "L6";
+
+                return (
+                  <tr key={member.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="p-3 font-bold text-slate-900">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <button className="hover:underline hover:text-emerald-700 text-left focus:outline-none cursor-pointer flex items-center gap-1.5">
+                            <ChevronRight className="h-3 w-3 text-emerald-600 opacity-60 shrink-0" />
+                            <span>{member.name}</span>
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl sm:max-w-5xl bg-white p-6 rounded-2xl border-none shadow-2xl max-h-[92vh] flex flex-col overflow-y-auto custom-scrollbar">
+                          <OperatorHistoryDialog
+                            operatorName={member.name}
+                            operatorId={member.id}
+                            operatorPuesto={member.puesto}
+                            metricMode="guias"
+                            guiasProgress={member.guiasProgress}
+                            guiasL6Progress={member.guiasL6Progress}
+                            guiasL7Progress={member.guiasL7Progress}
+                            guiasL8Progress={member.guiasL8Progress}
+                            guiasActiveLevel={member.guiasActiveLevel}
+                          />
+                        </DialogContent>
+                      </Dialog>
+                    </td>
+                    <td className="p-3 text-slate-500 uppercase font-semibold text-[10px]">{member.puesto}</td>
+                    <td className="p-3 text-center align-middle">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-700 border border-slate-200">
+                        {level}
+                      </span>
+                    </td>
+                    <td className="p-3 text-center align-middle font-bold tabular-nums text-slate-600">
+                      {l6}%
+                    </td>
+                    <td className="p-3 text-center align-middle font-bold tabular-nums text-slate-600">
+                      {l7}%
+                    </td>
+                    <td className="p-3 text-center align-middle font-bold tabular-nums text-slate-600">
+                      {l8}%
+                    </td>
+                    <td className="p-3 text-center align-middle">
+                      <span className={cn(
+                        "px-2 py-0.5 rounded font-black text-[11px] tabular-nums border",
+                        progTotal === 100
+                          ? "bg-amber-50 text-amber-700 border-amber-200"
+                          : progTotal >= 80
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          : progTotal >= 50
+                          ? "bg-blue-50 text-blue-700 border-blue-200"
+                          : "bg-slate-50 text-slate-700 border-slate-200"
+                      )}>
+                        {progTotal}%
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
   const renderProgressSection = () => {
+    if (metricMode === "guias") {
+      return renderGuiasSection();
+    }
+
+    if (members.length === 0) {
+      return (
+        <div className="h-48 bg-slate-50 border border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center p-6 space-y-2 mt-4">
+          <Users className="h-8 w-8 text-slate-300" />
+          <p className="text-xs font-black uppercase text-slate-500 tracking-wider">Sin integrantes registrados</p>
+          <p className="text-[11px] text-slate-400 max-w-xs font-medium">No se encontraron operadores asignados a este equipo para el módulo de Cursos.</p>
+        </div>
+      );
+    }
+
     const sortedMembers = [...members].sort((a, b) => {
       const progA = a.cursosProgress ?? 0;
       const progB = b.cursosProgress ?? 0;
@@ -668,9 +813,21 @@ export function TeamHistoryDialog({
 
                 return (
                   <tr key={member.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="p-3 font-bold text-slate-900 flex items-center gap-1.5">
-                      <ChevronRight className="h-3 w-3 text-[#1a4491] opacity-40" />
-                      <span>{member.name}</span>
+                    <td className="p-3 font-bold text-slate-900">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <button className="hover:underline hover:text-purple-700 text-left focus:outline-none cursor-pointer flex items-center gap-1.5">
+                            <ChevronRight className="h-3 w-3 text-purple-600 opacity-60 shrink-0" />
+                            <span>{member.name}</span>
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl sm:max-w-5xl bg-white p-6 rounded-2xl border-none shadow-2xl max-h-[92vh] flex flex-col overflow-y-auto custom-scrollbar">
+                          <OperatorCoursesDialog
+                            operatorName={member.name}
+                            operatorId={member.id}
+                          />
+                        </DialogContent>
+                      </Dialog>
                     </td>
                     <td className="p-3 text-slate-500 uppercase font-semibold text-[10px]">{member.puesto}</td>
                     <td className="p-3 text-center align-middle text-slate-600 font-bold">
@@ -712,9 +869,11 @@ export function TeamHistoryDialog({
               "px-2 py-0.5 rounded text-[9px] font-black border uppercase tracking-wider",
               metricMode === "autonomia"
                 ? "bg-blue-50 text-[#1a4491] border-blue-200"
-                : "bg-purple-50 text-purple-750 border-purple-200"
+                : metricMode === "cursos"
+                ? "bg-purple-50 text-purple-750 border-purple-200"
+                : "bg-emerald-50 text-emerald-700 border-emerald-200"
             )}>
-              {metricMode === "autonomia" ? "Modo Autonomía" : "Modo Cursos (Capacitación)"}
+              {metricMode === "autonomia" ? "Modo Promedio Habilidades" : metricMode === "cursos" ? "Modo Cursos (Capacitación)" : "Modo Guías Técnicas"}
             </span>
           </div>
           <h2 className="text-2xl font-black text-[#1a4491] leading-tight uppercase">
@@ -807,15 +966,25 @@ export function TeamHistoryDialog({
                   </button>
                 )}
               </>
+            ) : metricMode === "cursos" ? (
+              <button
+                onClick={() => setActiveSubTab("progress")}
+                className={cn(
+                  "pb-2 border-b-2 px-1 transition-colors focus:outline-none flex items-center gap-1.5 cursor-pointer",
+                  activeSubTab === "progress" ? "border-purple-700 text-purple-700" : "border-transparent text-slate-400 hover:text-slate-600"
+                )}
+              >
+                Progreso de Cursos
+              </button>
             ) : (
               <button
                 onClick={() => setActiveSubTab("progress")}
                 className={cn(
                   "pb-2 border-b-2 px-1 transition-colors focus:outline-none flex items-center gap-1.5 cursor-pointer",
-                  activeSubTab === "progress" ? "border-[#1a4491] text-[#1a4491]" : "border-transparent text-slate-400 hover:text-slate-600"
+                  activeSubTab === "progress" ? "border-emerald-600 text-emerald-700 font-black" : "border-transparent text-slate-400 hover:text-slate-600"
                 )}
               >
-                Progreso de Cursos
+                Habilitación por Guías Técnicas
               </button>
             )}
           </div>
@@ -837,7 +1006,7 @@ export function TeamHistoryDialog({
                 <div className="bg-slate-50/60 rounded-2xl border border-slate-200/50 p-4">
                   <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-1.5">
                     <TrendingUp className="h-3.5 w-3.5 text-[#1a4491]" />
-                    <span>Autonomía Promedio del Equipo</span>
+                    <span>Promedio de Habilidades del Equipo</span>
                   </h3>
 
                   <div className="h-[200px] w-full text-[10px] font-black">
@@ -845,7 +1014,7 @@ export function TeamHistoryDialog({
                       <div className="h-full w-full flex flex-col items-center justify-center space-y-1">
                         <Award className="h-6 w-6 text-amber-500" />
                         <p className="text-[11px] font-black uppercase text-slate-600">Primera evaluación registrada</p>
-                        <p className="text-[10px] text-slate-400 font-medium">Autonomía promedio de {datosGrafico[0].score}% en {datosGrafico[0].name}</p>
+                        <p className="text-[10px] text-slate-400 font-medium">Promedio de habilidades de {datosGrafico[0].score}% en {datosGrafico[0].name}</p>
                       </div>
                     ) : (
                       <ResponsiveContainer width="100%" height="100%">
@@ -861,7 +1030,7 @@ export function TeamHistoryDialog({
                               fontSize: "11px",
                               fontWeight: "800"
                             }}
-                            formatter={(value: any) => [`${value}%`, "Autonomía"]}
+                            formatter={(value: any) => [`${value}%`, "Promedio de Habilidades"]}
                           />
                           <Line
                             type="monotone"
@@ -891,7 +1060,7 @@ export function TeamHistoryDialog({
                           <th className="p-3 border-b border-slate-200">Operador</th>
                           <th className="p-3 border-b border-slate-200">Puesto</th>
                           <th className="p-3 border-b border-slate-200 text-center">Evaluación</th>
-                          <th className="p-3 border-b border-slate-200 text-center">Autonomía</th>
+                          <th className="p-3 border-b border-slate-200 text-center">Promedio Habilidades</th>
                           <th className="p-3 border-b border-slate-200 text-center">Nivel</th>
                         </tr>
                       </thead>
@@ -921,7 +1090,7 @@ export function TeamHistoryDialog({
                                       {member.name}
                                     </button>
                                   </DialogTrigger>
-                                  <DialogContent className="max-w-2xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden">
+                                  <DialogContent className="max-w-4xl sm:max-w-5xl bg-white p-6 rounded-2xl border-none shadow-2xl max-h-[92vh] flex flex-col overflow-y-auto custom-scrollbar">
                                     {metricMode === "cursos" ? (
                                       <OperatorCoursesDialog 
                                         operatorName={member.name}

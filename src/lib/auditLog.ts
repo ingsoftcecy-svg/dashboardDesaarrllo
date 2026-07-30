@@ -9,7 +9,10 @@ export type TipoEvento =
   | 'LOGIN'
   | 'LOGOUT'
   | 'SESION_EXPIRADA'
-  | 'CARGA_DATOS';
+  | 'CARGA_DATOS'
+  | 'EDITAR_CURSOS_OPERADOR'
+  | 'GESTION_OPERADORES'
+  | 'CARGA_CURSOS';
 
 /**
  * Registra un evento de auditoría en la colección `audit_logs` de Firestore.

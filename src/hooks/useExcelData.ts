@@ -371,8 +371,10 @@ export function useExcelData() {
               if (id && modificadosMap[id] && modificadosMap[id].status === 'activo') {
                 const mod = modificadosMap[id];
                 nombre = mod.nombre;
-                r["SKAP Position"] = mod.puesto;
-                r["Position"] = mod.puesto;
+                if (!r["SKAP Position"] && !r["Position"]) {
+                  r["SKAP Position"] = mod.puesto;
+                  r["Position"] = mod.puesto;
+                }
                 r["Area"] = mod.area;
                 changed = true;
 
@@ -542,6 +544,22 @@ export function useExcelData() {
               }
             }
 
+            const getColValue = (rowObj: any, ...keys: string[]) => {
+              if (!rowObj || typeof rowObj !== 'object') return undefined;
+              const rowKeys = Object.keys(rowObj);
+              for (const targetKey of keys) {
+                if (rowObj[targetKey] !== undefined && rowObj[targetKey] !== null) {
+                  return rowObj[targetKey];
+                }
+                const normTarget = targetKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const foundKey = rowKeys.find(rk => rk.toLowerCase().replace(/[^a-z0-9]/g, '') === normTarget);
+                if (foundKey && rowObj[foundKey] !== undefined && rowObj[foundKey] !== null) {
+                  return rowObj[foundKey];
+                }
+              }
+              return undefined;
+            };
+
             const parseOperator = (row: any): Operator & { autonomyScore: number, noEvaluado: boolean } => {
               const empMatch = row["Employee"] ? String(row["Employee"]).match(/\[(\d+)\]\s+(.*)/) : null;
               let id = empMatch ? empMatch[1] : String(Math.random());
@@ -557,7 +575,7 @@ export function useExcelData() {
 
               const calculateAverage = (cols: string[]) => {
                 const values = cols.map(c => {
-                  const val = row[c];
+                  const val = getColValue(row, c);
                   if (val === undefined || val === null || val === "-") return 0;
                   if (typeof val === "number") return val * 100;
                   if (val === "Certified" || val === "100%") return 100;
@@ -569,21 +587,19 @@ export function useExcelData() {
                 return values.reduce((a, b) => a + b, 0) / cols.length;
               };
 
-              const hasEvaluation = [...basicCols, ...intermediateCols, ...advancedCols].some(c => {
-                const val = row[c];
-                return val !== undefined && val !== null && val !== "-" && String(val).trim() !== "";
-              });
-
-              const colScore = Object.keys(row).find(k => 
-                k.toLowerCase().includes("autonomy score") || 
-                k.toLowerCase().includes("excelencia") || 
+              const hasEvaluation = Object.keys(row).some(k => 
+                k.toLowerCase().includes("safety") || 
+                k.toLowerCase().includes("driver") || 
+                k.toLowerCase().includes("intermediate") || 
+                k.toLowerCase().includes("advanced") || 
                 k.toLowerCase().includes("autono") || 
                 k.toLowerCase().trim() === "autonomía"
               );
               
               let val: number | null = null;
-              if (colScore) {
-                val = parseFloat(row[colScore]);
+              const rawScoreVal = getColValue(row, "Autonomy Score", "AutonomyScore", "Score", "Autonomía", "Autonomia");
+              if (rawScoreVal !== undefined && rawScoreVal !== null && rawScoreVal !== "") {
+                val = parseFloat(String(rawScoreVal));
               }
 
               const parseSkillValue = (val: any) => {
@@ -599,9 +615,9 @@ export function useExcelData() {
                 return null;
               };
 
-              const rawBasico = parseSkillValue(row["Driver's License"]);
-              const rawIntermedio = parseSkillValue(row["Intermediate Capabilities"] || row["Intermediate"]);
-              const rawAvanzado = parseSkillValue(row["Advanced Capabilities"] || row["Advanced"]);
+              const rawBasico = parseSkillValue(getColValue(row, "Driver's License", "Drivers License", "Driver License", "Basic"));
+              const rawIntermedio = parseSkillValue(getColValue(row, "Intermediate Capabilities", "IntermediateCapabilities", "Intermediate"));
+              const rawAvanzado = parseSkillValue(getColValue(row, "Advanced Capabilities", "AdvancedCapabilities", "Advanced"));
 
               const basico = rawBasico !== null ? rawBasico : calculateAverage(basicCols);
               const intermedio = rawIntermedio !== null ? rawIntermedio : calculateAverage(intermediateCols);
@@ -619,7 +635,7 @@ export function useExcelData() {
                 ([teamName]) => normalizarNombreEquipo(teamName) === normalizedTeam
               );
               let leaderName = activeOverride ? activeOverride[1].leader : eaData.lider;
-              let puesto = row["SKAP Position"] || row["Position"] || "Operador";
+              let puesto = getColValue(row, "SKAP Position", "SKAPPosition", "Position", "position") || "Operador";
 
               if (leaderName === "JOSÉ FRANCISCO TORRES LÓPEZ" && normalizedTeam === "PANCHITOS") {
                 if (nombre.trim().toUpperCase() === "JOSÉ FRANCISCO TORRES LÓPEZ") {
@@ -637,25 +653,57 @@ export function useExcelData() {
               const cursosProgress = totalC > 0 ? parseFloat(((aprobadosC / totalC) * 100).toFixed(2)) : 0;
 
               // Guías Técnicas properties calculation — per level
-              const guiasData = guiasMap[id] || {};
-              const guiasActiveLevel = guiasData.activeLevel || "L6";
+              const guiasData = guiasMap[id] || guiasMap[String(id).trim()] || {};
               const guiasEvaluations = guiasData.evaluations || {};
 
               const calcGuiasProgress = (level: string) => {
                 const levelEval = guiasEvaluations[level] || {};
                 const checked = levelEval.checked || [];
                 const checkedCount = checked.filter(Boolean).length;
-                const totalSkills = guiasTotals[level as keyof typeof guiasTotals] || (level === "L6" ? 54 : level === "L7" ? 101 : 155);
-                return totalSkills > 0 ? parseFloat(((checkedCount / totalSkills) * 100).toFixed(2)) : 0;
+                const totalSkills = guiasTotals[level as keyof typeof guiasTotals] || (level === "L6" ? 54 : level === "L7" ? 101 : 34);
+                return {
+                  checkedCount,
+                  totalSkills,
+                  progress: totalSkills > 0 ? parseFloat(((checkedCount / totalSkills) * 100).toFixed(2)) : 0
+                };
               };
 
-              const guiasL6Progress = calcGuiasProgress("L6");
-              const guiasL7Progress = calcGuiasProgress("L7");
-              const guiasL8Progress = calcGuiasProgress("L8");
-              // Progreso del nivel activo (para compatibilidad con otros componentes)
-              const guiasProgress = calcGuiasProgress(guiasActiveLevel);
+              const guiasL6Eval = calcGuiasProgress("L6");
+              const guiasL7Eval = calcGuiasProgress("L7");
+              const guiasL8Eval = calcGuiasProgress("L8");
+
+              const guiasL6Progress = typeof guiasData.l6Progress === 'number' ? guiasData.l6Progress : guiasL6Eval.progress;
+              const guiasL7Progress = typeof guiasData.l7Progress === 'number' ? guiasData.l7Progress : guiasL7Eval.progress;
+              const guiasL8Progress = typeof guiasData.l8Progress === 'number' ? guiasData.l8Progress : guiasL8Eval.progress;
+
+              // Determinación inteligente del nivel activo
+              let guiasActiveLevel: "L6" | "L7" | "L8" = (guiasData.activeLevel as "L6" | "L7" | "L8") || "L6";
+              if (guiasL6Progress > 0 && guiasL6Progress < 100) guiasActiveLevel = "L6";
+              else if (guiasL7Progress > 0 && guiasL7Progress < 100) guiasActiveLevel = "L7";
+              else if (guiasL8Progress > 0) guiasActiveLevel = "L8";
+
+              // Porcentaje de Habilitación Total Absoluta
+              const totalCheckedSkills = guiasL6Eval.checkedCount + guiasL7Eval.checkedCount + guiasL8Eval.checkedCount;
+              const grandTotalSkills = guiasL6Eval.totalSkills + guiasL7Eval.totalSkills + guiasL8Eval.totalSkills;
+              const guiasProgressCalculated = grandTotalSkills > 0 
+                ? parseFloat(((totalCheckedSkills / grandTotalSkills) * 100).toFixed(2)) 
+                : 0;
+
+              const guiasProgress = (guiasL6Progress > 0 || guiasL7Progress > 0 || guiasL8Progress > 0)
+                ? parseFloat(((guiasL6Progress + guiasL7Progress + guiasL8Progress) / 3).toFixed(2))
+                : guiasProgressCalculated;
 
               const maxEquipos = OPERATORS_MAX_SKILLS[id] || 1;
+
+              const evalDetail = {
+                puesto: row["SKAP Position"] || row["Position"] || puesto,
+                score: Number(autonomyScore.toFixed(2)),
+                basico: Number(basico.toFixed(2)),
+                intermedio: Number(intermedio.toFixed(2)),
+                avanzado: Number(avanzado.toFixed(2)),
+                date: row["Assessment Date"] || row["Last Assessment Date"] || undefined,
+                evaluator: row["Evaluator"] || undefined
+              };
 
               return {
                 id,
@@ -665,6 +713,7 @@ export function useExcelData() {
                 intermedio: Number(intermedio.toFixed(2)),
                 avanzado: Number(avanzado.toFixed(2)),
                 autonomyScore: Number(autonomyScore.toFixed(2)),
+                evaluacionesDetalle: [evalDetail],
                 champions: championMap[id] || [],
                 equipoAutonomo: eaData.equipo,
                 lider: leaderName,
@@ -701,6 +750,10 @@ export function useExcelData() {
                 ext.avanzado += parsed.avanzado;
                 ext.autonomyScore += parsed.autonomyScore;
                 ext._count++;
+                if (!ext.evaluacionesDetalle) ext.evaluacionesDetalle = [];
+                if (parsed.evaluacionesDetalle && parsed.evaluacionesDetalle.length > 0) {
+                  ext.evaluacionesDetalle.push(parsed.evaluacionesDetalle[0]);
+                }
                 if (!parsed.noEvaluado) {
                   ext.noEvaluado = false;
                 }
@@ -731,6 +784,7 @@ export function useExcelData() {
               } else {
                 opsMap[parsed.id] = {
                   ...parsed,
+                  evaluacionesDetalle: parsed.evaluacionesDetalle ? [...parsed.evaluacionesDetalle] : [],
                   equipos: eqStr ? eqStr.split(",").map(e => e.trim()).filter(Boolean) : [],
                   _count: 1,
                   _area: area

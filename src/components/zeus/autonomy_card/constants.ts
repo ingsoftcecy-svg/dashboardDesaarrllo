@@ -1,5 +1,5 @@
 export const STRINGS = {
-  TITLE: "Nivel de Autonomía",
+  TITLE: "Promedio de Habilidades",
   SUBTITLE: "Progreso actual del equipo",
   GOAL_LABEL: "META ESPERADA: 4.00",
 };

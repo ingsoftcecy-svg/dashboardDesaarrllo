@@ -22,7 +22,7 @@ export const STRINGS = {
   INTERMEDIATE: "Intermediate",
   ADVANCED: "Advanced",
   SAFETY_TERRITORY: "Territorio Safety",
-  AUTONOMY_LEVEL: "NIVEL AUTONOMIA",
+  AUTONOMY_LEVEL: "PROMEDIO HABILIDADES",
   ATO: "ATO",
   MANAGE_IPS_TITLE: "Gestionar IPs",
   SELECT_IPS_SUBTITLE: "Seleccionar IPs para el operador",
