@@ -20,6 +20,10 @@ export function AtoEditor({ operator_id, operator_name, initial_ato, puedeEditar
   const [is_saving, set_is_saving] = useState(false);
 
   useEffect(() => {
+    set_ato_value(initial_ato);
+  }, [initial_ato]);
+
+  useEffect(() => {
     if (!usuario) return;
     const doc_ref = doc(db, "config_operadores", operator_id);
 

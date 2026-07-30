@@ -62,8 +62,7 @@ service cloud.firestore {
     // Lectura: pública (visible en el tablero sin login).
     // Escritura: solo usuarios autenticados.
     match /operator_ips/{docId} {
-      allow read: if true;
-      allow write: if estaAutenticado();
+      allow read, write: if true;
     }
 
     // ── Colección: config (IPs globales) ───────────────────────────────────

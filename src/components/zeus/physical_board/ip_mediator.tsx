@@ -5,16 +5,17 @@ import { db } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 import { useAuth } from '@/lib/auth';
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
-import { STRINGS } from "./constants";
+import { STRINGS, BANCO_IPS_COCIMIENTOS } from "./constants";
 
 interface IpMediatorProps {
   operator_id: string;
   operator_name: string;
   team_members: { id: string, name: string }[];
   puedeEditar?: boolean; // Nueva prop para controlar la edición
+  area?: string;
 }
 
-export function IpMediator({ operator_id, operator_name, team_members, puedeEditar }: IpMediatorProps) {
+export function IpMediator({ operator_id, operator_name, team_members, puedeEditar, area }: IpMediatorProps) {
   const usuario = useAuth();
 // Solo los usuarios autenticados pueden editar
   const [global_ips, set_global_ips] = useState<string[]>([]);
@@ -24,8 +25,38 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
   const [search_term, set_search_term] = useState("");
 
   useEffect(() => {
-    // LECTURA: permitida sin sesión (datos del tablero son públicos)
-    const unsubscribe_global = onSnapshot(doc(db, "config", "ips"), (snapshot) => {
+    const areaLower = (area || "").toLowerCase();
+    const isCocimientos = 
+      areaLower.includes("warm") || 
+      areaLower.includes("cocimiento") ||
+      areaLower.includes("cuchillas") ||
+      areaLower.includes("eac") ||
+      areaLower.includes("eabf") ||
+      areaLower.includes("bpre") ||
+      areaLower.includes("molienda") ||
+      areaLower.includes("guardianes");
+
+    const isBloqueFrio = 
+      areaLower.includes("cold") || 
+      areaLower.includes("frio") || 
+      areaLower.includes("frío") ||
+      areaLower.includes("bravos") ||
+      areaLower.includes("fuertes") ||
+      areaLower.includes("reyes") ||
+      areaLower.includes("loros");
+
+    if (isCocimientos) {
+      set_assigned_ips([]);
+      set_global_ips(BANCO_IPS_COCIMIENTOS);
+      return;
+    }
+
+    if (isBloqueFrio) {
+      set_assigned_ips([]);
+    }
+
+    let unsubscribe_global: (() => void) | null = null;
+    unsubscribe_global = onSnapshot(doc(db, "config", "ips"), (snapshot) => {
       if (snapshot.exists()) {
         set_global_ips(snapshot.data().list || []);
       }
@@ -82,7 +113,7 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
     });
     
     return () => { 
-      unsubscribe_global(); 
+      if (unsubscribe_global) unsubscribe_global(); 
       unsubscribe_operator(); 
     };
   }, [operator_id, operator_name]);
@@ -218,23 +249,38 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
               </div>
             )}
 
-            <div>
-              <h4 className="text-xs font-bold uppercase text-slate-400 mb-2">{STRINGS.SELECT_IPS_SUBTITLE}</h4>
-              <div className="flex flex-wrap gap-2 max-h-[220px] overflow-y-auto p-1 custom-scrollbar">
-                {filtered_ips.map(ip_address => (
-                  <button
-                    key={ip_address}
-                    onClick={() => toggle_assignment(ip_address)}
-                    className={cn(
-                      "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all cursor-pointer shadow-sm",
-                      assigned_ips.includes(ip_address) ? "bg-[#1a4491] text-white shadow-blue-900/20" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                    )}
-                  >
-                    {ip_address}
-                  </button>
-                ))}
+              <div>
+                <h4 className="text-xs font-bold uppercase text-slate-400 mb-2">{STRINGS.SELECT_IPS_SUBTITLE}</h4>
+                <div className="flex flex-wrap gap-2 max-h-[260px] overflow-y-auto p-1 custom-scrollbar">
+                  {filtered_ips.map(ip_address => {
+                    const isSelected = assigned_ips.includes(ip_address);
+                    const isCocimientosIp = BANCO_IPS_COCIMIENTOS.includes(ip_address);
+
+                    return (
+                      <button
+                        key={ip_address}
+                        onClick={() => toggle_assignment(ip_address)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all cursor-pointer shadow-xs flex items-center gap-1.5 border",
+                          isSelected
+                            ? "bg-[#1a4491] text-white border-blue-900 shadow-blue-900/20 scale-105"
+                            : isCocimientosIp
+                            ? "bg-gradient-to-r from-amber-50 to-orange-50 text-slate-800 border-amber-300 hover:border-amber-400 hover:bg-amber-100 hover:scale-105 font-extrabold"
+                            : "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200"
+                        )}
+                      >
+                        {isCocimientosIp && <Sparkles className="h-3 w-3 text-amber-500 shrink-0 animate-pulse" />}
+                        <span>{ip_address}</span>
+                        {isCocimientosIp && (
+                          <span className="px-1.5 py-0.5 rounded-md text-[8px] font-black bg-amber-500 text-white uppercase tracking-wider shadow-xs">
+                            COCIMIENTOS
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
 
             <div className="border-t pt-4">
               <h4 className="text-xs font-bold uppercase text-slate-400 mb-2">{STRINGS.GLOBAL_LIST_SUBTITLE}</h4>

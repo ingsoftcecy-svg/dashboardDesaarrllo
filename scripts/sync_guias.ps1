@@ -143,14 +143,16 @@ foreach ($item in $pendingFiles) {
         $equipo = if ($pathParts.Count -gt 1) { $pathParts[0] } else { "Cocimientos" }
         $subcarpeta = if ($pathParts.Count -gt 2) { $pathParts[1] } else { "General" }
         
-        # Determinar tipo de guia: COMPETENTE vs MEJORADO
+        # Determinar tipo de guia buscando en la ruta completa del archivo
+        $fullPathLower = "$($file.FullName) $($file.Name)".ToLower()
         $tipoGuia = "COMPETENTE"
-        $pathLower = $relativePath.ToLower()
-        if ($pathLower -like "*mejorado*") {
+        if ($fullPathLower -like "*mejorado*") {
             $tipoGuia = "MEJORADO"
-        } elseif ($pathLower -like "*competente*") {
+        } elseif ($fullPathLower -like "*competente*") {
             $tipoGuia = "COMPETENTE"
         }
+        
+        $cleanOperatorName = $operatorName -replace '\s+(COMPETENTE|MEJORADO)$', ''
         
         $processedCount++
         Write-Host "[$processedCount/$($pendingFiles.Count)] Leido: $($file.Name) ($tipoGuia)" -ForegroundColor White
@@ -160,7 +162,7 @@ foreach ($item in $pendingFiles) {
         $operatorRecord = [ordered]@{
             docId = $docId
             sharpId = $sharpId
-            nombre = "$operatorName".Trim()
+            nombre = "$cleanOperatorName".Trim()
             equipo = $equipo
             area = "Cocimientos"
             subcarpeta = $subcarpeta

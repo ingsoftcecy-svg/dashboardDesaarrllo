@@ -21,6 +21,7 @@ interface GuiasEditorDialogProps {
 export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
   const [activeLevel, setActiveLevel] = useState<"L6" | "L7" | "L8">(operator.guiasActiveLevel || "L6");
   const [importedData, setImportedData] = useState<any>(null);
+  const [firestoreData, setFirestoreData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState<Record<number, boolean>>({});
 
@@ -34,6 +35,7 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
       .then((snap) => {
         if (snap.exists()) {
           const data = snap.data();
+          setFirestoreData(data);
           if (data.evaluationsJson) {
             try {
               const parsed = JSON.parse(data.evaluationsJson);
@@ -57,22 +59,61 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
     setExpandedCategories({});
   }, [activeLevel]);
 
+  // Determinar tipoGuia: COMPETENTE vs MEJORADO
+  const tipoGuia = useMemo(() => {
+    const opName = (importedData?.nombre || operator.nombre || "").toUpperCase();
+    const fileStr = ((importedData?.subcarpeta || "") + " " + (importedData?.archivo || "")).toUpperCase();
+
+    if (opName.includes("COMPETENTE") || fileStr.includes("COMPETENTE")) {
+      return "COMPETENTE";
+    }
+    if (importedData?.tipoGuia === "COMPETENTE" || firestoreData?.tipoGuia === "COMPETENTE") {
+      return "COMPETENTE";
+    }
+    if (opName.includes("MEJORADO") || fileStr.includes("MEJORADO") || importedData?.tipoGuia === "MEJORADO" || firestoreData?.tipoGuia === "MEJORADO") {
+      return "MEJORADO";
+    }
+    return "COMPETENTE";
+  }, [importedData, firestoreData, operator.nombre]);
+
+  // Nombre limpio sin sufijo COMPETENTE / MEJORADO
+  const cleanNombre = useMemo(() => {
+    const rawName = importedData?.nombre || operator.nombre || "";
+    return rawName.replace(/\s+(COMPETENTE|MEJORADO)$/i, "").trim();
+  }, [importedData, operator.nombre]);
+
   // Datos del nivel activo desde el JSON importado de OneDrive
   const activeLevelData = useMemo(() => {
     if (!importedData || !importedData.niveles) return null;
     return importedData.niveles[activeLevel] || null;
   }, [importedData, activeLevel]);
 
-  // Porcentaje del nivel activo
+  // Filtrar ÚNICAMENTE categorías que tengan al menos 1 habilidad aprobada / evaluada
+  const evaluatedCategories = useMemo(() => {
+    if (!activeLevelData || !activeLevelData.categorias) return [];
+    return activeLevelData.categorias.filter((cat: any) => {
+      const habs = cat.habilidades || [];
+      const aprobadas = habs.filter((h: any) => h.marcado).length;
+      return aprobadas > 0;
+    });
+  }, [activeLevelData]);
+
+  // Porcentaje del nivel activo recalculado únicamente sobre las categorías que le corresponden al colaborador
   const levelPercentage = useMemo(() => {
-    if (activeLevelData && activeLevelData.porcentajeAvanceGlobal) {
-      return parseFloat(activeLevelData.porcentajeAvanceGlobal.replace("%", "")) || 0;
+    if (evaluatedCategories && evaluatedCategories.length > 0) {
+      let totalHabs = 0;
+      let aprobadas = 0;
+      evaluatedCategories.forEach((cat: any) => {
+        const habs = cat.habilidades || [];
+        totalHabs += habs.length;
+        aprobadas += habs.filter((h: any) => h.marcado).length;
+      });
+      if (totalHabs > 0) {
+        return parseFloat(((aprobadas / totalHabs) * 100).toFixed(1));
+      }
     }
-    if (activeLevel === "L6" && operator.guiasL6Progress) return operator.guiasL6Progress;
-    if (activeLevel === "L7" && operator.guiasL7Progress) return operator.guiasL7Progress;
-    if (activeLevel === "L8" && operator.guiasL8Progress) return operator.guiasL8Progress;
     return 0;
-  }, [activeLevelData, activeLevel, operator]);
+  }, [evaluatedCategories]);
 
   const toggleCategory = (idx: number) => {
     setExpandedCategories((prev) => ({
@@ -97,13 +138,13 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">
-              Guías Técnicas — {importedData?.nombre || operator.nombre}
+              Guías Técnicas — {cleanNombre}
             </h2>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               OneDrive Auto-Sync
             </span>
-            {importedData?.tipoGuia === "COMPETENTE" ? (
+            {tipoGuia === "COMPETENTE" ? (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-800 border border-blue-300 uppercase tracking-tight">
                 COMPETENTE (Solo L6)
               </span>
@@ -124,7 +165,7 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
         {/* Selector de Nivel */}
         <div className="flex rounded-xl bg-slate-100 p-1 border shadow-inner">
           {(["L6", "L7", "L8"] as const).map((lvl) => {
-            const isDisabled = importedData?.tipoGuia === "COMPETENTE" && (lvl === "L7" || lvl === "L8");
+            const isDisabled = tipoGuia === "COMPETENTE" && (lvl === "L7" || lvl === "L8");
             return (
               <button
                 key={lvl}
@@ -168,8 +209,8 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
 
       {/* CONTENIDO DE CATEGORÍAS & HABILIDADES EVALUADAS */}
       <div className="flex-1 overflow-y-auto pr-1 space-y-3 custom-scrollbar">
-        {activeLevelData && activeLevelData.categorias && activeLevelData.categorias.length > 0 ? (
-          activeLevelData.categorias.map((catItem: any, idx: number) => {
+        {evaluatedCategories && evaluatedCategories.length > 0 ? (
+          evaluatedCategories.map((catItem: any, idx: number) => {
             const isExpanded = !!expandedCategories[idx]; // Plegado/cerrado por defecto
             const habilidades = catItem.habilidades || [];
             const aprobadas = habilidades.filter((h: any) => h.marcado).length;

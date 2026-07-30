@@ -99,17 +99,6 @@ export function TopNav({ tab, onTabChange }: Props) {
               {mounted && (
                 <>
                   <div className="flex items-center justify-end gap-1.5 text-lg font-semibold tabular-nums">
-                    {isSuperAdmin && (
-                      <button
-                        type="button"
-                        onClick={() => setShowScriptPortal(true)}
-                        className="p-1.5 mr-2 text-blue-200 hover:text-white hover:bg-blue-800/60 rounded-lg transition-all flex items-center gap-1 text-xs font-bold bg-blue-950/40 border border-blue-800/60"
-                        title="Sincronizador de Scripts"
-                      >
-                        <Terminal className="h-4 w-4 text-amber-400" />
-                        <span className="hidden xl:inline text-[11px]">Scripts</span>
-                      </button>
-                    )}
                     <Clock className="h-4 w-4 text-yellow-400" />
                     {time}
                   </div>

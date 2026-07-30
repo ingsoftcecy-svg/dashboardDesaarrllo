@@ -116,13 +116,13 @@ export const cocimientos: AreaData = {
   // Los operadores se cargan dinámicamente desde Firebase/Excel
   operadores: [],
   ips: [
-    { id: "i1", categoria: "Productividad", metrica: "Merma de molienda", objetivo: "≤ 1.20%", valor: "0.98%", equipos: ["Molinos", "Tolva de granos"], sistemas: ["SAP", "MES"], estado: "ok", trend: [1.2, 1.1, 1.0, 1.05, 0.98, 0.97, 0.98] },
-    { id: "i2", categoria: "Calidad", metrica: "°Plato del mosto", objetivo: "16.0 ± 0.2", valor: "16.05", equipos: ["Cocedor", "Olla de mosto"], sistemas: ["ACADIA", "MES"], estado: "ok", trend: [16.0, 16.1, 15.9, 16.0, 16.05, 16.02, 16.05] },
-    { id: "i3", categoria: "Productividad", metrica: "Tiempo de cocción", objetivo: "≤ 65 min", valor: "67 min", equipos: ["Cocedor"], sistemas: ["MES", "MANGYVER"], estado: "warn", trend: [62, 64, 65, 66, 67, 67, 67] },
-    { id: "i4", categoria: "Calidad", metrica: "Tiempo de adición de lúpulo", objetivo: "± 30 s", valor: "+18 s", equipos: ["Cocedor", "Dosificador"], sistemas: ["ACADIA", "WVD"], estado: "ok", trend: [10, 12, 15, 18, 18, 17, 18] },
-    { id: "i5", categoria: "Productividad", metrica: "Rendimiento de cocción", objetivo: "≥ 96%", valor: "94.2%", equipos: ["Whirlpool", "Filtro Prensa"], sistemas: ["SAP", "MES", "ACADIA"], estado: "fail", trend: [96, 95, 95, 94, 94, 94.5, 94.2] },
-    { id: "i6", categoria: "Calidad", metrica: "Turbidez del mosto", objetivo: "≤ 30 EBC", valor: "22 EBC", equipos: ["Filtro Prensa"], sistemas: ["ACADIA"], estado: "ok", trend: [28, 26, 24, 23, 22, 22, 22] },
-    { id: "i7", categoria: "Productividad", metrica: "Consumo de vapor", objetivo: "≤ 220 kg/hL", valor: "215 kg/hL", equipos: ["Cocedor", "Caldera"], sistemas: ["MANGYVER", "WVD"], estado: "ok", trend: [225, 222, 220, 218, 216, 215, 215] },
+    { id: "i1", categoria: "Productividad", metrica: "% Merma de Silos", objetivo: "≤ 1.20%", valor: "0.98%", equipos: ["Molinos", "Tolva de granos"], sistemas: ["SAP", "MES"], estado: "ok", trend: [1.2, 1.1, 1.0, 1.05, 0.98, 0.97, 0.98] },
+    { id: "i2", categoria: "Calidad", metrica: "pH mosto frío", objetivo: "5.20 ± 0.05", valor: "5.22", equipos: ["Cocedor", "Olla de mosto"], sistemas: ["ACADIA", "MES"], estado: "ok", trend: [5.2, 5.21, 5.22, 5.21, 5.22, 5.22, 5.22] },
+    { id: "i3", categoria: "Productividad", metrica: "Tiempo de filtración", objetivo: "≤ 65 min", valor: "67 min", equipos: ["Cocedor"], sistemas: ["MES", "MANGYVER"], estado: "warn", trend: [62, 64, 65, 66, 67, 67, 67] },
+    { id: "i4", categoria: "Calidad", metrica: "EMO mosto frío", objetivo: "≥ 95%", valor: "96.5%", equipos: ["Cocedor", "Dosificador"], sistemas: ["ACADIA", "WVD"], estado: "ok", trend: [94, 95, 95.5, 96, 96.5, 96.5, 96.5] },
+    { id: "i5", categoria: "Productividad", metrica: "Eficiencia de Filtración", objetivo: "≥ 96%", valor: "94.2%", equipos: ["Whirlpool", "Filtro Prensa"], sistemas: ["SAP", "MES", "ACADIA"], estado: "fail", trend: [96, 95, 95, 94, 94, 94.5, 94.2] },
+    { id: "i6", categoria: "Calidad", metrica: "Color mosto frío", objetivo: "≤ 12 EBC", valor: "10 EBC", equipos: ["Filtro Prensa"], sistemas: ["ACADIA"], estado: "ok", trend: [14, 13, 12, 11, 10, 10, 10] },
+    { id: "i7", categoria: "Productividad", metrica: "Consumo de vapor (kg/hl mosto)", objetivo: "≤ 220 kg/hL", valor: "215 kg/hL", equipos: ["Cocedor", "Caldera"], sistemas: ["MANGYVER", "WVD"], estado: "ok", trend: [225, 222, 220, 218, 216, 215, 215] },
   ],
   podio: [],
   logros: [

@@ -431,16 +431,57 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             </td>
           )}
 
-          {show_ato && (
-            <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32">
-              <AtoEditor 
-                operator_id={operator.id} 
-                operator_name={operator.nombre} 
-                initial_ato={operator.ato || 4} 
-                puedeEditar={puedeEditar}
-              />
-            </td>
-          )}
+          {show_ato && (() => {
+            const areaStr = ((operator as any)._area || (operator as any).area || (operator as any).equipoAutonomo || (operator as any).equipo || "").toLowerCase();
+            const teamStr = ((operator as any).equipoAutonomo || (operator as any).equipo || "").toLowerCase();
+            const opNameStr = (operator.nombre || "").toLowerCase();
+
+            const isCocimientosArea = 
+              areaStr.includes("warm") || 
+              areaStr.includes("cocimiento") || 
+              teamStr.includes("cuchilla") || 
+              teamStr.includes("eac") || 
+              teamStr.includes("eabf") || 
+              teamStr.includes("bpre");
+
+            const isBloqueFrioArea = 
+              areaStr.includes("cold") || 
+              areaStr.includes("frio") || 
+              areaStr.includes("frío") ||
+              teamStr.includes("bravos") ||
+              teamStr.includes("fuertes") ||
+              teamStr.includes("reyes") ||
+              teamStr.includes("loros");
+
+            let calculatedAto = 4;
+
+            if (isCocimientosArea) {
+              const isCuchillas = teamStr.includes("cuchilla") || opNameStr.includes("cuchilla");
+              calculatedAto = isCuchillas ? 3 : 2;
+            } else if (isBloqueFrioArea) {
+              const isSpecialBFTeam = 
+                teamStr.includes("bravos") || 
+                teamStr.includes("fuertes") || 
+                teamStr.includes("reyes") ||
+                opNameStr.includes("bravos") ||
+                opNameStr.includes("fuertes") ||
+                opNameStr.includes("reyes");
+              calculatedAto = isSpecialBFTeam ? 3 : 2;
+            } else {
+              calculatedAto = operator.ato || 4;
+            }
+
+            return (
+              <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32">
+                <AtoEditor 
+                  operator_id={operator.id} 
+                  operator_name={operator.nombre} 
+                  initial_ato={calculatedAto} 
+                  puedeEditar={puedeEditar}
+                />
+              </td>
+            );
+          })()}
 
           <td className="border-b border-r border-slate-200/50 p-2 align-middle w-44">
             <IpMediator 
@@ -448,6 +489,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               operator_name={operator.nombre} 
               team_members={team_members}
               puedeEditar={puedeEditar}
+              area={(operator as any)._area || (operator as any).area || (operator as any).equipo}
             />
           </td>
 
