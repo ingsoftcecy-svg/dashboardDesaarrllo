@@ -45,22 +45,16 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
       areaLower.includes("reyes") ||
       areaLower.includes("loros");
 
-    if (isCocimientos) {
-      set_assigned_ips([]);
-      set_global_ips(BANCO_IPS_COCIMIENTOS);
-      return;
-    }
-
-    if (isBloqueFrio) {
-      set_assigned_ips([]);
-    }
-
     let unsubscribe_global: (() => void) | null = null;
-    unsubscribe_global = onSnapshot(doc(db, "config", "ips"), (snapshot) => {
-      if (snapshot.exists()) {
-        set_global_ips(snapshot.data().list || []);
-      }
-    });
+    if (isCocimientos) {
+      set_global_ips(BANCO_IPS_COCIMIENTOS);
+    } else {
+      unsubscribe_global = onSnapshot(doc(db, "config", "ips"), (snapshot) => {
+        if (snapshot.exists()) {
+          set_global_ips(snapshot.data().list || []);
+        }
+      });
+    }
     
     const getAlternativeIds = (id: string): string[] => {
       const translations: Record<string, string[]> = {
@@ -80,10 +74,20 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
       return translations[id] || [];
     };
 
+    const filterCocimientosIps = (rawList: string[]) => {
+      if (!isCocimientos) return rawList;
+      return rawList.filter(ip => 
+        BANCO_IPS_COCIMIENTOS.some(bancoIp => 
+          bancoIp.toLowerCase().trim() === ip.toLowerCase().trim()
+        )
+      );
+    };
+
     const doc_ref = doc(db, "operator_ips", operator_id);
     const unsubscribe_operator = onSnapshot(doc_ref, async (snapshot) => {
       if (snapshot.exists()) {
-        set_assigned_ips(snapshot.data().assigned || []);
+        const rawAssigned = snapshot.data().assigned || [];
+        set_assigned_ips(filterCocimientosIps(rawAssigned));
       } else {
         const altIds = getAlternativeIds(operator_id);
         for (const altId of altIds) {
@@ -92,12 +96,15 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
             const altSnapshot = await getDoc(altDocRef);
             if (altSnapshot.exists()) {
               const data = altSnapshot.data();
-              set_assigned_ips(data.assigned || []);
+              const rawAssigned = data.assigned || [];
+              set_assigned_ips(filterCocimientosIps(rawAssigned));
               
               // Solo migrar si hay sesión activa
               if (usuario) {
+                const cleanAssignedToMigrate = filterCocimientosIps(rawAssigned);
                 await setDoc(doc_ref, {
                   ...data,
+                  assigned: cleanAssignedToMigrate,
                   operatorName: operator_name,
                   updatedAt: new Date().toISOString()
                 }, { merge: true });
