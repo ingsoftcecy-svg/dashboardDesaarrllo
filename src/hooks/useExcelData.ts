@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import * as xlsx from "xlsx";
 import { collection, getDocs, doc, getDoc, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Operator, ChampionKey, cocimientos as defaultCocimientos, bloqueFrio as defaultBloqueFrio, mantenimiento as defaultMantenimiento, AreaData, OPERATORS_MAX_SKILLS } from "@/data/zeus";
+import { Operator, ChampionKey, cocimientos as defaultCocimientos, bloqueFrio as defaultBloqueFrio, mantenimiento as defaultMantenimiento, AreaData, OPERATORS_MAX_SKILLS } from "@/data/ccz";
 
 export const normalizarNombreEquipo = (name: string): string => {
   const n = name.trim().toUpperCase();

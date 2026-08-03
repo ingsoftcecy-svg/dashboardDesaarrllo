@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Users, Search } from "lucide-react";
-import type { Operator } from "@/data/zeus";
+import type { Operator } from "@/data/ccz";
 import { STRINGS } from "./constants";
 import { OperatorItem } from "./operator_item";
 

@@ -1,5 +1,5 @@
 import { ShieldAlert, BadgeCheck, Leaf, Wrench, ClipboardList, Users, Truck } from "lucide-react";
-import type { ChampionKey } from "@/data/zeus";
+import type { ChampionKey } from "@/data/ccz";
 
 export const CHAMPION_ICONS: Record<ChampionKey, any> = {
   seguridad: ShieldAlert,

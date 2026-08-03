@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } 
 import { cn, getLeaderColor } from "@/lib/utils";
 import { get_initials } from "./utils";
 import { PODIUM_CONFIG, STRINGS } from "./constants";
-import type { Podium } from "@/data/zeus";
+import type { Podium } from "@/data/ccz";
 
 interface PodiumItemProps {
   person: Podium;

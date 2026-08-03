@@ -15,7 +15,7 @@ interface AutonomyCardProps {
   guiasL8?: number;
 }
 
-import { Sparkline } from "@/components/zeus/sparkline";
+import { Sparkline } from "@/components/ccz/sparkline";
 import { cn } from "@/lib/utils";
 
 export function AutonomyCard({ 

@@ -3,7 +3,7 @@ import { BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import type { AreaData } from "@/data/zeus";
+import type { AreaData } from "@/data/ccz";
 import { STRINGS, FACTORS_LABELS } from "./constants";
 import { FactorItem } from "./factor_item";
 import { BpreEditorDialog } from "./bpre_editor_dialog";

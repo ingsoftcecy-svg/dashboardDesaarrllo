@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Tooltip as ShadcnTooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { OperatorHistoryDialog } from "./operator_history_dialog";
-import { AutonomyGauge } from "@/components/zeus/autonomy_card";
+import { AutonomyGauge } from "@/components/ccz/autonomy_card";
 import { OperatorCoursesDialog } from "./operator_courses_dialog";
 
 

@@ -1,5 +1,5 @@
 import { Factory } from "lucide-react";
-import type { AreaData } from "@/data/zeus";
+import type { AreaData } from "@/data/ccz";
 import { FullscreenButton } from "./fullscreen_button";
 import { TeamCard } from "./team_card";
 import { STRINGS } from "./constants";

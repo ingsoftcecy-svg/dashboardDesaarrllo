@@ -4,7 +4,7 @@ import { PodiumItem } from "./podium_item";
 import { AchievementList } from "./achievement_list";
 import { TeamExcellenceChart } from "./team_excellence_chart";
 import { STRINGS, PODIUM_ORDER } from "./constants";
-import type { Podium } from "@/data/zeus";
+import type { Podium } from "@/data/ccz";
 
 import { cn } from "@/lib/utils";
 

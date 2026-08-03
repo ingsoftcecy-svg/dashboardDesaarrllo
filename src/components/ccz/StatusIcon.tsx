@@ -1,5 +1,5 @@
 import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
-import type { Status } from "@/data/zeus";
+import type { Status } from "@/data/ccz";
 
 export function StatusIcon({ status }: { status: Status }) {
   if (status === "ok") return <CheckCircle2 className="h-5 w-5 text-green-600" />;

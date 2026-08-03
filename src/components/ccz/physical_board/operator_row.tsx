@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } 
 import { OperatorHistoryDialog } from "./operator_history_dialog";
 import { TeamHistoryDialog } from "./team_history_dialog";
 import { OperatorCoursesDialog } from "./operator_courses_dialog";
-import type { Operator } from "@/data/zeus";
+import type { Operator } from "@/data/ccz";
 import { OperatorAvatar } from "./operator_avatar";
 import { PreReqEditor } from "./pre_req_editor";
 import { IpMediator } from "./ip_mediator";

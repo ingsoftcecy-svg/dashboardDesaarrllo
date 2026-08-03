@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { championColors, type Operator } from "@/data/zeus";
+import { championColors, type Operator } from "@/data/ccz";
 import { get_initials } from "./utils";
 import { CHAMPION_ICONS } from "./constants";
 import { SkillBar } from "./skill_bar";

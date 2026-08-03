@@ -5,7 +5,7 @@ import { db } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 import { useAuth } from '@/lib/auth';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { OPERATORS_MAX_SKILLS } from "@/data/zeus";
+import { OPERATORS_MAX_SKILLS } from "@/data/ccz";
 
 interface MultiSkillEditorProps {
   operator_id: string;

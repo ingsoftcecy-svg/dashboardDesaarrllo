@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { AutonomyGauge } from "@/components/zeus/autonomy_card";
-import type { Operator } from "@/data/zeus";
+import { AutonomyGauge } from "@/components/ccz/autonomy_card";
+import type { Operator } from "@/data/ccz";
 import { 
   Dialog, 
   DialogContent, 

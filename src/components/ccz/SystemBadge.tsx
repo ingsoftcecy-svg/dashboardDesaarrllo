@@ -1,4 +1,4 @@
-import { systemColors, type SystemKey } from "@/data/zeus";
+import { systemColors, type SystemKey } from "@/data/ccz";
 import { cn } from "@/lib/utils";
 
 export function SystemBadge({ system }: { system: SystemKey }) {

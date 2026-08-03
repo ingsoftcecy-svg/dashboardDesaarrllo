@@ -3,7 +3,7 @@ import { Activity, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { SystemBadge } from "./SystemBadge";
 import { StatusIcon, statusLabel } from "./StatusIcon";
-import type { IPRow } from "@/data/zeus";
+import type { IPRow } from "@/data/ccz";
 import { cn } from "@/lib/utils";
 import {
   ResponsiveContainer,

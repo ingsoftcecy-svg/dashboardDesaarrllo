@@ -10,7 +10,7 @@ import { Star, Check, LogOut, LayoutDashboard, CloudUpload, Terminal, Users, Plu
 import { doc, setDoc, getDoc, collection, getDocs, query, orderBy, writeBatch, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import * as XLSX from 'xlsx';
-import { SharePointExcelViewer } from '@/components/zeus/SharePointExcelViewer';
+import { SharePointExcelViewer } from '@/components/ccz/SharePointExcelViewer';
 
 export const Route = createFileRoute('/cargar-datos')({
   component: CargarDatos,

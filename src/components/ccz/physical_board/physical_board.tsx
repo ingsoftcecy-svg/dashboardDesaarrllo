@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Search, X } from "lucide-react";
 import { motion } from "framer-motion";
-import type { Operator } from "@/data/zeus";
+import type { Operator } from "@/data/ccz";
 import { OperatorRow } from "./operator_row";
 import { normalize_string } from "./utils";
 import { STRINGS } from "./constants";

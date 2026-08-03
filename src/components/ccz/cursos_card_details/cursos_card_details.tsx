@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { BookOpen, CheckCircle2, PlayCircle, HelpCircle, Users } from "lucide-react";
-import type { AreaData } from "@/data/zeus";
+import type { AreaData } from "@/data/ccz";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { OperatorCoursesDialog } from "../physical_board/operator_courses_dialog";
 
