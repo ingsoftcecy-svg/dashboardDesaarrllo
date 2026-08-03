@@ -1,28 +1,56 @@
 import { useState, useEffect } from "react";
 import { BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import type { AreaData } from "@/data/zeus";
 import { STRINGS, FACTORS_LABELS } from "./constants";
 import { FactorItem } from "./factor_item";
+import { BpreEditorDialog } from "./bpre_editor_dialog";
+import { useAuth } from "@/lib/auth";
+import { cn } from "@/lib/utils";
 
 interface PromedioPorFactorCardProps {
   area: AreaData;
   className?: string;
 }
 
-import { cn } from "@/lib/utils";
-
 export function PromedioPorFactorCard({ area, className }: PromedioPorFactorCardProps) {
+  const usuario = useAuth();
+  const puedeEditar = true;
   const [selectedTeam, setSelectedTeam] = useState<string>("general");
+  const [customFactors, setCustomFactors] = useState<Record<string, number> | null>(null);
 
   // Reiniciar a "general" al cambiar de departamento/área
   useEffect(() => {
     setSelectedTeam("general");
   }, [area.team]);
 
+  // Sincronizar en tiempo real con Firestore para puntuaciones editadas del equipo
+  useEffect(() => {
+    if (selectedTeam === "general") {
+      setCustomFactors(null);
+      return;
+    }
+
+    const cleanUpper = selectedTeam.trim().toUpperCase();
+    const teamKey = cleanUpper.replace(/[^A-Z0-9]/g, '_');
+    const docRef = doc(db, "evaluaciones_guias_tecnicas", `bpre_${teamKey}`);
+
+    const unsubscribe = onSnapshot(docRef, (snap) => {
+      if (snap.exists() && snap.data().factors) {
+        setCustomFactors(snap.data().factors);
+      } else {
+        setCustomFactors(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [selectedTeam]);
+
   const selectedTeamData = area.teamRankings?.find((t) => t.name === selectedTeam);
 
-  const factors = (selectedTeam === "general" ? area.autonomyFactors : selectedTeamData?.autonomyFactors) || {
+  const baseFactors = (selectedTeam === "general" ? area.autonomyFactors : selectedTeamData?.autonomyFactors) || {
     dinamica: 0,
     liderazgo: 0,
     skap: 0,
@@ -35,10 +63,12 @@ export function PromedioPorFactorCard({ area, className }: PromedioPorFactorCard
     infraest: 0,
   };
 
+  const factors = customFactors || baseFactors;
+
   const factor_items = Object.entries(FACTORS_LABELS).map(([key, label]) => ({
     key,
     label,
-    value: (factors as any)[key] || 0,
+    value: (factors as any)[key] !== undefined ? (factors as any)[key] : (baseFactors as any)[key] || 0,
   }));
 
   // Filtrar los operadores pertenecientes al equipo seleccionado para calcular requisitos específicos en los modales
@@ -51,6 +81,7 @@ export function PromedioPorFactorCard({ area, className }: PromedioPorFactorCard
       );
 
   const displayAreaName = selectedTeam === "general" ? area.team : selectedTeam;
+  const currentTeamKey = selectedTeam.trim().toUpperCase().replace(/[^A-Z0-9]/g, '_');
 
   return (
     <motion.section
@@ -71,22 +102,33 @@ export function PromedioPorFactorCard({ area, className }: PromedioPorFactorCard
           </div>
         </div>
 
-        {area.teamRankings && area.teamRankings.length > 0 && (
-          <select
-            value={selectedTeam}
-            onChange={(e) => setSelectedTeam(e.target.value)}
-            className="text-[10px] font-bold bg-slate-800 text-white border border-slate-700 rounded px-2 py-1 outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer max-w-[150px] truncate transition-colors hover:bg-slate-700"
-          >
-            <option value="general" className="bg-[#0f172a]">
-              General ({area.team})
-            </option>
-            {area.teamRankings.map((team) => (
-              <option key={team.name} value={team.name} className="bg-[#0f172a]">
-                {team.name}
+        <div className="flex items-center gap-2">
+          {area.teamRankings && area.teamRankings.length > 0 && (
+            <select
+              value={selectedTeam}
+              onChange={(e) => setSelectedTeam(e.target.value)}
+              className="text-[10px] font-bold bg-slate-800 text-white border border-slate-700 rounded px-2 py-1 outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer max-w-[150px] truncate transition-colors hover:bg-slate-700"
+            >
+              <option value="general" className="bg-[#0f172a]">
+                General ({area.team})
               </option>
-            ))}
-          </select>
-        )}
+              {area.teamRankings.map((team) => (
+                <option key={team.name} value={team.name} className="bg-[#0f172a]">
+                  {team.name}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {/* Botón compacto de Editor BPRE */}
+          <BpreEditorDialog
+            teamKey={currentTeamKey}
+            teamName={displayAreaName}
+            currentFactors={factors}
+            puedeEditar={puedeEditar}
+            isGeneral={selectedTeam === "general"}
+          />
+        </div>
       </header>
 
       <div className="grid grid-cols-3 gap-2 p-3 sm:grid-cols-3 md:grid-cols-3">

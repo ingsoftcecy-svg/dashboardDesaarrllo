@@ -1,4 +1,4 @@
-import { AlertTriangle, Wrench } from "lucide-react";
+import { AlertTriangle, Wrench, Sparkles, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { OperatorHistoryDialog } from "./operator_history_dialog";
@@ -210,13 +210,42 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               )}
             </div>
             <div className="truncate text-[10px] font-semibold text-slate-500">{operator.puesto}</div>
-            {operator.lider && (
-              <div className="mt-1.5 flex">
-                <div className={cn("px-1.5 py-0.5 text-[9px] font-bold uppercase rounded-md border", getLeaderColor(operator.lider))}>
-                  {STRINGS.LEADER_LABEL} {operator.lider}
+            
+            {/* Indicador Diseñador Chido: COMPETENTE vs MEJORADO */}
+            {(() => {
+              const isMejorado = operator.tipoGuia === "MEJORADO" || 
+                                (operator.guiasL7Progress && operator.guiasL7Progress > 0) || 
+                                (operator.guiasL8Progress && operator.guiasL8Progress > 0);
+              return (
+                <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                  {operator.lider && (
+                    <div className={cn("px-1.5 py-0.5 text-[9px] font-bold uppercase rounded-md border", getLeaderColor(operator.lider))}>
+                      {STRINGS.LEADER_LABEL} {operator.lider}
+                    </div>
+                  )}
+                  {metricMode === "guias" && (
+                    <span className={cn(
+                      "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-wider shadow-2xs border transition-all",
+                      isMejorado
+                        ? "bg-gradient-to-r from-purple-500/15 via-fuchsia-500/15 to-violet-500/10 text-purple-700 border-purple-500/30 shadow-[0_0_8px_rgba(168,85,247,0.15)] hover:scale-105"
+                        : "bg-gradient-to-r from-emerald-500/15 via-teal-500/15 to-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.15)] hover:scale-105"
+                    )}>
+                      {isMejorado ? (
+                        <>
+                          <Sparkles className="h-2.5 w-2.5 text-purple-600 animate-pulse" />
+                          <span>MEJORADO (L6-L8)</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShieldCheck className="h-2.5 w-2.5 text-emerald-600" />
+                          <span>COMPETENTE (L6)</span>
+                        </>
+                      )}
+                    </span>
+                  )}
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </div>
       </td>

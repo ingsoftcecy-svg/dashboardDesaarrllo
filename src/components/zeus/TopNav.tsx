@@ -107,6 +107,18 @@ export function TopNav({ tab, onTabChange }: Props) {
               )}
             </div>
 
+            {/* 💻 Icono de Portal de Scripts Secreto */}
+            {isSuperAdmin && (
+              <button
+                aria-label="Portal de Scripts Secreto"
+                title="Abrir Portal de Scripts y Sincronización OneDrive"
+                className="text-blue-200 hover:text-yellow-400 transition-colors p-1.5 rounded-lg hover:bg-blue-800/50 outline-none"
+                onClick={() => setShowScriptPortal(true)}
+              >
+                <Terminal className="h-5 w-5" />
+              </button>
+            )}
+
             {/* ⚙️ Icono de Configuración interactivo al lado del reloj */}
             <button
               aria-label="Configuración"

@@ -140,10 +140,6 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
             <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">
               Guías Técnicas — {cleanNombre}
             </h2>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              OneDrive Auto-Sync
-            </span>
             {tipoGuia === "COMPETENTE" ? (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-800 border border-blue-300 uppercase tracking-tight">
                 COMPETENTE (Solo L6)

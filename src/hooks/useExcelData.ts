@@ -656,6 +656,35 @@ export function useExcelData() {
               const guiasData = guiasMap[id] || guiasMap[String(id).trim()] || {};
               const guiasEvaluations = guiasData.evaluations || {};
 
+              const getLevelPercentageFromJson = (level: string) => {
+                if (!guiasData.evaluationsJson) return null;
+                try {
+                  const parsed = typeof guiasData.evaluationsJson === 'string' 
+                    ? JSON.parse(guiasData.evaluationsJson) 
+                    : guiasData.evaluationsJson;
+                    
+                  if (parsed.niveles && parsed.niveles[level]) {
+                    const cats = parsed.niveles[level].categorias || [];
+                    const evalCats = cats.filter((c: any) => (c.habilidades || []).some((h: any) => h.marcado));
+                    if (evalCats.length > 0) {
+                      let totalHabs = 0;
+                      let aprobadas = 0;
+                      evalCats.forEach((c: any) => {
+                        const h = c.habilidades || [];
+                        totalHabs += h.length;
+                        aprobadas += h.filter((x: any) => x.marcado).length;
+                      });
+                      if (totalHabs > 0) {
+                        return parseFloat(((aprobadas / totalHabs) * 100).toFixed(1));
+                      }
+                    }
+                  }
+                } catch (e) {
+                  console.error("Error parsing evaluationsJson in useExcelData:", e);
+                }
+                return null;
+              };
+
               const calcGuiasProgress = (level: string) => {
                 const levelEval = guiasEvaluations[level] || {};
                 const checked = levelEval.checked || [];
@@ -672,9 +701,9 @@ export function useExcelData() {
               const guiasL7Eval = calcGuiasProgress("L7");
               const guiasL8Eval = calcGuiasProgress("L8");
 
-              const guiasL6Progress = typeof guiasData.l6Progress === 'number' ? guiasData.l6Progress : guiasL6Eval.progress;
-              const guiasL7Progress = typeof guiasData.l7Progress === 'number' ? guiasData.l7Progress : guiasL7Eval.progress;
-              const guiasL8Progress = typeof guiasData.l8Progress === 'number' ? guiasData.l8Progress : guiasL8Eval.progress;
+              const guiasL6Progress = getLevelPercentageFromJson("L6") ?? (typeof guiasData.l6Progress === 'number' ? guiasData.l6Progress : guiasL6Eval.progress);
+              const guiasL7Progress = getLevelPercentageFromJson("L7") ?? (typeof guiasData.l7Progress === 'number' ? guiasData.l7Progress : guiasL7Eval.progress);
+              const guiasL8Progress = getLevelPercentageFromJson("L8") ?? (typeof guiasData.l8Progress === 'number' ? guiasData.l8Progress : guiasL8Eval.progress);
 
               // Determinación inteligente del nivel activo
               let guiasActiveLevel: "L6" | "L7" | "L8" = (guiasData.activeLevel as "L6" | "L7" | "L8") || "L6";
