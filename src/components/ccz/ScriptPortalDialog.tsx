@@ -580,8 +580,22 @@ export function ScriptPortalDialog({ isOpen, onClose }: ScriptPortalDialogProps)
 
   if (!isOpen || !isSuperAdmin) return null;
 
-  const handleDownloadFile = (filename: string, content: string) => {
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const handleDownloadFile = async (filename: string, fallbackContent: string) => {
+    try {
+      const res = await fetch(`/scripts/${filename}?t=${Date.now()}`);
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        return;
+      }
+    } catch {}
+
+    const blob = new Blob([fallbackContent], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
