@@ -20,6 +20,10 @@ param (
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "   SINCRONIZADOR DE GUIAS TECNICAS - AREA COCIMIENTOS    " -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
+if ($SoloLocal) {
+    Write-Host "   [MODO PRUEBA SEGURA LOCAL - LECTURA FIRESTORE HABILITADA] " -ForegroundColor Yellow
+}
+Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host ""
 
 # Configurar Proxy de Red Corporativa y TLS 1.2 de Windows
@@ -408,6 +412,8 @@ if (-not $SoloLocal) {
             Write-Host "[WARN] Red diferida para SHARP $($op.sharpId) -> $_" -ForegroundColor Yellow
         }
     }
+} else {
+    Write-Host "[MODO PRUEBA SEGURA] Escritura a Firebase omitida. Datos guardados en $OutputFile" -ForegroundColor Yellow
 }
 
 Write-Host "==========================================================" -ForegroundColor Cyan
