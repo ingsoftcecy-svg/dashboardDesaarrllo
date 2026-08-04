@@ -22,7 +22,7 @@ try {
 
 if (-not $OneDrivePath) {
     try {
-        $OneDrivePath = (Get-Item "$env:USERPROFILE\OneDrive - Anheuser-Busch InBev\Brewery Operations - *\5.0  Mantto\2026\04 ATO\03 ATO MEJORADO\Guias Tecnicas" -ErrorAction SilentlyContinue).FullName
+        $OneDrivePath = (Get-Item "$env:USERPROFILE\OneDrive - Anheuser-Busch InBev\Brewery Operations - *\5.0  Mantto\2026\04 ATO\03 ATO MEJORADO\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
     } catch {}
     if (-not $OneDrivePath) {
         try {
@@ -32,7 +32,8 @@ if (-not $OneDrivePath) {
 }
 
 if (-not $OneDrivePath -or -not (Test-Path -Path $OneDrivePath)) {
-    Write-Host "[ERROR] No se encontro la carpeta de Guias Tecnicas 2026." -ForegroundColor Red
+    Write-Host "[ERROR] No se encontro la carpeta de Guias Tecnicas 2026 en OneDrive." -ForegroundColor Red
+    Write-Host "[AYUDA] Verifica si la carpeta 'Guias Tecnicas' existe en tu OneDrive corporativo." -ForegroundColor Yellow
     exit 1
 }
 
