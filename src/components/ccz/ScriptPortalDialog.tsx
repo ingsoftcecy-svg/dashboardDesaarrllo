@@ -392,6 +392,27 @@ echo ==========================================================
 pause
 `;
 
+const PRUEBA_SEGURA_BAT_CODE = `@echo off
+title PRUEBA SEGURA (Sin Firebase) - Guías Técnicas CCZ
+color 0B
+cls
+echo ======================================================================
+echo           PRUEBA SEGURA - EXTRACCION LOCAL DE GUIAS TECNICAS
+echo ======================================================================
+echo.
+echo  Modo: SOLO LOCAL (NO sube nada a Firebase, NO altera la nube)
+echo  Resultado: Generara 'resultado_extraccion.json' para verificar
+echo.
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0sync_guias.ps1" -SoloLocal
+
+echo.
+echo ======================================================================
+echo  Proceso finalizado. Revisa el archivo 'resultado_extraccion.json'.
+echo ======================================================================
+pause
+`;
+
 const SKAP_POWERSHELL_CODE = `# ==============================================================================
 # SINCRONIZADOR SKAP CON MODO DEBUG Y DEPURACION COMPLETA EN ARCHIVO LOG
 # ==============================================================================
@@ -500,7 +521,7 @@ export function ScriptPortalDialog({ isOpen, onClose }: ScriptPortalDialogProps)
   const usuario = useAuth();
   const isSuperAdmin = usuario?.email?.toLowerCase() === "ingsoftcecy@gmail.com" || usuario?.uid === "fDd4YkfBWYbji8fT8vKZs1LzimH3";
 
-  const [activeTab, setActiveTab] = useState<"ps1" | "bat" | "json" | "skap">("ps1");
+  const [activeTab, setActiveTab] = useState<"ps1" | "bat" | "json" | "skap" | "prueba">("ps1");
   const [copiedPs1, setCopiedPs1] = useState(false);
   const [copiedBat, setCopiedBat] = useState(false);
   const [copiedSkap, setCopiedSkap] = useState(false);
@@ -656,6 +677,18 @@ export function ScriptPortalDialog({ isOpen, onClose }: ScriptPortalDialogProps)
           </button>
 
           <button
+            onClick={() => setActiveTab("prueba")}
+            className={`px-4 py-2.5 text-xs font-black rounded-t-xl border-t border-x transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+              activeTab === "prueba"
+                ? "bg-slate-950 border-slate-700 text-amber-400 shadow-md"
+                : "bg-slate-800/80 border-slate-700/50 text-slate-300 hover:text-white hover:bg-slate-800"
+            }`}
+          >
+            <Terminal className="w-4 h-4 text-amber-400" />
+            4. Prueba Segura (`Prueba_Segura_Local.bat`)
+          </button>
+
+          <button
             onClick={() => setActiveTab("json")}
             className={`px-4 py-2.5 text-xs font-black rounded-t-xl border-t border-x transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
               activeTab === "json"
@@ -664,7 +697,7 @@ export function ScriptPortalDialog({ isOpen, onClose }: ScriptPortalDialogProps)
             }`}
           >
             <Upload className="w-4 h-4 text-purple-400" />
-            4. Cargar JSON (Web)
+            5. Cargar JSON (Web)
           </button>
         </div>
 
@@ -743,6 +776,24 @@ export function ScriptPortalDialog({ isOpen, onClose }: ScriptPortalDialogProps)
               </div>
               <pre className="flex-1 overflow-auto bg-slate-900/90 p-4 rounded-xl border border-slate-800 text-slate-200 text-xs font-mono custom-scrollbar leading-relaxed">
                 {BAT_CODE}
+              </pre>
+            </div>
+          ) : activeTab === "prueba" ? (
+            <div className="flex-1 flex flex-col gap-3 overflow-hidden">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-slate-400 font-mono">Prueba_Segura_Local.bat (Sin subir a Firebase)</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleDownloadFile("Prueba_Segura_Local.bat", PRUEBA_SEGURA_BAT_CODE)}
+                    className="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg transition-all cursor-pointer"
+                  >
+                    <Download className="w-4 h-4 text-white" />
+                    Descargar .bat de Prueba
+                  </button>
+                </div>
+              </div>
+              <pre className="flex-1 overflow-auto bg-slate-900/90 p-4 rounded-xl border border-slate-800 text-slate-200 text-xs font-mono custom-scrollbar leading-relaxed">
+                {PRUEBA_SEGURA_BAT_CODE}
               </pre>
             </div>
           ) : (
