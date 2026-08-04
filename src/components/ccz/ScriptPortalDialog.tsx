@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Copy, Check, Terminal, FileCode, X, Upload, CheckCircle2, Database } from "lucide-react";
+import { Copy, Check, Terminal, FileCode, X, Upload, CheckCircle2, Database, Download } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -152,13 +152,21 @@ foreach ($item in $pendingFiles) {
         $equipo = if ($pathParts.Count -gt 1) { $pathParts[0] } else { "Cocimientos" }
         $subcarpeta = if ($pathParts.Count -gt 2) { $pathParts[1] } else { "General" }
         
-        $fullPathLower = "$($file.FullName) $($file.Name)".ToLower()
-        $tipoGuia = "COMPETENTE"
-        if ($fullPathLower -like "*mejorado*") {
-            $tipoGuia = "MEJORADO"
-        } elseif ($fullPathLower -like "*competente*") {
-            $tipoGuia = "COMPETENTE"
+        # Determinar tipo de guia - PRIORIDAD 1: carpetas en la ruta (excluye nombre del archivo)
+        $directoryPath = [System.IO.Path]::GetDirectoryName($file.FullName).ToLower()
+        $fileNameLower  = $file.Name.ToLower()
+        $tipoGuia = "COMPETENTE" # valor por defecto
+        
+        if ($directoryPath -like "*mejorado*") {
+            $tipoGuia = "MEJORADO"      # La carpeta dice MEJORADO -> máxima prioridad
+        } elseif ($directoryPath -like "*competente*") {
+            $tipoGuia = "COMPETENTE"    # La carpeta dice COMPETENTE -> máxima prioridad
+        } elseif ($fileNameLower -like "*mejorado*") {
+            $tipoGuia = "MEJORADO"      # Fallback: solo el nombre del archivo
+        } elseif ($fileNameLower -like "*competente*") {
+            $tipoGuia = "COMPETENTE"    # Fallback: solo el nombre del archivo
         }
+        # Si ni carpeta ni nombre mencionan el tipo -> se queda "COMPETENTE" por defecto
         
         $cleanOperatorName = $operatorName -replace '\\s+(COMPETENTE|MEJORADO)$', ''
         
@@ -501,6 +509,16 @@ export function ScriptPortalDialog({ isOpen, onClose }: ScriptPortalDialogProps)
 
   if (!isOpen || !isSuperAdmin) return null;
 
+  const handleDownloadFile = (filename: string, content: string) => {
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleCopyPs1 = () => {
     navigator.clipboard.writeText(POWERSHELL_CODE);
     setCopiedPs1(true);
@@ -656,13 +674,22 @@ export function ScriptPortalDialog({ isOpen, onClose }: ScriptPortalDialogProps)
             <div className="flex-1 flex flex-col gap-3 overflow-hidden">
               <div className="flex justify-between items-center text-xs">
                 <span className="text-slate-400 font-mono">sync_guias.ps1</span>
-                <button
-                  onClick={handleCopyPs1}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-extrabold flex items-center gap-2 shadow-lg transition-all cursor-pointer"
-                >
-                  {copiedPs1 ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
-                  {copiedPs1 ? "¡Código Copiado al Portapapeles!" : "Copiar Código PowerShell"}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleDownloadFile("sync_guias.ps1", POWERSHELL_CODE)}
+                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-blue-300 rounded-xl text-xs font-bold flex items-center gap-1.5 border border-slate-700 transition-all cursor-pointer"
+                  >
+                    <Download className="w-4 h-4 text-blue-400" />
+                    Descargar .ps1
+                  </button>
+                  <button
+                    onClick={handleCopyPs1}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-extrabold flex items-center gap-2 shadow-lg transition-all cursor-pointer"
+                  >
+                    {copiedPs1 ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
+                    {copiedPs1 ? "¡Código Copiado!" : "Copiar Código"}
+                  </button>
+                </div>
               </div>
               <pre className="flex-1 overflow-auto bg-slate-900/90 p-4 rounded-xl border border-slate-800 text-slate-200 text-xs font-mono custom-scrollbar leading-relaxed">
                 {POWERSHELL_CODE}
@@ -671,14 +698,23 @@ export function ScriptPortalDialog({ isOpen, onClose }: ScriptPortalDialogProps)
           ) : activeTab === "skap" ? (
             <div className="flex-1 flex flex-col gap-3 overflow-hidden">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-slate-400 font-mono">sync_datos_skap.ps1 (Para Power Automate Desktop)</span>
-                <button
-                  onClick={handleCopySkap}
-                  className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-extrabold flex items-center gap-2 shadow-lg transition-all cursor-pointer"
-                >
-                  {copiedSkap ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
-                  {copiedSkap ? "¡Código Copiado al Portapapeles!" : "Copiar Código SKAP"}
-                </button>
+                <span className="text-slate-400 font-mono">sync_datos_skap.ps1</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleDownloadFile("sync_datos_skap.ps1", SKAP_POWERSHELL_CODE)}
+                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded-xl text-xs font-bold flex items-center gap-1.5 border border-slate-700 transition-all cursor-pointer"
+                  >
+                    <Download className="w-4 h-4 text-cyan-400" />
+                    Descargar .ps1
+                  </button>
+                  <button
+                    onClick={handleCopySkap}
+                    className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-extrabold flex items-center gap-2 shadow-lg transition-all cursor-pointer"
+                  >
+                    {copiedSkap ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
+                    {copiedSkap ? "¡Código Copiado!" : "Copiar Código"}
+                  </button>
+                </div>
               </div>
               <pre className="flex-1 overflow-auto bg-slate-900/90 p-4 rounded-xl border border-slate-800 text-slate-200 text-xs font-mono custom-scrollbar leading-relaxed">
                 {SKAP_POWERSHELL_CODE}
@@ -688,13 +724,22 @@ export function ScriptPortalDialog({ isOpen, onClose }: ScriptPortalDialogProps)
             <div className="flex-1 flex flex-col gap-3 overflow-hidden">
               <div className="flex justify-between items-center text-xs">
                 <span className="text-slate-400 font-mono">Sincronizar_Guías.bat</span>
-                <button
-                  onClick={handleCopyBat}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-extrabold flex items-center gap-2 shadow-lg transition-all cursor-pointer"
-                >
-                  {copiedBat ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
-                  {copiedBat ? "¡Código Copiado al Portapapeles!" : "Copiar Código BAT"}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleDownloadFile("Sincronizar_Guías.bat", BAT_CODE)}
+                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-300 rounded-xl text-xs font-bold flex items-center gap-1.5 border border-slate-700 transition-all cursor-pointer"
+                  >
+                    <Download className="w-4 h-4 text-emerald-400" />
+                    Descargar .bat
+                  </button>
+                  <button
+                    onClick={handleCopyBat}
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-extrabold flex items-center gap-2 shadow-lg transition-all cursor-pointer"
+                  >
+                    {copiedBat ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
+                    {copiedBat ? "¡Código Copiado!" : "Copiar Código"}
+                  </button>
+                </div>
               </div>
               <pre className="flex-1 overflow-auto bg-slate-900/90 p-4 rounded-xl border border-slate-800 text-slate-200 text-xs font-mono custom-scrollbar leading-relaxed">
                 {BAT_CODE}
