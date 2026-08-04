@@ -201,21 +201,20 @@ foreach ($item in $pendingFiles) {
         $equipo = if ($pathParts.Count -gt 1) { $pathParts[0] } else { "Cocimientos" }
         $subcarpeta = if ($pathParts.Count -gt 2) { $pathParts[1] } else { "General" }
         
-        # Determinar tipo de guia - PRIORIDAD 1: carpetas en la ruta (excluye nombre del archivo)
-        $directoryPath = [System.IO.Path]::GetDirectoryName($file.FullName).ToLower()
-        $fileNameLower  = $file.Name.ToLower()
-        $tipoGuia = "COMPETENTE" # valor por defecto
-        
-        if ($directoryPath -like "*mejorado*") {
-            $tipoGuia = "MEJORADO"      # La carpeta dice MEJORADO -> máxima prioridad
-        } elseif ($directoryPath -like "*competente*") {
-            $tipoGuia = "COMPETENTE"    # La carpeta dice COMPETENTE -> máxima prioridad
+        # Clasificación de tipoGuia evaluando SOLAMENTE la subcarpeta relativa (MASH-RAMPA\COMPETENTE)
+        $subPathLower  = $relativePath.ToLower()
+        $fileNameLower = $file.Name.ToLower()
+        $tipoGuia = "COMPETENTE"
+
+        if ($subPathLower -like "*\\mejorado\\*" -or $subPathLower -like "*mejorado\\*") {
+            $tipoGuia = "MEJORADO"
+        } elseif ($subPathLower -like "*\\competente\\*" -or $subPathLower -like "*competente\\*") {
+            $tipoGuia = "COMPETENTE"
         } elseif ($fileNameLower -like "*mejorado*") {
-            $tipoGuia = "MEJORADO"      # Fallback: solo el nombre del archivo
+            $tipoGuia = "MEJORADO"
         } elseif ($fileNameLower -like "*competente*") {
-            $tipoGuia = "COMPETENTE"    # Fallback: solo el nombre del archivo
+            $tipoGuia = "COMPETENTE"
         }
-        # Si ni carpeta ni nombre mencionan el tipo -> se queda "COMPETENTE" por defecto
         
         $cleanOperatorName = $operatorName -replace '\\s+(COMPETENTE|MEJORADO)$', ''
         
