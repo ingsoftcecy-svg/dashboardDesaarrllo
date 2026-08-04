@@ -8,6 +8,10 @@ param (
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "   SINCRONIZADOR DE GUIAS TECNICAS - AREA COCIMIENTOS    " -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
+if ($SoloLocal) {
+    Write-Host "   [MODO PRUEBA SEGURA LOCAL - LECTURA FIRESTORE HABILITADA] " -ForegroundColor Yellow
+}
+Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host ""
 
 # Configurar Proxy de Red Corporativa y TLS 1.2 de Windows
@@ -40,7 +44,7 @@ Write-Host "[INFO] Carpeta Encontrada: $OneDrivePath" -ForegroundColor Green
 Write-Host ""
 
 # ----------------------------------------------------------
-# FASE 0: CACHE LOCAL Y METADATOS EN FIRESTORE (DELTA SYNC)
+# FASE 0: CACHE LOCAL Y CONSULTA DE ESTADO EN FIRESTORE (READ-ONLY)
 # ----------------------------------------------------------
 $syncCache = @{}
 if (Test-Path -Path $CacheFile) {
@@ -49,29 +53,32 @@ if (Test-Path -Path $CacheFile) {
         foreach ($prop in $cacheRaw.PSObject.Properties) {
             $syncCache[$prop.Name] = $prop.Value
         }
-        Write-Host "[INFO] Cache local cargada con $($syncCache.Count) registros prevíos." -ForegroundColor Gray
+        Write-Host "[INFO] Cache local cargada con $($syncCache.Count) registros previos." -ForegroundColor Gray
     } catch {}
 }
 
-if (-not $SoloLocal) {
-    Write-Host "[INFO] Consultando estado previo en Firestore (Batch Check)..." -ForegroundColor Yellow
-    try {
-        $listUrl = "https://firestore.googleapis.com/v1/projects/" + $ProjectId + "/databases/(default)/documents/evaluaciones_guias_tecnicas?pageSize=300"
-        $fsResponse = Invoke-RestMethod -Uri $listUrl -Method Get -TimeoutSec 10 -UseBasicParsing
-        if ($fsResponse.documents) {
-            foreach ($doc in $fsResponse.documents) {
-                $docName = [System.IO.Path]::GetFileName($doc.name)
-                $lastMod = ""
-                if ($doc.fields.fileLastModified -and $doc.fields.fileLastModified.stringValue) {
-                    $lastMod = $doc.fields.fileLastModified.stringValue
-                }
+# Siempre consultar Firestore (Lectura) para saber si la versión remota ya está al día
+Write-Host "[INFO] Consultando marcas de tiempo en Firestore (Batch Check)..." -ForegroundColor Yellow
+try {
+    $listUrl = "https://firestore.googleapis.com/v1/projects/" + $ProjectId + "/databases/(default)/documents/evaluaciones_guias_tecnicas?pageSize=300"
+    $fsResponse = Invoke-RestMethod -Uri $listUrl -Method Get -TimeoutSec 10 -UseBasicParsing
+    if ($fsResponse.documents) {
+        foreach ($doc in $fsResponse.documents) {
+            $docName = [System.IO.Path]::GetFileName($doc.name)
+            $lastMod = ""
+            if ($doc.fields.fileLastModified -and $doc.fields.fileLastModified.stringValue) {
+                $lastMod = $doc.fields.fileLastModified.stringValue
+            } elseif ($doc.fields.updatedAt -and $doc.fields.updatedAt.stringValue) {
+                $lastMod = $doc.fields.updatedAt.stringValue
+            }
+            if ($lastMod) {
                 $syncCache[$docName] = $lastMod
             }
-            Write-Host "[OK] Metadatos cargados de Firestore: $($syncCache.Count) documentos." -ForegroundColor Green
         }
-    } catch {
-        Write-Host "[WARN] No se pudo consultar Firestore en lote. Se procesaran los archivos según cache local." -ForegroundColor Yellow
+        Write-Host "[OK] Metadatos remotos cargados de Firestore: $($syncCache.Count) documentos." -ForegroundColor Green
     }
+} catch {
+    Write-Host "[WARN] No se pudo consultar Firestore en linea. Se procesaran los archivos según cache local." -ForegroundColor Yellow
 }
 
 Write-Host ""
@@ -105,7 +112,7 @@ foreach ($file in $excelFiles) {
     $docId = $sharpId
     $localLastMod = $file.LastWriteTimeUtc.ToString("o")
 
-    # Comparar timestamp local vs cache inteligente (con tolerancia DateTime)
+    # Comparar timestamp local vs marca remota (Firestore o local previa)
     $cacheKey = $docId
     $fileKey = $file.Name
     $prevTimeStr = if ($syncCache.ContainsKey($cacheKey)) { "$($syncCache[$cacheKey])" } elseif ($syncCache.ContainsKey($fileKey)) { "$($syncCache[$fileKey])" } else { $null }
@@ -144,7 +151,7 @@ Write-Host ""
 
 if ($pendingFiles.Count -eq 0) {
     Write-Host "==========================================================" -ForegroundColor Cyan
-    Write-Host "   TODOS LOS ARCHIVOS ESTAN AL DIA. NADA QUE SUBIR.      " -ForegroundColor Green
+    Write-Host "   TODOS LOS ARCHIVOS ESTAN AL DIA. NADA QUE PROCESAR.   " -ForegroundColor Green
     Write-Host "==========================================================" -ForegroundColor Cyan
     exit 0
 }
@@ -408,6 +415,8 @@ if (-not $SoloLocal) {
             Write-Host "[WARN] Red diferida para SHARP $($op.sharpId) -> $_" -ForegroundColor Yellow
         }
     }
+} else {
+    Write-Host "[MODO PRUEBA SEGURA] Escritura a Firebase omitida. Datos guardados en $OutputFile" -ForegroundColor Yellow
 }
 
 Write-Host "==========================================================" -ForegroundColor Cyan
