@@ -208,7 +208,7 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
               "flex items-center gap-1 px-2 py-1 text-[10px] font-bold rounded transition-colors",
               puedeEditar 
                 ? "bg-[#1a4491] text-white hover:bg-blue-600"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-[#1a4491] text-white cursor-default pointer-events-none"
             )}
             title={STRINGS.MANAGE_IPS_TITLE} 
           >

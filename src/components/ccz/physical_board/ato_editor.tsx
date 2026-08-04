@@ -99,8 +99,8 @@ export function AtoEditor({ operator_id, operator_name, initial_ato, puedeEditar
 
   if(!puedeEditar) {
     return (
-      <div className="mx-auto flex w-full max-w-[100px] flex-col overflow-hidden rounded border border-slate-300 opacity-75 shadow-sm select-none">
-        <div className="bg-slate-400 py-0.5 text-[10px] font-bold text-white uppercase text-center">
+      <div className="mx-auto flex w-full max-w-[100px] flex-col overflow-hidden rounded border border-[#1a4491] shadow-sm select-none">
+        <div className="bg-[#1a4491] py-0.5 text-[10px] font-bold text-white uppercase text-center">
           ATO
         </div>
         <div className="flex h-10 items-center justify-center bg-slate-200 text-lg font-black text-slate-800">
