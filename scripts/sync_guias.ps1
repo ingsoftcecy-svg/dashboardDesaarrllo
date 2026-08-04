@@ -105,10 +105,25 @@ foreach ($file in $excelFiles) {
     $docId = $sharpId
     $localLastMod = $file.LastWriteTimeUtc.ToString("o")
 
-    # Comparar timestamp local vs cache (Firestore o local previa)
-    if ($syncCache.ContainsKey($docId) -and $syncCache[$docId]) {
-        $prevTime = $syncCache[$docId]
-        if ($localLastMod -le $prevTime) {
+    # Comparar timestamp local vs cache inteligente (con tolerancia DateTime)
+    $cacheKey = $docId
+    $fileKey = $file.Name
+    $prevTimeStr = if ($syncCache.ContainsKey($cacheKey)) { "$($syncCache[$cacheKey])" } elseif ($syncCache.ContainsKey($fileKey)) { "$($syncCache[$fileKey])" } else { $null }
+
+    if ($prevTimeStr) {
+        $skipFile = $false
+        try {
+            $dtLocal = [DateTime]::Parse($localLastMod)
+            $dtPrev  = [DateTime]::Parse($prevTimeStr)
+            if ($dtLocal -le $dtPrev.AddSeconds(3)) {
+                $skipFile = $true
+            }
+        } catch {
+            if ($localLastMod -le $prevTimeStr) {
+                $skipFile = $true
+            }
+        }
+        if ($skipFile) {
             Write-Host "[SIN CAMBIOS - OMITIDO] $($file.Name) (SHARP: $docId)" -ForegroundColor Gray
             continue
         }
@@ -159,6 +174,8 @@ foreach ($item in $pendingFiles) {
 
     try {
         if ($processedOperators.Contains($docId)) {
+            $syncCache[$docId] = $item.LocalLastMod
+            $syncCache[$file.Name] = $item.LocalLastMod
             continue
         }
 
@@ -331,6 +348,7 @@ foreach ($item in $pendingFiles) {
         $wb = $null
         $processedOperators[$docId] = $operatorRecord
         $syncCache[$docId] = $item.LocalLastMod
+        $syncCache[$file.Name] = $item.LocalLastMod
     }
     catch {
         Write-Host "[ERROR] En $($file.Name): $_" -ForegroundColor Red
@@ -343,7 +361,7 @@ try { $excel.Quit() } catch {}
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel) | Out-Null
 [System.GC]::Collect()
 
-# Actualizar archivo de cache local .sync_cache.json
+# Guardar o actualizar siempre el archivo de cache local .sync_cache.json
 try {
     $cacheJson = $syncCache | ConvertTo-Json -Depth 5
     [System.IO.File]::WriteAllText($CacheFile, $cacheJson, [System.Text.Encoding]::UTF8)

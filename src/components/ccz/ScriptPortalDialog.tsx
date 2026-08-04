@@ -117,10 +117,25 @@ foreach ($file in $excelFiles) {
     $docId = $sharpId
     $localLastMod = $file.LastWriteTimeUtc.ToString("o")
 
-    # Comparar timestamp local vs cache (Firestore o local previa)
-    if ($syncCache.ContainsKey($docId) -and $syncCache[$docId]) {
-        $prevTime = $syncCache[$docId]
-        if ($localLastMod -le $prevTime) {
+    # Comparar timestamp local vs cache inteligente (con tolerancia DateTime)
+    $cacheKey = $docId
+    $fileKey = $file.Name
+    $prevTimeStr = if ($syncCache.ContainsKey($cacheKey)) { "$($syncCache[$cacheKey])" } elseif ($syncCache.ContainsKey($fileKey)) { "$($syncCache[$fileKey])" } else { $null }
+
+    if ($prevTimeStr) {
+        $skipFile = $false
+        try {
+            $dtLocal = [DateTime]::Parse($localLastMod)
+            $dtPrev  = [DateTime]::Parse($prevTimeStr)
+            if ($dtLocal -le $dtPrev.AddSeconds(3)) {
+                $skipFile = $true
+            }
+        } catch {
+            if ($localLastMod -le $prevTimeStr) {
+                $skipFile = $true
+            }
+        }
+        if ($skipFile) {
             Write-Host "[SIN CAMBIOS - OMITIDO] $($file.Name) (SHARP: $docId)" -ForegroundColor Gray
             continue
         }
