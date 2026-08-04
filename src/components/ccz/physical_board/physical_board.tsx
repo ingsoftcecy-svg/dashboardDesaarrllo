@@ -91,19 +91,24 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
                   <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-32 text-center z-30 transition-colors duration-300", headerBgClass)}>L6</th>
                   <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-32 text-center z-30 transition-colors duration-300", headerBgClass)}>L7</th>
                   <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-32 text-center z-30 transition-colors duration-300", headerBgClass)}>L8</th>
+                  <th className={cn("sticky top-0 border-b border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>PROGRESO TOTAL</th>
                 </>
               ) : (
                 <>
                   <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-48 text-center z-30 transition-colors duration-300", headerBgClass)}>HABILIDADES</th>
+                  {metricMode === "autonomia" && (
+                    <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>PROMEDIO DE HABILIDADES</th>
+                  )}
                   <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-48 z-30 transition-colors duration-300", headerBgClass)}>MULTI-HABILIDAD</th>
                   {metricMode === "autonomia" && <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-28 text-center z-30 transition-colors duration-300", headerBgClass)}>CHAMPIONS</th>}
                   {show_ato && <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-32 text-center z-30 transition-colors duration-300", headerBgClass)}>ATO</th>}
                   <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-44 z-30 transition-colors duration-300", headerBgClass)}>IPs ASIGNADOS</th>
                   {metricMode === "autonomia" && <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-64 z-30 transition-colors duration-300", headerBgClass)}>USABILIDAD EN HERRAMIENTAS DIGITALES</th>}
+                  {metricMode === "cursos" && (
+                    <th className={cn("sticky top-0 border-b border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>PROGRESO CURSOS</th>
+                  )}
                 </>
               )}
-              
-              <th className={cn("sticky top-0 border-b border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>{metricMode === "autonomia" ? "PROMEDIO DE HABILIDADES" : metricMode === "cursos" ? "PROGRESO CURSOS" : "PROGRESO TOTAL"}</th>
             </tr>
           </thead>
           <tbody>

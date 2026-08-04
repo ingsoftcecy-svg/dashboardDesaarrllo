@@ -213,7 +213,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             
             {/* Indicador Diseñador Chido: COMPETENTE vs MEJORADO */}
             {(() => {
-              const isMejorado = operator.tipoGuia === "MEJORADO" || 
+              const isMejorado = (operator as any).tipoGuia === "MEJORADO" || 
                                 (operator.guiasL7Progress && operator.guiasL7Progress > 0) || 
                                 (operator.guiasL8Progress && operator.guiasL8Progress > 0);
               return (
@@ -422,6 +422,91 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             })()}
           </td>
 
+          {metricMode === "autonomia" && (
+            <td className="border-b border-r border-slate-200/50 p-3 align-middle text-center w-40">
+              {(() => {
+              const evals = operator.evaluacionesDetalle && operator.evaluacionesDetalle.length > 0
+                ? operator.evaluacionesDetalle
+                : (operator.equipos && operator.equipos.length > 1
+                  ? operator.equipos.map(eq => ({ puesto: eq, score: operator.autonomyScore }))
+                  : []);
+              const numEvals = evals.length;
+              const esMultihabilidad = numEvals > 1;
+
+              return (
+                <TooltipProvider>
+                  <Tooltip delayDuration={100}>
+                    <TooltipTrigger asChild>
+                      <div className={cn(
+                        "mx-auto flex w-24 flex-col items-center justify-center overflow-hidden rounded border transition-all cursor-pointer group shadow-sm",
+                        esMultihabilidad ? "border-amber-400 bg-amber-50/40 ring-1 ring-amber-300" : "border-[#1a4491]",
+                        operator.autonomyScore === 100 && "animate-glow-gold scale-105"
+                      )}>
+                        <div className={cn(
+                          "w-full py-1 text-center text-[7.5px] font-black leading-none text-white uppercase tracking-tighter px-0.5 flex items-center justify-center gap-0.5",
+                          operator.autonomyScore === 100 ? "bg-yellow-500" : "bg-[#1a4491]"
+                        )}>
+                          {esMultihabilidad ? `PROMEDIO (${numEvals} POS)` : STRINGS.AUTONOMY_LEVEL}
+                        </div>
+                        <div className="flex w-full flex-col items-center justify-center bg-white py-1 text-[#1a4491] min-h-[38px]">
+                          {operator.noEvaluado ? (
+                            <div className="flex flex-col items-center justify-center leading-none">
+                              <span className="text-xs font-black text-slate-400">0.00%</span>
+                              <span className="text-[6.5px] text-rose-500 font-black uppercase tracking-widest mt-0.5 whitespace-nowrap">Sin Evaluar</span>
+                            </div>
+                          ) : (
+                            <>
+                              <span className="text-xs font-black text-[#1a4491]">{autonomy_score_pct}</span>
+                              {esMultihabilidad && (
+                                <span className="text-[7.5px] font-black text-blue-900 uppercase tracking-tight leading-none mt-0.5 bg-blue-50 px-1 py-0.2 rounded border border-blue-200">
+                                  Promediado
+                                </span>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </TooltipTrigger>
+                    {esMultihabilidad && (
+                      <TooltipContent side="top" className="bg-[#0b1329] text-white p-3.5 rounded-xl border border-blue-800 shadow-2xl max-w-sm space-y-2.5 z-50">
+                        <div className="border-b border-blue-900 pb-2 flex items-center justify-between gap-3">
+                          <span className="text-[10px] font-black uppercase tracking-wider text-yellow-400 flex items-center gap-1">
+                            📊 Score Promediado (Multihabilidad)
+                          </span>
+                          <span className="text-[9px] font-extrabold bg-blue-900 text-blue-200 px-1.5 py-0.5 rounded border border-blue-700">
+                            {numEvals} Posiciones
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-200 font-medium leading-normal">
+                          El puntaje mostrado (<strong className="text-yellow-400 font-bold">{autonomy_score_pct}</strong>) es el <strong className="text-white font-bold">promedio consolidado</strong> de sus evaluaciones en cada puesto:
+                        </p>
+                        <div className="space-y-1.5 pt-1 max-h-56 overflow-y-auto pr-1 custom-scrollbar">
+                          {evals.map((ev: any, idx) => (
+                            <div key={idx} className="bg-blue-950/80 border border-blue-900/80 p-2 rounded-lg space-y-1">
+                              <div className="flex justify-between items-center text-[10px] font-bold text-white uppercase">
+                                <span className="truncate max-w-[190px]">{ev.puesto}</span>
+                                <span className="text-yellow-400 font-black text-xs tabular-nums">{ev.score.toFixed(2)}%</span>
+                              </div>
+                              <div className="grid grid-cols-3 gap-1 text-[9px] text-slate-300 border-t border-blue-900/40 pt-1 mt-0.5">
+                                <div><span className="text-slate-300 block text-[7.5px] uppercase font-semibold">Driver's License</span> <strong className="text-sky-300 font-bold">{ev.basico !== undefined ? Math.round(ev.basico) : "-"}%</strong></div>
+                                <div><span className="text-slate-300 block text-[7.5px] uppercase font-semibold">Intermedio</span> <strong className="text-sky-300 font-bold">{ev.intermedio !== undefined ? Math.round(ev.intermedio) : "-"}%</strong></div>
+                                <div><span className="text-slate-300 block text-[7.5px] uppercase font-semibold">Avanzado</span> <strong className="text-sky-300 font-bold">{ev.avanzado !== undefined ? Math.round(ev.avanzado) : "-"}%</strong></div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="text-[8.5px] text-blue-200 italic pt-1 border-t border-blue-900/60 text-center">
+                          💡 Refleja el nivel de autonomía integral del colaborador multifuncional.
+                        </div>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
+              );
+            })()}
+          </td>
+        )}
+
           <td className="border-b border-r border-slate-200/50 p-2 align-middle w-48">
             <MultiSkillEditor 
               operator_id={operator.id} 
@@ -535,87 +620,9 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
         </>
       )}
 
-      <td className="border-b p-3 align-middle text-center w-40">
-        {metricMode === "autonomia" ? (() => {
-          const evals = operator.evaluacionesDetalle && operator.evaluacionesDetalle.length > 0
-            ? operator.evaluacionesDetalle
-            : (operator.equipos && operator.equipos.length > 1
-              ? operator.equipos.map(eq => ({ puesto: eq, score: operator.autonomyScore }))
-              : []);
-          const numEvals = evals.length;
-          const esMultihabilidad = numEvals > 1;
-
-          return (
-            <TooltipProvider>
-              <Tooltip delayDuration={100}>
-                <TooltipTrigger asChild>
-                  <div className={cn(
-                    "mx-auto flex w-24 flex-col items-center justify-center overflow-hidden rounded border transition-all cursor-pointer group shadow-sm",
-                    esMultihabilidad ? "border-amber-400 bg-amber-50/40 ring-1 ring-amber-300" : "border-[#1a4491]",
-                    operator.autonomyScore === 100 && "animate-glow-gold scale-105"
-                  )}>
-                    <div className={cn(
-                      "w-full py-1 text-center text-[7.5px] font-black leading-none text-white uppercase tracking-tighter px-0.5 flex items-center justify-center gap-0.5",
-                      operator.autonomyScore === 100 ? "bg-yellow-500" : esMultihabilidad ? "bg-[#1a4491]" : "bg-[#1a4491]"
-                    )}>
-                      {esMultihabilidad ? `PROMEDIO (${numEvals} POS)` : STRINGS.AUTONOMY_LEVEL}
-                    </div>
-                    <div className="flex w-full flex-col items-center justify-center bg-white py-1 text-[#1a4491] min-h-[38px]">
-                      {operator.noEvaluado ? (
-                        <div className="flex flex-col items-center justify-center leading-none">
-                          <span className="text-xs font-black text-slate-400">0.00%</span>
-                          <span className="text-[6.5px] text-rose-500 font-black uppercase tracking-widest mt-0.5 whitespace-nowrap">Sin Evaluar</span>
-                        </div>
-                      ) : (
-                        <>
-                          <span className="text-xs font-black text-[#1a4491]">{autonomy_score_pct}</span>
-                          {esMultihabilidad && (
-                            <span className="text-[7.5px] font-black text-blue-900 uppercase tracking-tight leading-none mt-0.5 bg-blue-50 px-1 py-0.2 rounded border border-blue-200">
-                              Promediado
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </TooltipTrigger>
-                {esMultihabilidad && (
-                  <TooltipContent side="top" className="bg-[#0b1329] text-white p-3.5 rounded-xl border border-blue-800 shadow-2xl max-w-sm space-y-2.5 z-50">
-                    <div className="border-b border-blue-900 pb-2 flex items-center justify-between gap-3">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-yellow-400 flex items-center gap-1">
-                        📊 Score Promediado (Multihabilidad)
-                      </span>
-                      <span className="text-[9px] font-extrabold bg-blue-900 text-blue-200 px-1.5 py-0.5 rounded border border-blue-700">
-                        {numEvals} Posiciones
-                      </span>
-                    </div>
-                    <p className="text-[10px] text-slate-200 font-medium leading-normal">
-                      El puntaje mostrado (<strong className="text-yellow-400 font-bold">{autonomy_score_pct}</strong>) es el <strong className="text-white font-bold">promedio consolidado</strong> de sus evaluaciones en cada puesto:
-                    </p>
-                    <div className="space-y-1.5 pt-1 max-h-56 overflow-y-auto pr-1 custom-scrollbar">
-                      {evals.map((ev, idx) => (
-                        <div key={idx} className="bg-blue-950/80 border border-blue-900/80 p-2 rounded-lg space-y-1">
-                          <div className="flex justify-between items-center text-[10px] font-bold text-white uppercase">
-                            <span className="truncate max-w-[190px]">{ev.puesto}</span>
-                            <span className="text-yellow-400 font-black text-xs tabular-nums">{ev.score.toFixed(2)}%</span>
-                          </div>
-                          <div className="grid grid-cols-3 gap-1 text-[9px] text-slate-300 border-t border-blue-900/40 pt-1 mt-0.5">
-                            <div><span className="text-slate-300 block text-[7.5px] uppercase font-semibold">Driver's License</span> <strong className="text-sky-300 font-bold">{ev.basico !== undefined ? Math.round(ev.basico) : "-"}%</strong></div>
-                            <div><span className="text-slate-300 block text-[7.5px] uppercase font-semibold">Intermedio</span> <strong className="text-sky-300 font-bold">{ev.intermedio !== undefined ? Math.round(ev.intermedio) : "-"}%</strong></div>
-                            <div><span className="text-slate-300 block text-[7.5px] uppercase font-semibold">Avanzado</span> <strong className="text-sky-300 font-bold">{ev.avanzado !== undefined ? Math.round(ev.avanzado) : "-"}%</strong></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="text-[8.5px] text-blue-200 italic pt-1 border-t border-blue-900/60 text-center">
-                      💡 Refleja el nivel de autonomía integral del colaborador multifuncional.
-                    </div>
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
-          );
-        })() : metricMode === "cursos" ? (() => {
+      {metricMode !== "autonomia" && (
+        <td className="border-b p-3 align-middle text-center w-40">
+          {metricMode === "cursos" ? (() => {
           const progress = operator.cursosProgress ?? 0;
           let colorHeader = "bg-[#1a4491]";
           let colorBorder = "border-[#1a4491]";
@@ -641,7 +648,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             }
           }
 
-          const badgeEl = (
+          return (
             <div 
               title={`Aprobados: ${operator.cursosAprobados || 0} / ${operator.cursosTotal || 0}\nEn progreso: ${operator.cursosEnProgreso || 0}\nPendientes: ${operator.cursosPendientes || 0}`}
               className={cn(
@@ -667,11 +674,9 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               </div>
             </div>
           );
-
-          return badgeEl;
-        })() : (() => {
+        })() : metricMode === "guias" ? (() => {
           const progress = operator.guiasProgress ?? 0;
-          const level = operator.guiasActiveLevel || "L6";
+          const level = (operator as any).tipoGuia || "L6";
           let colorHeader = "bg-slate-500";
           let colorBorder = "border-slate-500";
           let colorText = "text-slate-700";
@@ -694,7 +699,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             colorText = "text-blue-700";
           }
 
-           const badgeEl = (
+          const badgeEl = (
             <div 
               title={`Nivel: ${level}\nProgreso: ${progress}%`}
               className={cn(
@@ -733,8 +738,9 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               </DialogContent>
             </Dialog>
           );
-        })()}
+        })() : null}
       </td>
+      )}
 
     </motion.tr>
   );
