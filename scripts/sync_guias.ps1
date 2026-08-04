@@ -34,13 +34,25 @@ if (-not $OneDrivePath -or -not (Test-Path -Path $OneDrivePath)) {
 }
 
 $OutputFile = Join-Path -Path $PSScriptRoot -ChildPath "resultado_extraccion.json"
+$CacheFile = Join-Path -Path $PSScriptRoot -ChildPath ".sync_cache.json"
+
 Write-Host "[INFO] Carpeta Encontrada: $OneDrivePath" -ForegroundColor Green
 Write-Host ""
 
 # ----------------------------------------------------------
-# FASE 0: OBTENER MARCAS DE TIEMPO EXISTENTES EN FIRESTORE
+# FASE 0: CACHE LOCAL Y METADATOS EN FIRESTORE (DELTA SYNC)
 # ----------------------------------------------------------
-$firestoreCache = @{}
+$syncCache = @{}
+if (Test-Path -Path $CacheFile) {
+    try {
+        $cacheRaw = Get-Content -Path $CacheFile -Raw -Encoding UTF8 | ConvertFrom-Json
+        foreach ($prop in $cacheRaw.PSObject.Properties) {
+            $syncCache[$prop.Name] = $prop.Value
+        }
+        Write-Host "[INFO] Cache local cargada con $($syncCache.Count) registros prevíos." -ForegroundColor Gray
+    } catch {}
+}
+
 if (-not $SoloLocal) {
     Write-Host "[INFO] Consultando estado previo en Firestore (Batch Check)..." -ForegroundColor Yellow
     try {
@@ -53,12 +65,12 @@ if (-not $SoloLocal) {
                 if ($doc.fields.fileLastModified -and $doc.fields.fileLastModified.stringValue) {
                     $lastMod = $doc.fields.fileLastModified.stringValue
                 }
-                $firestoreCache[$docName] = $lastMod
+                $syncCache[$docName] = $lastMod
             }
-            Write-Host "[OK] Metadatos cargados de Firestore: $($firestoreCache.Count) documentos." -ForegroundColor Green
+            Write-Host "[OK] Metadatos cargados de Firestore: $($syncCache.Count) documentos." -ForegroundColor Green
         }
     } catch {
-        Write-Host "[WARN] No se pudo consultar Firestore en lote. Se procesaran todos los archivos." -ForegroundColor Yellow
+        Write-Host "[WARN] No se pudo consultar Firestore en lote. Se procesaran los archivos según cache local." -ForegroundColor Yellow
     }
 }
 
@@ -72,24 +84,36 @@ Write-Host ""
 $pendingFiles = @()
 foreach ($file in $excelFiles) {
     $fileNameRaw = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
+
+    # 1. Filtro estricto: Omitir archivos maestros/anexos/plantillas que no son de un operador
+    if ($fileNameRaw -like "*ANEXO*" -or $fileNameRaw -like "*Guías-Técnicas*" -or $fileNameRaw -like "*Guias-Tecnicas*" -or $fileNameRaw -like "*Plantilla*") {
+        Write-Host "[OMITIDO - PLANTILLA/ANEXO] $($file.Name)" -ForegroundColor Gray
+        continue
+    }
+
     $sharpId = ""
     $operatorName = $fileNameRaw
     if ($fileNameRaw -match '^(\d{7,10})\s+(.+)$') {
         $sharpId = $matches[1]
         $operatorName = $matches[2]
+    } else {
+        # Si el archivo no empieza con ID SHARP (7-10 dígitos), no es guía de operador
+        Write-Host "[OMITIDO - NO ES OPERADOR] $($file.Name)" -ForegroundColor Gray
+        continue
     }
-    $docId = if ($sharpId) { $sharpId } else { $operatorName -replace '[^a-zA-Z0-9_-]', '_' }
 
+    $docId = $sharpId
     $localLastMod = $file.LastWriteTimeUtc.ToString("o")
-    
-    if (-not $SoloLocal -and $firestoreCache.ContainsKey($docId) -and $firestoreCache[$docId]) {
-        $remoteTime = $firestoreCache[$docId]
-        if ($localLastMod -le $remoteTime) {
+
+    # Comparar timestamp local vs cache (Firestore o local previa)
+    if ($syncCache.ContainsKey($docId) -and $syncCache[$docId]) {
+        $prevTime = $syncCache[$docId]
+        if ($localLastMod -le $prevTime) {
             Write-Host "[SIN CAMBIOS - OMITIDO] $($file.Name) (SHARP: $docId)" -ForegroundColor Gray
             continue
         }
     }
-    
+
     $pendingFiles += [pscustomobject]@{
         File = $file
         DocId = $docId
@@ -110,14 +134,14 @@ if ($pendingFiles.Count -eq 0) {
     exit 0
 }
 
-# Configuracion Anti-Bloqueos de Excel COM
+# Configuracion Anti-Bloqueos de Excel COM (Disable All Macros & Forced Background Mode)
 $excel = New-Object -ComObject Excel.Application
+try { $excel.AutomationSecurity = 3 } catch {} # 3 = msoAutomationSecurityForceDisable
 $excel.Visible = $false
 $excel.DisplayAlerts = $false
 $excel.ScreenUpdating = $false
 $excel.EnableEvents = $false
 try { $excel.AskToUpdateLinks = $false } catch {}
-try { $excel.AutomationSecurity = 3 } catch {}
 
 $processedOperators = [ordered]@{}
 $processedCount = 0
@@ -132,40 +156,42 @@ foreach ($item in $pendingFiles) {
     $sharpId = $item.SharpId
     $operatorName = $item.OperatorName
     $wb = $null
-    
+
     try {
         if ($processedOperators.Contains($docId)) {
             continue
         }
-        
+
         $relativePath = $file.FullName.Replace($OneDrivePath, "").TrimStart("\")
         $pathParts = $relativePath.Split("\")
         $equipo = if ($pathParts.Count -gt 1) { $pathParts[0] } else { "Cocimientos" }
         $subcarpeta = if ($pathParts.Count -gt 2) { $pathParts[1] } else { "General" }
-        
+
         # Determinar tipo de guia - PRIORIDAD 1: carpetas en la ruta (excluye nombre del archivo)
         $directoryPath = [System.IO.Path]::GetDirectoryName($file.FullName).ToLower()
         $fileNameLower  = $file.Name.ToLower()
         $tipoGuia = "COMPETENTE" # valor por defecto
-        
+
         if ($directoryPath -like "*mejorado*") {
-            $tipoGuia = "MEJORADO"      # La carpeta dice MEJORADO → máxima prioridad
+            $tipoGuia = "MEJORADO"      # La carpeta dice MEJORADO -> máxima prioridad
         } elseif ($directoryPath -like "*competente*") {
-            $tipoGuia = "COMPETENTE"    # La carpeta dice COMPETENTE → máxima prioridad
+            $tipoGuia = "COMPETENTE"    # La carpeta dice COMPETENTE -> máxima prioridad
         } elseif ($fileNameLower -like "*mejorado*") {
             $tipoGuia = "MEJORADO"      # Fallback: solo el nombre del archivo
         } elseif ($fileNameLower -like "*competente*") {
             $tipoGuia = "COMPETENTE"    # Fallback: solo el nombre del archivo
         }
-        # Si ni carpeta ni nombre mencionan el tipo → se queda "COMPETENTE" por defecto
-        
+
         $cleanOperatorName = $operatorName -replace '\s+(COMPETENTE|MEJORADO)$', ''
-        
+
         $processedCount++
         Write-Host "[$processedCount/$($pendingFiles.Count)] Leido: $($file.Name) ($tipoGuia)" -ForegroundColor White
-        
+
         $wb = $excel.Workbooks.Open($file.FullName, 0, $true, 5, "", "", $true)
-        
+        # Forzar Excel oculto por si alguna plantilla activa macros
+        $excel.Visible = $false
+        $excel.DisplayAlerts = $false
+
         $operatorRecord = [ordered]@{
             docId = $docId
             sharpId = $sharpId
@@ -181,26 +207,26 @@ foreach ($item in $pendingFiles) {
             l8Pct = 0
             niveles = [ordered]@{}
         }
-        
+
         foreach ($ws in $wb.Sheets) {
             $sheetName = $ws.Name
-            
+
             $detectedLevel = ""
             if ($sheetName -like "*L6*" -or $sheetName -like "*N6*" -or $sheetName -like "*6*") { $detectedLevel = "L6" }
             elseif ($sheetName -like "*L7*" -or $sheetName -like "*N7*" -or $sheetName -like "*7*") { $detectedLevel = "L7" }
             elseif ($sheetName -like "*L8*" -or $sheetName -like "*N8*" -or $sheetName -like "*8*") { $detectedLevel = "L8" }
-            
+
             # Para COMPETENTE, omitir L7 y L8
             if ($tipoGuia -eq "COMPETENTE" -and ($detectedLevel -eq "L7" -or $detectedLevel -eq "L8")) {
                 continue
             }
-            
+
             if ($detectedLevel -and -not $operatorRecord.niveles[$detectedLevel]) {
                 $totalPreguntas = 0
                 $marcadasSI = 0
                 $categoriasList = @()
                 $currentCategory = $null
-                
+
                 $checkedRows = @{}
                 try {
                     if ($ws.CheckBoxes.Count -gt 0) {
@@ -212,29 +238,29 @@ foreach ($item in $pendingFiles) {
                         }
                     }
                 } catch {}
-                
+
                 for ($row = 3; $row -le 150; $row++) {
                     $textB = "$($ws.Cells.Item($row, 2).Value2)".Trim()
                     $cellC = "$($ws.Cells.Item($row, 3).Value2)".Trim()
-                    
+
                     if ($textB.Length -gt 0 -and $textB -notlike "*INSTRUCCIONES*" -notlike "*COMPETENCIAS*") {
-                        
+
                         # Deteccion Inteligente de Categorias (Mayusculas + Negrita o %)
                         $isHeader = $false
                         $isFontBold = $false
                         try { $isFontBold = [bool]($ws.Cells.Item($row, 2).Font.Bold) } catch {}
-                        
+
                         if ($cellC -like "*%" -or ($isFontBold -and $textB -eq $textB.ToUpper() -and $textB.Length -gt 3)) {
                             $isHeader = $true
                         }
-                        
+
                         if ($isHeader) {
                             $pctText = $cellC
                             if ($cellC -as [double] -or $cellC -as [single]) {
                                 $pctVal = [math]::Round([double]$cellC * 100)
                                 $pctText = "$pctVal%"
                             }
-                            
+
                             $currentCategory = [ordered]@{
                                 categoria = $textB
                                 porcentajeOficial = $pctText
@@ -245,35 +271,35 @@ foreach ($item in $pendingFiles) {
                         elseif ($textB.Length -gt 6) {
                             $totalPreguntas++
                             $isChecked = $false
-                            
+
                             if ($checkedRows.ContainsKey($row) -and $checkedRows[$row] -eq $true) {
                                 $isChecked = $true
                             } else {
                                 $valC = $cellC.ToLower()
                                 $valD = "$($ws.Cells.Item($row, 4).Value2)".Trim().ToLower()
-                                
+
                                 if ($valC -match '1|x|si|certified|true|ok|cumple|competente' -or $valD -match '1|x|si|certified|true|ok|cumple|competente') {
                                     $isChecked = $true
                                 }
                             }
-                            
+
                             if ($isChecked) {
                                 $marcadasSI++
                             }
-                            
+
                             $habilidadItem = [ordered]@{
                                 fila = $row
                                 habilidad = $textB
                                 marcado = $isChecked
                             }
-                            
+
                             if ($currentCategory) {
                                 $currentCategory.habilidades += $habilidadItem
                             }
                         }
                     }
                 }
-                
+
                 # Filtrar solo categorias que tengan habilidades o porcentaje evaluado
                 $filteredCategories = @()
                 foreach ($cat in $categoriasList) {
@@ -281,16 +307,16 @@ foreach ($item in $pendingFiles) {
                         $filteredCategories += $cat
                     }
                 }
-                
+
                 $porcentajeCalculado = 0
                 if ($totalPreguntas -gt 0) {
                     $porcentajeCalculado = [math]::Round(($marcadasSI / $totalPreguntas) * 100, 1)
                 }
-                
+
                 if ($detectedLevel -eq "L6") { $operatorRecord.l6Pct = $porcentajeCalculado }
                 elseif ($detectedLevel -eq "L7") { $operatorRecord.l7Pct = $porcentajeCalculado }
                 elseif ($detectedLevel -eq "L8") { $operatorRecord.l8Pct = $porcentajeCalculado }
-                
+
                 $operatorRecord.niveles[$detectedLevel] = [ordered]@{
                     pestana = $sheetName
                     porcentajeAvanceGlobal = "$porcentajeCalculado%"
@@ -300,10 +326,11 @@ foreach ($item in $pendingFiles) {
                 }
             }
         }
-        
+
         $wb.Close($false)
         $wb = $null
         $processedOperators[$docId] = $operatorRecord
+        $syncCache[$docId] = $item.LocalLastMod
     }
     catch {
         Write-Host "[ERROR] En $($file.Name): $_" -ForegroundColor Red
@@ -311,10 +338,16 @@ foreach ($item in $pendingFiles) {
     }
 }
 
-# Cerrar Excel COM
-$excel.Quit()
+# Cerrar Excel COM forzosamente sin dejar ventanas
+try { $excel.Quit() } catch {}
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel) | Out-Null
 [System.GC]::Collect()
+
+# Actualizar archivo de cache local .sync_cache.json
+try {
+    $cacheJson = $syncCache | ConvertTo-Json -Depth 5
+    [System.IO.File]::WriteAllText($CacheFile, $cacheJson, [System.Text.Encoding]::UTF8)
+} catch {}
 
 # Guardar resultado_extraccion.json localmente
 $allDataList = @($processedOperators.Values)
@@ -333,7 +366,7 @@ if (-not $SoloLocal) {
         try {
             $evalJson = $op | ConvertTo-Json -Depth 8 -Compress
             $firestoreUrl = "https://firestore.googleapis.com/v1/projects/" + $ProjectId + "/databases/(default)/documents/evaluaciones_guias_tecnicas/" + $docId + "?updateMask.fieldPaths=sharpId&updateMask.fieldPaths=nombre&updateMask.fieldPaths=equipo&updateMask.fieldPaths=area&updateMask.fieldPaths=tipoGuia&updateMask.fieldPaths=fileLastModified&updateMask.fieldPaths=evaluationsJson&updateMask.fieldPaths=updatedAt&updateMask.fieldPaths=l6Progress&updateMask.fieldPaths=l7Progress&updateMask.fieldPaths=l8Progress"
-            
+
             $bodyObj = @{
                 fields = @{
                     sharpId = @{ stringValue = "$($op.sharpId)" }
@@ -349,7 +382,7 @@ if (-not $SoloLocal) {
                     updatedAt = @{ stringValue = (Get-Date -Format "o") }
                 }
             } | ConvertTo-Json -Depth 10 -Compress
-            
+
             $response = Invoke-RestMethod -Uri $firestoreUrl -Method Patch -ContentType "application/json; charset=utf-8" -Body $bodyObj -TimeoutSec 10 -UseBasicParsing
             $uploadCount++
             Write-Host "[OK Firebase] SHARP: $($op.sharpId) | $($op.nombre) | Type: $($op.tipoGuia) | L6: $($op.l6Pct)%" -ForegroundColor Green
@@ -359,7 +392,6 @@ if (-not $SoloLocal) {
     }
 }
 
-Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "   EXTRACCION Y SINCRONIZACION COMPLETADAS               " -ForegroundColor Cyan
 Write-Host "   Nuevos / Modificados : $processedCount" -ForegroundColor Green

@@ -46,11 +46,25 @@ if (-not $OneDrivePath -or -not (Test-Path -Path $OneDrivePath)) {
 }
 
 $OutputFile = Join-Path -Path $PSScriptRoot -ChildPath "resultado_extraccion.json"
+$CacheFile = Join-Path -Path $PSScriptRoot -ChildPath ".sync_cache.json"
+
 Write-Host "[INFO] Carpeta Encontrada: $OneDrivePath" -ForegroundColor Green
 Write-Host ""
 
-# FASE 0: OBTENER MARCAS DE TIEMPO EXISTENTES EN FIRESTORE
-$firestoreCache = @{}
+# ----------------------------------------------------------
+# FASE 0: CACHE LOCAL Y METADATOS EN FIRESTORE (DELTA SYNC)
+# ----------------------------------------------------------
+$syncCache = @{}
+if (Test-Path -Path $CacheFile) {
+    try {
+        $cacheRaw = Get-Content -Path $CacheFile -Raw -Encoding UTF8 | ConvertFrom-Json
+        foreach ($prop in $cacheRaw.PSObject.Properties) {
+            $syncCache[$prop.Name] = $prop.Value
+        }
+        Write-Host "[INFO] Cache local cargada con $($syncCache.Count) registros prevíos." -ForegroundColor Gray
+    } catch {}
+}
+
 if (-not $SoloLocal) {
     Write-Host "[INFO] Consultando estado previo en Firestore (Batch Check)..." -ForegroundColor Yellow
     try {
@@ -63,12 +77,12 @@ if (-not $SoloLocal) {
                 if ($doc.fields.fileLastModified -and $doc.fields.fileLastModified.stringValue) {
                     $lastMod = $doc.fields.fileLastModified.stringValue
                 }
-                $firestoreCache[$docName] = $lastMod
+                $syncCache[$docName] = $lastMod
             }
-            Write-Host "[OK] Metadatos cargados de Firestore: $($firestoreCache.Count) documentos." -ForegroundColor Green
+            Write-Host "[OK] Metadatos cargados de Firestore: $($syncCache.Count) documentos." -ForegroundColor Green
         }
     } catch {
-        Write-Host "[WARN] No se pudo consultar Firestore en lote. Se procesaran todos los archivos." -ForegroundColor Yellow
+        Write-Host "[WARN] No se pudo consultar Firestore en lote. Se procesaran los archivos según cache local." -ForegroundColor Yellow
     }
 }
 
@@ -78,27 +92,40 @@ $excelFiles = Get-ChildItem -Path $OneDrivePath -Recurse -Filter "*.xlsx" -Error
 Write-Host "[INFO] Archivos encontrados en OneDrive: $($excelFiles.Count)" -ForegroundColor Green
 Write-Host ""
 
+# Filtrar archivos que requieren procesamiento (Delta Filter)
 $pendingFiles = @()
 foreach ($file in $excelFiles) {
     $fileNameRaw = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
+
+    # 1. Filtro estricto: Omitir archivos maestros/anexos/plantillas que no son de un operador
+    if ($fileNameRaw -like "*ANEXO*" -or $fileNameRaw -like "*Guías-Técnicas*" -or $fileNameRaw -like "*Guias-Tecnicas*" -or $fileNameRaw -like "*Plantilla*") {
+        Write-Host "[OMITIDO - PLANTILLA/ANEXO] $($file.Name)" -ForegroundColor Gray
+        continue
+    }
+
     $sharpId = ""
     $operatorName = $fileNameRaw
     if ($fileNameRaw -match '^(\\d{7,10})\\s+(.+)$') {
         $sharpId = $matches[1]
         $operatorName = $matches[2]
+    } else {
+        # Si el archivo no empieza con ID SHARP (7-10 dígitos), no es guía de operador
+        Write-Host "[OMITIDO - NO ES OPERADOR] $($file.Name)" -ForegroundColor Gray
+        continue
     }
-    $docId = if ($sharpId) { $sharpId } else { $operatorName -replace '[^a-zA-Z0-9_-]', '_' }
 
+    $docId = $sharpId
     $localLastMod = $file.LastWriteTimeUtc.ToString("o")
-    
-    if (-not $SoloLocal -and $firestoreCache.ContainsKey($docId) -and $firestoreCache[$docId]) {
-        $remoteTime = $firestoreCache[$docId]
-        if ($localLastMod -le $remoteTime) {
+
+    # Comparar timestamp local vs cache (Firestore o local previa)
+    if ($syncCache.ContainsKey($docId) -and $syncCache[$docId]) {
+        $prevTime = $syncCache[$docId]
+        if ($localLastMod -le $prevTime) {
             Write-Host "[SIN CAMBIOS - OMITIDO] $($file.Name) (SHARP: $docId)" -ForegroundColor Gray
             continue
         }
     }
-    
+
     $pendingFiles += [pscustomobject]@{
         File = $file
         DocId = $docId
@@ -119,14 +146,14 @@ if ($pendingFiles.Count -eq 0) {
     exit 0
 }
 
-# Configuracion Anti-Bloqueos de Excel COM
+# Configuracion Anti-Bloqueos de Excel COM (Disable All Macros & Forced Background Mode)
 $excel = New-Object -ComObject Excel.Application
+try { $excel.AutomationSecurity = 3 } catch {} # 3 = msoAutomationSecurityForceDisable
 $excel.Visible = $false
 $excel.DisplayAlerts = $false
 $excel.ScreenUpdating = $false
 $excel.EnableEvents = $false
 try { $excel.AskToUpdateLinks = $false } catch {}
-try { $excel.AutomationSecurity = 3 } catch {}
 
 $processedOperators = [ordered]@{}
 $processedCount = 0
