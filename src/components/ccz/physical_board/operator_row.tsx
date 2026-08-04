@@ -311,38 +311,56 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
 
           {/* L7 Column */}
           <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32 font-black text-xs text-slate-700">
-            <span className={cn(
-              "px-2.5 py-1 rounded font-bold tabular-nums min-w-[48px] text-center shadow-sm text-xs border inline-block",
-              operator.guiasL7Progress === 100 
-                ? "bg-yellow-50 text-yellow-600 border-yellow-200" 
-                : (operator.guiasL7Progress ?? 0) >= 80 
-                  ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
-                  : (operator.guiasL7Progress ?? 0) >= 50 
-                    ? "bg-amber-50 text-amber-700 border-amber-200"
-                    : (operator.guiasL7Progress ?? 0) > 0
-                      ? "bg-blue-50 text-blue-700 border-blue-200"
-                      : "bg-slate-50 text-slate-400 border-slate-200"
-            )}>
-              {operator.guiasL7Progress !== undefined ? `${operator.guiasL7Progress.toFixed(1)}%` : "0.0%"}
-            </span>
+            {(() => {
+              const isMejorado = (operator as any).tipoGuia === "MEJORADO" || (operator.guiasL7Progress && operator.guiasL7Progress > 0) || (operator.guiasL8Progress && operator.guiasL8Progress > 0);
+              return !isMejorado ? (
+                <span className="px-2.5 py-1 rounded font-bold text-center shadow-sm text-xs border inline-block bg-slate-100 text-slate-400 border-slate-200 uppercase tracking-wider">
+                  N/A
+                </span>
+              ) : (
+                <span className={cn(
+                  "px-2.5 py-1 rounded font-bold tabular-nums min-w-[48px] text-center shadow-sm text-xs border inline-block",
+                  operator.guiasL7Progress === 100 
+                    ? "bg-yellow-50 text-yellow-600 border-yellow-200" 
+                    : (operator.guiasL7Progress ?? 0) >= 80 
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                      : (operator.guiasL7Progress ?? 0) >= 50 
+                        ? "bg-amber-50 text-amber-700 border-amber-200"
+                        : (operator.guiasL7Progress ?? 0) > 0
+                          ? "bg-blue-50 text-blue-700 border-blue-200"
+                          : "bg-slate-50 text-slate-400 border-slate-200"
+                )}>
+                  {operator.guiasL7Progress !== undefined ? `${operator.guiasL7Progress.toFixed(1)}%` : "0.0%"}
+                </span>
+              );
+            })()}
           </td>
 
           {/* L8 Column */}
           <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32 font-black text-xs text-slate-700">
-            <span className={cn(
-              "px-2.5 py-1 rounded font-bold tabular-nums min-w-[48px] text-center shadow-sm text-xs border inline-block",
-              operator.guiasL8Progress === 100 
-                ? "bg-yellow-50 text-yellow-600 border-yellow-200" 
-                : (operator.guiasL8Progress ?? 0) >= 80 
-                  ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
-                  : (operator.guiasL8Progress ?? 0) >= 50 
-                    ? "bg-amber-50 text-amber-700 border-amber-200"
-                    : (operator.guiasL8Progress ?? 0) > 0
-                      ? "bg-blue-50 text-blue-700 border-blue-200"
-                      : "bg-slate-50 text-slate-400 border-slate-200"
-            )}>
-              {operator.guiasL8Progress !== undefined ? `${operator.guiasL8Progress.toFixed(1)}%` : "0.0%"}
-            </span>
+            {(() => {
+              const isMejorado = (operator as any).tipoGuia === "MEJORADO" || (operator.guiasL7Progress && operator.guiasL7Progress > 0) || (operator.guiasL8Progress && operator.guiasL8Progress > 0);
+              return !isMejorado ? (
+                <span className="px-2.5 py-1 rounded font-bold text-center shadow-sm text-xs border inline-block bg-slate-100 text-slate-400 border-slate-200 uppercase tracking-wider">
+                  N/A
+                </span>
+              ) : (
+                <span className={cn(
+                  "px-2.5 py-1 rounded font-bold tabular-nums min-w-[48px] text-center shadow-sm text-xs border inline-block",
+                  operator.guiasL8Progress === 100 
+                    ? "bg-yellow-50 text-yellow-600 border-yellow-200" 
+                    : (operator.guiasL8Progress ?? 0) >= 80 
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                      : (operator.guiasL8Progress ?? 0) >= 50 
+                        ? "bg-amber-50 text-amber-700 border-amber-200"
+                        : (operator.guiasL8Progress ?? 0) > 0
+                          ? "bg-blue-50 text-blue-700 border-blue-200"
+                          : "bg-slate-50 text-slate-400 border-slate-200"
+                )}>
+                  {operator.guiasL8Progress !== undefined ? `${operator.guiasL8Progress.toFixed(1)}%` : "0.0%"}
+                </span>
+              );
+            })()}
           </td>
         </>
       ) : (
