@@ -347,81 +347,28 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
         </>
       ) : (
         <>
-          <td className="border-b border-r border-slate-200/50 p-2 align-middle w-48">
-            {(() => {
-              const evals = operator.evaluacionesDetalle && operator.evaluacionesDetalle.length > 1
-                ? operator.evaluacionesDetalle
-                : [];
-              const esMulti = evals.length > 1;
-
-              const content = (
-                <div className={cn("flex flex-col gap-1.5 text-[11px] font-semibold text-slate-600", esMulti && "cursor-help")}>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1">
-                      {STRINGS.DRIVERS_LICENSE}
-                      {esMulti && <span className="text-[8px] font-black text-amber-600">★</span>}
-                    </span>
-                    <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.basico))}>
-                      {operator.basico > 0 ? Math.round(operator.basico) : "-"}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>{STRINGS.INTERMEDIATE}</span>
-                    <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.intermedio))}>
-                      {operator.intermedio > 0 ? Math.round(operator.intermedio) : "-"}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>{STRINGS.ADVANCED}</span>
-                    <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.avanzado))}>
-                      {operator.avanzado > 0 ? Math.round(operator.avanzado) : "-"}
-                    </span>
-                  </div>
-                </div>
-              );
-
-              if (!esMulti) return content;
-
-              return (
-                <TooltipProvider>
-                  <Tooltip delayDuration={100}>
-                    <TooltipTrigger asChild>
-                      {content}
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="bg-[#0b1329] text-white p-3.5 rounded-xl border border-blue-800 shadow-2xl max-w-sm space-y-2.5 z-50">
-                      <div className="border-b border-blue-900 pb-2 flex items-center justify-between gap-3">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-yellow-400">
-                          🎯 Desglose de Habilidades por Puesto
-                        </span>
-                        <span className="text-[9px] font-extrabold bg-blue-900 text-blue-200 px-1.5 py-0.5 rounded border border-blue-700">
-                          {evals.length} Posiciones
-                        </span>
-                      </div>
-                      <div className="space-y-2 max-h-56 overflow-y-auto pr-1 custom-scrollbar">
-                        {evals.map((ev, idx) => (
-                          <div key={idx} className="bg-blue-950/80 border border-blue-900/80 p-2 rounded-lg space-y-1">
-                            <div className="flex justify-between items-center text-[10px] font-bold text-white uppercase border-b border-blue-900/60 pb-1">
-                              <span className="truncate max-w-[190px]">{ev.puesto}</span>
-                              <span className="text-yellow-400 font-black">{ev.score.toFixed(1)}%</span>
-                            </div>
-                            <div className="grid grid-cols-3 gap-1 text-[9px] text-slate-300 pt-0.5">
-                              <div><span className="text-slate-300 block text-[7.5px] uppercase font-semibold">Driver's License</span> <strong className="text-sky-300 font-bold">{ev.basico !== undefined ? Math.round(ev.basico) : "-"}%</strong></div>
-                              <div><span className="text-slate-300 block text-[7.5px] uppercase font-semibold">Intermedio</span> <strong className="text-sky-300 font-bold">{ev.intermedio !== undefined ? Math.round(ev.intermedio) : "-"}%</strong></div>
-                              <div><span className="text-slate-300 block text-[7.5px] uppercase font-semibold">Avanzado</span> <strong className="text-sky-300 font-bold">{ev.avanzado !== undefined ? Math.round(ev.avanzado) : "-"}%</strong></div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      <p className="text-[8.5px] text-blue-200 italic border-t border-blue-900/60 pt-1 text-center">
-                        Los porcentajes de la tabla corresponden al promedio ponderado del colaborador.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              );
-            })()}
+          <td className="border-b border-r border-slate-200/50 p-3 align-middle w-48">
+            <div className="flex flex-col gap-1.5 text-[11px] font-semibold text-slate-600">
+              <div className="flex items-center justify-between">
+                <span>{STRINGS.DRIVERS_LICENSE}</span>
+                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.basico))}>
+                  {operator.basico > 0 ? Math.round(operator.basico) : "-"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>{STRINGS.INTERMEDIATE}</span>
+                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.intermedio))}>
+                  {operator.intermedio > 0 ? Math.round(operator.intermedio) : "-"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>{STRINGS.ADVANCED}</span>
+                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.avanzado))}>
+                  {operator.avanzado > 0 ? Math.round(operator.avanzado) : "-"}
+                </span>
+              </div>
+            </div>
           </td>
-
           {metricMode === "autonomia" && (
             <td className="border-b border-r border-slate-200/50 p-3 align-middle text-center w-40">
               {(() => {
