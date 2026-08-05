@@ -1,0 +1,2288 @@
+{
+  "piToKpiMap": {
+    "CONSUMO A ORDENES EN UN PERIODO DE 24 HRS": {
+      "pi": "Consumo a ordenes en un periodo de 24 hrs",
+      "kpi": "VIC Elaboracion Materiales",
+      "proceso": "Materias primas y aux",
+      "dueno": "Técnico Coctos (Mat Prim)"
+    },
+    "APEGO A BOM DE COCTOS": {
+      "pi": "Apego a BOM de Coctos",
+      "kpi": "VIC Elaboracion Materiales",
+      "proceso": "Materias primas y aux",
+      "dueno": "Técnico Coctos (Mat Prim)"
+    },
+    "CUMPLIMIENTO A EXACTITUD DE INVENTARIOS": {
+      "pi": "Cumplimiento a exactitud de inventarios",
+      "kpi": "VIC Elaboracion Materiales",
+      "proceso": "Materias primas y aux",
+      "dueno": "Técnico Coctos (Mat Prim)"
+    },
+    "BACKLOG (PASADO + FUTURO) COCIMIENTO": {
+      "pi": "BACKLOG (Pasado + futuro) cocimiento",
+      "kpi": "MPA",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "BREAKDOWNS COCIMIENTOS": {
+      "pi": "Breakdowns Cocimientos",
+      "kpi": "Brewhouse OSE",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "BSSI": {
+      "pi": "BSSI",
+      "kpi": "Índice Sensorial",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "% VACIADO FILTRO DE ASPIRACION": {
+      "pi": "% Vaciado Filtro de aspiración",
+      "kpi": "Total Extract Losses",
+      "proceso": "Filtros",
+      "dueno": "Bagacero"
+    },
+    "CERO IMPACTOS (FMS)": {
+      "pi": "Cero impactos (FMS)",
+      "kpi": "Lesiones",
+      "proceso": "Materias primas y aux",
+      "dueno": "Oper Grits"
+    },
+    "TIEMPO DISOLUCION": {
+      "pi": "Tiempo disolución",
+      "kpi": "Brewhouse OSE",
+      "proceso": "Cocedores",
+      "dueno": "Oper Grits"
+    },
+    "TARJETAS GENERADAS POR ATO": {
+      "pi": "Tarjetas generadas por ATO",
+      "kpi": "Brewhouse OSE",
+      "proceso": "Todos",
+      "dueno": "Adicionador Filtros - Ollas"
+    },
+    "MIX ATO": {
+      "pi": "Mix ATO",
+      "kpi": "Brewhouse OSE",
+      "proceso": "Todos",
+      "dueno": "Adicionador Filtros - Ollas"
+    },
+    "CALIFICACION PILAR GESTION + MEDIOS": {
+      "pi": "Calificación Pilar Gestión + Medios",
+      "kpi": "VPO score Nivel Excelencia",
+      "proceso": "Todos",
+      "dueno": "Técnico Coctos (Mat Prim)"
+    },
+    "% DE APEGO A MEDIOS": {
+      "pi": "% de apego a medios",
+      "kpi": "VIC Elaboracion Materiales",
+      "proceso": "Materias primas y aux",
+      "dueno": "Técnico Coctos (Mat Prim)"
+    },
+    "CALIFICACION PILAR LOGISTICA": {
+      "pi": "Calificación Pilar Logística",
+      "kpi": "VPO score Nivel Excelencia",
+      "proceso": "Todos",
+      "dueno": "Técnico Coctos (Mat Prim)"
+    },
+    "FUGA DE GRANO O POLVO DURANTE RECIBO": {
+      "pi": "Fuga de grano o polvo durante recibo",
+      "kpi": "Lesiones",
+      "proceso": "Materias primas y aux",
+      "dueno": "Oper Mat. Primas"
+    },
+    "INVENTARIO EN SILOS (MEDICION DE LLENADO DE SILOS)": {
+      "pi": "Inventario en silos (medición de llenado de silos)",
+      "kpi": "Total Extract Losses",
+      "proceso": "Materias primas y aux",
+      "dueno": "Oper Mat. Primas"
+    },
+    "FUGAS DE POLVO EN BODEGA": {
+      "pi": "Fugas de polvo en Bodega",
+      "kpi": "Lesiones",
+      "proceso": "Cocedores",
+      "dueno": "Ayudante de Grits"
+    },
+    "TIEMPO DE EXPOSICION POR ATORONES DE CARTON": {
+      "pi": "Tiempo de exposición por atorones de cartón",
+      "kpi": "Brewhouse OSE",
+      "proceso": "Cocedores",
+      "dueno": "Ayudante de Grits"
+    },
+    "COLOR MOSTO FRIO": {
+      "pi": "Color MOSTO FRIO",
+      "kpi": "Fermentation Consistency Index(FCI)",
+      "proceso": "QUAS",
+      "dueno": "Adicionador Filtros - Ollas"
+    },
+    "PH MOSTO FRIO": {
+      "pi": "pH mosto frio",
+      "kpi": "Fermentation Consistency Index(FCI)",
+      "proceso": "QUAS",
+      "dueno": "Adicionador Filtros - Ollas"
+    },
+    "DIAS DE AUTONOMIA DE MAT AUX": {
+      "pi": "Dias de autonomia de mat aux",
+      "kpi": "VIC Elaboracion Materiales",
+      "proceso": "Materias primas y aux",
+      "dueno": "Preparador"
+    },
+    "CALIFICACION PILAR AMBIENTAL": {
+      "pi": "Calificación Pilar Ambiental",
+      "kpi": "VPO score Nivel Excelencia",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "CALIFICACION PILAR CALIDAD": {
+      "pi": "Calificación Pilar Calidad",
+      "kpi": "VPO score Nivel Excelencia",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "CALIFICACION PILAR GENTE": {
+      "pi": "Calificación Pilar Gente",
+      "kpi": "VPO score Nivel Excelencia",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "CALIFICACION PILAR MANTENIMIENTO": {
+      "pi": "Calificación Pilar Mantenimiento",
+      "kpi": "VPO score Nivel Excelencia",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "CALIFICACION PILAR SEGURIDAD": {
+      "pi": "Calificación Pilar Seguridad",
+      "kpi": "VPO score Nivel Excelencia",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "CONSUMO DE AGUA": {
+      "pi": "Consumo de agua",
+      "kpi": "Consumo de agua",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "CUMPLIMIENTO A PAE": {
+      "pi": "Cumplimiento a PAE",
+      "kpi": "Cumplimiento al Plan de Autonomia",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "CUMPLIMIENTO AL PLAN DE AUTONOMIA": {
+      "pi": "Cumplimiento al plan de Autonomía",
+      "kpi": "Cumplimiento al Plan de Autonomia",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "RDF MOSTO FRIO": {
+      "pi": "RDF mosto frio",
+      "kpi": "Índice Sensorial",
+      "proceso": "QUAS",
+      "dueno": "Adicionador Coc - Mac"
+    },
+    "EMO MOSTO FRIO": {
+      "pi": "EMO MOSTO FRIO",
+      "kpi": "Fermentation Consistency Index(FCI)",
+      "proceso": "QUAS",
+      "dueno": "Adicionador Coc - Mac"
+    },
+    "INVENTARIO CICLICO": {
+      "pi": "Inventario ciclico",
+      "kpi": "VILC",
+      "proceso": "Materias primas y aux",
+      "dueno": "Preparador"
+    },
+    "MSA COCIMIENTOS": {
+      "pi": "MSA Cocimientos",
+      "kpi": "MPA",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "OSE": {
+      "pi": "OSE",
+      "kpi": "Brewhouse OSE",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "VELOCIDAD ASPIRACION": {
+      "pi": "Velocidad Aspiracion",
+      "kpi": "Total Extract Losses",
+      "proceso": "Filtros",
+      "dueno": "Bagacero"
+    },
+    "PSM DUST EXPLOSION": {
+      "pi": "PSM Dust Explosion",
+      "kpi": "Lesiones",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "TEL": {
+      "pi": "TEL",
+      "kpi": "Total Extract Losses",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "MINUTOS DE ATRASO EN ARRANQUE DE COCEDOR": {
+      "pi": "Minutos de atraso en arranque de cocedor",
+      "kpi": "Brewhouse OSE",
+      "proceso": "Cocedores",
+      "dueno": "Técnico Coctos (Mac - Coc)"
+    },
+    "TEMP AGUA PARA DISOLUCION DE GRITS": {
+      "pi": "Temp agua para disolución de grits",
+      "kpi": "Consumo de agua",
+      "proceso": "Cocedores",
+      "dueno": "Técnico Coctos (Mac - Coc)"
+    },
+    "COLOR DE TCC AL LLENAR": {
+      "pi": "Color de TCC  al llenar",
+      "kpi": "Fermentation Consistency Index(FCI)",
+      "proceso": "QUAS",
+      "dueno": "Técnico Coctos (Mac - Coc)"
+    },
+    "TPE": {
+      "pi": "TPE",
+      "kpi": "TPE",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "TRI +CTRI": {
+      "pi": "TRI +CTRI",
+      "kpi": "Lesiones",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "VIC RAW MATERIAL & AUX P&P": {
+      "pi": "VIC RAW MATERIAL & AUX  P&P",
+      "kpi": "VIC Elaboracion Materiales",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "ZBB + VIC MANTENIMIENTO": {
+      "pi": "ZBB + VIC MANTENIMIENTO",
+      "kpi": "ZBB",
+      "proceso": "Todos",
+      "dueno": "Lider de Coctos"
+    },
+    "HLD": {
+      "pi": "HLD",
+      "kpi": "Brewhouse OSE",
+      "proceso": "Ollas",
+      "dueno": "Técnico Coctos (Fil - Ollas)"
+    },
+    "EMO DE TCC AL LLENAR": {
+      "pi": "EMO de TCC  al llenar",
+      "kpi": "Fermentation Consistency Index(FCI)",
+      "proceso": "QUAS",
+      "dueno": "Técnico Coctos (Fil - Ollas)"
+    },
+    "EXPOSICION POR FALLAS EN EQUIPOS": {
+      "pi": "Exposición por fallas en equipos",
+      "kpi": "Lesiones",
+      "proceso": "Filtración",
+      "dueno": "Técnico Coctos (Fil - Ollas)"
+    },
+    "APEGO A STOCK DE ACUERDO A POLITICA DE INVENTARIO PARA MATERIALES AUXILIARES": {
+      "pi": "Apego a stock de acuerdo a politica de inventario para materiales auxiliares",
+      "kpi": "VIC Elaboracion Materiales",
+      "proceso": "Materias primas y aux",
+      "dueno": "Técnico  (Mat Prim)"
+    },
+    "APEGO A STOCK DE ACUERDO A POLITICA DE INVENTARIO PARA MATERIAS PRIMAS": {
+      "pi": "Apego a stock de acuerdo a politica de inventario para materias primas",
+      "kpi": "VIC Elaboracion Materiales",
+      "proceso": "Materias primas y aux",
+      "dueno": "Técnico  (Mat Prim)"
+    },
+    "APEGO A REPORTEO DE ACIS": {
+      "pi": "Apego a reporteo de ACIS",
+      "kpi": "Lesiones",
+      "proceso": "Todos",
+      "dueno": "Líderes EA"
+    },
+    "EXPOSICIONES POR FALLAS FILTROS": {
+      "pi": "Exposiciones por fallas filtros",
+      "kpi": "Lesiones",
+      "proceso": "Filtración",
+      "dueno": "Filtradores"
+    },
+    "EXPOSICIONES POR FALLAS CMF": {
+      "pi": "Exposiciones por fallas CMF",
+      "kpi": "Lesiones",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "CUMPLIMIENTO A INDUCCIONES FUNCIONALES": {
+      "pi": "Cumplimiento a inducciones funcionales",
+      "kpi": "Cumplimiento al Plan de Autonomia",
+      "proceso": "Todos",
+      "dueno": "Champion Gente"
+    },
+    "HRS TIEMPO EXTRA": {
+      "pi": "Hrs Tiempo Extra",
+      "kpi": "Costos por Tiempos Extra Totales",
+      "proceso": "Todos",
+      "dueno": "Champion Gente"
+    },
+    "POLIFENOLES EN CORONA": {
+      "pi": "Polifenoles en Corona",
+      "kpi": "Índice Sensorial",
+      "proceso": "Filtración",
+      "dueno": "Filtradores"
+    },
+    "EXTRACTO A 72 HRS": {
+      "pi": "Extracto a 72 Hrs",
+      "kpi": "Fermentation Consistency Index(FCI)",
+      "proceso": "Fermentación",
+      "dueno": "Plateros"
+    },
+    "TEMPERATURA AL LLENAR TCC": {
+      "pi": "Temperatura al llenar TCC",
+      "kpi": "Fermentation Consistency Index(FCI)",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "CONTEO AL LLENAR": {
+      "pi": "Conteo al llenar",
+      "kpi": "Fermentation Consistency Index(FCI)",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "DIACETILO": {
+      "pi": "Diacetilo",
+      "kpi": "Brand Profile Index  (BPI)",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "DFE EN EXTRACTO APARENTE BBT": {
+      "pi": "DFE en Extracto Aparente BBT",
+      "kpi": "Brand Profile Index  (BPI)",
+      "proceso": "Gobierno",
+      "dueno": "Filtradores"
+    },
+    "DFE EN COLOR BBT": {
+      "pi": "DFE en Color BBT",
+      "kpi": "Brand Profile Index  (BPI)",
+      "proceso": "Gobierno",
+      "dueno": "Filtradores"
+    },
+    "NUMERO DE ATRASOS EN RECIBO DE MOSTO": {
+      "pi": "Número de atrasos en recibo de mosto",
+      "kpi": "Flavor Stability Index  (FSI )",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "OXIGENO INTEGRADO EN FILTROS": {
+      "pi": "Oxígeno Integrado en filtros",
+      "kpi": "Flavor Stability Index  (FSI )",
+      "proceso": "Filtración",
+      "dueno": "Filtradores"
+    },
+    "OXIGENO DISUELTO EN BBT (LLENANDO-LLENO)": {
+      "pi": "Oxígeno Disuelto en BBT (Llenando-Lleno)",
+      "kpi": "Flavor Stability Index  (FSI )",
+      "proceso": "Gobierno",
+      "dueno": "Gobernadores"
+    },
+    "CUMPLIMIENTO CMP FERMENTACION + DESINCRUSTACIONES": {
+      "pi": "Cumplimiento CMP Fermentación + desincrustaciones",
+      "kpi": "Micro Index (Brewing)",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "CUMPLIMIENTO CMP FILTROS + GOBIERNO + DESINCRUSTACIONES": {
+      "pi": "Cumplimiento CMP Filtros + Gobierno + desincrustaciones",
+      "kpi": "Micro Index (Brewing)",
+      "proceso": "Gobierno",
+      "dueno": "Gobernadores"
+    },
+    "CUMPLIMIENTO MICRO CERVEZA BRILLANTE": {
+      "pi": "Cumplimiento Micro Cerveza Brillante",
+      "kpi": "Micro Index (Brewing)",
+      "proceso": "Filtros/Gobierno",
+      "dueno": "Champion Calidad"
+    },
+    "CUMPLIMIENTO PRP MENSUAL + GFSI": {
+      "pi": "Cumplimiento PRP mensual + GFSI",
+      "kpi": "PRP Index + GFSI",
+      "proceso": "Todos",
+      "dueno": "Champion Calidad"
+    },
+    "HL APARTADOS POR MES": {
+      "pi": "Hl apartados por mes",
+      "kpi": "Eficiencia de Calidad Elab. (Apartados)",
+      "proceso": "Gobierno",
+      "dueno": "Champion Calidad"
+    },
+    "APARTADOS POR CO2/OD": {
+      "pi": "Apartados por CO2/OD",
+      "kpi": "Eficiencia de Calidad Elab. (Apartados)",
+      "proceso": "Gobierno",
+      "dueno": "Gobernadores"
+    },
+    "APARTADOS POR PARTICULAS": {
+      "pi": "Apartados por Partículas",
+      "kpi": "Eficiencia de Calidad Elab. (Apartados)",
+      "proceso": "Gobierno",
+      "dueno": "Gobernadores"
+    },
+    "RELACION CERVEZA FILTRADA/LEVADURA TRATADA CMF": {
+      "pi": "Relación cerveza filtrada/levadura tratada CMF",
+      "kpi": "Total Extract Losses",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "EFICIENCIA CMF": {
+      "pi": "Eficiencia CMF",
+      "kpi": "Total Extract Losses",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "VOLUMEN FILTRADO POR CICLO": {
+      "pi": "Volumen filtrado por ciclo",
+      "kpi": "Total Extract Losses",
+      "proceso": "Filtración",
+      "dueno": "Filtradores"
+    },
+    "EFICIENCIA FILTROS": {
+      "pi": "Eficiencia Filtros",
+      "kpi": "Eficiencia en Filtracion de Cerveza",
+      "proceso": "Filtración",
+      "dueno": "Filtradores"
+    },
+    "BBTS RETRABAJADOS": {
+      "pi": "BBTs retrabajados",
+      "kpi": "OEE Filtros de cerveza",
+      "proceso": "Filtración",
+      "dueno": "Filtradores"
+    },
+    "CUMPLIMIENTO A EMO POR FILTRO": {
+      "pi": "Cumplimiento a EMO por filtro",
+      "kpi": "OEE Filtros de cerveza",
+      "proceso": "Filtración",
+      "dueno": "Filtradores"
+    },
+    "TIEMPO DE AFECTACION AL ENVASADO POR CAMBIO DE BBT": {
+      "pi": "Tiempo de afectación al envasado por cambio de BBT",
+      "kpi": "Downtime Envasado",
+      "proceso": "Gobierno",
+      "dueno": "Gobernadores"
+    },
+    "TIEMPO DE AFECTACION AL ENVASADO POR LIQUIDO NO DISPONIBLE/DFE": {
+      "pi": "Tiempo de afectación al envasado por líquido no disponible/DFE",
+      "kpi": "Downtime Envasado",
+      "proceso": "Gobierno",
+      "dueno": "Gobernadores"
+    },
+    "MSA ATO DE ELABORACION": {
+      "pi": "MSA ATO de Elaboración",
+      "kpi": "MSA Elaboración",
+      "proceso": "Todos",
+      "dueno": "Champion Mtto"
+    },
+    "EQUIPOS NO LIBERADOS": {
+      "pi": "Equipos no liberados",
+      "kpi": "MPA Elaboración",
+      "proceso": "Todos",
+      "dueno": "Champion Mtto"
+    },
+    "BACKLOG (PASADO + FUTURO)": {
+      "pi": "Backlog (Pasado + Futuro)",
+      "kpi": "Backlog (Pasado + Futuro)",
+      "proceso": "Todos",
+      "dueno": "Planeador Mtto"
+    },
+    "CUMPLIMIENTO A IP AGUA CFR": {
+      "pi": "Cumplimiento a IP Agua CFR",
+      "kpi": "Consumo de agua",
+      "proceso": "Todos",
+      "dueno": "Champion Ambiental"
+    },
+    "CONSUMO DE VAPOR EN CFR": {
+      "pi": "Consumo de vapor en CFR",
+      "kpi": "TPE",
+      "proceso": "Todos",
+      "dueno": "Champion Ambiental"
+    },
+    "DESCARGAS ANORMALES FERMENTACION": {
+      "pi": "Descargas anormales Fermentación",
+      "kpi": "Indice de Carga Organica",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "DESCARGAS ANORMALES FILTROS/GOBIERNO/BLENDER": {
+      "pi": "Descargas anormales Filtros/Gobierno/Blender",
+      "kpi": "Indice de Carga Organica",
+      "proceso": "Filtros/Gobierno",
+      "dueno": "Filtradores"
+    },
+    "CONSUMO DE ACIDO FOSFORICO": {
+      "pi": "Consumo de ácido fosfórico",
+      "kpi": "Fosforo en Drenaje Industrial",
+      "proceso": "Todos",
+      "dueno": "Adrian Silva"
+    },
+    "CONSUMO DE CO2 FERMENTACION": {
+      "pi": "Consumo de CO2 Fermentación",
+      "kpi": "Consumo de CO2",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "CONSUMO DE CO2 FILTROS": {
+      "pi": "Consumo de CO2 Filtros",
+      "kpi": "Consumo de CO2",
+      "proceso": "Filtros",
+      "dueno": "Filtradores"
+    },
+    "CONSUMO DE CO2 BBTS": {
+      "pi": "Consumo de CO2 BBTs",
+      "kpi": "Consumo de CO2",
+      "proceso": "Gobierno",
+      "dueno": "Gobernadores"
+    },
+    "CUMPLIMIENTO A RECUPERACION DE CO2": {
+      "pi": "Cumplimiento a Recuperación de CO2",
+      "kpi": "Consumo de CO2",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "APEGO A BOMS": {
+      "pi": "Apego a BOMs",
+      "kpi": "VIC Elaboracion Materiales",
+      "proceso": "Todos",
+      "dueno": "Champion Logística"
+    },
+    "CONSUMO DE TIERRAS": {
+      "pi": "Consumo de Tierras",
+      "kpi": "VIC Elaboracion Materiales",
+      "proceso": "Filtración",
+      "dueno": "Adrian Silva"
+    },
+    "CONSUMO DE PVPP": {
+      "pi": "Consumo de PVPP",
+      "kpi": "VIC Elaboracion Materiales",
+      "proceso": "Filtración",
+      "dueno": "Adrian Silva"
+    },
+    "CONTROL DE PRESIONES DURANTE FERM/REPOSO": {
+      "pi": "Control de presiones durante ferm/reposo",
+      "kpi": "Proceso Fermentación",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "CUMPLIMIENTO A ALMACENAMIENTO DE CERVEZA Y LEVADURA EN RECUPERACION DE CERVEZA": {
+      "pi": "Cumplimiento a almacenamiento de cerveza y levadura en recuperación de cerveza",
+      "kpi": "Proceso Fermentación",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "APEGO AL LAYOUT DE TCCS": {
+      "pi": "Apego al Layout de TCCs",
+      "kpi": "Proceso Fermentación",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "CUMPLIMIENTO A TIEMPO DE LLENADO DE TCC": {
+      "pi": "Cumplimiento a tiempo de llenado de TCC",
+      "kpi": "Proceso Fermentación",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "VOLUMEN DE INOCULO": {
+      "pi": "Volumen de inóculo",
+      "kpi": "Proceso Fermentación",
+      "proceso": "Fermentación",
+      "dueno": "Fermentadores"
+    },
+    "CONTROL DE EXTRACCIONES DE 8VO DIA": {
+      "pi": "Control de extracciones de 8vo día",
+      "kpi": "Proceso Levadura",
+      "proceso": "Levadura",
+      "dueno": "Fermentadores"
+    },
+    "CUMPLIMIENTO A TIEMPO DE PURGADO DE TRUB": {
+      "pi": "Cumplimiento a tiempo de purgado de TRUB",
+      "kpi": "Proceso Levadura",
+      "proceso": "Levadura",
+      "dueno": "Plateros"
+    },
+    "TIEMPO DE PERMANENCIA DE LEVADURA EN TCC FRIO": {
+      "pi": "Tiempo de permanencia de Levadura en TCC Frío",
+      "kpi": "Proceso Levadura",
+      "proceso": "Levadura",
+      "dueno": "Bombero Levadura"
+    },
+    "TEMPERATURA DE ALMACENAMIENTO EN TDL": {
+      "pi": "Temperatura de almacenamiento en TDL",
+      "kpi": "Proceso Levadura",
+      "proceso": "Levadura",
+      "dueno": "Bombero Levadura"
+    },
+    "VOLUMEN REFILTRADO": {
+      "pi": "Volumen refiltrado",
+      "kpi": "Proceso Filtración",
+      "proceso": "Filtración",
+      "dueno": "Filtradores"
+    },
+    "VOLUMEN FILTRADO": {
+      "pi": "Volumen Filtrado",
+      "kpi": "Proceso Filtración",
+      "proceso": "Filtración",
+      "dueno": "Filtradores"
+    },
+    "ML EN PROBETA DE PVPP": {
+      "pi": "Ml en probeta de PVPP",
+      "kpi": "Proceso Filtración",
+      "proceso": "Filtración",
+      "dueno": "Filtradores"
+    },
+    "CONDICIONES DE REGENERACION (PH, TEMPERATURA, CONDUCTIVIDAD)": {
+      "pi": "Condiciones de Regeneración (pH, Temperatura, Conductividad)",
+      "kpi": "Proceso Filtración",
+      "proceso": "Filtración",
+      "dueno": "Filtradores"
+    },
+    "OD ENTRADA FILTROS": {
+      "pi": "OD entrada filtros",
+      "kpi": "Proceso Filtración",
+      "proceso": "Filtración",
+      "dueno": "Bombero Cerveza"
+    },
+    "PRESURIZACION DE TCCS POR FILTRAR CON CO2": {
+      "pi": "Presurización de TCCs por filtrar con CO2",
+      "kpi": "Proceso Filtración",
+      "proceso": "Filtración",
+      "dueno": "Bombero Cerveza"
+    },
+    "CUMPLIMIENTO A LIMPIEZA EN AREA DE TIERRAS": {
+      "pi": "Cumplimiento a limpieza en área de tierras",
+      "kpi": "Proceso Filtración",
+      "proceso": "Filtración",
+      "dueno": "Operador de Tierras"
+    },
+    "CUMPLIMIENTO A LAYOUT DE ESTIBADO": {
+      "pi": "Cumplimiento a Layout de estibado",
+      "kpi": "Proceso Filtración",
+      "proceso": "Filtración",
+      "dueno": "Operador de Tierras"
+    },
+    "CAMBIOS AL PROGRAMA DIARIO DE ENVASADO POR FALTA DE CERVEZA": {
+      "pi": "Cambios al programa diario de Envasado por falta de cerveza",
+      "kpi": "Proceso Gobierno",
+      "proceso": "Gobierno",
+      "dueno": "Gobernadores"
+    },
+    "CUMPLIMIENTO AL LAYOUT DE BBTS": {
+      "pi": "Cumplimiento al Layout de BBTs",
+      "kpi": "Proceso Gobierno",
+      "proceso": "Gobierno",
+      "dueno": "Gobernadores"
+    },
+    "CUMPLIMIENTO A ALMACENAMIENTO DE CERVEZA Y RESTOS": {
+      "pi": "Cumplimiento a almacenamiento de cerveza y restos",
+      "kpi": "Proceso Gobierno",
+      "proceso": "Gobierno",
+      "dueno": "Gobernadores"
+    },
+    "VOLUMEN DE CERVEZA SIN ASIGNAR": {
+      "pi": "Volumen de cerveza sin asignar",
+      "kpi": "Proceso Gobierno",
+      "proceso": "Gobierno",
+      "dueno": "Gobernadores"
+    },
+    "OD AL LLENAR": {
+      "pi": "OD al Llenar",
+      "kpi": "Proceso Gobierno",
+      "proceso": "Gobierno",
+      "dueno": "Llenadores Gob"
+    },
+    "CO2 AL LLENAR": {
+      "pi": "CO2 al Llenar",
+      "kpi": "Proceso Gobierno",
+      "proceso": "Gobierno",
+      "dueno": "Llenadores Gob"
+    },
+    "OD AL VACIAR": {
+      "pi": "OD al Vaciar",
+      "kpi": "Proceso Gobierno",
+      "proceso": "Gobierno",
+      "dueno": "Vaciadores Gob"
+    },
+    "CO2 AL VACIAR": {
+      "pi": "CO2 al Vaciar",
+      "kpi": "Proceso Gobierno",
+      "proceso": "Gobierno",
+      "dueno": "Vaciadores Gob"
+    },
+    "AFECTACIONES AL ENVASADO POR BLENDER": {
+      "pi": "Afectaciones al envasado por Blender",
+      "kpi": "Proceso Blender",
+      "proceso": "Blender",
+      "dueno": "Blenderos"
+    },
+    "CUMPLIMIENTO A ESPECIFICACIONES MARCAS BLENDER": {
+      "pi": "Cumplimiento a especificaciones marcas Blender",
+      "kpi": "Proceso Blender",
+      "proceso": "Blender",
+      "dueno": "Blenderos"
+    },
+    "CUMPLIMIENTO A BWC": {
+      "pi": "Cumplimiento a BWC",
+      "kpi": "Proceso QUAS",
+      "proceso": "QUAS",
+      "dueno": "Quasero"
+    },
+    "CUMPLIMIENTO A VERIFICACION DE EQUIPOS": {
+      "pi": "Cumplimiento a verificación de equipos",
+      "kpi": "Proceso QUAS",
+      "proceso": "QUAS",
+      "dueno": "Quasero"
+    }
+  },
+  "workerAssignments": {
+    "ABEL GUILLERMO MAZATAN PAREDES": [
+      {
+        "pi": "Consumo a ordenes en un periodo de 24 hrs",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Materias primas y aux",
+        "dueno": "Técnico Coctos (Mat Prim)"
+      },
+      {
+        "pi": "Apego a BOM de Coctos",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Materias primas y aux",
+        "dueno": "Técnico Coctos (Mat Prim)"
+      },
+      {
+        "pi": "Cumplimiento a exactitud de inventarios",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Materias primas y aux",
+        "dueno": "Técnico Coctos (Mat Prim)"
+      }
+    ],
+    "JUAN CARLOS CEBALLO": [
+      {
+        "pi": "BACKLOG (Pasado + futuro) cocimiento",
+        "kpi": "MPA",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Breakdowns Cocimientos",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "MSA Cocimientos",
+        "kpi": "MPA",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "OSE",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "ZBB + VIC MANTENIMIENTO",
+        "kpi": "ZBB",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      }
+    ],
+    "LUIS MANUEL GARCIA VICTORIO": [
+      {
+        "pi": "BACKLOG (Pasado + futuro) cocimiento",
+        "kpi": "MPA",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Cumplimiento al plan de Autonomía",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "MSA Cocimientos",
+        "kpi": "MPA",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "OSE",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "ZBB + VIC MANTENIMIENTO",
+        "kpi": "ZBB",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      }
+    ],
+    "ADRIAN DIAZ": [
+      {
+        "pi": "BSSI",
+        "kpi": "Índice Sensorial",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "OSE",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "TEL",
+        "kpi": "Total Extract Losses",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "TRI +CTRI",
+        "kpi": "Lesiones",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "VIC RAW MATERIAL & AUX  P&P",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      }
+    ],
+    "FATIMA NEDITH GOMEZ MIRELES": [
+      {
+        "pi": "BSSI",
+        "kpi": "BQI",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Calificación Pilar Calidad",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Cumplimiento al plan de Autonomía",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "OSE",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "TEL",
+        "kpi": "Total Extract Losses",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      }
+    ],
+    "EDUARDO VALLE ARIAS": [
+      {
+        "pi": "% Vaciado Filtro de aspiración",
+        "kpi": "Total Extract Losses",
+        "proceso": "Filtros",
+        "dueno": "Bagacero"
+      },
+      {
+        "pi": "Velocidad Aspiracion",
+        "kpi": "Total Extract Losses",
+        "proceso": "Filtros",
+        "dueno": "Bagacero"
+      }
+    ],
+    "MANUEL DE JESUS DEL REAL ESQUIVEL": [
+      {
+        "pi": "% Vaciado Filtro de aspiración",
+        "kpi": "Total Extract Losses",
+        "proceso": "Filtros",
+        "dueno": "Bagacero"
+      },
+      {
+        "pi": "Velocidad Aspiracion",
+        "kpi": "Total Extract Losses",
+        "proceso": "Filtros",
+        "dueno": "Bagacero"
+      }
+    ],
+    "ALBERTO NUNEZ VELEZ.": [
+      {
+        "pi": "Cero impactos (FMS)",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Grits"
+      },
+      {
+        "pi": "Tiempo disolución",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Oper Grits"
+      }
+    ],
+    "ALDO SIFUENTES VELOZ": [
+      {
+        "pi": "Tarjetas generadas por ATO",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Todos",
+        "dueno": "Adicionador Filtros - Ollas"
+      },
+      {
+        "pi": "Mix ATO",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Todos",
+        "dueno": "Adicionador Filtros - Ollas"
+      }
+    ],
+    "BETSAIDA GUERRERO SILVA": [
+      {
+        "pi": "Calificación Pilar Gestión + Medios",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Técnico Coctos (Mat Prim)"
+      },
+      {
+        "pi": "% de apego a medios",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Materias primas y aux",
+        "dueno": "Técnico Coctos (Mat Prim)"
+      },
+      {
+        "pi": "Calificación Pilar Logística",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Técnico Coctos (Mat Prim)"
+      }
+    ],
+    "CARLOS RIVERA": [
+      {
+        "pi": "Fuga de grano o polvo durante recibo",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Mat. Primas"
+      },
+      {
+        "pi": "Inventario en silos (medición de llenado de silos)",
+        "kpi": "Total Extract Losses",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Mat. Primas"
+      }
+    ],
+    "CONCEPCION REYES MONTERO": [
+      {
+        "pi": "Fugas de polvo en Bodega",
+        "kpi": "Lesiones",
+        "proceso": "Cocedores",
+        "dueno": "Ayudante de Grits"
+      },
+      {
+        "pi": "Tiempo de exposición por atorones de cartón",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Ayudante de Grits"
+      }
+    ],
+    "HECTOR HUGO VALDEZ PINA": [
+      {
+        "pi": "Color MOSTO FRIO",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Filtros - Ollas"
+      },
+      {
+        "pi": "pH mosto frio",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Filtros - Ollas"
+      }
+    ],
+    "JOSE CARLOS CARDONA LOERA": [
+      {
+        "pi": "Color MOSTO FRIO",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Filtros - Ollas"
+      },
+      {
+        "pi": "pH mosto frio",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Filtros - Ollas"
+      }
+    ],
+    "ADRIAN HERNANDEZ DE AVILA": [
+      {
+        "pi": "Dias de autonomia de mat aux",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Materias primas y aux",
+        "dueno": "Preparador"
+      },
+      {
+        "pi": "Inventario ciclico",
+        "kpi": "VILC",
+        "proceso": "Materias primas y aux",
+        "dueno": "Preparador"
+      }
+    ],
+    "JOSE LUIS MALDONADO": [
+      {
+        "pi": "Dias de autonomia de mat aux",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Materias primas y aux",
+        "dueno": "Preparador"
+      },
+      {
+        "pi": "Inventario ciclico",
+        "kpi": "VILC",
+        "proceso": "Materias primas y aux",
+        "dueno": "Preparador"
+      }
+    ],
+    "J JESUS ALVARADO TENORIO": [
+      {
+        "pi": "BSSI",
+        "kpi": "BQI",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Mix ATO",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "OSE",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "TEL",
+        "kpi": "Total Extract Losses",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "TRI +CTRI",
+        "kpi": "Lesiones",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      }
+    ],
+    "JOSE LUIS RODRIGUEZ RANGEL": [
+      {
+        "pi": "BSSI",
+        "kpi": "BQI",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Calificación Pilar Gente",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Cumplimiento a PAE",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Cumplimiento al plan de Autonomía",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "OSE",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      }
+    ],
+    "OSCAR NUNEZ": [
+      {
+        "pi": "BSSI",
+        "kpi": "Índice Sensorial",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Consumo de agua",
+        "kpi": "Consumo de agua",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Mix ATO",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "OSE",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "TPE",
+        "kpi": "TPE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      }
+    ],
+    "OBED CALVILLO": [
+      {
+        "pi": "Calificación Pilar Ambiental",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Calificación Pilar Mantenimiento",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Consumo de agua",
+        "kpi": "Consumo de agua",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Cumplimiento al plan de Autonomía",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Mix ATO",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "TPE",
+        "kpi": "TPE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      }
+    ],
+    "JOSE LUIS CAZARES PINALES": [
+      {
+        "pi": "Color MOSTO FRIO",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Filtros - Ollas"
+      },
+      {
+        "pi": "pH mosto frio",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Filtros - Ollas"
+      }
+    ],
+    "HUGO ALBERTO CARDONA ESPINOZA": [
+      {
+        "pi": "Cero impactos (FMS)",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Grits"
+      },
+      {
+        "pi": "Tiempo disolución",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Oper Grits"
+      }
+    ],
+    "JUAN SALAZAR ANDA": [
+      {
+        "pi": "Calificación Pilar Seguridad",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Cumplimiento al plan de Autonomía",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "OSE",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "PSM Dust Explosion",
+        "kpi": "Lesiones",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "TEL",
+        "kpi": "Total Extract Losses",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      }
+    ],
+    "J. GUADALUPE GUZMAN MUNOZ": [
+      {
+        "pi": "Fugas de polvo en Bodega",
+        "kpi": "Lesiones",
+        "proceso": "Cocedores",
+        "dueno": "Ayudante de Grits"
+      },
+      {
+        "pi": "Tiempo de exposición por atorones de cartón",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Ayudante de Grits"
+      }
+    ],
+    "J. JESUS RIVERA MEDINA": [
+      {
+        "pi": "Tiempo de exposición por atorones de cartón",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Ayudante de Grits"
+      },
+      {
+        "pi": "Fugas de polvo en Bodega",
+        "kpi": "Lesiones",
+        "proceso": "Cocedores",
+        "dueno": "Ayudante de Grits"
+      }
+    ],
+    "J. MANUEL RAYGOZA JUAREZ": [
+      {
+        "pi": "Fuga de grano o polvo durante recibo",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Mat. Primas"
+      },
+      {
+        "pi": "Inventario en silos (medición de llenado de silos)",
+        "kpi": "Total Extract Losses",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Mat. Primas"
+      }
+    ],
+    "J. MARIO TRUJILLO MEZA": [
+      {
+        "pi": "Cero impactos (FMS)",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Grits"
+      },
+      {
+        "pi": "Tiempo disolución",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Oper Grits"
+      }
+    ],
+    "JAIME LOPEZ CHAVEZ": [
+      {
+        "pi": "Cero impactos (FMS)",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Grits"
+      },
+      {
+        "pi": "Tiempo disolución",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Oper Grits"
+      }
+    ],
+    "JOSE AMADOR RODRIGUEZ JUAREZ": [
+      {
+        "pi": "Cero impactos (FMS)",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Grits"
+      },
+      {
+        "pi": "Tiempo disolución",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Oper Grits"
+      }
+    ],
+    "OMAR ALBERTO ROBLES SOSA": [
+      {
+        "pi": "Color MOSTO FRIO",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Filtros - Ollas"
+      },
+      {
+        "pi": "pH mosto frio",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Filtros - Ollas"
+      }
+    ],
+    "PAOLA CRISTINA OLIIVARES": [
+      {
+        "pi": "Consumo de agua",
+        "kpi": "Consumo de agua",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Mix ATO",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "OSE",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "TEL",
+        "kpi": "Total Extract Losses",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "TPE",
+        "kpi": "TPE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      }
+    ],
+    "JOSE FRANCISCO TORRES": [
+      {
+        "pi": "Cumplimiento al plan de Autonomía",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "Mix ATO",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "OSE",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "TRI +CTRI",
+        "kpi": "Lesiones",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      },
+      {
+        "pi": "VIC RAW MATERIAL & AUX  P&P",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Todos",
+        "dueno": "Lider de Coctos"
+      }
+    ],
+    "EDGAR EMANUEL JUAREZ ALBA": [
+      {
+        "pi": "RDF mosto frio",
+        "kpi": "Índice Sensorial",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Coc - Mac"
+      },
+      {
+        "pi": "EMO MOSTO FRIO",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Coc - Mac"
+      }
+    ],
+    "EDGAR ZAMARRON ACOSTA": [
+      {
+        "pi": "RDF mosto frio",
+        "kpi": "Índice Sensorial",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Coc - Mac"
+      },
+      {
+        "pi": "EMO MOSTO FRIO",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Coc - Mac"
+      }
+    ],
+    "JUAN ANTONIO VALDEZ LICERIO": [
+      {
+        "pi": "Cero impactos (FMS)",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Grits"
+      },
+      {
+        "pi": "Tiempo disolución",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Oper Grits"
+      }
+    ],
+    "JUAN RAMON JIMENEZ DELGADO": [
+      {
+        "pi": "Cero impactos (FMS)",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Grits"
+      },
+      {
+        "pi": "Tiempo disolución",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Oper Grits"
+      }
+    ],
+    "LEOBARDO VARELA NIETO": [
+      {
+        "pi": "Cero impactos (FMS)",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Grits"
+      },
+      {
+        "pi": "Tiempo disolución",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Oper Grits"
+      }
+    ],
+    "MANUEL DE JESUS CHAVEZ GARCIA": [
+      {
+        "pi": "Cero impactos (FMS)",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Grits"
+      },
+      {
+        "pi": "Tiempo disolución",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Oper Grits"
+      }
+    ],
+    "MARCO AURELIO RAMIREZ CUAUCOATL": [
+      {
+        "pi": "Fugas de polvo en Bodega",
+        "kpi": "Lesiones",
+        "proceso": "Cocedores",
+        "dueno": "Ayudante de Grits"
+      },
+      {
+        "pi": "Tiempo de exposición por atorones de cartón",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Ayudante de Grits"
+      }
+    ],
+    "MARIO ALBERTO ZAMARRIPA LLANAS": [
+      {
+        "pi": "Cero impactos (FMS)",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Grits"
+      },
+      {
+        "pi": "Tiempo disolución",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Oper Grits"
+      }
+    ],
+    "JOSE MANUEL VARELA ROSALES": [
+      {
+        "pi": "RDF mosto frio",
+        "kpi": "Índice Sensorial",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Coc - Mac"
+      },
+      {
+        "pi": "EMO MOSTO FRIO",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Coc - Mac"
+      }
+    ],
+    "OSCAR IVAN IBARRA ORTIZ": [
+      {
+        "pi": "Minutos de atraso en arranque de cocedor",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Técnico Coctos (Mac - Coc)"
+      },
+      {
+        "pi": "Temp agua para disolución de grits",
+        "kpi": "Consumo de agua",
+        "proceso": "Cocedores",
+        "dueno": "Técnico Coctos (Mac - Coc)"
+      },
+      {
+        "pi": "Color de TCC  al llenar",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Técnico Coctos (Mac - Coc)"
+      }
+    ],
+    "RAFAEL VERA ORTEGA": [
+      {
+        "pi": "HLD",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Ollas",
+        "dueno": "Técnico Coctos (Fil - Ollas)"
+      },
+      {
+        "pi": "EMO de TCC  al llenar",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Técnico Coctos (Fil - Ollas)"
+      },
+      {
+        "pi": "Exposición por fallas en equipos",
+        "kpi": "Lesiones",
+        "proceso": "Filtración",
+        "dueno": "Técnico Coctos (Fil - Ollas)"
+      }
+    ],
+    "RAUL BANUELOS FLORES": [
+      {
+        "pi": "Minutos de atraso en arranque de cocedor",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Técnico Coctos (Mac - Coc)"
+      },
+      {
+        "pi": "Color de TCC  al llenar",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Técnico Coctos (Mac - Coc)"
+      },
+      {
+        "pi": "Temp agua para disolución de grits",
+        "kpi": "Consumo de agua",
+        "proceso": "Cocedores",
+        "dueno": "Técnico Coctos (Mac - Coc)"
+      }
+    ],
+    "RIGOBERTO MOTA CORTEZ": [
+      {
+        "pi": "RDF mosto frio",
+        "kpi": "Índice Sensorial",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Coc - Mac"
+      },
+      {
+        "pi": "EMO MOSTO FRIO",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Coc - Mac"
+      }
+    ],
+    "RUBEN CARRILLO CASAS": [
+      {
+        "pi": "HLD",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Ollas",
+        "dueno": "Técnico Coctos (Fil - Ollas)"
+      },
+      {
+        "pi": "EMO de TCC  al llenar",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Técnico Coctos (Fil - Ollas)"
+      },
+      {
+        "pi": "Exposición por fallas en equipos",
+        "kpi": "Lesiones",
+        "proceso": "Filtración",
+        "dueno": "Técnico Coctos (Fil - Ollas)"
+      }
+    ],
+    "SAMANTHA ROJERO LERMA": [
+      {
+        "pi": "Exposición por fallas en equipos",
+        "kpi": "Lesiones",
+        "proceso": "Filtración",
+        "dueno": "Técnico Coctos (Fil - Ollas)"
+      },
+      {
+        "pi": "HLD",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Ollas",
+        "dueno": "Técnico Coctos (Fil - Ollas)"
+      },
+      {
+        "pi": "EMO de TCC  al llenar",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Técnico Coctos (Fil - Ollas)"
+      }
+    ],
+    "SANTIAGO HERRERA AMADOR": [
+      {
+        "pi": "Cero impactos (FMS)",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Grits"
+      },
+      {
+        "pi": "Tiempo disolución",
+        "kpi": "Brewhouse OSE",
+        "proceso": "Cocedores",
+        "dueno": "Oper Grits"
+      }
+    ],
+    "SUSANA SAUCEDO MEDRANO": [
+      {
+        "pi": "Inventario Ciclico",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Materias primas y aux",
+        "dueno": "Técnico  (Mat Prim)"
+      },
+      {
+        "pi": "Apego a stock de acuerdo a politica de inventario para materiales auxiliares",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Materias primas y aux",
+        "dueno": "Técnico  (Mat Prim)"
+      },
+      {
+        "pi": "Apego a stock de acuerdo a politica de inventario para materias primas",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Materias primas y aux",
+        "dueno": "Técnico  (Mat Prim)"
+      }
+    ],
+    "URIEL ESCOBEDO MURO": [
+      {
+        "pi": "RDF mosto frio",
+        "kpi": "Índice Sensorial",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Coc - Mac"
+      },
+      {
+        "pi": "EMO MOSTO FRIO",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "QUAS",
+        "dueno": "Adicionador Coc - Mac"
+      }
+    ],
+    "VALERIA NATALY CASTANON": [
+      {
+        "pi": "Fuga de grano o polvo durante recibo",
+        "kpi": "Lesiones",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Mat. Primas"
+      },
+      {
+        "pi": "Inventario en silos (medición de llenado de silos)",
+        "kpi": "Total Extract Losses",
+        "proceso": "Materias primas y aux",
+        "dueno": "Oper Mat. Primas"
+      }
+    ],
+    "JUAN JOSE MEJIA MONTOYA": [
+      {
+        "pi": "Apego a reporteo de ACIS",
+        "kpi": "Lesiones",
+        "proceso": "Todos",
+        "dueno": "Líderes EA"
+      },
+      {
+        "pi": "MSA ATO de Elaboración",
+        "kpi": "MSA Elaboración",
+        "proceso": "Todos",
+        "dueno": "Champion Mtto"
+      },
+      {
+        "pi": "Calificación Pilar Seguridad",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Champion Seguridad"
+      },
+      {
+        "pi": "Calificación Pilar Mantenimiento",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Chamption Mtto"
+      }
+    ],
+    "ARIADNNE TORRES": [
+      {
+        "pi": "Exposiciones por fallas filtros",
+        "kpi": "Lesiones",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Eficiencia Filtros",
+        "kpi": "Eficiencia en Filtracion de Cerveza",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Equipos no liberados",
+        "kpi": "MPA Elaboración",
+        "proceso": "Todos",
+        "dueno": "Champion Mtto"
+      }
+    ],
+    "LUIS FERNANDO ZAPATA CARDONA": [
+      {
+        "pi": "Exposiciones por fallas filtros",
+        "kpi": "Lesiones",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "DFE en Color BBT",
+        "kpi": "Brand Profile Index  (BPI)",
+        "proceso": "Gobierno",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Volumen refiltrado",
+        "kpi": "Proceso Filtración",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      }
+    ],
+    "RICARDO ESPARZA DOMINGUEZ": [
+      {
+        "pi": "Exposiciones por fallas filtros",
+        "kpi": "Lesiones",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Consumo de CO2 Filtros",
+        "kpi": "Consumo de CO2",
+        "proceso": "Filtros",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Condiciones de Regeneración (pH, Temperatura, Conductividad)",
+        "kpi": "Proceso Filtración",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      }
+    ],
+    "ANA PAOLA PERERA MARIN": [
+      {
+        "pi": "Exposiciones por fallas CMF",
+        "kpi": "Lesiones",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      },
+      {
+        "pi": "Descargas anormales Fermentación",
+        "kpi": "Indice de Carga Organica",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      },
+      {
+        "pi": "Cumplimiento a almacenamiento de cerveza y levadura en recuperación de cerveza",
+        "kpi": "Proceso Fermentación",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      }
+    ],
+    "MIGUEL ANGEL RIVERA MUNOZ": [
+      {
+        "pi": "Cumplimiento a inducciones funcionales",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Champion Gente"
+      },
+      {
+        "pi": "Oxígeno Integrado en filtros",
+        "kpi": "Flavor Stability Index  (FSI )",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Cumplimiento a EMO por filtro",
+        "kpi": "OEE Filtros de cerveza",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      }
+    ],
+    "SHERLYN GARCIA PEREZ": [
+      {
+        "pi": "Cumplimiento a PAE",
+        "kpi": "Cumplimiento al Plan de Autonomia",
+        "proceso": "Todos",
+        "dueno": "Champion Gente"
+      },
+      {
+        "pi": "Hrs Tiempo Extra",
+        "kpi": "Costos por Tiempos Extra Totales",
+        "proceso": "Todos",
+        "dueno": "Champion Gente"
+      },
+      {
+        "pi": "Calificación Pilar Gente",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Champion Gente"
+      }
+    ],
+    "JESUS BRICENO MONTELONGO": [
+      {
+        "pi": "Polifenoles en Corona",
+        "kpi": "Índice Sensorial",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Volumen filtrado por ciclo",
+        "kpi": "Total Extract Losses",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Ml en probeta de PVPP",
+        "kpi": "Proceso Filtración",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      }
+    ],
+    "OSCAR GUILLERMO MEJIA GARCIA": [
+      {
+        "pi": "Extracto a 72 Hrs",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "Fermentación",
+        "dueno": "Plateros"
+      },
+      {
+        "pi": "Diacetilo",
+        "kpi": "Brand Profile Index  (BPI)",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      },
+      {
+        "pi": "Cumplimiento CMP Fermentación + desincrustaciones",
+        "kpi": "Micro Index (Brewing)",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      },
+      {
+        "pi": "Relación cerveza filtrada/levadura tratada CMF",
+        "kpi": "Total Extract Losses",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      },
+      {
+        "pi": "Control de presiones durante ferm/reposo",
+        "kpi": "Proceso Fermentación",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      }
+    ],
+    "SOLORZANO ISAI": [
+      {
+        "pi": "Temperatura al llenar TCC",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      },
+      {
+        "pi": "Cumplimiento a Recuperación de CO2",
+        "kpi": "Consumo de CO2",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      },
+      {
+        "pi": "Cumplimiento a tiempo de llenado de TCC",
+        "kpi": "Proceso Fermentación",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      }
+    ],
+    "OSCAR RODRIGUEZ CODALLOS": [
+      {
+        "pi": "Conteo al llenar",
+        "kpi": "Fermentation Consistency Index(FCI)",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      },
+      {
+        "pi": "Eficiencia CMF",
+        "kpi": "Total Extract Losses",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      },
+      {
+        "pi": "Cumplimiento a tiempo de purgado de TRUB",
+        "kpi": "Proceso Levadura",
+        "proceso": "Levadura",
+        "dueno": "Plateros"
+      }
+    ],
+    "JOSE LEANDRO MARTINEZ SANDOVAL": [
+      {
+        "pi": "DFE en Extracto Aparente BBT",
+        "kpi": "Brand Profile Index  (BPI)",
+        "proceso": "Gobierno",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Eficiencia Filtros",
+        "kpi": "Eficiencia en Filtracion de Cerveza",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Volumen refiltrado",
+        "kpi": "Proceso Filtración",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      }
+    ],
+    "GUILLERMO GERARDO GONZALEZ ULLOA": [
+      {
+        "pi": "Número de atrasos en recibo de mosto",
+        "kpi": "Flavor Stability Index  (FSI )",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      },
+      {
+        "pi": "Consumo de CO2 Fermentación",
+        "kpi": "Consumo de CO2",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      },
+      {
+        "pi": "Apego al Layout de TCCs",
+        "kpi": "Proceso Fermentación",
+        "proceso": "Fermentación",
+        "dueno": "Fermentadores"
+      }
+    ],
+    "CARLOS ORNEDO": [
+      {
+        "pi": "Oxígeno Disuelto en BBT (Llenando-Lleno)",
+        "kpi": "Flavor Stability Index  (FSI )",
+        "proceso": "Gobierno",
+        "dueno": "Gobernadores"
+      },
+      {
+        "pi": "Tiempo de afectación al envasado por cambio de BBT",
+        "kpi": "Downtime Envasado",
+        "proceso": "Gobierno",
+        "dueno": "Gobernadores"
+      },
+      {
+        "pi": "Cumplimiento al Layout de BBTs",
+        "kpi": "Proceso Gobierno",
+        "proceso": "Gobierno",
+        "dueno": "Gobernadores"
+      }
+    ],
+    "OSCAR MANUEL GONZALEZ BOTELLO": [
+      {
+        "pi": "Cumplimiento CMP Filtros + Gobierno + desincrustaciones",
+        "kpi": "Micro Index (Brewing)",
+        "proceso": "Gobierno",
+        "dueno": "Gobernadores"
+      },
+      {
+        "pi": "Cumplimiento Micro Cerveza Brillante",
+        "kpi": "Micro Index (Brewing)",
+        "proceso": "Filtros/Gobierno",
+        "dueno": "Champion Calidad"
+      },
+      {
+        "pi": "Cumplimiento PRP mensual + GFSI",
+        "kpi": "PRP Index + GFSI",
+        "proceso": "Todos",
+        "dueno": "Champion Calidad"
+      },
+      {
+        "pi": "Hl apartados por mes",
+        "kpi": "Eficiencia de Calidad Elab. (Apartados)",
+        "proceso": "Gobierno",
+        "dueno": "Champion Calidad"
+      },
+      {
+        "pi": "Calificación Pilar Calidad",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Champion Calidad"
+      }
+    ],
+    "EDGAR RENE DIAZ SANCHEZ": [
+      {
+        "pi": "Apartados por CO2/OD",
+        "kpi": "Eficiencia de Calidad Elab. (Apartados)",
+        "proceso": "Gobierno",
+        "dueno": "Gobernadores"
+      },
+      {
+        "pi": "Tiempo de afectación al envasado por líquido no disponible/DFE",
+        "kpi": "Downtime Envasado",
+        "proceso": "Gobierno",
+        "dueno": "Gobernadores"
+      },
+      {
+        "pi": "Cumplimiento a almacenamiento de cerveza y restos",
+        "kpi": "Proceso Gobierno",
+        "proceso": "Gobierno",
+        "dueno": "Gobernadores"
+      }
+    ],
+    "VICTOR HUGO ZAPATA DOMINGUEZ": [
+      {
+        "pi": "Apartados por Partículas",
+        "kpi": "Eficiencia de Calidad Elab. (Apartados)",
+        "proceso": "Gobierno",
+        "dueno": "Gobernadores"
+      },
+      {
+        "pi": "Consumo de CO2 BBTs",
+        "kpi": "Consumo de CO2",
+        "proceso": "Gobierno",
+        "dueno": "Gobernadores"
+      },
+      {
+        "pi": "Volumen de cerveza sin asignar",
+        "kpi": "Proceso Gobierno",
+        "proceso": "Gobierno",
+        "dueno": "Gobernadores"
+      }
+    ],
+    "MIGUEL ANGEL SANCHEZ FLORES": [
+      {
+        "pi": "Volumen filtrado por ciclo",
+        "kpi": "Total Extract Losses",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Eficiencia Filtros",
+        "kpi": "Eficiencia en Filtracion de Cerveza",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "BBTs retrabajados",
+        "kpi": "OEE Filtros de cerveza",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      }
+    ],
+    "RAUL DAVID CORTES ALANIZ": [
+      {
+        "pi": "Eficiencia Filtros",
+        "kpi": "Eficiencia en Filtracion de Cerveza",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Tiempo de afectación al envasado por cambio de BBT",
+        "kpi": "Downtime Envasado",
+        "proceso": "Gobierno",
+        "dueno": "Gobernadores"
+      },
+      {
+        "pi": "Cambios al programa diario de Envasado por falta de cerveza",
+        "kpi": "Proceso Gobierno",
+        "proceso": "Gobierno",
+        "dueno": "Gobernadores"
+      }
+    ],
+    "LUIS ADOLFO MALDONADO DOMINGUEZ": [
+      {
+        "pi": "Eficiencia Filtros",
+        "kpi": "Eficiencia en Filtracion de Cerveza",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "BBTs retrabajados",
+        "kpi": "OEE Filtros de cerveza",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Volumen refiltrado",
+        "kpi": "Proceso Filtración",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Volumen Filtrado",
+        "kpi": "Proceso Filtración",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Ml en probeta de PVPP",
+        "kpi": "Proceso Filtración",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      }
+    ],
+    "TOPILTZIN TONATIUH I CURIEL CABRAL": [
+      {
+        "pi": "BBTs retrabajados",
+        "kpi": "OEE Filtros de cerveza",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Cumplimiento a EMO por filtro",
+        "kpi": "OEE Filtros de cerveza",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Consumo de vapor en CFR",
+        "kpi": "TPE",
+        "proceso": "Todos",
+        "dueno": "Champion Ambiental"
+      },
+      {
+        "pi": "Descargas anormales Filtros/Gobierno/Blender",
+        "kpi": "Indice de Carga Organica",
+        "proceso": "Filtros/Gobierno",
+        "dueno": "Filtradores"
+      },
+      {
+        "pi": "Condiciones de Regeneración (pH, Temperatura, Conductividad)",
+        "kpi": "Proceso Filtración",
+        "proceso": "Filtración",
+        "dueno": "Filtradores"
+      }
+    ],
+    "IVAN ALEJANDRO ROJERO MALDONADO": [
+      {
+        "pi": "Cumplimiento a IP Agua CFR",
+        "kpi": "Consumo de agua",
+        "proceso": "Todos",
+        "dueno": "Champion Ambiental"
+      },
+      {
+        "pi": "Calificación Pilar Ambiental",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Champion Ambiental"
+      },
+      {
+        "pi": "Control de extracciones de 8vo día",
+        "kpi": "Proceso Levadura",
+        "proceso": "Levadura",
+        "dueno": "Fermentadores"
+      }
+    ],
+    "ALDO ERNESTO SILVA VARELA": [
+      {
+        "pi": "Consumo de ácido fosfórico",
+        "kpi": "Fosforo en Drenaje Industrial",
+        "proceso": "Todos",
+        "dueno": "Adrian Silva"
+      },
+      {
+        "pi": "Consumo de Tierras",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Filtración",
+        "dueno": "Adrian Silva"
+      },
+      {
+        "pi": "Consumo de PVPP",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Filtración",
+        "dueno": "Adrian Silva"
+      }
+    ],
+    "RODRIGO REGALADO": [
+      {
+        "pi": "Cumplimiento a Exactitud de Inventarios",
+        "kpi": "Exactitud de Inventarios Cuartos Fríos",
+        "proceso": "Todos",
+        "dueno": "Champion Logística"
+      },
+      {
+        "pi": "Apego a BOMs",
+        "kpi": "VIC Elaboracion Materiales",
+        "proceso": "Todos",
+        "dueno": "Champion Logística"
+      },
+      {
+        "pi": "Calificación Pilar Logística",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Champion Logística"
+      },
+      {
+        "pi": "Calificación Pilar Gestión + Medios",
+        "kpi": "VPO score Nivel Excelencia",
+        "proceso": "Todos",
+        "dueno": "Champion Gestión"
+      }
+    ]
+  },
+  "uniqueKpis": [
+    "BQI",
+    "Backlog (Pasado + Futuro)",
+    "Brand Profile Index  (BPI)",
+    "Brewhouse OSE",
+    "Consumo de CO2",
+    "Consumo de agua",
+    "Costos por Tiempos Extra Totales",
+    "Cumplimiento al Plan de Autonomia",
+    "Downtime Envasado",
+    "Eficiencia de Calidad Elab. (Apartados)",
+    "Eficiencia en Filtracion de Cerveza",
+    "Exactitud de Inventarios Cuartos Fríos",
+    "Fermentation Consistency Index(FCI)",
+    "Flavor Stability Index  (FSI )",
+    "Fosforo en Drenaje Industrial",
+    "Indice de Carga Organica",
+    "Lesiones",
+    "MPA",
+    "MPA Elaboración",
+    "MSA Elaboración",
+    "Micro Index (Brewing)",
+    "OEE Filtros de cerveza",
+    "PRP Index + GFSI",
+    "Proceso Blender",
+    "Proceso Fermentación",
+    "Proceso Filtración",
+    "Proceso Gobierno",
+    "Proceso Levadura",
+    "Proceso QUAS",
+    "TPE",
+    "Total Extract Losses",
+    "VIC Elaboracion Materiales",
+    "VILC",
+    "VPO score Nivel Excelencia",
+    "ZBB",
+    "Índice Sensorial"
+  ]
+}

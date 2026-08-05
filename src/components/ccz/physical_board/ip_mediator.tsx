@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ClipboardList, Search, Sparkles, X } from "lucide-react";
 import { doc, onSnapshot, setDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from '@/lib/auth';
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { STRINGS, BANCO_IPS_COCIMIENTOS } from "./constants";
+import { getKpiForPi, getOperatorDefaultIps, KPI_COLOR_THEMES, DEFAULT_KPI_THEME } from "@/data/ips_cocimientos_helper";
 
 interface IpMediatorProps {
   operator_id: string;
@@ -83,39 +84,21 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
       );
     };
 
+    const defaultExcelAssignments = getOperatorDefaultIps(operator_name);
     const doc_ref = doc(db, "operator_ips", operator_id);
+
     const unsubscribe_operator = onSnapshot(doc_ref, async (snapshot) => {
-      if (snapshot.exists()) {
+      if (snapshot.exists() && snapshot.data().hasManualOverride && snapshot.data().assigned) {
         const rawAssigned = snapshot.data().assigned || [];
-        set_assigned_ips(filterCocimientosIps(rawAssigned));
+        set_assigned_ips(rawAssigned);
+      } else if (defaultExcelAssignments && defaultExcelAssignments.length > 0) {
+        const defaultPiList = defaultExcelAssignments.map(item => item.pi);
+        set_assigned_ips(defaultPiList);
+      } else if (snapshot.exists() && snapshot.data().assigned && snapshot.data().assigned.length > 0) {
+        const rawAssigned = snapshot.data().assigned || [];
+        set_assigned_ips(rawAssigned);
       } else {
-        const altIds = getAlternativeIds(operator_id);
-        for (const altId of altIds) {
-          try {
-            const altDocRef = doc(db, "operator_ips", altId);
-            const altSnapshot = await getDoc(altDocRef);
-            if (altSnapshot.exists()) {
-              const data = altSnapshot.data();
-              const rawAssigned = data.assigned || [];
-              set_assigned_ips(filterCocimientosIps(rawAssigned));
-              
-              // Solo migrar si hay sesión activa
-              if (usuario) {
-                const cleanAssignedToMigrate = filterCocimientosIps(rawAssigned);
-                await setDoc(doc_ref, {
-                  ...data,
-                  assigned: cleanAssignedToMigrate,
-                  operatorName: operator_name,
-                  updatedAt: new Date().toISOString()
-                }, { merge: true });
-                console.log(`Migrated operator_ips from ${altId} to ${operator_id}`);
-              }
-              break;
-            }
-          } catch (err) {
-            console.error(err);
-          }
-        }
+        set_assigned_ips([]);
       }
     });
     
@@ -153,7 +136,7 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
     set_assigned_ips(next_assignments);
     await setDoc(
       doc(db, "operator_ips", operator_id), 
-      { assigned: next_assignments, operatorName: operator_name }, 
+      { assigned: next_assignments, operatorName: operator_name, hasManualOverride: true }, 
       { merge: true }
     );
   };
@@ -187,17 +170,80 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
 
   const sorted_assigned_ips = [...assigned_ips].sort((a, b) => a.localeCompare(b));
 
+  const groupedAssignedIps = useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const ip of sorted_assigned_ips) {
+      const kpiInfo = getKpiForPi(ip);
+      const kpi = kpiInfo?.kpi || "IP";
+      if (!map.has(kpi)) {
+        map.set(kpi, []);
+      }
+      map.get(kpi)!.push(ip);
+    }
+
+    const groups: { kpi: string; ips: string[] }[] = [];
+    for (const [kpi, ips] of map.entries()) {
+      groups.push({ kpi, ips });
+    }
+    return groups;
+  }, [sorted_assigned_ips]);
+
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex flex-wrap gap-1">
-        {sorted_assigned_ips.map(ip_address => (
-          <div key={ip_address} className="rounded bg-sky-500 px-2 py-0.5 text-[9px] font-bold text-white shadow-sm flex items-center gap-1 group">
-            {ip_address}
-            {puedeEditar && (
-              <button onClick={() => toggle_assignment(ip_address)} className="hover:text-red-200">×</button>
-            )}
-          </div>
-        ))}
+    <div className="flex flex-col gap-1.5 w-full">
+      <div className="flex flex-col gap-1.5 w-full">
+        {groupedAssignedIps.map(({ kpi, ips }) => {
+          const isSinKpi = kpi === "IP";
+          const theme = (!isSinKpi && KPI_COLOR_THEMES[kpi]) || DEFAULT_KPI_THEME;
+
+          return (
+            <div 
+              key={kpi} 
+              className={cn(
+                "rounded-lg border p-1.5 shadow-xs flex flex-col gap-1 transition-all w-full",
+                theme.bg,
+                theme.border
+              )}
+            >
+              <div className="flex items-center justify-between gap-1 w-full border-b border-slate-200/40 pb-1">
+                {isSinKpi ? (
+                  <span className="px-1.5 py-0.5 rounded text-[7.5px] font-black uppercase tracking-wider bg-slate-500 text-white">
+                    IP
+                  </span>
+                ) : (
+                  <span 
+                    className={cn("px-1.5 py-0.5 rounded text-[7.5px] font-black uppercase tracking-wider truncate max-w-[130px]", theme.kpiBg, theme.kpiText)}
+                    title={kpi}
+                  >
+                    {kpi}
+                  </span>
+                )}
+                {ips.length > 1 && (
+                  <span className={cn("text-[8px] font-bold opacity-70", theme.text)}>
+                    {ips.length} PIs
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col gap-1">
+                {ips.map(ip_address => (
+                  <div key={ip_address} className="flex items-center justify-between gap-1 group/item">
+                    <span className={cn("text-[9.5px] font-bold leading-tight break-words", theme.text)}>
+                      {ips.length > 1 ? `• ${ip_address}` : ip_address}
+                    </span>
+                    {puedeEditar && (
+                      <button 
+                        onClick={() => toggle_assignment(ip_address)} 
+                        className="text-slate-400 hover:text-red-600 font-bold text-xs leading-none px-0.5 cursor-pointer opacity-70 group-hover/item:opacity-100"
+                        title="Quitar IP"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     
       <Dialog>
@@ -261,28 +307,32 @@ export function IpMediator({ operator_id, operator_name, team_members, puedeEdit
                 <div className="flex flex-wrap gap-2 max-h-[260px] overflow-y-auto p-1 custom-scrollbar">
                   {filtered_ips.map(ip_address => {
                     const isSelected = assigned_ips.includes(ip_address);
-                    const isCocimientosIp = BANCO_IPS_COCIMIENTOS.includes(ip_address);
+                    const kpiInfo = getKpiForPi(ip_address);
+                    const kpiName = kpiInfo?.kpi || "";
+                    const theme = (kpiName && KPI_COLOR_THEMES[kpiName]) || DEFAULT_KPI_THEME;
 
                     return (
                       <button
                         key={ip_address}
                         onClick={() => toggle_assignment(ip_address)}
                         className={cn(
-                          "px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all cursor-pointer shadow-xs flex items-center gap-1.5 border",
+                          "px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all cursor-pointer shadow-xs flex items-center gap-2 border",
                           isSelected
                             ? "bg-[#1a4491] text-white border-blue-900 shadow-blue-900/20 scale-105"
-                            : isCocimientosIp
-                            ? "bg-gradient-to-r from-amber-50 to-orange-50 text-slate-800 border-amber-300 hover:border-amber-400 hover:bg-amber-100 hover:scale-105 font-extrabold"
+                            : kpiName
+                            ? "bg-slate-50 text-slate-800 border-slate-200 hover:border-amber-400 hover:bg-amber-50 hover:scale-102"
                             : "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200"
                         )}
                       >
-                        {isCocimientosIp && <Sparkles className="h-3 w-3 text-amber-500 shrink-0 animate-pulse" />}
-                        <span>{ip_address}</span>
-                        {isCocimientosIp && (
-                          <span className="px-1.5 py-0.5 rounded-md text-[8px] font-black bg-amber-500 text-white uppercase tracking-wider shadow-xs">
-                            COCIMIENTOS
+                        {kpiName && (
+                          <span className={cn(
+                            "px-1.5 py-0.5 rounded text-[8px] font-black tracking-wider uppercase shrink-0",
+                            isSelected ? "bg-white/20 text-white" : theme.kpiBg + " " + theme.kpiText
+                          )}>
+                            {kpiName}
                           </span>
                         )}
+                        <span className="truncate">{ip_address}</span>
                       </button>
                     );
                   })}
