@@ -7,13 +7,16 @@ interface OperatorAvatarProps {
 }
 
 export function OperatorAvatar({ operator_name }: OperatorAvatarProps) {
-  const [image_src, set_image_src] = useState(`/fotos/${operator_name.trim()}.jpeg?v=2`);
+  const [image_src, set_image_src] = useState(`/fotos/${operator_name.trim()}.webp?v=3`);
 
   const handle_image_error = () => {
-    if (image_src.includes('.jpeg')) {
-      set_image_src(`/fotos/${operator_name.trim()}.png?v=2`);
+    if (image_src.includes('.webp')) {
+      set_image_src(`/fotos/${operator_name.trim()}.jpeg?v=3`);
+    } else if (image_src.includes('.jpeg')) {
+      set_image_src(`/fotos/${operator_name.trim()}.png?v=3`);
     }
   };
+
 
   return (
     <Avatar className="h-12 w-12 shrink-0 rounded-md shadow-sm border border-slate-200">

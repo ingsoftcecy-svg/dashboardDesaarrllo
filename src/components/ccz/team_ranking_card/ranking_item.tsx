@@ -54,12 +54,14 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [], m
     const list: string[] = [];
 
     // 1. Full name
+    list.push(`${clean}.webp`);
     list.push(`${clean}.jpeg`);
     list.push(`${clean}.png`);
 
     if (parts.length >= 3) {
       // 2. Omit second surname (last word)
       const omitLast = parts.slice(0, -1).join(" ");
+      list.push(`${omitLast}.webp`);
       list.push(`${omitLast}.jpeg`);
       list.push(`${omitLast}.png`);
     }
@@ -67,6 +69,7 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [], m
     if (parts.length >= 4) {
       // 3. First name + First surname (e.g. "RAUL DAVID CORTES ALANIZ" -> "RAUL CORTES")
       const firstAndThird = `${parts[0]} ${parts[2]}`;
+      list.push(`${firstAndThird}.webp`);
       list.push(`${firstAndThird}.jpeg`);
       list.push(`${firstAndThird}.png`);
     }
@@ -74,11 +77,13 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [], m
     if (parts.length >= 2) {
       // 4. First name + Second word
       const firstTwo = `${parts[0]} ${parts[1]}`;
+      list.push(`${firstTwo}.webp`);
       list.push(`${firstTwo}.jpeg`);
       list.push(`${firstTwo}.png`);
       
       // 5. First + Last
       const firstAndLast = `${parts[0]} ${parts[parts.length - 1]}`;
+      list.push(`${firstAndLast}.webp`);
       list.push(`${firstAndLast}.jpeg`);
       list.push(`${firstAndLast}.png`);
     }

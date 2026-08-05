@@ -54,7 +54,7 @@ export function TopNav({ tab, onTabChange }: Props) {
           {/* Brand */}
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg shadow bg-white overflow-hidden">
-              <img src="/logos/BREWMAN.jpeg" alt="BREWMAN" className="h-full w-full object-cover" />
+              <img src="/logos/BREWMAN.webp" alt="BREWMAN" className="h-full w-full object-cover" />
             </div>
             <div className="leading-tight">
               <div className="text-base font-bold">Dashboard de Autonomía</div>

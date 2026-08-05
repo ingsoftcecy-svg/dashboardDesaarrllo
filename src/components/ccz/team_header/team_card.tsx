@@ -62,7 +62,7 @@ const obtenerLogoFallbacks = (name: string): string[] => {
   }
 
   const unique = Array.from(new Set(list));
-  return unique.map(item => `/logos/${item}.png`);
+  return unique.map(item => `/logos/${item}.webp`);
 };
 
 export function TeamCard({ variant, team, operadores = [], metricMode = "autonomia" }: TeamCardProps) {
@@ -188,7 +188,7 @@ export function TeamCard({ variant, team, operadores = [], metricMode = "autonom
         <DialogTrigger asChild>
           <button className="focus:outline-none transition-transform hover:scale-105 active:scale-95 group">
             <Avatar className={`h-16 w-16 border-2 shadow-xl transition-colors ${avatar_border}`}>
-              <AvatarImage src={`/fotos/${leader_name.trim()}.jpeg`} className="object-cover" />
+              <AvatarImage src={`/fotos/${leader_name.trim()}.webp`} className="object-cover" />
               <AvatarFallback className={`text-sm font-black text-white ${avatar_border}`}>
                 {leader_name.split(" ").map(name_part => name_part[0]).slice(0, 2).join("")}
               </AvatarFallback>
@@ -198,7 +198,7 @@ export function TeamCard({ variant, team, operadores = [], metricMode = "autonom
         <DialogContent className="max-w-sm sm:max-w-md bg-white p-6 rounded-2xl border-none shadow-2xl flex flex-col items-center">
           <div className="w-full aspect-square relative rounded-xl overflow-hidden bg-slate-100 shadow-inner flex items-center justify-center">
             <img 
-              src={`/fotos/${leader_name.trim()}.jpeg`} 
+              src={`/fotos/${leader_name.trim()}.webp`} 
               alt={leader_name} 
               className="w-full h-full object-cover" 
               onError={handle_leader_error} 
@@ -248,7 +248,7 @@ export function TeamCard({ variant, team, operadores = [], metricMode = "autonom
       <DialogTrigger asChild>
         <button className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white border shadow-lg p-0.5 overflow-hidden transition-transform hover:scale-105 active:scale-95 ${avatar_border}`}>
           <img 
-            src={logo_fallbacks[0] || `/logos/${team_name.trim().toUpperCase()}.png`} 
+            src={logo_fallbacks[0] || `/logos/${team_name.trim().toUpperCase()}.webp`} 
             alt={team_name}
             className="max-h-full max-w-full object-contain"
             data-fallbacks={JSON.stringify(logo_fallbacks)}
@@ -260,7 +260,7 @@ export function TeamCard({ variant, team, operadores = [], metricMode = "autonom
       <DialogContent className="max-w-sm sm:max-w-md bg-white p-6 rounded-2xl border-none shadow-2xl flex flex-col items-center">
         <div className="w-full aspect-square flex items-center justify-center p-4">
           <img 
-            src={logo_fallbacks[0] || `/logos/${team_name.trim().toUpperCase()}.png`} 
+            src={logo_fallbacks[0] || `/logos/${team_name.trim().toUpperCase()}.webp`} 
             alt={team_name}
             className="max-h-full max-w-full object-contain drop-shadow-xl"
             data-fallbacks={JSON.stringify(logo_fallbacks)}

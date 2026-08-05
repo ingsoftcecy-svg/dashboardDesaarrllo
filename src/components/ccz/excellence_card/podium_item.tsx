@@ -31,7 +31,7 @@ export function PodiumItem({ person, index }: PodiumItemProps) {
           <DialogTrigger asChild>
             <button className="focus:outline-none transition-transform hover:scale-105 active:scale-95">
               <Avatar className="h-12 w-12 border-2 border-white shadow-md ring-2 ring-white/50 bg-gradient-to-br from-blue-700 to-blue-900">
-                <AvatarImage src={`/fotos/${person.nombre.trim()}.jpeg?t=${Date.now()}`} className="object-cover" />
+                <AvatarImage src={`/fotos/${person.nombre.trim()}.webp?t=${Date.now()}`} className="object-cover" />
                 <AvatarFallback className="text-sm font-bold text-white">
                   {get_initials(person.nombre)}
                 </AvatarFallback>
@@ -41,7 +41,7 @@ export function PodiumItem({ person, index }: PodiumItemProps) {
           <DialogContent className="max-w-sm sm:max-w-md bg-white p-6 rounded-2xl border-none shadow-2xl flex flex-col items-center">
             <div className="w-full aspect-square relative rounded-xl overflow-hidden bg-slate-100 shadow-inner flex items-center justify-center">
               <img 
-                src={`/fotos/${person.nombre.trim()}.jpeg?t=${Date.now()}`} 
+                src={`/fotos/${person.nombre.trim()}.webp?t=${Date.now()}`} 
                 alt={person.nombre} 
                 className="w-full h-full object-cover" 
                 onError={handle_image_error} 

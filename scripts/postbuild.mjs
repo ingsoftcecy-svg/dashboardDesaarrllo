@@ -30,6 +30,20 @@ async function prerender() {
     // Save to dist/client/index.html
     fs.writeFileSync(path.join(clientDir, 'index.html'), html);
     console.log('✅ Generated true SSR index.html successfully!');
+    // Clean up unnecessary files from dist/client to reduce bundle size
+    console.log('🧹 Cleaning up dist/client...');
+    const distFiles = fs.readdirSync(clientDir);
+    distFiles.forEach(file => {
+      const fullPath = path.join(clientDir, file);
+      if (file.endsWith('.xlsx')) {
+        fs.unlinkSync(fullPath);
+        console.log(`  🗑️ Removed ${file}`);
+      } else if (file === 'fotos_originales' || file === 'logos_originales') {
+        fs.rmSync(fullPath, { recursive: true, force: true });
+        console.log(`  🗑️ Removed directory ${file}/`);
+      }
+    });
+
   } catch (e) {
     console.error('❌ Prerender failed:', e);
     process.exit(1);

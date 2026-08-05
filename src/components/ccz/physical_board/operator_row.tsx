@@ -62,7 +62,7 @@ const obtenerLogoFallbacks = (name: string): string[] => {
   }
 
   const unique = Array.from(new Set(list));
-  return unique.map(item => `/logos/${item}.png`);
+  return unique.map(item => `/logos/${item}.webp`);
 };
 
 export function OperatorRow({ operator, original_index, visual_index, show_ato = true, team_members, full_team_members = [], puedeEditar = false, teamRankings = [], metricMode = "autonomia" }: OperatorRowProps) {
@@ -134,13 +134,16 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             <DialogContent className="max-w-sm sm:max-w-md bg-white p-6 rounded-2xl border-none shadow-2xl flex flex-col items-center">
               <div className="w-full aspect-square relative rounded-xl overflow-hidden bg-slate-100 shadow-inner flex items-center justify-center">
                 <img 
-                  src={`/fotos/${operator.nombre.trim()}.jpeg?v=2`} 
+                  src={`/fotos/${operator.nombre.trim()}.webp?v=3`} 
                   alt={operator.nombre} 
                   className="w-full h-full object-cover" 
                   onError={(e) => {
                     const target = e.currentTarget as HTMLImageElement;
-                    if (!target.src.includes('.png')) {
-                      target.src = `/fotos/${operator.nombre.trim()}.png?v=2`;
+                    if (target.src.includes('.webp')) {
+                      target.src = `/fotos/${operator.nombre.trim()}.jpeg?v=3`;
+                      return;
+                    } else if (!target.src.includes('.png')) {
+                      target.src = `/fotos/${operator.nombre.trim()}.png?v=3`;
                       return;
                     }
                     target.style.display = 'none';
@@ -257,7 +260,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               <button className="flex flex-col items-center gap-1 mx-auto hover:opacity-85 active:scale-95 transition-all cursor-pointer focus:outline-none group">
                 <div className="h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg flex items-center justify-center p-1 group-hover:scale-105 transition-transform">
                   <img 
-                    src={logo_fallbacks[0] || `/logos/${operator.equipoAutonomo.trim().toUpperCase()}.png`} 
+                    src={logo_fallbacks[0] || `/logos/${operator.equipoAutonomo.trim().toUpperCase()}.webp`} 
                     alt={operator.equipoAutonomo}
                     className="max-h-full max-w-full object-contain"
                     data-fallbacks={JSON.stringify(logo_fallbacks)}
