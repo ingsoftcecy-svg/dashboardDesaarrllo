@@ -172,90 +172,23 @@ export function useExcelData() {
           }
         }
 
-        // Obtener líderes de baseRows para los equipos (como fallback)
-        const leaderMap: Record<string, string> = {};
-        for (const row of baseRows) {
-          const rol = String(row["Puesto / ROL"] || "").toUpperCase();
-          if (rol.includes("LÍDER") || rol.includes("LIDER")) {
-            const eq = String(row["Nombre del equipo "] || "").trim().toUpperCase();
-            if (eq) {
-              leaderMap[eq] = String(row["Nombre del integrante "] || "").trim();
-            }
-          }
+        // Cargar operadores centralizados
+        let centralizedOperators: any[] = [];
+        try {
+          const opsRes = await fetch(`/operators.json?t=${timestamp}`);
+          centralizedOperators = await opsRes.json();
+        } catch (e) {
+          console.error("Error loading centralized operators.json:", e);
         }
 
-        // Poblar eaMap usando la estructura nueva oficial
-        if (estructuraNuevaRows && estructuraNuevaRows.length > 0) {
-          const idTranslations: Record<string, string> = {
-            "32173442": "32043900",
-            "32145333": "32044316",
-            "32043835": "32145333",
-            "32043900": "32045469",
-            "32043739": "32043301",
-            "32043861": "32043835",
-            "32044301": "32043861",
-            "32044319": "32045769",
-          };
-
-          for (const row of estructuraNuevaRows) {
-            const id = row["SHARP"] ? String(row["SHARP"]).trim() : null;
-            if (id) {
-              const rawTeam = String(row["Nombre del Equipo"] || row["ESTRUCTURA DE EQUIPOS"] || "").trim();
-              const match = rawTeam.match(/^\d+\.\s*(.*)$/);
-              const cleanTeam = match ? match[1].trim() : rawTeam;
-
-              const teamData = {
-                equipo: cleanTeam,
-                lider: String(row["Nombre del Lider"] || row["JEFE DIRECTO"] || "No asignado").trim()
+        // Poblar eaMap usando operators.json
+        if (centralizedOperators && centralizedOperators.length > 0) {
+          for (const op of centralizedOperators) {
+            if (op.id) {
+              eaMap[op.id] = {
+                equipo: op.equipoAutonomo || "Sin Equipo",
+                lider: op.lider || "No asignado",
               };
-
-              eaMap[id] = teamData;
-              const translatedId = idTranslations[id];
-              if (translatedId) {
-                eaMap[translatedId] = teamData;
-              }
-            }
-          }
-        } else {
-          // Fallback
-          for (const row of baseRows) {
-            const id = row["ID Sharp"] ? String(row["ID Sharp"]) : null;
-            if (id) {
-              const rawEquipo = String(row["Nombre del equipo "] || "").trim();
-              const rawEquipoUpper = rawEquipo.toUpperCase();
-              eaMap[id] = {
-                equipo: rawEquipo,
-                lider: leaderMap[rawEquipoUpper] || "No asignado",
-              };
-            }
-          }
-
-          for (const row of eacRows) {
-            if (row["SHARP"]) {
-              const sharpStr = String(row["SHARP"]).trim();
-              if (!eaMap[sharpStr]) {
-                eaMap[sharpStr] = {
-                  equipo: row["Nombre del Equipo"] || "",
-                  lider: row["Nombre del Lider"] || "",
-                };
-              }
-            }
-          }
-
-          let lastEquipo = "";
-          let lastLider = "";
-          for (const row of eabfRows) {
-            if (row["NUEVO EQUIPO "]) lastEquipo = String(row["NUEVO EQUIPO "]).trim();
-            if (row["NUEVO LIDER"]) lastLider = String(row["NUEVO LIDER"]).trim();
-            
-            if (row["SHARP"]) {
-              const sharpStr = String(row["SHARP"]).trim();
-              if (!eaMap[sharpStr]) {
-                eaMap[sharpStr] = {
-                  equipo: lastEquipo,
-                  lider: lastLider,
-                };
-              }
             }
           }
         }
