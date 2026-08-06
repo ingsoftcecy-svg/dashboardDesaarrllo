@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Search, X } from "lucide-react";
+import { Search, X, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import type { Operator } from "@/data/ccz";
 import { OperatorRow } from "./operator_row";
@@ -50,25 +50,107 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
 
   return (
     <div className="flex flex-col gap-4">
-      {/* 🔍 BARRA DE BÚSQUEDA */}
-      <div className="relative w-full max-w-md">
-        <Search className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-400" />
-        <input
-          type="text"
-          placeholder={STRINGS.SEARCH_PLACEHOLDER}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-10 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all placeholder:text-slate-400 focus:border-[#1a4491] focus:ring-1 focus:ring-[#1a4491] outline-none"
-        />
-        {searchTerm && (
-          <button
-            onClick={() => setSearchTerm("")}
-            className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 transition-colors"
-          >
-            <X className="h-4.5 w-4.5" />
-          </button>
-        )}
+      {/* 🔍 BARRA DE BÚSQUEDA Y EXPORTAR */}
+      <div className="flex w-full items-center justify-between">
+        <div className="relative w-full max-w-md">
+          <Search className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-400" />
+          <input
+            type="text"
+            placeholder={STRINGS.SEARCH_PLACEHOLDER}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-10 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all placeholder:text-slate-400 focus:border-[#1a4491] focus:ring-1 focus:ring-[#1a4491] outline-none"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X className="h-4.5 w-4.5" />
+            </button>
+          )}
+        </div>
+        
+        <button
+          onClick={() => {
+            const headers = [
+              "ID",
+              "OPERADOR",
+              "PUESTO",
+              "EQUIPO AUTONOMO",
+              "LIDER"
+            ];
+
+            if (metricMode === "autonomia") {
+              headers.push("BASICO", "INTERMEDIO", "AVANZADO", "PROMEDIO AUTONOMIA (%)");
+            } else if (metricMode === "cursos") {
+              headers.push("CURSOS TOTAL", "CURSOS APROBADOS", "CURSOS EN PROGRESO", "CURSOS PENDIENTES", "PROGRESO CURSOS (%)");
+            } else if (metricMode === "guias") {
+              headers.push("GUIAS L6 (%)", "GUIAS L7 (%)", "GUIAS L8 (%)", "PROGRESO GUIAS (%)");
+            }
+
+            const csvRows = [headers.join(",")];
+
+            filteredOperadores.forEach(({ operator }) => {
+              const row = [
+                operator.id,
+                `"${operator.nombre}"`,
+                `"${operator.puesto || ''}"`,
+                `"${operator.equipoAutonomo || 'Sin Equipo'}"`,
+                `"${operator.lider || ''}"`
+              ];
+
+              if (metricMode === "autonomia") {
+                row.push(
+                  operator.basico || 0,
+                  operator.intermedio || 0,
+                  operator.avanzado || 0,
+                  operator.autonomyScore ? operator.autonomyScore.toFixed(2) : 0
+                );
+              } else if (metricMode === "cursos") {
+                row.push(
+                  operator.cursosTotal || 0,
+                  operator.cursosAprobados || 0,
+                  operator.cursosEnProgreso || 0,
+                  operator.cursosPendientes || 0,
+                  operator.cursosProgress ? operator.cursosProgress.toFixed(2) : 0
+                );
+              } else if (metricMode === "guias") {
+                row.push(
+                  operator.guiasL6Progress !== undefined ? operator.guiasL6Progress.toFixed(2) : 0,
+                  operator.guiasL7Progress !== undefined ? operator.guiasL7Progress.toFixed(2) : 0,
+                  operator.guiasL8Progress !== undefined ? operator.guiasL8Progress.toFixed(2) : 0,
+                  operator.guiasProgress !== undefined ? operator.guiasProgress.toFixed(2) : 0
+                );
+              }
+              csvRows.push(row.join(","));
+            });
+
+            // Usamos BOM de UTF-8 para que Excel lo abra con los acentos correctos
+            const csvContent = new Uint8Array([0xEF, 0xBB, 0xBF, ...new TextEncoder().encode(csvRows.join("\n"))]);
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `Exportacion_Dashboard_${metricMode}_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider text-white shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer",
+            metricMode === "cursos" 
+                ? "bg-purple-700 hover:bg-purple-600 shadow-purple-500/20" 
+                : metricMode === "guias"
+                  ? "bg-emerald-700 hover:bg-emerald-600 shadow-emerald-500/20"
+                  : "bg-[#1a4491] hover:bg-blue-800 shadow-blue-900/20"
+          )}
+        >
+          <Download className="h-4 w-4" />
+          Exportar CSV
+        </button>
       </div>
+
 
       {/* 📋 TABLA FÍSICA */}
       <motion.div

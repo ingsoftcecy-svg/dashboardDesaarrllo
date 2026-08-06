@@ -267,7 +267,7 @@ export function useExcelData() {
             let localRows = rows ? JSON.parse(JSON.stringify(rows)) : [];
 
             // APLICAR CAMBIOS DE OPERADORES MODIFICADOS (Bajas, Modificaciones, Altas)
-            const baseInactiveIds = new Set(["32045556", "32188117"]);
+            const baseInactiveIds = new Set(["32045556", "32188117", "32231307"]); // 32231307 is Rodrigo Regalado
             
             // Combinar inactivos desde modificados
             Object.values(modificadosMap).forEach((mod: any) => {
@@ -316,6 +316,9 @@ export function useExcelData() {
                   equipo: mod.equipoAutonomo || "Sin Equipo",
                   lider: mod.lider || "No asignado"
                 };
+                if (mod.roles) {
+                  championMap[id] = mod.roles;
+                }
               }
 
               if (changed) {
@@ -395,6 +398,9 @@ export function useExcelData() {
                     equipo: mod.equipoAutonomo || "Sin Equipo",
                     lider: mod.lider || "No asignado"
                   };
+                  if (mod.roles) {
+                    championMap[mod.id] = mod.roles;
+                  }
 
                   localRows.push({
                     "Employee": `[${mod.id}] ${mod.nombre}`,
@@ -758,6 +764,47 @@ export function useExcelData() {
                 };
               }
             }
+
+            // INYECTAR OPERADORES MODIFICADOS QUE NO ESTÁN EN SKAP
+            Object.values(modificadosMap).forEach((mod: any) => {
+              if (mod.status === 'activo' && !baseInactiveIds.has(mod.id)) {
+                if (!opsMap[mod.id]) {
+                  const masterOp = centralizedOperators?.find((o: any) => o.id === mod.id);
+                  const mappedArea = mod.area || masterOp?.area || "desconocida";
+                  
+                  let finalArea = mappedArea.toLowerCase();
+                  if (finalArea.includes("cocimiento")) finalArea = "Warm Block";
+                  else if (finalArea.includes("frio") || finalArea.includes("frío")) finalArea = "Cold Block";
+                  else if (finalArea.includes("mantenimiento")) finalArea = "Brewing Maintenance";
+                  else finalArea = mappedArea;
+
+                  opsMap[mod.id] = {
+                    id: mod.id,
+                    nombre: mod.nombre || masterOp?.nombre || `Operador ${mod.id}`,
+                    puesto: mod.puesto || masterOp?.puesto || "Operador",
+                    basico: 0,
+                    intermedio: 0,
+                    avanzado: 0,
+                    autonomyScore: 0,
+                    noEvaluado: true,
+                    evaluacionesDetalle: [],
+                    champions: championMap[mod.id] || [],
+                    equipoAutonomo: mod.equipoAutonomo || masterOp?.equipoAutonomo || "Sin Equipo",
+                    lider: mod.lider || masterOp?.lider || "No asignado",
+                    roles: [],
+                    equipos: [],
+                    maxEquipos: 1,
+                    _count: 1,
+                    _area: finalArea,
+                    guiasProgress: 0,
+                    guiasL6Progress: 0,
+                    guiasL7Progress: 0,
+                    guiasL8Progress: 0,
+                    guiasEvaluations: {}
+                  };
+                }
+              }
+            });
 
             const cocimientosOps: (Operator & { autonomyScore: number, noEvaluado: boolean, _area: string })[] = [];
             const bloqueFrioOps: (Operator & { autonomyScore: number, noEvaluado: boolean, _area: string })[] = [];

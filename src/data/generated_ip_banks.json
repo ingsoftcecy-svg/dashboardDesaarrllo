@@ -1,0 +1,246 @@
+{
+  "ips_cocimientos": [
+    {
+      "pi": "% de apego a medios",
+      "kpi": "VIC Elaboracion Materiales"
+    },
+    {
+      "pi": "% Vaciado Filtro de aspiración",
+      "kpi": "Total Extract Losses"
+    },
+    {
+      "pi": "Apego a BOM de Coctos",
+      "kpi": "VIC Elaboracion Materiales"
+    },
+    {
+      "pi": "Calificación Pilar Gestión + Medios",
+      "kpi": "VPO score Nivel Excelencia"
+    },
+    {
+      "pi": "Calificación Pilar Logística",
+      "kpi": "VPO score Nivel Excelencia"
+    },
+    {
+      "pi": "Calificación Pilar Seguridad",
+      "kpi": "VPO score Nivel Excelencia"
+    },
+    {
+      "pi": "Cero impactos (FMS)",
+      "kpi": "Lesiones"
+    },
+    {
+      "pi": "Consumo a ordenes en un periodo de 24 hrs",
+      "kpi": "VIC Elaboracion Materiales"
+    },
+    {
+      "pi": "Cumplimiento a exactitud de inventarios",
+      "kpi": "VIC Elaboracion Materiales"
+    },
+    {
+      "pi": "Cumplimiento al plan de Autonomía",
+      "kpi": "Cumplimiento al Plan de Autonomia"
+    },
+    {
+      "pi": "Dias de autonomia de mat aux",
+      "kpi": "VIC Elaboracion Materiales"
+    },
+    {
+      "pi": "Fuga de grano o polvo durante recibo",
+      "kpi": "Lesiones"
+    },
+    {
+      "pi": "Fugas de polvo en Bodega",
+      "kpi": "Lesiones"
+    },
+    {
+      "pi": "Inventario ciclico",
+      "kpi": "VILC"
+    },
+    {
+      "pi": "Inventario en silos (medición de llenado de silos)",
+      "kpi": "Total Extract Losses"
+    },
+    {
+      "pi": "OSE",
+      "kpi": "Brewhouse OSE"
+    },
+    {
+      "pi": "PSM Dust Explosion",
+      "kpi": "Lesiones"
+    },
+    {
+      "pi": "TEL",
+      "kpi": "Total Extract Losses"
+    },
+    {
+      "pi": "Tiempo de exposición por atorones de cartón",
+      "kpi": "Brewhouse OSE"
+    },
+    {
+      "pi": "Tiempo disolución",
+      "kpi": "Brewhouse OSE"
+    },
+    {
+      "pi": "Velocidad Aspiracion",
+      "kpi": "Total Extract Losses"
+    }
+  ],
+  "ips_bloque_frio": [
+    {
+      "pi": "Apartados por Partículas",
+      "kpi": "Eficiencia de Calidad Elab. (Apartados)"
+    },
+    {
+      "pi": "Apego a BOMs",
+      "kpi": "VIC Elaboracion Materiales"
+    },
+    {
+      "pi": "BACKLOG (Pasado + futuro) cocimiento",
+      "kpi": "MPA"
+    },
+    {
+      "pi": "BSSI",
+      "kpi": "BQI"
+    },
+    {
+      "pi": "Calificación Pilar Ambiental",
+      "kpi": "VPO score Nivel Excelencia"
+    },
+    {
+      "pi": "Calificación Pilar Gente",
+      "kpi": "VPO score Nivel Excelencia"
+    },
+    {
+      "pi": "Calificación Pilar Gestión + Medios",
+      "kpi": "VPO score Nivel Excelencia"
+    },
+    {
+      "pi": "Calificación Pilar Logística",
+      "kpi": "VPO score Nivel Excelencia"
+    },
+    {
+      "pi": "Cambios al programa diario de Envasado por falta de cerveza",
+      "kpi": "Proceso Gobierno"
+    },
+    {
+      "pi": "Consumo de CO2 BBTs",
+      "kpi": "Consumo de CO2"
+    },
+    {
+      "pi": "Conteo al llenar",
+      "kpi": "Fermentation Consistency Index(FCI)"
+    },
+    {
+      "pi": "Control de extracciones de 8vo día",
+      "kpi": "Proceso Levadura"
+    },
+    {
+      "pi": "Cumplimiento a almacenamiento de cerveza y levadura en recuperación de cerveza",
+      "kpi": "Proceso Fermentación"
+    },
+    {
+      "pi": "Cumplimiento a Exactitud de Inventarios",
+      "kpi": "Exactitud de Inventarios Cuartos Fríos"
+    },
+    {
+      "pi": "Cumplimiento a IP Agua CFR",
+      "kpi": "Consumo de agua"
+    },
+    {
+      "pi": "Cumplimiento a PAE",
+      "kpi": "Cumplimiento al Plan de Autonomia"
+    },
+    {
+      "pi": "Cumplimiento a Recuperación de CO2",
+      "kpi": "Consumo de CO2"
+    },
+    {
+      "pi": "Cumplimiento a tiempo de llenado de TCC",
+      "kpi": "Proceso Fermentación"
+    },
+    {
+      "pi": "Cumplimiento a tiempo de purgado de TRUB",
+      "kpi": "Proceso Levadura"
+    },
+    {
+      "pi": "Cumplimiento al Layout de BBTs",
+      "kpi": "Proceso Gobierno"
+    },
+    {
+      "pi": "Cumplimiento al plan de Autonomía",
+      "kpi": "Cumplimiento al Plan de Autonomia"
+    },
+    {
+      "pi": "Descargas anormales Fermentación",
+      "kpi": "Indice de Carga Organica"
+    },
+    {
+      "pi": "DFE en Color BBT",
+      "kpi": "Brand Profile Index  (BPI)"
+    },
+    {
+      "pi": "Eficiencia CMF",
+      "kpi": "Total Extract Losses"
+    },
+    {
+      "pi": "Eficiencia Filtros",
+      "kpi": "Eficiencia en Filtracion de Cerveza"
+    },
+    {
+      "pi": "Exposiciones por fallas CMF",
+      "kpi": "Lesiones"
+    },
+    {
+      "pi": "Exposiciones por fallas filtros",
+      "kpi": "Lesiones"
+    },
+    {
+      "pi": "Hrs Tiempo Extra",
+      "kpi": "Costos por Tiempos Extra Totales"
+    },
+    {
+      "pi": "Ml en probeta de PVPP",
+      "kpi": "Proceso Filtración"
+    },
+    {
+      "pi": "MSA Cocimientos",
+      "kpi": "MPA"
+    },
+    {
+      "pi": "OSE",
+      "kpi": "Brewhouse OSE"
+    },
+    {
+      "pi": "Oxígeno Disuelto en BBT (Llenando-Lleno)",
+      "kpi": "Flavor Stability Index  (FSI )"
+    },
+    {
+      "pi": "Polifenoles en Corona",
+      "kpi": "Índice Sensorial"
+    },
+    {
+      "pi": "Temperatura al llenar TCC",
+      "kpi": "Fermentation Consistency Index(FCI)"
+    },
+    {
+      "pi": "Tiempo de afectación al envasado por cambio de BBT",
+      "kpi": "Downtime Envasado"
+    },
+    {
+      "pi": "Volumen de cerveza sin asignar",
+      "kpi": "Proceso Gobierno"
+    },
+    {
+      "pi": "Volumen filtrado por ciclo",
+      "kpi": "Total Extract Losses"
+    },
+    {
+      "pi": "Volumen refiltrado",
+      "kpi": "Proceso Filtración"
+    },
+    {
+      "pi": "ZBB + VIC MANTENIMIENTO",
+      "kpi": "ZBB"
+    }
+  ]
+}

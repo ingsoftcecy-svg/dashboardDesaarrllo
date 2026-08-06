@@ -12,7 +12,7 @@
     "id": "32043796",
     "nombre": "JUAN RAMON JIMENEZ",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS CAZADORES DEL AMARGOR",
     "lider": "FÁTIMA NEDITH GOMEZ MIRELES",
     "roles": []
@@ -39,7 +39,7 @@
     "id": "32043849",
     "nombre": "PEDRO ANTONIO URIBE",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -57,7 +57,7 @@
     "id": "32043880",
     "nombre": "JAIME CID",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -66,7 +66,7 @@
     "id": "32043886",
     "nombre": "RAFAEL CHAVEZ",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -75,7 +75,7 @@
     "id": "32043891",
     "nombre": "ARMANDO RAYZOLA",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -93,7 +93,7 @@
     "id": "32043902",
     "nombre": "ARTURO SAUCEDO",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -102,7 +102,7 @@
     "id": "32044036",
     "nombre": "VICTOR SOTO",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -111,7 +111,7 @@
     "id": "32044037",
     "nombre": "MANUEL DE JESUS CHAVEZ",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MOSTO-BOYS",
     "lider": "OBED CALVILLO RAMIREZ",
     "roles": []
@@ -120,7 +120,7 @@
     "id": "32044235",
     "nombre": "JESUS EDUARDO BRICEÑO",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -129,7 +129,7 @@
     "id": "32044246",
     "nombre": "MIGUEL ANGEL SANCHEZ",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -192,7 +192,7 @@
     "id": "32044502",
     "nombre": "ABEL GUILLERMO MAZATAN",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "CUCHILLAS",
     "lider": "JUAN SALAZAR BANDA",
     "roles": []
@@ -201,7 +201,7 @@
     "id": "32044513",
     "nombre": "HUMBERTO RODARTE",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -210,7 +210,7 @@
     "id": "32044514",
     "nombre": "LUIS MANUEL DOMINGUEZ",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -219,7 +219,7 @@
     "id": "32044751",
     "nombre": "JUAN MANUEL HUERTA",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -228,7 +228,7 @@
     "id": "32044760",
     "nombre": "MAURICIO ARELLANO",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -237,7 +237,7 @@
     "id": "32044771",
     "nombre": "RAFAEL MARTINEZ",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -246,7 +246,7 @@
     "id": "32044776",
     "nombre": "BENITO VALLE",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -255,7 +255,7 @@
     "id": "32044783",
     "nombre": "SANTIAGO HERRERA",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS PANCHITOS",
     "lider": "LUIS FERNANDO GUTIERREZ",
     "roles": []
@@ -273,7 +273,7 @@
     "id": "32044838",
     "nombre": "J MARIO TRUJILLO",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS CAZADORES DEL AMARGOR",
     "lider": "FÁTIMA NEDITH GOMEZ MIRELES",
     "roles": []
@@ -282,7 +282,7 @@
     "id": "32044839",
     "nombre": "JAIME LOPEZ",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MASH-RAINBOW",
     "lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
     "roles": []
@@ -291,7 +291,7 @@
     "id": "32044892",
     "nombre": "LEOBARDO VARELA",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS PANCHITOS",
     "lider": "LUIS FERNANDO GUTIERREZ",
     "roles": []
@@ -309,7 +309,7 @@
     "id": "32044983",
     "nombre": "RAUL BAÑUELOS",
     "puesto": "Operador de Molienda 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MOSTO-BOYS",
     "lider": "OBED CALVILLO RAMIREZ",
     "roles": []
@@ -318,7 +318,7 @@
     "id": "32045004",
     "nombre": "J JESUS RIVERA",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MOSTO-BOYS",
     "lider": "OBED CALVILLO RAMIREZ",
     "roles": []
@@ -336,7 +336,7 @@
     "id": "32045076",
     "nombre": "ERON GUARDADO",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -354,7 +354,7 @@
     "id": "32045116",
     "nombre": "JOSE LEANDRO MARTINEZ",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -363,7 +363,7 @@
     "id": "32045128",
     "nombre": "JESUS CALDERON",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -372,7 +372,7 @@
     "id": "32045134",
     "nombre": "PEDRO MALDONADO",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -381,7 +381,7 @@
     "id": "32045139",
     "nombre": "RICARDO ESPARZA",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -390,7 +390,7 @@
     "id": "32045149",
     "nombre": "ENRIQUE MEDINA",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -399,7 +399,7 @@
     "id": "32045357",
     "nombre": "GUSTAVO MELENCIANO",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -408,7 +408,7 @@
     "id": "32045396",
     "nombre": "JUAN GABRIEL HERNANDEZ",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -417,7 +417,7 @@
     "id": "32045409",
     "nombre": "ALBERTO NUÑEZ",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MASH-RAINBOW",
     "lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
     "roles": []
@@ -426,7 +426,7 @@
     "id": "32045410",
     "nombre": "RODOLFO CABRERA",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -435,7 +435,7 @@
     "id": "32045438",
     "nombre": "HUGO ALBERTO CARDONA",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS PANCHITOS",
     "lider": "LUIS FERNANDO GUTIERREZ",
     "roles": []
@@ -453,7 +453,7 @@
     "id": "32045510",
     "nombre": "J MANUEL RAYGOZA",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MASH-RAINBOW",
     "lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
     "roles": []
@@ -471,7 +471,7 @@
     "id": "32045572",
     "nombre": "J GUADALUPE GUZMAN",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MASH-RAINBOW",
     "lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
     "roles": []
@@ -480,7 +480,7 @@
     "id": "32045574",
     "nombre": "PEDRO PALOS",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -507,7 +507,7 @@
     "id": "32046259",
     "nombre": "JOSE CARLOS CARDONA",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MOSTO-BOYS",
     "lider": "OBED CALVILLO RAMIREZ",
     "roles": []
@@ -525,7 +525,7 @@
     "id": "32102191",
     "nombre": "MARIO ALBERTO ZAMARRIPA",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "CUCHILLAS",
     "lider": "JUAN SALAZAR BANDA",
     "roles": []
@@ -534,7 +534,7 @@
     "id": "32111307",
     "nombre": "FRANCISCO JAVIER VARELA",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -543,7 +543,7 @@
     "id": "32131972",
     "nombre": "OSCAR IVAN IBARRA",
     "puesto": "Operador de Molienda 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS PANCHITOS",
     "lider": "LUIS FERNANDO GUTIERREZ",
     "roles": []
@@ -552,7 +552,7 @@
     "id": "32132025",
     "nombre": "SERGIO MIGUEL PARRA",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -561,7 +561,7 @@
     "id": "32132054",
     "nombre": "RUBEN CARRILLO",
     "puesto": "Operador de Molienda 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS PANCHITOS",
     "lider": "LUIS FERNANDO GUTIERREZ",
     "roles": []
@@ -570,7 +570,7 @@
     "id": "32132055",
     "nombre": "JOSE AMADOR RODRIGUEZ",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MOSTO-BOYS",
     "lider": "OBED CALVILLO RAMIREZ",
     "roles": []
@@ -579,7 +579,7 @@
     "id": "32132194",
     "nombre": "HECTOR HUGO VALDEZ",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS PANCHITOS",
     "lider": "LUIS FERNANDO GUTIERREZ",
     "roles": []
@@ -588,7 +588,7 @@
     "id": "32137247",
     "nombre": "EDUARDO VALLE",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MOSTO-BOYS",
     "lider": "OBED CALVILLO RAMIREZ",
     "roles": []
@@ -597,7 +597,7 @@
     "id": "32142953",
     "nombre": "GERMAN RUEDAS",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -606,7 +606,7 @@
     "id": "32143106",
     "nombre": "VICTOR HUGO ZAPATA",
     "puesto": "Operador de BBT 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -615,7 +615,7 @@
     "id": "32144776",
     "nombre": "WILMAR YOEL GONZALEZ",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -624,7 +624,7 @@
     "id": "32144777",
     "nombre": "OSCAR CAMPOS",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -633,7 +633,7 @@
     "id": "32144778",
     "nombre": "JUAN FRANCISCO GARCIA",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -651,7 +651,7 @@
     "id": "32146003",
     "nombre": "LUIS FERNANDO ZAPATA",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -669,7 +669,7 @@
     "id": "32148846",
     "nombre": "RIGOBERTO MOTA",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MASH-RAINBOW",
     "lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
     "roles": []
@@ -678,7 +678,7 @@
     "id": "32148922",
     "nombre": "JUAN ANTONIO VALDEZ",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS CAZADORES DEL AMARGOR",
     "lider": "FÁTIMA NEDITH GOMEZ MIRELES",
     "roles": []
@@ -687,7 +687,7 @@
     "id": "32149237",
     "nombre": "HELMER DEL REAL",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "REYES DE LA MEZCLA",
     "lider": "RODRIGO REGALADO PALOMEQUE",
     "roles": []
@@ -696,7 +696,7 @@
     "id": "32149238",
     "nombre": "OSWALDO DELGADILLO",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -714,7 +714,7 @@
     "id": "32149605",
     "nombre": "JUAN MANUEL RODARTE",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -723,7 +723,7 @@
     "id": "32149607",
     "nombre": "JORGE ALBERTO ORTIZ",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -732,7 +732,7 @@
     "id": "32154634",
     "nombre": "EDGAR RENE DIAZ",
     "puesto": "Operador de BBT 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -741,7 +741,7 @@
     "id": "32157221",
     "nombre": "JESUS MENCHACA",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -759,7 +759,7 @@
     "id": "32173445",
     "nombre": "JOSE LUIS CAZARES",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MOSTO-BOYS",
     "lider": "OBED CALVILLO RAMIREZ",
     "roles": []
@@ -768,7 +768,7 @@
     "id": "32173446",
     "nombre": "JOSE EDUARDO ALVARADO",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -786,7 +786,7 @@
     "id": "32175115",
     "nombre": "NESTOR MONTOYA",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "REYES DE LA MEZCLA",
     "lider": "RODRIGO REGALADO PALOMEQUE",
     "roles": []
@@ -804,7 +804,7 @@
     "id": "32176720",
     "nombre": "JOSE REFUGIO LOPEZ",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "REYES DE LA MEZCLA",
     "lider": "RODRIGO REGALADO PALOMEQUE",
     "roles": []
@@ -813,7 +813,7 @@
     "id": "32177483",
     "nombre": "ALDO ADRIAN SIFUENTES",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MOSTO-BOYS",
     "lider": "OBED CALVILLO RAMIREZ",
     "roles": []
@@ -822,7 +822,7 @@
     "id": "32181712",
     "nombre": "CARLOS ADRIAN ROBLES",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "REYES DE LA MEZCLA",
     "lider": "RODRIGO REGALADO PALOMEQUE",
     "roles": []
@@ -831,7 +831,7 @@
     "id": "32183480",
     "nombre": "LUIS ARMANDO REYES",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "REYES DE LA MEZCLA",
     "lider": "RODRIGO REGALADO PALOMEQUE",
     "roles": []
@@ -840,7 +840,7 @@
     "id": "32186666",
     "nombre": "SAMANTHA MONTSERRAT ROJERO",
     "puesto": "Operador de Molienda 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MASH-RAINBOW",
     "lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
     "roles": []
@@ -849,7 +849,7 @@
     "id": "32188007",
     "nombre": "JOSE MANUEL VARELA",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS PANCHITOS",
     "lider": "LUIS FERNANDO GUTIERREZ",
     "roles": []
@@ -858,7 +858,7 @@
     "id": "32188009",
     "nombre": "ALDO ERNESTO SILVA",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -876,7 +876,7 @@
     "id": "32188513",
     "nombre": "GUILLERMO GERARDO GONZALEZ",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -885,7 +885,7 @@
     "id": "32196366",
     "nombre": "VICTOR HUGO ASCENCIO",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -894,7 +894,7 @@
     "id": "32196674",
     "nombre": "OSCAR RODRIGUEZ",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -903,7 +903,7 @@
     "id": "32197423",
     "nombre": "URIEL ESCOBEDO",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS CAZADORES DEL AMARGOR",
     "lider": "FÁTIMA NEDITH GOMEZ MIRELES",
     "roles": []
@@ -912,7 +912,7 @@
     "id": "32197427",
     "nombre": "EDGAR ZAMARRON",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MASH-RAINBOW",
     "lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
     "roles": []
@@ -921,7 +921,7 @@
     "id": "32197833",
     "nombre": "JORGE LUIS RODRIGUEZ",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -930,7 +930,7 @@
     "id": "32197834",
     "nombre": "LUIS ADOLFO MALDONADO",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -939,7 +939,7 @@
     "id": "32197835",
     "nombre": "MARIO ALBERTO REYES",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -948,7 +948,7 @@
     "id": "32197975",
     "nombre": "LUIS RICARDO VALDES",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "REYES DE LA MEZCLA",
     "lider": "RODRIGO REGALADO PALOMEQUE",
     "roles": []
@@ -957,7 +957,7 @@
     "id": "32198258",
     "nombre": "VALERIA NATALY CASTAÑON",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "CUCHILLAS",
     "lider": "JUAN SALAZAR BANDA",
     "roles": []
@@ -984,7 +984,7 @@
     "id": "32201712",
     "nombre": "JUAN CARLOS MORALES",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -993,7 +993,7 @@
     "id": "32201713",
     "nombre": "RODOLFO ESPARZA",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -1002,7 +1002,7 @@
     "id": "32202297",
     "nombre": "OMAR ALBERTO ROBLES",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS CAZADORES DEL AMARGOR",
     "lider": "FÁTIMA NEDITH GOMEZ MIRELES",
     "roles": []
@@ -1011,7 +1011,7 @@
     "id": "32204264",
     "nombre": "ADRIAN HERNANDEZ",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "CUCHILLAS",
     "lider": "JUAN SALAZAR BANDA",
     "roles": []
@@ -1020,7 +1020,7 @@
     "id": "32209189",
     "nombre": "EDGAR EMMANUEL JUAREZ ALBA",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS PANCHITOS",
     "lider": "LUIS FERNANDO GUTIERREZ",
     "roles": []
@@ -1029,7 +1029,7 @@
     "id": "32209454",
     "nombre": "JOSE LUIS MALDONADO",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "CUCHILLAS",
     "lider": "JUAN SALAZAR BANDA",
     "roles": []
@@ -1038,7 +1038,7 @@
     "id": "32209921",
     "nombre": "OSCAR EDUARDO VALDEZ",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -1047,7 +1047,7 @@
     "id": "32209922",
     "nombre": "JOSE GUADALUPE VALLE",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -1056,7 +1056,7 @@
     "id": "32213349",
     "nombre": "PEDRO LUIS RODRIGUEZ",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
@@ -1065,7 +1065,7 @@
     "id": "32213345",
     "nombre": "MANUEL DE JESUS FALCON",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -1074,7 +1074,7 @@
     "id": "32218817",
     "nombre": "MARCO AURELIO CUAUCOATL RAMIREZ",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS CAZADORES DEL AMARGOR",
     "lider": "FÁTIMA NEDITH GOMEZ MIRELES",
     "roles": []
@@ -1092,7 +1092,7 @@
     "id": "32222223",
     "nombre": "HECTOR MANUEL DE LA ROSA",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -1101,7 +1101,7 @@
     "id": "32222225",
     "nombre": "MANUEL DE JESUS DEL REAL",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "CUCHILLAS",
     "lider": "JUAN SALAZAR BANDA",
     "roles": []
@@ -1110,7 +1110,7 @@
     "id": "32222222",
     "nombre": "EFREN GONZALEZ CONTRERAS",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -1119,7 +1119,7 @@
     "id": "32222227",
     "nombre": "CARLOS RIVERA",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "MASH-RAINBOW",
     "lider": "RODRÍGUEZ RANGEL JOSÉ LUIS",
     "roles": []
@@ -1128,7 +1128,7 @@
     "id": "32222224",
     "nombre": "RICARDO ESTEBAN JARAMILLO",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -1137,7 +1137,7 @@
     "id": "32224001",
     "nombre": "SHERLYN GARCIA",
     "puesto": "Operador de BBT 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -1146,7 +1146,7 @@
     "id": "32224377",
     "nombre": "CARLOS EDUARDO ORNEDO",
     "puesto": "Operador de BBT 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -1155,7 +1155,7 @@
     "id": "32231910",
     "nombre": "ARIADNNE MAGDALENA TORRES",
     "puesto": "Operador de Filtración de Cerveza 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "MIGUEL ANGEL RIVERA MUÑOZ",
     "roles": []
@@ -1164,7 +1164,7 @@
     "id": "32231911",
     "nombre": "ANA PAOLA PERERA",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
@@ -1173,7 +1173,7 @@
     "id": "32231912",
     "nombre": "BETSAIDA GUERRERO",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "CUCHILLAS",
     "lider": "JUAN SALAZAR BANDA",
     "roles": []
@@ -1182,7 +1182,7 @@
     "id": "32233326",
     "nombre": "RAFAEL VERA",
     "puesto": "Operador de Molienda 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS CAZADORES DEL AMARGOR",
     "lider": "FÁTIMA NEDITH GOMEZ MIRELES",
     "roles": []
@@ -1191,7 +1191,7 @@
     "id": "32233327",
     "nombre": "ISAI SOLORZANO",
     "puesto": "Operador de Fermentación 2.0",
-    "area": "mantenimiento",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "RAUL DAVID CORTES ALANIZ",
     "roles": []
@@ -1200,7 +1200,7 @@
     "id": "32237827",
     "nombre": "CONCEPCION REYES",
     "puesto": "Operador de Materias Primas 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "CUCHILLAS",
     "lider": "JUAN SALAZAR BANDA",
     "roles": []
@@ -1209,311 +1209,311 @@
     "id": "32237830",
     "nombre": "ERIKA IVOONE IBARRA",
     "puesto": "Operador de Maceración 2.0",
-    "area": "mantenimiento",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS CAZADORES DEL AMARGOR",
     "lider": "FÁTIMA NEDITH GOMEZ MIRELES",
     "roles": []
   },
   {
     "id": "32043301",
-    "nombre": "Operador 32043301",
+    "nombre": "EDUARDO NERI DE LUNA",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "mantenimiento",
     "equipoAutonomo": "NAHUALES",
     "lider": "LUIS MANUEL GARCIA VICTORIO",
     "roles": []
   },
   {
     "id": "32043783",
-    "nombre": "Operador 32043783",
+    "nombre": "PEDRO RODRIGUEZ GUERRERO",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "BREWMAN",
     "lider": "RUBEN EDGARDO OLIVA ESPINOSA",
     "roles": []
   },
   {
     "id": "32043857",
-    "nombre": "Operador 32043857",
+    "nombre": "JUAN CARLOS CALVILLO GARAY",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "mantenimiento",
     "equipoAutonomo": "MUNICH",
     "lider": "RUBEN EDGARDO OLIVA ESPINOSA",
     "roles": []
   },
   {
     "id": "32044049",
-    "nombre": "Operador 32044049",
+    "nombre": "RAUL DAVID CORTES ALANIZ",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "bloque frio",
     "equipoAutonomo": "BRAVOS DEL FRIO",
     "lider": "JAIME ALEJANDRO LAGUNAS CARRERA",
     "roles": []
   },
   {
     "id": "32044447",
-    "nombre": "Operador 32044447",
+    "nombre": "ROGELIO MARTINEZ ALVARADO",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS CHAMBINES DE FERMENTACIÓN",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
   },
   {
     "id": "32044518",
-    "nombre": "Operador 32044518",
+    "nombre": "RODRÍGUEZ RANGEL JOSÉ LUIS",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "MASH-RAINBOW",
     "lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
     "roles": []
   },
   {
     "id": "32044762",
-    "nombre": "Operador 32044762",
+    "nombre": "RUBEN EDGARDO OLIVA ESPINOSA",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "BREWMAN",
     "lider": "AXEL GUILLEN RAMÍREZ",
     "roles": []
   },
   {
     "id": "32044788",
-    "nombre": "Operador 32044788",
+    "nombre": "OSCAR NUÑEZ CALZADA",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS CAZADORES DEL AMARGOR",
     "lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
     "roles": []
   },
   {
     "id": "32044914",
-    "nombre": "Operador 32044914",
+    "nombre": "ADRIAN DIAZ MARRUFO",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "BREWMAN",
     "lider": "AXEL GUILLEN RAMÍREZ",
     "roles": []
   },
   {
     "id": "32045014",
-    "nombre": "Operador 32045014",
+    "nombre": "J JESUS ALVARADO TENORIO",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "BREWMAN",
     "lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
     "roles": []
   },
   {
     "id": "32045174",
-    "nombre": "Operador 32045174",
+    "nombre": "MIGUEL ANGEL RIVERA MUÑOZ",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS BRONCOS",
     "lider": "JAIME ALEJANDRO LAGUNAS CARRERA",
     "roles": []
   },
   {
     "id": "32045378",
-    "nombre": "Operador 32045378",
+    "nombre": "JOSÉ FRANCISCO TORRES LÓPEZ",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS PANCHITOS",
     "lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
     "roles": []
   },
   {
     "id": "32045472",
-    "nombre": "Operador 32045472",
+    "nombre": "JOSE BENJAMIN RAMIREZ RAMIREZ",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "BREWMAN",
     "lider": "RUBEN EDGARDO OLIVA ESPINOSA",
     "roles": []
   },
   {
     "id": "32045495",
-    "nombre": "Operador 32045495",
+    "nombre": "LUIS MANUEL GARCIA VICTORIO",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "mantenimiento",
     "equipoAutonomo": "NAHUALES",
     "lider": "RUBEN EDGARDO OLIVA ESPINOSA",
     "roles": []
   },
   {
     "id": "32045531",
-    "nombre": "Operador 32045531",
+    "nombre": "JUAN SALAZAR BANDA",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "CUCHILLAS",
     "lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
     "roles": []
   },
   {
     "id": "32045961",
-    "nombre": "Operador 32045961",
+    "nombre": "JAIME ALEJANDRO LAGUNAS CARRERA",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "BREWMAN",
     "lider": "AXEL GUILLEN RAMÍREZ",
     "roles": []
   },
   {
     "id": "32046063",
-    "nombre": "Operador 32046063",
+    "nombre": "TOPILTZIN TONATIUH I CURIEL CABRAL",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "BREWMAN",
     "lider": "JAIME ALEJANDRO LAGUNAS CARRERA",
     "roles": []
   },
   {
     "id": "32052556",
-    "nombre": "Operador 32052556",
+    "nombre": "AXEL GUILLEN RAMIREZ",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "BREWMAN",
     "lider": "ERNESTO ANGEL RANGEL",
     "roles": []
   },
   {
     "id": "32052750",
-    "nombre": "Operador 32052750",
+    "nombre": "OSCAR GUILLERMO MEJIA GARCIA",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "BREWMAN",
     "lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
     "roles": []
   },
   {
     "id": "32052981",
-    "nombre": "Operador 32052981",
+    "nombre": "JUAN JOSE MEJIA MONTOYA",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JAIME ALEJANDRO LAGUNAS CARRERA",
     "roles": []
   },
   {
     "id": "32063998",
-    "nombre": "Operador 32063998",
+    "nombre": "JUAN CARLOS CEBALLOS",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "BREWMAN",
     "lider": "RUBEN EDGARDO OLIVA ESPINOSA",
     "roles": []
   },
   {
     "id": "32132858",
-    "nombre": "Operador 32132858",
+    "nombre": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "BREWMAN",
     "lider": "AXEL GUILLEN RAMÍREZ",
     "roles": []
   },
   {
     "id": "32143661",
-    "nombre": "Operador 32143661",
+    "nombre": "SAMUEL MONTES JUAREZ",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS CHAMBINES DE FERMENTACIÓN",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
   },
   {
     "id": "32144668",
-    "nombre": "Operador 32144668",
+    "nombre": "OBED CALVILLO RAMIREZ",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "MOSTO-BOYS",
     "lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
     "roles": []
   },
   {
     "id": "32146677",
-    "nombre": "Operador 32146677",
+    "nombre": "IVAN ALEJANDRO ROJERO MALDONADO",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "JAIME ALEJANDRO LAGUNAS CARRERA",
     "roles": []
   },
   {
     "id": "32146683",
-    "nombre": "Operador 32146683",
+    "nombre": "OSCAR MANUEL GONZALEZ BOTELLO",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "BREWMAN",
     "lider": "AXEL GUILLEN RAMÍREZ",
     "roles": []
   },
   {
     "id": "32151919",
-    "nombre": "Operador 32151919",
+    "nombre": "PAOLA CRISTINA OLIVARES SANCHEZ",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "MOSTO-BOYS",
     "lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
     "roles": []
   },
   {
     "id": "32173435",
-    "nombre": "Operador 32173435",
+    "nombre": "HECTOR ALEJANDRO CRISTERNA CRUZ",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "mantenimiento",
     "equipoAutonomo": "NAHUALES",
     "lider": "LUIS MANUEL GARCIA VICTORIO",
     "roles": []
   },
   {
     "id": "32174889",
-    "nombre": "Operador 32174889",
+    "nombre": "FÁTIMA NEDITH GOMEZ MIRELES",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS CAZADORES DEL AMARGOR",
     "lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
     "roles": []
   },
   {
     "id": "32197863",
-    "nombre": "Operador 32197863",
+    "nombre": "CESAR RODRIGUEZ BANDA",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "bloque frio",
     "equipoAutonomo": "ANDAMOS CON TODO",
     "lider": "JUAN JOSE MEJIA MONTOYA",
     "roles": []
   },
   {
     "id": "32209640",
-    "nombre": "Operador 32209640",
+    "nombre": "LUIS FERNANDO GUTIERREZ",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "cocimientos",
     "equipoAutonomo": "LOS PANCHITOS",
     "lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
     "roles": []
   },
   {
     "id": "32231307",
-    "nombre": "Operador 32231307",
+    "nombre": "RODRIGO REGALADO PALOMEQUE",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "bloque frio",
     "equipoAutonomo": "REYES DE LA MEZCLA",
     "lider": "CLAUDIA ALEXANDRA ALVAREZ BARBA",
     "roles": []
   },
   {
     "id": "32244174",
-    "nombre": "Operador 32244174",
+    "nombre": "ALEXIS BERLIN ALVAREZ CORONA",
     "puesto": "Desconocido",
-    "area": "desconocida",
+    "area": "bloque frio",
     "equipoAutonomo": "LOS FUERTES DEL FRIO",
     "lider": "IVAN ALEJANDRO ROJERO MALDONADO",
     "roles": []
   },
   {
     "id": "SHARP",
-    "nombre": "Operador SHARP",
+    "nombre": "INTEGRANTES",
     "puesto": "Desconocido",
     "area": "desconocida",
     "equipoAutonomo": "NOMBRE DEL EQUIPO",

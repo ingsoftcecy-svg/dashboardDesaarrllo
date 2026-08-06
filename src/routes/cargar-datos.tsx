@@ -201,6 +201,7 @@ function CargarDatos() {
   const [formArea, setFormArea] = useState("Warm Block");
   const [formEquipoAutonomo, setFormEquipoAutonomo] = useState("");
   const [formLider, setFormLider] = useState("");
+  const [formChampions, setFormChampions] = useState("");
   const [formStatus, setFormStatus] = useState<"activo" | "inactivo">("activo");
   const [isEditing, setIsEditing] = useState(false);
   const [isManualEditing, setIsManualEditing] = useState(false);
@@ -240,20 +241,21 @@ function CargarDatos() {
 
   const EQUIPOS_POR_AREA: Record<string, { name: string, defaultLeader: string }[]> = {
     "Warm Block": [
-      { name: "CAZADORES_AMARGOR", defaultLeader: "EDUARDO NERI DE LUNA" },
-      { name: "REYES_MEZCLA", defaultLeader: "RODRIGO REGALADO PALOMEQUE" },
-      { name: "CUCHILLA", defaultLeader: "FILIBERTO PINEDO RODRIGUEZ" },
-      { name: "MASHRAINBOW", defaultLeader: "SERGIO TRUJILLO GUARDADO" },
-      { name: "MOSTOBOYS", defaultLeader: "ANDRES SARABIA RODARTE" },
-      { name: "PANCHITOS", defaultLeader: "JOSÉ FRANCISCO TORRES LÓPEZ" }
+      { name: "LOS CAZADORES DEL AMARGOR", defaultLeader: "FÁTIMA NEDITH GOMEZ MIRELES" },
+      { name: "REYES DE LA MEZCLA", defaultLeader: "RODRIGO REGALADO PALOMEQUE" },
+      { name: "CUCHILLAS", defaultLeader: "JUAN SALAZAR BANDA" },
+      { name: "MASH-RAINBOW", defaultLeader: "RODRÍGUEZ RANGEL JOSÉ LUIS" },
+      { name: "MOSTO-BOYS", defaultLeader: "OBED CALVILLO RAMIREZ" },
+      { name: "LOS PANCHITOS", defaultLeader: "JOSÉ FRANCISCO TORRES LÓPEZ" }
     ],
     "Cold Block": [
-      { name: "BRONCOS", defaultLeader: "EDUARDO ESCAPITA" },
-      { name: "LOS_BRAVOS", defaultLeader: "MARCO ANTONIO MENCHACA PEREZ" },
-      { name: "LOS_FUERTES", defaultLeader: "VICTOR HUGO ASCENCIO LEYVA" }
+      { name: "LOS BRONCOS", defaultLeader: "MIGUEL ANGEL RIVERA MUÑOZ" },
+      { name: "BRAVOS DEL FRIO", defaultLeader: "RAUL DAVID CORTES ALANIZ" },
+      { name: "LOS FUERTES DEL FRIO", defaultLeader: "IVAN ALEJANDRO ROJERO MALDONADO" },
+      { name: "ANDAMOS CON TODO", defaultLeader: "JUAN JOSE MEJIA MONTOYA" }
     ],
     "Brewing Maintenance": [
-      { name: "MUNICH", defaultLeader: "GERARDO ZUÑIGA" },
+      { name: "MUNICH", defaultLeader: "JUAN CARLOS CALVILLO GARAY" },
       { name: "NAHUALES", defaultLeader: "LUIS MANUEL GARCIA VICTORIO" }
     ]
   };
@@ -292,12 +294,18 @@ function CargarDatos() {
   };
 
   const handleSelectOperatorToEdit = (op: any) => {
+    let mappedArea = op.departamento || op.area || "Warm Block";
+    if (mappedArea.toLowerCase() === "cocimientos") mappedArea = "Warm Block";
+    if (mappedArea.toLowerCase() === "bloque frio") mappedArea = "Cold Block";
+    if (mappedArea.toLowerCase() === "mantenimiento") mappedArea = "Brewing Maintenance";
+    
     setFormId(op.id);
     setFormNombre(op.nombre || op.name || "");
     setFormPuesto(op.puesto || "Integrante");
-    setFormArea(op.departamento || op.area || "Warm Block");
+    setFormArea(mappedArea);
     setFormEquipoAutonomo(op.equipoAutonomo || op.equipo || "");
     setFormLider(op.lider || "");
+    setFormChampions(op.roles && op.roles.length > 0 ? op.roles[0] : "");
     setFormStatus(op.status || "activo");
     setIsEditing(true);
     setIsManualEditing(!!op.isManual);
@@ -310,6 +318,7 @@ function CargarDatos() {
     setFormArea("Warm Block");
     setFormEquipoAutonomo("");
     setFormLider("");
+    setFormChampions("");
     setFormStatus("activo");
     setIsEditing(false);
     setIsManualEditing(false);
@@ -330,6 +339,7 @@ function CargarDatos() {
         area: formArea,
         equipoAutonomo: formEquipoAutonomo || "Sin Equipo",
         lider: formLider.trim() || "No asignado",
+        roles: formChampions ? [formChampions] : [],
         status: formStatus,
         isManual: isEditing ? isManualEditing : true,
         updatedAt: new Date().toISOString()
@@ -423,6 +433,7 @@ function CargarDatos() {
         departamento: op.departamento,
         equipoAutonomo: op.equipo,
         lider: "No asignado",
+        roles: op.roles || [],
         status: "activo",
         isManual: false,
         isModified: false
@@ -439,6 +450,7 @@ function CargarDatos() {
           departamento: mod.area,
           equipoAutonomo: mod.equipoAutonomo,
           lider: mod.lider,
+          roles: (mod.roles && mod.roles.length > 0) ? mod.roles : (existing.roles || []),
           status: mod.status,
           isModified: true
         });
@@ -450,6 +462,7 @@ function CargarDatos() {
           departamento: mod.area,
           equipoAutonomo: mod.equipoAutonomo,
           lider: mod.lider,
+          roles: mod.roles || [],
           status: mod.status,
           isManual: true,
           isModified: false
@@ -457,7 +470,7 @@ function CargarDatos() {
       }
     });
 
-    return Array.from(listMap.values());
+    return Array.from(listMap.values()).filter((op: any) => op.status !== 'inactivo');
   }, [operators, modificados]);
 
   const filteredCombinedOperators = useMemo(() => {
@@ -686,179 +699,23 @@ function CargarDatos() {
             console.error("Error loading courses summary for list:", err);
           }
 
-          // Cargar catálogos fijos (eac, eabf, base_equipos) con fallback local
-          const eaMap: Record<string, string> = {};
-          let eacList: any[] = [];
-          let eabfList: any[] = [];
+          const res = await fetch("/operators.json");
+          if (!res.ok) throw new Error("Failed to fetch operators.json");
+          const data = await res.json();
           
-          try {
-            const catalogSnap = await getDoc(doc(db, "config_dashboard", "catalogos_fijos"));
-            const catData = catalogSnap.exists() ? catalogSnap.data() : {};
-            
-            // Cargar EAC con fallback
-            eacList = catData.eac || [];
-            if (!Array.isArray(eacList) || eacList.length === 0) {
-              eacList = [];
-              try {
-                const res = await fetch("/eac.json");
-                if (res.ok) {
-                  const data = await res.json();
-                  if (Array.isArray(data)) eacList = data;
-                }
-              } catch (e) {
-                console.error("Local fallback for eac failed:", e);
-              }
-            }
-            
-            // Cargar EABF con fallback
-            eabfList = catData.eabf || [];
-            if (!Array.isArray(eabfList) || eabfList.length === 0) {
-              eabfList = [];
-              try {
-                const res = await fetch("/eabf.json");
-                if (res.ok) {
-                  const data = await res.json();
-                  if (Array.isArray(data)) eabfList = data;
-                }
-              } catch (e) {
-                console.error("Local fallback for eabf failed:", e);
-              }
-            }
-            
-            // Cargar Base Equipos con fallback
-            let baseEquipos = catData.base_equipos || [];
-            if (!Array.isArray(baseEquipos) || baseEquipos.length === 0) {
-              baseEquipos = [];
-              try {
-                const res = await fetch("/base.json");
-                if (res.ok) {
-                  const data = await res.json();
-                  if (Array.isArray(data)) baseEquipos = data;
-                }
-              } catch (e) {
-                console.error("Local fallback for base_equipos failed:", e);
-              }
-            }
-
-            if (Array.isArray(baseEquipos)) {
-              baseEquipos.forEach((row: any) => {
-                const sharp = row["ID Sharp"] || row["SHARP"] || row["sharp"];
-                const equipo = row["Nombre del equipo "] || row["Nombre del equipo"] || row["Equipo"] || "Sin Equipo";
-                if (sharp) {
-                  eaMap[String(sharp).trim()] = String(equipo).trim();
-                }
-              });
-            }
-          } catch (err) {
-            console.error("Error loading fixed catalogs for grid mapping:", err);
-          }
-
-          const q = query(collection(db, "historicos_excel"));
-          const snap = await getDocs(q);
-          
-          let skap: any[] = [];
-          if (!snap.empty) {
-            const sortedDocs = [...snap.docs].sort((a, b) => b.id.localeCompare(a.id));
-            const docData = sortedDocs[0].data();
-            skap = docData.datos_skap || [];
-          } else {
-            try {
-              const res = await fetch("/datos.json");
-              if (res.ok) {
-                const data = await res.json();
-                if (Array.isArray(data)) skap = data;
-              }
-            } catch (e) {
-              console.error("Local fallback for datos.json failed:", e);
-            }
-          }
-
-          // Combinar todas las fuentes de operadores
-          const combinedRows: { row: any, sourceArea: string }[] = [];
-          
-          if (Array.isArray(skap)) {
-            skap.forEach((row: any) => {
-              combinedRows.push({
-                row,
-                sourceArea: getRowValue(row, ["area", "departamento", "seccion"])
-              });
-            });
-          }
-
-          if (Array.isArray(eacList)) {
-            eacList.forEach((row: any) => {
-              combinedRows.push({
-                row,
-                sourceArea: "Warm Block"
-              });
-            });
-          }
-
-          if (Array.isArray(eabfList)) {
-            eabfList.forEach((row: any) => {
-              combinedRows.push({
-                row,
-                sourceArea: "Cold Block"
-              });
-            });
-          }
-
-          const parsedOpsMap = new Map<string, any>();
-          combinedRows.forEach(({ row, sourceArea }) => {
-            const empMatch = row["Employee"] ? String(row["Employee"]).match(/\[(\d+)\]\s+(.*)/) : null;
-            let id = empMatch ? empMatch[1] : "";
-            let name = empMatch ? empMatch[2] : row["Employee"] || "";
-
-            // Fallback para eac y eabf (que usan SHARP y Integrante/NOMBRE)
-            if (!id && row["SHARP"]) {
-              id = String(row["SHARP"]).trim();
-              name = row["Integrante"] || row["NOMBRE"] || "Desconocido";
-            }
-
-            if (!id || id === "undefined" || id === "NaN") return;
-            
-            const puesto = row["SKAP Position"] || row["Position"] || row["Puesto en en Worday"] || row["PUESTO"] || "Operador";
-            const depto = sourceArea || "Sin Departamento";
-            
-            // Buscar equipo en eaMap, y si no está, intentar sacarlo directamente de las columnas del registro (Nombre del Equipo, NUEVO EQUIPO)
-            let equipo = eaMap[id];
-            if (!equipo) {
-              equipo = row["Nombre del Equipo"] || row["NUEVO EQUIPO "] || row["NUEVO EQUIPO"] || "Sin Equipo";
-            }
-
-            if (parsedOpsMap.has(id)) {
-              const existing = parsedOpsMap.get(id);
-              if (!existing.puestos.includes(puesto)) {
-                existing.puestos.push(puesto);
-              }
-              if (existing.departamento === "Sin Departamento" && depto !== "Sin Departamento") {
-                existing.departamento = depto;
-              }
-              if (existing.equipo === "Sin Equipo" && equipo !== "Sin Equipo") {
-                existing.equipo = equipo;
-              }
-            } else {
-              parsedOpsMap.set(id, { 
-                id, 
-                name, 
-                puestos: [puesto],
-                departamento: depto,
-                equipo: equipo
-              });
-            }
-          });
-          
-          const parsedOps = Array.from(parsedOpsMap.values()).map(op => ({
+          const parsedOps = data.map((op: any) => ({
             id: op.id,
-            name: op.name,
-            puesto: op.puestos.join(" / "),
-            departamento: op.departamento,
-            equipo: op.equipo
+            name: op.nombre,
+            puesto: op.puesto,
+            departamento: op.area || "Sin Departamento",
+            equipo: op.equipoAutonomo || "Sin Equipo",
+            lider: op.lider || "No asignado",
+            roles: op.roles || [],
           }));
-            
+          
           setOperators(parsedOps);
         } catch (err) {
-          console.error("Error loading operators for cursos grid:", err);
+          console.error("Error loading operators:", err);
         }
       };
       loadOperators();
@@ -2778,8 +2635,13 @@ function CargarDatos() {
                         required
                         value={formNombre}
                         onChange={(e) => setFormNombre(e.target.value)}
+                        readOnly={isEditing}
                         placeholder="Ej: JUAN CARLOS RAMIREZ"
-                        className="w-full rounded-xl bg-slate-50 px-3 py-2 text-xs font-bold text-slate-800 outline-none border border-slate-200 focus:border-[#1a4491] focus:bg-white transition-all"
+                        className={`w-full rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none border transition-all ${
+                          isEditing
+                            ? "bg-slate-50 border-slate-100 cursor-not-allowed opacity-70"
+                            : "bg-slate-50 border-slate-200 focus:border-[#1a4491] focus:bg-white"
+                        }`}
                       />
                     </div>
 
@@ -2831,15 +2693,22 @@ function CargarDatos() {
 
                     <div>
                       <label className="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1">
-                        Líder de Equipo
+                        Champion
                       </label>
-                      <input
-                        type="text"
-                        value={formLider}
-                        onChange={(e) => setFormLider(e.target.value)}
-                        placeholder="Nombre del Líder..."
+                      <select
+                        value={formChampions}
+                        onChange={(e) => setFormChampions(e.target.value)}
                         className="w-full rounded-xl bg-slate-50 px-3 py-2 text-xs font-bold text-slate-800 outline-none border border-slate-200 focus:border-[#1a4491] focus:bg-white transition-all"
-                      />
+                      >
+                        <option value="">Ninguno</option>
+                        <option value="seguridad">Seguridad (Safety)</option>
+                        <option value="calidad">Calidad (Quality)</option>
+                        <option value="ambiental">Ambiental (Environment)</option>
+                        <option value="mantenimiento">Mantenimiento</option>
+                        <option value="gestion">Gestión</option>
+                        <option value="gente">Gente (People)</option>
+                        <option value="logistica">Logística</option>
+                      </select>
                     </div>
 
                     <div>
