@@ -454,7 +454,7 @@ function CargarDatos() {
           status: mod.status,
           isModified: true
         });
-      } else {
+      } else if (mod.isManual === true) {
         listMap.set(mod.id, {
           id: mod.id,
           nombre: mod.nombre,
@@ -1730,12 +1730,27 @@ function CargarDatos() {
       if (archivoDatos) {
         setLogProceso(prev => [...prev, "⏳ Analizando filas de DATOS.xlsx..."]);
         const filas = await parsearExcel(archivoDatos);
+        
+        const nuevosEncontrados = new Map<string, string>(); // id -> nombre
+
         filas.forEach((fila) => {
           // Filtrar filas vacías o de resumen que no tienen un empleado válido
           const colEmp = Object.keys(fila).find(k => k.toLowerCase().trim() === 'employee');
           const nombreEmpleado = colEmp ? String(fila[colEmp]).trim() : '';
           if (!nombreEmpleado || nombreEmpleado.toLowerCase() === 'undefined') {
             return;
+          }
+
+          const match = nombreEmpleado.match(/\[(\d+)\]\s*(.*)/);
+          if (match) {
+            const empId = match[1].trim();
+            let empNombre = match[2].trim();
+            if (empId === "32111307") empNombre = "FRANCISCO JAVIER VARELA";
+            if (empId === "32045556") empNombre = "VICTOR MANUEL REYES VALLE";
+
+            if (!combinedOperators.find((op: any) => op.id === empId)) {
+              nuevosEncontrados.set(empId, empNombre);
+            }
           }
 
           const colFecha = Object.keys(fila).find(k => k.toLowerCase().includes('assessment') || (k.toLowerCase().includes('fecha') && !k.toLowerCase().includes('compromiso')));
@@ -1750,6 +1765,32 @@ function CargarDatos() {
             gruposPorSemana[semanaID].datos_skap.push(fila);
           }
         });
+
+        if (nuevosEncontrados.size > 0) {
+          const listaNuevos = Array.from(nuevosEncontrados.entries()).map(([id, nom]) => `- ${nom} (${id})`).join('\n');
+          const confirmar = window.confirm(`⚠️ Se encontraron integrantes en el Excel que NO están en tu lista oficial:\n\n${listaNuevos}\n\n¿Deseas agregarlos al sistema automáticamente como altas manuales?\n(Si son personas que ya se fueron de la empresa, haz click en "Cancelar").`);
+          
+          if (confirmar) {
+            setLogProceso(prev => [...prev, `💾 Guardando ${nuevosEncontrados.size} colaboradores nuevos detectados...`]);
+            for (const [id, nombre] of nuevosEncontrados.entries()) {
+              await setDoc(doc(db!, "operadores_modificados", id), {
+                id,
+                nombre: nombre.toUpperCase(),
+                puesto: "Desconocido",
+                area: "desconocida",
+                equipoAutonomo: "Sin Equipo",
+                lider: "No asignado",
+                roles: [],
+                status: "activo",
+                isManual: true,
+                updatedAt: new Date().toISOString()
+              });
+            }
+            setLogProceso(prev => [...prev, `✅ Nuevos colaboradores agregados exitosamente.`]);
+          } else {
+            setLogProceso(prev => [...prev, `⏭️ Se ignoraron ${nuevosEncontrados.size} colaboradores no registrados.`]);
+          }
+        }
       }
 
       if (archivoBpre) {
