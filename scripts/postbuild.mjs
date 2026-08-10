@@ -52,13 +52,14 @@ async function prerender() {
     }
     const scriptFiles = fs.readdirSync(scriptsSrc);
     scriptFiles.forEach(f => {
+      if (f.endsWith('.bat') || f.endsWith('.exe')) return; // Skip executables forbidden by Firebase Hosting
       const srcFile = path.join(scriptsSrc, f);
       const dstFile = path.join(scriptsDst, f);
       if (fs.statSync(srcFile).isFile()) {
         fs.copyFileSync(srcFile, dstFile);
       }
     });
-    console.log('✅ Copied all scripts (.bat, .ps1) to dist/client/scripts for Portal Secreto.');
+    console.log('✅ Copied PowerShell and JS scripts to dist/client/scripts for Portal Secreto.');
 
   } catch (e) {
     console.error('❌ Prerender failed:', e);
