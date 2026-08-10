@@ -604,7 +604,7 @@ export function useExcelData() {
                     
                   if (parsed.niveles && parsed.niveles[level]) {
                     const cats = parsed.niveles[level].categorias || [];
-                    const evalCats = cats.filter((c: any) => (c.habilidades || []).some((h: any) => h.marcado));
+                    const evalCats = cats.filter((c: any) => (c.habilidades || []).length > 0);
                     if (evalCats.length > 0) {
                       let totalHabs = 0;
                       let aprobadas = 0;

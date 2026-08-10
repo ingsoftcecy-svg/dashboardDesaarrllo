@@ -88,18 +88,21 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
     return importedData.niveles[activeLevel] || null;
   }, [importedData, activeLevel]);
 
-  // Filtrar ÚNICAMENTE categorías que tengan al menos 1 habilidad aprobada / evaluada
+  // Filtrar categorías que contengan habilidades definidas
   const evaluatedCategories = useMemo(() => {
     if (!activeLevelData || !activeLevelData.categorias) return [];
     return activeLevelData.categorias.filter((cat: any) => {
       const habs = cat.habilidades || [];
-      const aprobadas = habs.filter((h: any) => h.marcado).length;
-      return aprobadas > 0;
+      return habs.length > 0;
     });
   }, [activeLevelData]);
 
-  // Porcentaje del nivel activo recalculado únicamente sobre las categorías que le corresponden al colaborador
+  // Porcentaje del nivel activo recalculado sobre el total de habilidades del nivel
   const levelPercentage = useMemo(() => {
+    if (activeLevelData && activeLevelData.porcentajeAvanceGlobal) {
+      const parsed = parseFloat(String(activeLevelData.porcentajeAvanceGlobal).replace('%', ''));
+      if (!isNaN(parsed) && parsed >= 0) return parsed;
+    }
     if (evaluatedCategories && evaluatedCategories.length > 0) {
       let totalHabs = 0;
       let aprobadas = 0;
@@ -113,7 +116,7 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
       }
     }
     return 0;
-  }, [evaluatedCategories]);
+  }, [activeLevelData, evaluatedCategories]);
 
   const toggleCategory = (idx: number) => {
     setExpandedCategories((prev) => ({
