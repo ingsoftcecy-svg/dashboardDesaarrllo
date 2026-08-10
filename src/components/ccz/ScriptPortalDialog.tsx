@@ -466,7 +466,7 @@ Write-Host "   Nuevos / Modificados : $processedCount" -ForegroundColor Green
 Write-Host "   Subidos Directos     : $uploadCount" -ForegroundColor Green
 Write-Host "   Archivo JSON         : $OutputFile" -ForegroundColor White
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host ""`;Host ""`;
+Write-Host ""`;
 
 const BAT_CODE = `@echo off
 title Sincronizador de Guías Técnicas 2026
