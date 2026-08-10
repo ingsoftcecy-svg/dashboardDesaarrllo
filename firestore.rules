@@ -65,6 +65,11 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    // ── Colección: multi_habilidades (Personalización de multihabilidades) ─
+    match /multi_habilidades/{docId} {
+      allow read, write: if true;
+    }
+
     // ── Colección: config (IPs globales) ───────────────────────────────────
     match /config/{docId} {
       allow read: if true;

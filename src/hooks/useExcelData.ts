@@ -811,6 +811,48 @@ export function useExcelData() {
             const mantenimientoOps: (Operator & { autonomyScore: number, noEvaluado: boolean, _area: string })[] = [];
 
             Object.values(opsMap).forEach(op => {
+               const masterOp = centralizedOperators?.find((o: any) => String(o.id) === String(op.id));
+               if (masterOp) {
+                  if (masterOp.puesto) {
+                    op.puesto = masterOp.puesto;
+                  }
+                  if (masterOp.equipoAutonomo && masterOp.equipoAutonomo !== "Sin Equipo") {
+                    op.equipoAutonomo = masterOp.equipoAutonomo;
+                  }
+                  if (masterOp.lider && masterOp.lider !== "No asignado") {
+                    op.lider = masterOp.lider;
+                  }
+                  if (masterOp.multihabilidades && Array.isArray(masterOp.multihabilidades) && masterOp.multihabilidades.length > 0) {
+                    const masterSkills = [...masterOp.multihabilidades];
+                    (op.equipos || []).forEach((eq: string) => {
+                      if (!masterSkills.some(m => m.trim().toLowerCase() === eq.trim().toLowerCase())) {
+                        masterSkills.push(eq);
+                      }
+                    });
+                    op.equipos = masterSkills;
+                  }
+               }
+
+               if (op.puesto && op.equipos && op.equipos.length > 0) {
+                 const primaryIdx = op.equipos.findIndex(e => e.trim().toLowerCase() === op.puesto.trim().toLowerCase());
+                 if (primaryIdx > 0) {
+                   const primarySkill = op.equipos[primaryIdx];
+                   op.equipos.splice(primaryIdx, 1);
+                   op.equipos.unshift(primarySkill);
+                 }
+               }
+
+               if (op.equipoAutonomo) {
+                 const eqUpper = op.equipoAutonomo.trim().toUpperCase();
+                 const cocimientosTeams = ['LOS CAZADORES DEL AMARGOR', 'CUCHILLAS', 'LOS PANCHITOS', 'MASH-RAINBOW', 'MOSTO-BOYS'];
+                 const frioTeams = ['ANDAMOS CON TODO', 'BRAVOS DEL FRIO', 'LOS BRONCOS', 'LOS FUERTES DEL FRIO', 'REYES DE LA MEZCLA'];
+                 const mantTeams = ['MUNICH', 'NAHUALES'];
+
+                 if (cocimientosTeams.includes(eqUpper)) op._area = "Warm Block";
+                 else if (frioTeams.includes(eqUpper)) op._area = "Cold Block";
+                 else if (mantTeams.includes(eqUpper)) op._area = "Brewing Maintenance";
+               }
+
                op.basico = Number((op.basico / op._count).toFixed(2));
                op.intermedio = Number((op.intermedio / op._count).toFixed(2));
                op.avanzado = Number((op.avanzado / op._count).toFixed(2));

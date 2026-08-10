@@ -1,250 +1,1564 @@
 {
+  "metadata": {
+    "version": "V2_ANEXO",
+    "fileProcessed": "26_Guías-Técnicas-Elaboración-V2---ANEXO (1).xlsx",
+    "tieneHojaResumen": true,
+    "processedAt": "2026-08-10T16:02:55.153Z",
+    "totalGuias": 208
+  },
+  "levels": {
+    "L6": [
+      {
+        "category": "MANEJO DE MATERIA PRIMA",
+        "skills": [
+          {
+            "name": "Comprende el funcionamiento de los diferentes equipos que forman el sistema de almacenamiento, transporte y limpieza de materia prima como: Silos, transportadores, elevadores, rotoesclusas, limpiadoras de grano, imanes, filtros de polvo, básculas y dosificadores.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM"
+          },
+          {
+            "name": "Comprende y explica las variables críticas de seguridad en el manejo de polvo y conoce los controles necesarios en los sistemas de transporte de materias primas y los monitorea de manera rutinaria (Rutinas PM).",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM"
+          },
+          {
+            "name": "Reconoce riesgos críticos asociados al manejo de materia prima: Polvo combustible, atrapamiento, caída de material, contaminación cruzada, derrames y limpieza deficiente del área.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM"
+          },
+          {
+            "name": "Identifica sensores y protecciones del sistema de materia prima: Detección de nivel alto/bajo, velocidad, desvío de banda, detección de atasco y presión diferencial en filtros de mangas. Es capaz de identificar alarmas en el sistema SCADA/HMI local sugiriendo posibles soluciones al equipo de mantenimiento.",
+            "metodoValidacion": "Prueba práctica en Scada/campo con checklist y explicación de criterio de aceptación.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM"
+          },
+          {
+            "name": "Explica la función del sistema de aspiración y filtración de polvo, relacionando presión diferencial, limpieza por pulsos, fugas de polvo y condición de mangas con estabilidad operativa.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM"
+          },
+          {
+            "name": "Relaciona capacidad de transporte, velocidad, amperaje y condición mecánica con posibles sobrecargas, desalineación, rotura de cangilones, atascos o pérdida de flujo.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Conoce y está en capacidad de realizar la medición en el flujo de aspiración y regularlo de ser necesario. Identifica la presión de trabajo de las mangas y conoce los límites máximos para asegurar un buen funcionamiento (7 a 15 mbar).",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM"
+          },
+          {
+            "name": "Reconoce condiciones anormales en campo: Ruido excesivo, alta vibración, calentamiento, polvo excesivo, derrames, caída de caudal, activación de alarmas o consumo eléctrico fuera de tendencia. Genera avisos de mantenimiento con el detalle requerido y completo.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica"
+          },
+          {
+            "name": "Valida que los ajustes realizados al sistema, trabajen acorde a los requerimientos de proceso.",
+            "metodoValidacion": "Entrevista técnica guiada + validación con resultados en receta.",
+            "herramientas": "Recorrido en campo, HMI/SCADA, SOP del área y checklist de operación"
+          }
+        ]
+      },
+      {
+        "category": "MOLIENDA",
+        "skills": [
+          {
+            "name": "Comprende el funcionamiento de los componentes principales del sistema de molienda: Alimentador, imanes, acondicionador/humectación, rodillos o martillos, cribas, compuertas, aspiración y descarga.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Explica el objetivo técnico de la molienda y cómo impacta en la extracción, conversión, filtrabilidad y rendimiento de sala.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino"
+          },
+          {
+            "name": "Interpreta variables operativas de molienda: Distancia entre rodillos, velocidad de transporte, caudal de alimentación, húmedad de acondicionamiento, amperaje en molino, aspiración y temperatura. (Si aplica).",
+            "metodoValidacion": "Análisis de tendencia/histórico + entrevista técnica + validación en Scada.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino"
+          },
+          {
+            "name": "Reconoce síntomas de molienda fuera de condición: Bajo o alto porcentaje de finos, grano entero, cáscara destruida, granulometría inestable, baja velocidad, polvo excesivo o incremento de tiempo de molienda o consumo de energía.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino"
+          },
+          {
+            "name": "Verifica protecciones y controles de seguridad del sistema: Imanes, detectores metálicos, puertas enclavadas, paros de emergencia, filtros de polvo y secuencia de arranque/parada. Es capaz de identificar alarmas en el sistema SCADA/HMI local y genera avisos de mantenimiento sugiriendo posibles soluciones al equipo de mantenimiento.",
+            "metodoValidacion": "Prueba práctica en Scada/campo con checklist y explicación de criterio de aceptación.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM"
+          },
+          {
+            "name": "Relaciona el desgaste de rodillos, martillos, cribas, rodamientos o placas de impacto con variables de monitoreo como vibración, ruido, sobrecorriente, baja capacidad y desviación de granulometría.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino; Analizador de vibraciones, espectros/tendencias, rutas CBM y límites de severidad"
+          },
+          {
+            "name": "Conoce y está en capacidad de identificar en molino de martillos desgaste de martillos y chapa perforada. En molino de rodillos la medición de apertura de rodillos y su regulación de ser necesario.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino"
+          },
+          {
+            "name": "Conoce y está en capacidad de realizar la regulación de velocidad en transportes de grano del sistema de molienda y alimentación al molino. Realiza la regulación de la humectación del grano en molienda acondicionada, diagnóstico y ceonoce los parametros de trabajo de la bomba de descargue de masa en molienda húmeda.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Valida que los ajustes realizados trabajen de acuerdo a lo requerido por el proceso, monitoreando condición de la molienda mediante muestra representativa, ausencia de cuerpos extraños, estabilidad del equipo y cumplimiento de parámetros de receta.",
+            "metodoValidacion": "Entrevista técnica guiada + validación con resultados en receta.",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino"
+          }
+        ]
+      },
+      {
+        "category": "MACERACIÓN",
+        "skills": [
+          {
+            "name": "Comprende el funcionamiento de los diferentes equipos del sistema de maceración como: Macerador, Pre-macerador, agitadores, bombas de macerado, válvulas, líneas de transferencia, sistema de calentamiento, instrumentación y circuitos CIP asociados.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Reconoce desviaciones típicas: Rampa térmica lenta, mezcla heterogénea, formación de grumos y las relaciona con alto amperaje de agitador, cavitación de bomba o error de secuencia/receta.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Reconoce instrumentación crítica de maceración: Temperatura, nivel, caudal, presión y pH, explicando el impacto de una medición errónea sobre receta, calidad y seguridad. Es capaz de identificar en el SCADA cuando se presenta una falla en el instrumento de medición y genera avisos de mantenimiento.",
+            "metodoValidacion": "Prueba práctica en Scada/campo con checklist y explicación de criterio de aceptación.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta"
+          },
+          {
+            "name": "Relaciona fallas de agitadores, bombas, válvulas o sensores con baja conversión, variación de extracto, aumento de viscosidad, mala homogeneidad y problemas de filtrabilidad.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Verifica condición operaciónal del sistema de calentamiento: válvulas de vapor, trampas, retorno de condensado, camisa/calandria, control de temperatura y ausencia de golpes de ariete.",
+            "metodoValidacion": "Prueba práctica en Scada/campo con checklist y explicación de criterio de aceptación.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica"
+          },
+          {
+            "name": "Conoce y hace uso del histórico de gráficas, protocolo de pasos, reporte de alarmas del sistema SCADA/HMI para identificar fallas o desviaciones en el comportamiento de los principales equipos de la sala de maceración.",
+            "metodoValidacion": "Análisis de tendencia/histórico + entrevista técnica + validación en HMI.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Valida la transferencia hacia filtración confirmando volumen, temperatura, homogeneidad, secuencia correcta, ausencia de alarmas y condición segura de bombas y válvulas.",
+            "metodoValidacion": "Entrevista técnica guiada + validación con resultados en receta.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          }
+        ]
+      },
+      {
+        "category": "FILTRO DE MOSTO",
+        "skills": [
+          {
+            "name": "Comprende el funcionamiento de los principales equipos y componentes del sistema de filtración de mosto: lauter tun o mash filter, fondo falso/telas/placas, cuchillas/rakes, sistema hidráulico, bombas, sistema desalojo de bagazo, válvulas e instrumentación.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Explica las etapas del ciclo y es capaz de identificar la secuencia en los pasos de la receta: Llenado, formación de cama, recirculación, filtración, lavado de bagazo, drenaje, descarga de bagazo y limpieza CIP.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Interpreta variables críticas: Turbidez, caudal, nivel, presión diferencial, temperatura, extracto de lavado y estabilidad del flujo de mosto. Es capaz de identificar en el SCADA cuando se presenta una falla en el instrumento de medición y genera un avisos de mantenimiento.",
+            "metodoValidacion": "Prueba práctica en Scada/campo con checklist y explicación de criterio de aceptación.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad"
+          },
+          {
+            "name": "Relaciona molienda, viscosidad de maceración y operación de cuchillas y falso fondo/ telas y membranas con filtrabilidad, claridad de mosto, rendimiento y tiempo total de ciclo.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad"
+          },
+          {
+            "name": "Verifica condición operaciónal de bombas de recirculación, bombas de mosto, sistema hidráulico, válvulas de transferencia, válvulas de lavado y retorno, identificando cavitación, pérdida de capacidad, aumento de amperaje.",
+            "metodoValidacion": "Prueba práctica en Scada/campo con checklist y explicación de criterio de aceptación.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Explica la función de cuchilla, profundidad de corte, velocidad y secuencia, reconociendo el impacto de un ajuste incorrecto sobre la cama filtrante. Es capaz de realizar la regulación de ser requerido.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad"
+          },
+          {
+            "name": "Reconoce la función del sistema hidráulico o de prensado, identificando presión, movimientos, cilindros, actuadores, finales de carrera y riesgos por energía acumulada. Valida el tipo y nivel de aceite requerido.",
+            "metodoValidacion": "Prueba práctica en Scada/campo con checklist y explicación de criterio de aceptación.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Identifica los componentes del sistema de remoción y desalojo de bagazo (tolva de bagazo). Participa en ajuste y verificación de alineamiento rutinario.",
+            "metodoValidacion": "Prueba práctica en Scada/campo con checklist y explicación de criterio de aceptación.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Participa en actividades de mantenimiento básicas como limpieza mecánica de falso fondo: Desarmado, limpieza y armado de falso fondo para filtro lauter. Para mash filter participa en el reemplazo de telas y membranas filtrantes.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Reconoce la función de las válvulas de llenado, válvulas y bomba de recirculación de mosto y su impacto en la eficiencia de filtración. Identifica fallas por cavitación, presencia de burbujas de aire, alta turbidez en el mosto y las reporta identificando las posibles causas en avisos de mantenimiento.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Conoce y hace uso del histórico de gráficas, protocolo de pasos, reporte de alarmas del sistema SCADA/HMI para identificar fallas o desviaciones en el comportamiento de los principales equipos del proceso de filtración de mosto.",
+            "metodoValidacion": "Análisis de tendencia/histórico + entrevista técnica + validación en Scada.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Valida que los ajustes realizados en la máquina impactan en el mosto filtrado confirmando claridad, caudal estable, tiempo de ciclo, extracto esperado, ausencia de alarmas y transferencia correcta a cocimiento.",
+            "metodoValidacion": "Entrevista técnica guiada + validación con resultados en receta.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad"
+          }
+        ]
+      },
+      {
+        "category": "SALA DE COCIMIENTO",
+        "skills": [
+          {
+            "name": "Comprende el funcionamiento de los principales equipos de cocimiento: Olla de hervor, calandria/calentador externo, whirlpool, bombas de mosto, dosificación de lúpulo/aditivos, condensador de vapores e intercambiadores de calor.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Interpreta variables críticas: Temperatura, presión de vapor, nivel, pH, extracto, dosificación, caudal, flujómetro de agua, mosto y aireación y secuencia de receta. Es capaz de identificar en el SCADA cuando se presenta una falla en el instrumento de medición y genera avisos de mantenimiento.",
+            "metodoValidacion": "Prueba práctica en Scada/campo con checklist y explicación de criterio de aceptación.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica"
+          },
+          {
+            "name": "Reconoce desviaciones del sistema de calentamiento: Rampa lenta, bajo hervor, alta presión, retorno deficiente de condensado, falla de trampa, válvula de vapor inestable o golpe de ariete. Genera avisos de mantenimiento.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica"
+          },
+          {
+            "name": "Explica la función del whirlpool y relaciona entrada tangencial, tiempo de reposo, separación de trub, turbidez y arrastre de sólidos con calidad de mosto.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad"
+          },
+          {
+            "name": "Verifica rutas de trasiego, alineación de válvulas, estado de bombas y prevención de mezcla de lotes durante transferencias entre cocimiento, whirlpool y enfriamiento identificando cavitación, golpes de ariete o pérdida de capacidad.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Reconoce puntos críticos del enfriamiento y aireación/oxigenación: Intercambiador, agua helada/glicol, caudal, temperatura de salida y dosificación de oxígeno según receta.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT"
+          },
+          {
+            "name": "Conoce y hace uso del histórico de gráficas, protocolo de pasos, reporte de alarmas del sistema SCADA/HMI para identificar fallas o desviaciones en el comportamiento de los principales equipos de la sala de cocimientos.",
+            "metodoValidacion": "Análisis de tendencia/histórico + entrevista técnica + validación en Scada.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Valida que los ajustes estén alineados a los requerimientos de proceso como son liberación del mosto a fermentación confirmando lote, volumen, extracto, temperatura, oxigenación, ausencia de trub excesivo, ruta correcta y registros completos.",
+            "metodoValidacion": "Entrevista técnica guiada + validación con resultados en receta.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          }
+        ]
+      },
+      {
+        "category": "SALA DE FERMENTACIÓN",
+        "skills": [
+          {
+            "name": "Comprende el funcionamiento de los principales equipos de fermentación: Fermentadores, maduradores, propagadores, centrífugas, CMF, líneas de levadura, matriz de válvulas sanitarias, enfriamiento por camisas, venteos, CO₂, CIP, sensores y puntos de muestreo.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT"
+          },
+          {
+            "name": "Interpreta variables críticas: temperatura, presión, extracto, pH, nivel y secuencia de receta. Es capaz de identificar en el SCADA cuando se presenta una falla en el instrumento de medición y genera avisos de mantenimiento.",
+            "metodoValidacion": "Análisis de tendencia/histórico + entrevista técnica + validación en Scada.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta"
+          },
+          {
+            "name": "Comprende los principales impactos del funcionamiento inadecuado de los equipos Centrífugas/CMF identificando alta vibración, ruido anormal, sobrecorriente, bajo flujo, alta tasa de descargas.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Analizador de vibraciones, espectros/tendencias, rutas CBM y límites de severidad"
+          },
+          {
+            "name": "Verifica condiciones de inoculación, transferencia de levadura, cosecha, descarte y trazabilidad, diferenciando fallas operativas, sanitarias y de instrumentación.",
+            "metodoValidacion": "Prueba práctica en Scada/campo con checklist y explicación de criterio de aceptación.",
+            "herramientas": "Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Relaciona fallas de válvulas de glicol, sensores de temperatura, presión o nivel con pérdida de control fermentativo, desviación de calidad y riesgo de seguridad.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta"
+          },
+          {
+            "name": "Reconoce condiciones inseguras: sobrepresión, vacío, falla de válvula de alivio, ingreso de oxígeno, fuga de CO₂, bloqueo incorrecto de líneas o intervención no autorizada.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT"
+          },
+          {
+            "name": "Conoce y comprende los riesgos sanitarios en fermentadores, válvulas sanitarias y matriz de válvulas. Conoce el control de cambio de asientos y empaques en estos equipos.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Conoce y hace uso del histórico de gráficas, protocolo de pasos, reporte de alarmas del sistema SCADA/HMI para identificar fallas o desviaciones en el comportamiento de los principales equipos de la sala de fermentación.",
+            "metodoValidacion": "Análisis de tendencia/histórico + entrevista técnica + validación en Scada.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Valida que los ajustes estén alineados a los requerimientos de proceso como son transferencia o liberación interna del tanque confirmando estado de lote, análisis de calidad, ruta, presión, temperatura, condición sanitaria y registros completos.",
+            "metodoValidacion": "Entrevista técnica guiada + validación con resultados en receta.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          }
+        ]
+      },
+      {
+        "category": "SALA DE FILTROS",
+        "skills": [
+          {
+            "name": "Comprende el funcionamiento de los principales equipos de filtración y estabilización: Centrífuga, filtro de placas/velas/membranas, sistema de dilución, PVPP, Generación de agua desaireada, cartuchos, bombas, válvulas, instrumentos y líneas sanitarias.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT"
+          },
+          {
+            "name": "Identifica instrumentos críticos: Turbidímetro, medidor de oxígeno disuelto, caudalímetro, transmisores de presión, temperatura, medidor de extracto, conductividad y medición de CO₂. Es capaz de identificar en el SCADA/HMI cuando se presenta una falla en el instrumento de medición y genera avisos de mantenimiento.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT"
+          },
+          {
+            "name": "Reconoce fallas típicas de funcionamiento de los filtros de cerveza en el reporte histórico de gráficas del sistema SCADA: Turbidez elevada, incremento de diferencial, rotura de medio filtrante, mala formación de precapa, dosificación irregular o entrada de aire.",
+            "metodoValidacion": "Análisis de tendencia/histórico + entrevista técnica + validación en Scada.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad"
+          },
+          {
+            "name": "Relaciona bombas, sellos, empaques, uniones, válvulas y purgas con riesgo de ingreso de oxígeno, contaminación, espuma o pérdida de presión.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT"
+          },
+          {
+            "name": "Reconoce puntos críticos de CIP/sanitización en filtros, centrífuga, dosificadores, líneas, válvulas, drenajes, venteos y retorno de limpieza.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Conoce y hace uso del histórico de gráficas, protocolo de pasos, reporte de alarmas del sistema SCADA/HMI para identificar fallas o desviaciones en el comportamiento de los principales equipos de la sala de filtración y estabilización.",
+            "metodoValidacion": "Análisis de tendencia/histórico + entrevista técnica + validación en Scada.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Valida que los ajustes estén alineados a los requerimientos de proceso de filtración de cerveza hacia BBT confirmando turbidez, oxígeno, CO₂, presión, temperatura, ruta de transferencia, liberación de calidad y ausencia de alarmas.",
+            "metodoValidacion": "Entrevista técnica guiada + validación con resultados en receta.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad"
+          }
+        ]
+      },
+      {
+        "category": "SALA BBT",
+        "skills": [
+          {
+            "name": "Comprende el funcionamiento de los principales equipos de sala BBTs: BBTs, carbonatadores, manifold de transferencia, líneas a envasado, CIP, suministro de CO₂, válvulas de presión/vacío, sensores y puntos de muestreo.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Identifica instrumentos críticos: Caudalímetro, transmisores de presión, temperatura, nivel, volumen, medidor de CO₂, conductividad. Es capaz de identificar en el SCADA/HMI cuando se presenta una falla en el instrumento de medición y genera avisos de mantenimiento.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Identifica válvulas, reguladores, filtros estériles, sensores de presión/nivel/temperatura, puntos de muestra y elementos de seguridad asociados al BBT.",
+            "metodoValidacion": "Entrevista técnica guiada + identificación física de equipos/componentes en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT"
+          },
+          {
+            "name": "Relaciona condición de bombas, líneas, válvulas, sellos y conexiones sanitarias con pérdida de CO₂, incremento de oxígeno, contaminación o transferencia inestable.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Reconoce los puntos críticos de CIP/sanitización del BBT: conductividad, temperatura, caudal, retorno, drenaje, purgas, integridad de empaques.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Conoce y hace uso del histórico de gráficas, protocolo de pasos, reporte de alarmas del sistema SCADA/HMI para identificar fallas o desviaciones en el comportamiento de los principales equipos de la sala de BBTs.",
+            "metodoValidacion": "Análisis de tendencia/histórico + entrevista técnica + validación en Scada.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Conoce y comprende los riesgos sanitarios en BBTs, bombas y válvulas sanitarias. Conoce el control de cambio de asientos y empaques en estos equipos.",
+            "metodoValidacion": "Caso de desviación + recorrido en campo + preguntas de causa/impacto/escalamiento.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Valida que los ajustes estén alineados a los requerimientos de proceso presión estable, CO₂/O₂ dentro de especificación y registros completos.",
+            "metodoValidacion": "Entrevista técnica guiada + validación con resultados en receta.",
+            "herramientas": "Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          }
+        ]
+      }
+    ],
+    "L7": [
+      {
+        "category": "MANEJO DE MATERIA PRIMA",
+        "skills": [
+          {
+            "name": "Inspecciona transportadores, elevadores, cadenas, bandas, cangilones, raspadores y guardas, identificando desgaste, elongación, desalineación, fisuras y fijaciones sueltas.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Participa en la intervención mecánica en cangilones, bandas, cadenas, poleas, raspadores, compuertas y elementos de fijación, aplicando bloqueo de energías y procedimientos estandarizados.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Interpreta planos P&D mecánicos, eléctricos y neumáticos básicos para aislar, intervenir y liberar equipos de materia prima con control de energías peligrosas.",
+            "metodoValidacion": "Revisión de P&ID/plano/secuencia. Explicación en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM"
+          },
+          {
+            "name": "Evalúa rodamientos, chumaceras, reductores, acoplamientos, sellos y soportes, definiendo si requieren ajuste, lubricación, reemplazo o seguimiento por condición.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM; Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Realiza inspección interna de filtros de mangas, colectores, ductos, ventiladores y sistemas de pulso, verificando taponamiento, rotura, fugas, corrosión y hermeticidad.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM"
+          },
+          {
+            "name": "Verifica básculas, celdas de carga, sensores de nivel, desvío de banda y detectores de atasco después de una intervención mecánica o eléctrica.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, manual OEM, procedimiento LOTO, kit de herramientas y checklist de intervención"
+          },
+          {
+            "name": "Alinea poleas, acoples y transmisiones, validando tensión, paralelismo, sentido de giro, ausencia de fricción, vibración anormal y calentamiento.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM; Analizador de vibraciones, espectros/tendencias, rutas CBM y límites de severidad"
+          },
+          {
+            "name": "Participa en el análisis para corrección de fallas típicas en compuertas, actuadores, sensores y enclavamientos locales, diferenciando falla mecánica, neumática, eléctrica o de señal.",
+            "metodoValidacion": "Caso análisis de falla + revisión  + diagnóstico y acción realizada.",
+            "herramientas": "P&ID, manual OEM, procedimiento LOTO, kit de herramientas y checklist de intervención"
+          },
+          {
+            "name": "Realiza pruebas funcionales sin carga y con carga controlada, confirmando capacidad, estabilidad, limpieza técnica, secuencia automática y retorno seguro a operación.",
+            "metodoValidacion": "Prueba funcional post-intervención con checklist de aceptación y liberación segura.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta"
+          },
+          {
+            "name": "Documenta hallazgos de intervención indicando equipo, componente, modo de falla, causa probable, repuesto utilizado, condición final y recomendación preventiva.",
+            "metodoValidacion": "Revisión de Orden Trabajo + validación de calidad del reporte técnico.",
+            "herramientas": "P&ID, manual OEM, procedimiento LOTO, kit de herramientas y checklist de intervención"
+          }
+        ]
+      },
+      {
+        "category": "MOLIENDA",
+        "skills": [
+          {
+            "name": "Inspecciona alimentadores, imanes, compuertas, rodillos, martillos, cribas, placa perforada, rotoesclusa, rodamientos y sistemas de aspiración.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino"
+          },
+          {
+            "name": "Ejecuta reemplazo, ajuste o calibración mecánica de rodillos, martillos, cribas, placas perforadas, sellos, rodamientos y fijaciones según tecnología instalada y estándar del fabricante.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Verifica gap/luz de rodillos, paralelismo, presión de molienda, balance de rotor, condición de martillos/cribas y uniformidad de alimentación.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino"
+          },
+          {
+            "name": "Evalúa motores, reductores, acoplamientos, correas, poleas y cadenas relacionando condición mecánica con capacidad y consumo eléctrico.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino"
+          },
+          {
+            "name": "Realiza limpieza técnica e inspección de filtros de polvo, ductos, ventiladores, mangas, esclusas y puntos de captación del sistema de molienda.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino"
+          },
+          {
+            "name": "Participa en el análisis para corrección de fallas típicas de molienda: vibración, ruido metálico, sobrecorriente, baja capacidad, atascamiento, calentamiento y variación de granulometría.",
+            "metodoValidacion": "Caso análisis de falla + revisión  + diagnóstico y acción realizada.",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino; P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Interpreta planos P&D mecánicos, eléctricos y neumáticos básicos para aislar, intervenir y liberar equipos de molienda con control de energías peligrosas.",
+            "metodoValidacion": "Revisión de P&ID/plano/secuencia. Explicación en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino"
+          },
+          {
+            "name": "Valida enclavamientos de seguridad, sensores de apertura, velocidad, nivel, presión diferencial, detectores metálicos e interlocks después de mantenimiento.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino"
+          },
+          {
+            "name": "Ejecuta lubricación técnica, cambio de aceite/grasa y verificación de puntos críticos, evitando contaminación de producto y sobrelubricación.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino; Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Realiza prueba de molienda con carga controlada, validando granulometría, estabilidad mecánica, consumo, ausencia de fugas de polvo y cumplimiento del proceso.",
+            "metodoValidacion": "Prueba funcional post-intervención con checklist de aceptación y liberación segura.",
+            "herramientas": ""
+          },
+          {
+            "name": "Documenta hallazgos de intervención indicando equipo, componente, modo de falla, causa probable, repuesto utilizado, condición final y recomendación preventiva.",
+            "metodoValidacion": "Revisión de Orden Trabajo + validación de calidad del reporte técnico.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino"
+          }
+        ]
+      },
+      {
+        "category": "MACERACIÓN",
+        "skills": [
+          {
+            "name": "Inspecciona cocedor, macerador, agitadores, ejes, paletas, reductores, acoplamientos, sellos, soportes y bombas de macerado, identificando holguras, desgaste y fugas.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Ejecuta mantenimiento de agitadores, acoples, sellos mecánicos, empaques, rodamientos, reductores y bases, aplicando alineación y torque según estándar.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Verifica chaquetas de calentamiento, serpentines, calandria, válvulas de vapor, trampas, retorno de condensado y aislamiento térmico, identificando restricciones, fugas o baja transferencia.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica"
+          },
+          {
+            "name": "Interviene bombas de macerado, válvulas de transferencia, actuadores neumáticos y posicionadores, validando estanqueidad y respuesta funcional.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Evalúa instrumentos de temperatura, nivel, caudal, presión y pH, coordinando calibración/verificación cuando la medición afecte receta o seguridad.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, manual OEM, procedimiento LOTO, kit de herramientas y checklist de intervención"
+          },
+          {
+            "name": "Inspecciona sistema CIP: roto-jet, boquillas, líneas, drenajes, válvulas de retorno, conductividad y temperatura, detectando baja cobertura o zonas muertas.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Participa en el análisis para corrección de fallas de mezcla, calentamiento, transferencia o limpieza que afecten rampas térmicas, conversión, viscosidad, inocuidad y disponibilidad del equipo.",
+            "metodoValidacion": "Caso análisis de falla + revisión  + diagnóstico y acción realizada.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Interpreta P&ID, planos mecánicos y secuencias de proceso para aislar maceradores, bombas y líneas antes de una intervención.",
+            "metodoValidacion": "Revisión de P&ID/plano/secuencia. Explicación en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Realiza prueba funcional de agitador, bombas, válvulas, calentamiento y CIP antes de liberar el sistema a producción.",
+            "metodoValidacion": "Prueba funcional post-intervención con checklist de aceptación y liberación segura.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Documenta condición final indicando componente intervenido, modo de falla, repuestos, pruebas realizadas, riesgos remanentes y criterios de liberación.",
+            "metodoValidacion": "Revisión de Orden Trabajo + validación de calidad del reporte técnico.",
+            "herramientas": "P&ID, manual OEM, procedimiento LOTO, kit de herramientas y checklist de intervención"
+          }
+        ]
+      },
+      {
+        "category": "FILTRO DE MOSTO",
+        "skills": [
+          {
+            "name": "Inspecciona lauter tun o mash filter identificando desgaste, deformación, daño sanitario, obstrucción, holguras, fugas y condición de superficies en contacto con producto.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Ejecuta mantenimiento de cuchillas/rakes, ejes, reductores, válvulas, actuadores, cilindros, telas, placas, fondo falso, empaques y elementos de fijación según tecnología instalada.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad"
+          },
+          {
+            "name": "Verifica bombas de recirculación, bombas de mosto, válvulas de trasiego/lavado, válvulas de drenaje y actuadores, validando caudal, estanqueidad y respuesta.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Evalúa sistema hidráulico o de prensado: aceite, filtros, mangueras, cilindros, manifolds, presiones, fugas, finales de carrera y dispositivos de seguridad.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Inspecciona instrumentos de caudal, presión diferencial, turbidez, nivel y temperatura, confirmando señal, ubicación y limpieza después de intervención.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad"
+          },
+          {
+            "name": "Participa en intervenciones de OVH en Filtros de Mosto, conoce e identifica desgaste en piezas de cambio.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención/parada mayor + LOTOTO + inspección de componentes según SWI de actividad",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Valida integridad de telas, placas soporte, empaques, falso fondo, boquillas CIP, drenajes y mirillas, evitando bypass, arrastre de sólidos o contaminación.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Participa en el análisis para corrección de fallas: baja filtrabilidad, diferencial alto, movimiento irregular de cuchillas, fugas, turbidez elevada, atascos o descarga incompleta de bagazo.",
+            "metodoValidacion": "Caso análisis de falla + revisión  + diagnóstico y acción realizada.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Interpreta P&ID y secuencias de bloqueo para aislar mosto caliente, vapor, hidráulica, neumática, electricidad y energía potencial antes de intervenir.",
+            "metodoValidacion": "Revisión de P&ID/plano/secuencia. Explicación en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad"
+          },
+          {
+            "name": "Ejecuta pruebas funcionales de movimiento, filtración simulada, recirculación, lavado, drenaje, descarga de bagazo y CIP antes de liberar.",
+            "metodoValidacion": "Prueba funcional post-intervención con checklist de aceptación y liberación segura.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Documenta hallazgos, modo de falla, causa probable, repuestos, pruebas de estanqueidad/funcionales y condición final para operación.",
+            "metodoValidacion": "Revisión de Orden Trabajo + validación de calidad del reporte técnico.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad"
+          }
+        ]
+      },
+      {
+        "category": "SALA DE COCIMIENTO",
+        "skills": [
+          {
+            "name": "Inspecciona olla de hervido, calandria interna o externa, whirlpool, condensador de vapores, bombas, líneas, válvulas, dosificadores y sistema de enfriamiento.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Ejecuta mantenimiento de bombas de mosto caliente, sellos mecánicos, acoplamientos, válvulas sanitarias, actuadores, empaques y conexiones higiénicas.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Verifica sistema de vapor y condensado: válvulas de control, trampas, filtros, purgas, retornos, aislamiento y presencia de golpes de ariete o fugas.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica"
+          },
+          {
+            "name": "Evalúa calandria interna o externa, camisas de calentamiento, placas de intercambio o superficies térmicas, identificando incrustación, baja transferencia, corrosión, fugas o restricciones.",
+            "metodoValidacion": "Revisión de Orden Trabajo + validación de calidad del reporte técnico.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica"
+          },
+          {
+            "name": "Inspecciona whirlpool y rutas de trasiego, verificando boquillas de limpieza, drenajes, líneas de trub, válvulas y condición sanitaria.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Interviene dosificadores de lúpulo/aditivos, válvulas, tolvas y líneas asociadas, validando sellado, secuencia, limpieza y ausencia de contaminación cruzada.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta"
+          },
+          {
+            "name": "Verifica intercambiador de calor, válvulas de agua helada/glicol, líneas de oxigenación y sensores de temperatura/caudal antes de liberar mosto frío.",
+            "metodoValidacion": "Revisión de Orden Trabajo + validación de calidad del reporte técnico.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad"
+          },
+          {
+            "name": "Participa en el análisis para corrección de fallas del hervido, evaporación, separación de trub, enfriamiento, oxigenación, transferencia o seguridad por vapor.",
+            "metodoValidacion": "Caso análisis de falla + revisión  + diagnóstico y acción realizada.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Realiza pruebas funcionales de vapor, bombas, válvulas, dosificación, whirlpool, enfriamiento y CIP, confirmando parámetros de liberación.",
+            "metodoValidacion": "Prueba funcional post-intervención con checklist de aceptación y liberación segura.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Documenta hallazgos de intervención, pruebas de estanqueidad, condición sanitaria, riesgos remanentes y liberación técnica del sistema.",
+            "metodoValidacion": "Revisión de Orden Trabajo + validación de calidad del reporte técnico.",
+            "herramientas": "Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          }
+        ]
+      },
+      {
+        "category": "SALA DE FERMENTACIÓN",
+        "skills": [
+          {
+            "name": "Inspecciona fermentadores, centrífugas, propagadores, válvulas sanitarias, camisas de enfriamiento, líneas de levadura, CO₂, CIP, venteos y elementos de seguridad.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT"
+          },
+          {
+            "name": "Ejecuta mantenimiento de válvulas mixproof/mariposa/diafragma, actuadores, sellos, empaques, clamps, líneas sanitarias y conexiones críticas de tanque.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Verifica sistema de enfriamiento: válvulas de glicol, camisas de enfriamiento, sensores de temperatura, aislamiento, caudal, fugas y respuesta del lazo de control.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta"
+          },
+          {
+            "name": "Inspecciona elementos de presión/vacío, válvulas de alivio, venteos, filtros estériles, manómetros y transmisores, validando seguridad del tanque.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta"
+          },
+          {
+            "name": "Interviene bombas o líneas de levadura, cosecha, descarte y transferencia, controlando condición sanitaria, estanqueidad y trazabilidad de rutas.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Participa en intervenciones OVH de Centrífugas conoce e identifica las piezas de cambio. Revisa bowl, discos, sistema hidráulico, agua de maniobra, lubricación, transmisión, vibración y condición de descarga.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención/parada mayor + LOTOTO + inspección de componentes según SWI de actividad",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Analizador de vibraciones, espectros/tendencias, rutas CBM y límites de severidad"
+          },
+          {
+            "name": "Participa en intervenciones OVH de CMF conoce e identifica las piezas de cambio. Conoce procedimiento de identificación de rotura de membrana y de cambio.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención/parada mayor + LOTOTO + inspección de componentes según SWI de actividad",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Participa en intervenciones OVH de Intercambiadores de calor, conoce e identifica las piezas de cambio. Realiza inspección de placas y empaques. Conoce procedimiento de inspección de placas e identificación de rotura.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención/parada mayor + LOTOTO + inspección de componentes según SWI de actividad",
+            "herramientas": "Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Evalúa instrumentos de temperatura, presión, nivel, conductividad, caudal y CO₂ asociados a fermentación, CIP y transferencias.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Participa en el análisis para corrección de fallas en fermentación: pérdida de enfriamiento, válvula trabada, fuga sanitaria, sobrepresión, ingreso de oxígeno o CIP incompleto.",
+            "metodoValidacion": "Caso análisis de falla + revisión  + diagnóstico y acción realizada.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Interpreta P&ID y matrices de válvulas para aislar tanques, centrífuga, CMF y líneas sin riesgo de mezcla de lotes, contaminación o liberación de CO₂.",
+            "metodoValidacion": "Revisión de P&ID/plano/secuencia. Explicación en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT"
+          },
+          {
+            "name": "Realiza pruebas de estanqueidad, funcionalidad de válvulas, respuesta de enfriamiento, CIP y secuencia automática antes de entregar el equipo.",
+            "metodoValidacion": "Prueba funcional post-intervención con checklist de aceptación y liberación segura.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Documenta intervención indicando tanque, componente, modo de falla, acción correctiva, pruebas, condición sanitaria y liberación de mantenimiento.",
+            "metodoValidacion": "Revisión de Orden Trabajo + validación de calidad del reporte técnico.",
+            "herramientas": "Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          }
+        ]
+      },
+      {
+        "category": "SALA DE FILTROS",
+        "skills": [
+          {
+            "name": "Inspecciona centrífugas, filtro de placas/velas/membranas, dosificadores, bombas, líneas, válvulas, cartuchos, PVPP y elementos de medición asociados a cerveza filtrada.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Ejecuta mantenimiento de bombas, sellos, acoples, válvulas sanitarias, actuadores, empaques, conexiones y componentes de filtros según estándar de higiene.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Participa en intervenciones OVH de filtro de placas/velas/membranas verificando placas, velas, membranas, colectores, precapa, juntas, drenajes, venteos y puntos de posible bypass o rotura.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención/parada mayor + LOTOTO + inspección de componentes según SWI de actividad",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Participa en intervenciones OVH de Centrífugas conoce e identifica las piezas de cambio. Revisa bowl, discos, sistema hidráulico, agua de maniobra, lubricación, transmisión, vibración y condición de descarga.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención/parada mayor + LOTOTO + inspección de componentes según SWI de actividad",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Analizador de vibraciones, espectros/tendencias, rutas CBM y límites de severidad"
+          },
+          {
+            "name": "Verifica dosificación de tierra/PVPP/estabilizantes: bombas, agitadores, tolvas, líneas, concentración, válvulas y puntos de inyección.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Inspecciona instrumentos críticos: turbidímetro, oxígeno disuelto, caudal, presión diferencial, temperatura, CO₂ y conductividad CIP.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Participa en el análisis para corrección de fallas en filtración de cerveza que generen turbidez alta, oxígeno elevado, pérdida de CO₂, diferencial alto, colmatación, fuga sanitaria o transferencia inestable.",
+            "metodoValidacion": "Caso análisis de falla + revisión  + diagnóstico y acción realizada.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Interpreta P&ID y secuencias de CIP para aislar filtros, centrífuga, dosificadores y líneas sin contaminación ni mezcla de producto.",
+            "metodoValidacion": "Revisión de P&ID/plano/secuencia. Explicación en campo.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Realiza pruebas funcionales de filtración, dosificación, presión diferencial, estanqueidad, purga, CIP y transferencia hacia BBT.",
+            "metodoValidacion": "Prueba funcional post-intervención con checklist de aceptación y liberación segura.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Documenta hallazgos, modo de falla, condición sanitaria, repuestos, pruebas de calidad asociadas y restricciones de liberación.",
+            "metodoValidacion": "Revisión de Orden Trabajo + validación de calidad del reporte técnico.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          }
+        ]
+      },
+      {
+        "category": "SALA BBT",
+        "skills": [
+          {
+            "name": "Inspecciona BBTs, carbonatadores, generador de agua desaireada, manifold de transferencia, líneas de envío a envasado, válvulas, filtros estériles, CIP, CO₂ y elementos de seguridad.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Ejecuta mantenimiento de los principales equipos como BBTs, válvulas sanitarias, actuadores, reguladores, sellos, empaques, clamps, conexiones, bombas y accesorios de transferencia.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Verifica carbonatador, sistema de inyección, control de CO₂, presión, caudal y estabilidad de mezcla antes de liberar.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT"
+          },
+          {
+            "name": "Inspecciona válvulas de presión/vacío, venteos, filtros estériles, manómetros, transmisores y dispositivos de seguridad del tanque.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT"
+          },
+          {
+            "name": "Evalúa instrumentos de presión, nivel, temperatura, CO₂, oxígeno disuelto, turbidez y caudal asociados a BBT y envío a envasado.",
+            "metodoValidacion": "Revisión de Orden Trabajo + validación de calidad del reporte técnico.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT"
+          },
+          {
+            "name": "Participa en el análisis para corrección de fallas en BBTs que generen ingreso de oxígeno, pérdida de CO₂, espuma, mezcla de lotes, presión inestable, contaminación o bloqueo de transferencia.",
+            "metodoValidacion": "Caso análisis de falla + revisión  + diagnóstico y acción realizada.",
+            "herramientas": "Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Interviene válvulas y bombas de las matrices de válvulas y rutas a envasado para prevenir riesgo de mezcla de lotes o contaminación.",
+            "metodoValidacion": "Evaluación práctica DTO de intervención + inspección de componentes según SWI de actividad",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Realiza pruebas de estanqueidad, purga, presurización, CIP, transferencia y estabilidad de presión antes de entregar el BBT.",
+            "metodoValidacion": "Prueba funcional post-intervención con checklist de aceptación y liberación segura.",
+            "herramientas": "Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Documenta intervención indicando tanque, componente, causa probable, pruebas funcionales, condición sanitaria y restricciones de operación.",
+            "metodoValidacion": "Revisión de Orden Trabajo + validación de calidad del reporte técnico.",
+            "herramientas": "Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          }
+        ]
+      }
+    ],
+    "L8": [
+      {
+        "category": "MANEJO DE MATERIA PRIMA",
+        "skills": [
+          {
+            "name": "Interpreta resultados de análisis de vibración en motores, reductores, ventiladores, elevadores y transportadores. Relaciona los resultados con principales fallas por condiciones relacionadas a desbalance, desalineación, holgura y falla de rodamientos.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Interpreta resultados de análisis de termografía en motores, rodamientos, reductores y puntos de fricción. Relaciona los resultados con principales fallas por fricción, exceso de carga y lubricación deficiente.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica; Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Interpreta resultados de análisis de ultrasonido para detectar fugas neumáticas, fricción, falla incipiente de rodamientos, descarga parcial y pérdidas de aspiración en sistemas de polvo.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Equipo de ultrasonido, ruta de fugas/rodamientos, dB/FFT y reporte predictivo"
+          },
+          {
+            "name": "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Identifica y correlaciona comportamiento de presión diferencial de filtros de polvo, amperaje, alarmas de atasco y capacidad transportada para anticipar fallas y pérdida de confiabilidad.",
+            "metodoValidacion": "Análisis de condición/tendencias + caso de falla funcional + recomendación técnica.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Participa en elaboración de RCM y/o CBM para transportadores, elevadores, limpiadoras, aspiradores y básculas, priorizando modos de falla por seguridad, producción y calidad. Interpreta los resultados y entiende los beneficios en su proceso.",
+            "metodoValidacion": "Caso RCM/CBM + revisión de criticidad, modo de falla, tarea propuesta y beneficio.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Matriz RCM/CBM, AFJ, historial de fallas, criticidad, PM/WO y toolkit corporativo"
+          }
+        ]
+      },
+      {
+        "category": "MOLIENDA",
+        "skills": [
+          {
+            "name": "Interpreta resultados de análisis de vibración en molienda, motor, reductor, rodamientos, molino y ventiladores. Relaciona los resultados con principales fallas por condiciones relacionadas a desbalance, desalineación, holgura y falla de rodamientos.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Interpreta resultados de análisis de termografía en motores, rodamientos, reductores y puntos de fricción. Relaciona los resultados con sobrecarga y lubricación deficiente.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino; Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica; Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Interpreta resultados de análisis de ultrasonido para detectar fugas neumáticas, fricción, falla incipiente de rodamientos, descarga parcial y pérdidas de aspiración en sistemas de molienda.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Checklist de transporte/aspiración, manómetro/dP, tacómetro y registros PM; Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Interpreta resultados de condición de lubricantes (análisis de aceites), identificando contaminación, temperatura y partículas en reductores o sistemas centralizados, definiendo severidad y ventana de intervención.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino; Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Participa en la elaboración de CBM y/o RCM de molinos considerando impacto en extracción, filtrabilidad, consumo energético y tiempo de ciclo. Interpreta resultados y entiende los beneficios en su proceso.",
+            "metodoValidacion": "Caso RCM/CBM + revisión de criticidad, modo de falla, tarea propuesta y beneficio.",
+            "herramientas": "Tamices/granulometría, galgas, amperímetro, manual OEM y checklist de molino; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Matriz RCM/CBM, AFJ, historial de fallas, criticidad, PM/WO y toolkit corporativo"
+          }
+        ]
+      },
+      {
+        "category": "MACERACIÓN",
+        "skills": [
+          {
+            "name": "Interpreta resultados de análisis de vibración en reductores, motores, bombas y acoplamientos para detectar desalineación, falla de rodamientos, cavitación o pérdida de balance.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM; Analizador de vibraciones, espectros/tendencias, rutas CBM y límites de severidad"
+          },
+          {
+            "name": "Interpreta resultados de análisis de termografía en motores, reductores y puntos de fricción.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica"
+          },
+          {
+            "name": "Interpreta resultados de análisis de termografía en trampas de vapor identificando su correcto funcionamiento e impactos en consumo energético.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica"
+          },
+          {
+            "name": "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Analiza comportamiento de los principales lazos de control para anticipar inestabilidad o pérdida de control del proceso. Conoce y es capaz de sugerir ajustes en controladores PID.",
+            "metodoValidacion": "Análisis de condición/tendencias + caso de falla funcional + recomendación técnica.",
+            "herramientas": "Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Interpreta y conoce los beneficios del monitoreo de condiciones AFJ (Alarmas, Fallas y Forzados)/ ISA (Indicador de Salud de Automatización) . Evidencia control y seguimiento.",
+            "metodoValidacion": "Caso AFJ + revisión de  Alarmas, Fallas y Forzados + diagnóstico y acción realizada.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Matriz RCM/CBM, AFJ, historial de fallas, criticidad, PM/WO y toolkit corporativo"
+          },
+          {
+            "name": "Interpreta y participa en el desarrollo del Toolkit de Válvulas y Bombas de Brewingrewing. Analisa resultados y genera avisos de mantenimiento. Evidencia control y seguimiento.",
+            "metodoValidacion": "Revisión de Toolkit, reporte mensual de avances + plan de trabajo 1YP",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Participa en la elaboración de CBM y/o RCM de los principales equipos del sistema de maceración priorizando modos de falla que afecten conversión, mezcla, inocuidad, seguridad por vapor y disponibilidad.",
+            "metodoValidacion": "Caso RCM/CBM + revisión de criticidad, modo de falla, tarea propuesta y beneficio.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Matriz RCM/CBM, AFJ, historial de fallas, criticidad, PM/WO y toolkit corporativo"
+          }
+        ]
+      },
+      {
+        "category": "FILTRO DE MOSTO",
+        "skills": [
+          {
+            "name": "Interpreta resultados de análisis de vibración en reductores, motores, bombas y acoplamientos para detectar desalineación, falla de rodamientos, cavitación o pérdida de balance.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM; Analizador de vibraciones, espectros/tendencias, rutas CBM y límites de severidad"
+          },
+          {
+            "name": "Interpreta resultados de análisis de termografía aplicado a anillos colectores, calentadores de cascos tubos y placas a fin de determinar deficiciencia en transferencia de calor, obstrucciones, perdidas de flujo.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica"
+          },
+          {
+            "name": "Aplica ultrasonido y termografía para detectar fugas hidráulicas, cavitación, fricción, sobrecalentamiento, aire atrapado o pérdida de eficiencia en actuadores.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica"
+          },
+          {
+            "name": "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Interpreta y conoce los beneficios del monitoreo de condiciones AFJ (Alarmas, Fallas y Forzados)/ ISA (Indicador de Salud de Automatización) . Evidencia control y seguimiento.",
+            "metodoValidacion": "Caso AFJ + revisión de  Alarmas, Fallas y Forzados + diagnóstico y acción realizada.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz RCM/CBM, AFJ, historial de fallas, criticidad, PM/WO y toolkit corporativo"
+          },
+          {
+            "name": "Interpreta y participa en el desarrollo del Toolkit de Válvulas y Bombas de Brewingrewing. Analisa resultados y genera avisos de mantenimiento. Evidencia control y seguimiento.",
+            "metodoValidacion": "Revisión de Toolkit, reporte mensual de avances + plan de trabajo 1YP.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Participa en la elaboración de CBM/RCM para lauter tun o mash filter considerando claridad de mosto, rendimiento, tiempo de ciclo, seguridad e impacto en producción.",
+            "metodoValidacion": "Caso RCM/CBM + revisión de criticidad, modo de falla, tarea propuesta y beneficio.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Matriz RCM/CBM, AFJ, historial de fallas, criticidad, PM/WO y toolkit corporativo"
+          }
+        ]
+      },
+      {
+        "category": "SALA DE COCIMIENTO",
+        "skills": [
+          {
+            "name": "Interpreta resultados de análisis de vibración en reductores, motores, bombas y acoplamientos para detectar desalineación, falla de rodamientos, cavitación o pérdida de balance.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM; Analizador de vibraciones, espectros/tendencias, rutas CBM y límites de severidad"
+          },
+          {
+            "name": "Interpreta resultados de análisis de termografía aplicado a intercambiadores de calor a fin de determinar deficiciencia en transferencia de calor, obstrucciones, perdidas de flujo.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica"
+          },
+          {
+            "name": "Interpreta resultados de análisis de termografía en trampas de vapor identificando su correcto funcionamiento e impactos en consumo energético.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica"
+          },
+          {
+            "name": "Interpreta resultados de ultrasonido y termografía para detectar fugas hidráulicas, cavitación, fricción, sobrecalentamiento, aire atrapado o pérdida de eficiencia en actuadores.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica; Equipo de ultrasonido, ruta de fugas/rodamientos, dB/FFT y reporte predictivo"
+          },
+          {
+            "name": "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Interpreta y conoce los beneficios del monitoreo de condiciones AFJ (Alarmas, Fallas y Forzados)/ ISA (Indicador de Salud de Automatización) . Evidencia control y seguimiento.",
+            "metodoValidacion": "Caso AFJ + revisión de  Alarmas, Fallas y Forzados + diagnóstico y acción realizada.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Matriz RCM/CBM, AFJ, historial de fallas, criticidad, PM/WO y toolkit corporativo"
+          },
+          {
+            "name": "Interpreta y participa en el desarrollo del Toolkit de Válvulas y Bombas de Brewingrewing. Analisa resultados y genera avisos de mantenimiento. Evidencia control y seguimiento.",
+            "metodoValidacion": "Revisión de Toolkit, reporte mensual de avances + plan de trabajo 1YP.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Participa en la elaboración de CBM/RCM en Whirlpool / evaporador / enfriador identificando modos críticos que afecten inocuidad, hervor, separación de trub, enfriamiento, seguridad por vapor y disponibilidad.",
+            "metodoValidacion": "Caso RCM/CBM + revisión de criticidad, modo de falla, tarea propuesta y beneficio.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Matriz RCM/CBM, AFJ, historial de fallas, criticidad, PM/WO y toolkit corporativo"
+          }
+        ]
+      },
+      {
+        "category": "SALA DE FERMENTACIÓN",
+        "skills": [
+          {
+            "name": "Interpreta resultados de análisis de vibración en reductores, motores, bombas, centrífugas y acoplamientos para detectar desalineación, falla de rodamientos, cavitación o pérdida de balance.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM; Analizador de vibraciones, espectros/tendencias, rutas CBM y límites de severidad"
+          },
+          {
+            "name": "Interpreta resultados de análisis de termografía aplicado a intercambiadores de calor a fin de determinar deficiciencia en transferencia de calor, obstrucciones, perdidas de flujo.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica"
+          },
+          {
+            "name": "Interpreta resultados de ultrasonido y termografía para detectar fugas hidráulicas, cavitación, fricción, sobrecalentamiento, aire atrapado o pérdida de eficiencia en actuadores.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica; Equipo de ultrasonido, ruta de fugas/rodamientos, dB/FFT y reporte predictivo"
+          },
+          {
+            "name": "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Interpreta y conoce los beneficios del monitoreo de condiciones AFJ (Alarmas, Fallas y Forzados)/ ISA (Indicador de Salud de Automatización) . Evidencia control y seguimiento.",
+            "metodoValidacion": "Caso AFJ + revisión de  Alarmas, Fallas y Forzados + diagnóstico y acción realizada.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Matriz RCM/CBM, AFJ, historial de fallas, criticidad, PM/WO y toolkit corporativo"
+          },
+          {
+            "name": "Interpreta y participa en el desarrollo del Toolkit de Válvulas y Bombas de Brewingrewing. Analisa resultados y genera avisos de mantenimiento. Evidencia control y seguimiento.",
+            "metodoValidacion": "Revisión de Toolkit, reporte mensual de avances + plan de trabajo 1YP",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Participa en la elaboración de RCM/CBM para centrífugas, CMF, propagadores, matriz de válvulas y sistemas de enfriamiento priorizando calidad, seguridad, inocuidad y continuidad operativa.",
+            "metodoValidacion": "Caso RCM/CBM + revisión de criticidad, modo de falla, tarea propuesta y beneficio.",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          }
+        ]
+      },
+      {
+        "category": "SALA DE FILTROS",
+        "skills": [
+          {
+            "name": "Interpreta resultados de análisis de vibración en reductores, motores, bombas, centrífugas y acoplamientos para detectar desalineación, falla de rodamientos, cavitación o pérdida de balance.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM; Analizador de vibraciones, espectros/tendencias, rutas CBM y límites de severidad"
+          },
+          {
+            "name": "Interpreta resultados de análisis de termografía aplicado a intercambiadores de calor a fin de determinar deficiciencia en transferencia de calor, obstrucciones, perdidas de flujo.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica"
+          },
+          {
+            "name": "Interpreta resultados de  ultrasonido y termografía para detectar fugas hidráulicas, cavitación, fricción, sobrecalentamiento, aire atrapado o pérdida de eficiencia en actuadores.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica"
+          },
+          {
+            "name": "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Interpreta y conoce los beneficios del monitoreo de condiciones AFJ (Alarmas, Fallas y Forzados)/ ISA (Indicador de Salud de Automatización) . Evidencia control y seguimiento.",
+            "metodoValidacion": "Caso AFJ + revisión de  Alarmas, Fallas y Forzados + diagnóstico y acción realizada.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz RCM/CBM, AFJ, historial de fallas, criticidad, PM/WO y toolkit corporativo"
+          },
+          {
+            "name": "Interpreta y participa en el desarrollo del Toolkit de Válvulas y Bombas de Brewingrewing. Analisa resultados y genera avisos de mantenimiento. Evidencia control y seguimiento.",
+            "metodoValidacion": "Revisión de Toolkit, reporte mensual de avances + plan de trabajo 1YP",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Participa en la elaboración de RCM/CBM para filtros de cerveza, centrífugas, sistemas de mezcla evitando la ganancia de oxígeno, mejorando la claridad, seguridad e inocuidad.",
+            "metodoValidacion": "Caso RCM/CBM + revisión de criticidad, modo de falla, tarea propuesta y beneficio.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          }
+        ]
+      },
+      {
+        "category": "SALA BBT",
+        "skills": [
+          {
+            "name": "Interpreta resultados de análisis de vibración en reductores, motores, bombas, centrífugas y acoplamientos para detectar desalineación, falla de rodamientos, cavitación o pérdida de balance.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Turbidímetro, medidor de O₂ disuelto, dP, caudal, SOP de filtración y registros de calidad; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM"
+          },
+          {
+            "name": "Interpreta resultados de análisis de termografía aplicado a motores y bombas a fin de determinar friccón, cavitación, deficiencias en lubricación.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Checklist de bombas/sellos, alineador, comparador, vibrómetro y manual OEM; Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica"
+          },
+          {
+            "name": "Interpreta resultados de  ultrasonido y termografía para detectar fugas hidráulicas, cavitación, fricción, sobrecalentamiento, aire atrapado o pérdida de eficiencia en actuadores.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "P&ID de vapor/condensado, termografía, manómetros y registros de rampa térmica; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Cámara termográfica, informe IR, cargas eléctricas/térmicas y tendencia histórica"
+          },
+          {
+            "name": "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+            "metodoValidacion": "Interpretación de reporte predictivo real/simulado + diagnóstico de severidad y acción realizada.",
+            "herramientas": "Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Informe de análisis de aceite, viscosidad, partículas, agua, ferrografía y tendencia"
+          },
+          {
+            "name": "Interpreta y conoce los beneficios del monitoreo de condiciones AFJ (Alarmas, Fallas y Forzados)/ ISA (Indicador de Salud de Automatización) . Evidencia control y seguimiento.",
+            "metodoValidacion": "Caso AFJ + revisión de  Alarmas, Fallas y Forzados + diagnóstico y acción realizada.",
+            "herramientas": "HMI/SCADA, históricos de tendencia, alarmas y SOP de respuesta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz RCM/CBM, AFJ, historial de fallas, criticidad, PM/WO y toolkit corporativo"
+          },
+          {
+            "name": "Interpreta y participa en el desarrollo del Toolkit de Válvulas y Bombas de Brewingrewing. Analisa resultados y genera avisos de mantenimiento. Evidencia control y seguimiento.",
+            "metodoValidacion": "Revisión de Toolkit, reporte mensual de avances + plan de trabajo 1YP",
+            "herramientas": "P&ID, matriz de válvulas, secuencia de operación/CIP y checklist de ruta; Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica"
+          },
+          {
+            "name": "Participa en la elaboración de RCM/CBM del sistema BBT y carbonatación priorizando modos de falla que afecten oxígeno, CO₂, presión, inocuidad, trazabilidad y continuidad de envasado.",
+            "metodoValidacion": "Caso RCM/CBM + revisión de criticidad, modo de falla, tarea propuesta y beneficio.",
+            "herramientas": "Analizador CO₂/O₂, manómetros, transmisores, registros de liberación y checklist BBT; Matriz CIP, registro de conductividad/temperatura/tiempo, ATP/micro si aplica; Matriz RCM/CBM, AFJ, historial de fallas, criticidad, PM/WO y toolkit corporativo"
+          }
+        ]
+      }
+    ]
+  },
+  "resumenMapeo": [
+    {
+      "puesto": "Operador de Materias Primas 2.0",
+      "equipoSala": "MANEJO DE MATERIA PRIMA"
+    },
+    {
+      "puesto": "Operador de Molienda 2.0",
+      "equipoSala": "MOLIENDA"
+    },
+    {
+      "puesto": "Operador de Maceración 2.0",
+      "equipoSala": "MACERACIÓN"
+    },
+    {
+      "puesto": "Operador de Filtración de Mosto 2.0",
+      "equipoSala": "FILTRO DE MOSTO"
+    },
+    {
+      "puesto": "Operador de Cocimiento 2.0",
+      "equipoSala": "SALA DE COCIMIENTO"
+    },
+    {
+      "puesto": "Operador de Fermentación 2.0",
+      "equipoSala": "SALA DE FERMENTACIÓN"
+    },
+    {
+      "puesto": "Operador de Filtración de Cerveza 2.0",
+      "equipoSala": "SALA DE FILTROS"
+    },
+    {
+      "puesto": "Operador de BBT 2.0",
+      "equipoSala": "SALA BBT"
+    }
+  ],
+  "criteriosTransversales": {
+    "L6": {
+      "enfoque": "Conocimiento técnico de equipos/salas",
+      "competenciasTransversales": "Lectura básica de HMI/SCADA, identificación de equipos, variables críticas, riesgos de proceso, rutas, alarmas y criterios de escalamiento.",
+      "evidenciaMinima": "Explica el flujo, reconoce equipos y variables críticas, identifica condición anormal y comunica sin intervenir fuera de autorización.",
+      "aplicacion": "Todas las salas de elaboración."
+    },
+    "L7": {
+      "enfoque": "Mantenimiento correctivo/intermedio y parada mayor",
+      "competenciasTransversales": "Bloqueo de energías, lectura de P&ID/planos, intervención mecánica/sanitaria, ajuste, reemplazo, pruebas funcionales y documentación técnica.",
+      "evidenciaMinima": "Ejecuta o sustenta intervención segura, valida pruebas sin carga/con carga, registra modo de falla, causa probable y condición de liberación.",
+      "aplicacion": "Paradas mayores, correctivos planificados e intervenciones especializadas."
+    },
+    "L8": {
+      "enfoque": "Predictivo, RCM, CBM y análisis de falla",
+      "competenciasTransversales": "Vibración, termografía, ultrasonido, análisis de aceite, tendencias de proceso, criticidad, modos de falla, severidad y ventana de intervención.",
+      "evidenciaMinima": "Interpreta tendencias, define severidad, prioriza intervención y vincula condición del activo con riesgo de producción, seguridad, calidad e inocuidad.",
+      "aplicacion": "Gestión de confiabilidad y mantenimiento basado en condición."
+    }
+  },
   "L6": [
     {
-      "category": "MANEJO DE MATERIAS PRIMAS - TRANSPORTE -LIMPIEZA",
+      "category": "MANEJO DE MATERIA PRIMA",
       "skills": [
-        "Comprende el funcionamiento de los diferentes equipos que conforman el sistema de transporte y limpieza de materias primas, tales como filtros de polvo, transportadores, elevadores, limpiadoras de grano y básculas.",
-        "Comprende y explica las variables críticas de seguridad (manejo de polvo) y control de los sistemas de transporte de materias primas y las monitorea de manera rutinaria (Rutinas PM).",
-        "Comprende los controles del sistema de transporte y sus sistemas de seguridad.  Capaz de eliminar una falla en los HMI de los equipos, puede activar manualmente el sistema y ponerlo en automático.  Interactua con los sistema de mando locales, centralizados.",
-        "Conoce y esta en capacidad de realizar la regulación a las compuertas de descarga en la salida de silos",
-        "Conoce y esta en capacidad de realizar alineación y tensado en las cadenas de los transportadores",
-        "Conoce y esta en capacidad de realizar la medición en el flujo de aspiración y regularlo de ser necesario",
-        "Conoce y esta en capacidad verificar la alineación en la banda de un elevador, y realizar el ajuste de ser necesario.",
-        "Conoce y esta en capacidad de realizar la medición de tolerancia en las rotoesclusas del proceso de transporte",
-        "Cuenta con la habilidad de validar que los ajustes realizados al sistema, trabajen acorde a los requerimientos de proceso."
+        "Comprende el funcionamiento de los diferentes equipos que forman el sistema de almacenamiento, transporte y limpieza de materia prima como: Silos, transportadores, elevadores, rotoesclusas, limpiadoras de grano, imanes, filtros de polvo, básculas y dosificadores.",
+        "Comprende y explica las variables críticas de seguridad en el manejo de polvo y conoce los controles necesarios en los sistemas de transporte de materias primas y los monitorea de manera rutinaria (Rutinas PM).",
+        "Reconoce riesgos críticos asociados al manejo de materia prima: Polvo combustible, atrapamiento, caída de material, contaminación cruzada, derrames y limpieza deficiente del área.",
+        "Identifica sensores y protecciones del sistema de materia prima: Detección de nivel alto/bajo, velocidad, desvío de banda, detección de atasco y presión diferencial en filtros de mangas. Es capaz de identificar alarmas en el sistema SCADA/HMI local sugiriendo posibles soluciones al equipo de mantenimiento.",
+        "Explica la función del sistema de aspiración y filtración de polvo, relacionando presión diferencial, limpieza por pulsos, fugas de polvo y condición de mangas con estabilidad operativa.",
+        "Relaciona capacidad de transporte, velocidad, amperaje y condición mecánica con posibles sobrecargas, desalineación, rotura de cangilones, atascos o pérdida de flujo.",
+        "Conoce y está en capacidad de realizar la medición en el flujo de aspiración y regularlo de ser necesario. Identifica la presión de trabajo de las mangas y conoce los límites máximos para asegurar un buen funcionamiento (7 a 15 mbar).",
+        "Reconoce condiciones anormales en campo: Ruido excesivo, alta vibración, calentamiento, polvo excesivo, derrames, caída de caudal, activación de alarmas o consumo eléctrico fuera de tendencia. Genera avisos de mantenimiento con el detalle requerido y completo.",
+        "Valida que los ajustes realizados al sistema, trabajen acorde a los requerimientos de proceso."
       ]
     },
     {
-      "category": "MOLIENDA DE MATERIAS PRIMAS",
+      "category": "MOLIENDA",
       "skills": [
-        "Comprende el funcionamiento de los diferentes tipos de equipos que conforman el sistema de molienda, tal como molino de rodillos, martillos, sistemas de acondicionamiento de malta, mezcladores (si aplica).",
-        "Comprende y explica las variables críticas de seguridad (manejo de polvo) y control de los sistemas de molienda y las monitorea de manera rutinaria (Rutinas PM).",
-        "Comprende los controles del sistema de molienda y sus sistemas de seguridad.  Capaz de eliminar una falla en los HMI de los equipos, puede activar manualmente el sistema y ponerlo en automático.  Interactua con los sistema de mando locales, centralizados.",
-        "Conoce y esta en capacidad de realizar la regulación de alimentación de grano hacia el molino, así como la uniformidad de entrada de grano (Si aplica)",
-        "Conoce y esta en capacidad de realizar la medición de distancia entre rodillos (abertura), validar el desgaste presentado en su estriado, y realizar un ajuste de ser necesario (Si aplica)",
-        "Conoce y esta en capacidad de realizar la regulación del sistema de humectación de grano (Si aplica)",
-        "Conoce y esta en capacidad de realizar el ajuste por desgaste en la bomba de descargue de masas (Si aplica)",
-        "Conoce y esta en capacidad de realizar el cambio de la malla perforada, de acuerdo a los ajustes requeridos por parte del proceso (Si aplica)",
-        "Cuenta con la habilidad de validar que los ajustes realizados al sistema, trabajen acorde a los requerimientos de proceso."
+        "Comprende el funcionamiento de los componentes principales del sistema de molienda: Alimentador, imanes, acondicionador/humectación, rodillos o martillos, cribas, compuertas, aspiración y descarga.",
+        "Explica el objetivo técnico de la molienda y cómo impacta en la extracción, conversión, filtrabilidad y rendimiento de sala.",
+        "Interpreta variables operativas de molienda: Distancia entre rodillos, velocidad de transporte, caudal de alimentación, húmedad de acondicionamiento, amperaje en molino, aspiración y temperatura. (Si aplica).",
+        "Reconoce síntomas de molienda fuera de condición: Bajo o alto porcentaje de finos, grano entero, cáscara destruida, granulometría inestable, baja velocidad, polvo excesivo o incremento de tiempo de molienda o consumo de energía.",
+        "Verifica protecciones y controles de seguridad del sistema: Imanes, detectores metálicos, puertas enclavadas, paros de emergencia, filtros de polvo y secuencia de arranque/parada. Es capaz de identificar alarmas en el sistema SCADA/HMI local y genera avisos de mantenimiento sugiriendo posibles soluciones al equipo de mantenimiento.",
+        "Relaciona el desgaste de rodillos, martillos, cribas, rodamientos o placas de impacto con variables de monitoreo como vibración, ruido, sobrecorriente, baja capacidad y desviación de granulometría.",
+        "Conoce y está en capacidad de identificar en molino de martillos desgaste de martillos y chapa perforada. En molino de rodillos la medición de apertura de rodillos y su regulación de ser necesario.",
+        "Conoce y está en capacidad de realizar la regulación de velocidad en transportes de grano del sistema de molienda y alimentación al molino. Realiza la regulación de la humectación del grano en molienda acondicionada, diagnóstico y ceonoce los parametros de trabajo de la bomba de descargue de masa en molienda húmeda.",
+        "Valida que los ajustes realizados trabajen de acuerdo a lo requerido por el proceso, monitoreando condición de la molienda mediante muestra representativa, ausencia de cuerpos extraños, estabilidad del equipo y cumplimiento de parámetros de receta."
       ]
     },
     {
-      "category": "SISTEMAS DE COCIMIENTO",
+      "category": "MACERACIÓN",
       "skills": [
-        "Comprende el funcionamiento mecánico de los diferentes equipos que conforman el ciclo de cocina, tales como ollas de maceración, filtros de mosto, olla de cocción, whirpool, evaporación y enfriamiento.",
-        "Comprende y explica las variables críticas de seguridad (SSM) y control de los sistemas de generación de mosto y las monitorea de manera rutinaria (Rutinas PM).",
-        "Comprende los controles del sistema de generación de mosto y los sistemas de seguridad.  Capaz de eliminar una falla en los HMI de los equipos, puede activar manualmente el equipo y ponerlo en automático.",
-        "Conoce y esta en capacidad de realizar la regulación del sistema de desalojo y remoción de bagazo en filtro lauter (Si aplica)",
-        "Conoce y esta en capacidad de realizar la regulación del sistema de limpieza y remoción de trup en whirpool (Si aplica)",
-        "Conoce y esta en capacidad de realizar la regulación del sistema de generación de vacío en evaporadores al vacío. (Si aplica)",
-        "Conoce y esta en capacidad de identificar la presión y flujo correcto en el suminsitro de vapor para las ollas de adjuntos, mezclas, cocción y calentadores externos (si aplica); y realizar su ajuste de ser necesario.",
-        "Conoce y esta en capacidad de identificar el correcto funcionameinto en los sistemas de trampeo de condensado y realizar los ajustes para normalizar el proceso (si aplica ajuste)",
-        "Cuenta con la habilidad de validar que los ajustes realizados al sistema, trabajen acorde a los requerimientos de proceso."
+        "Comprende el funcionamiento de los diferentes equipos del sistema de maceración como: Macerador, Pre-macerador, agitadores, bombas de macerado, válvulas, líneas de transferencia, sistema de calentamiento, instrumentación y circuitos CIP asociados.",
+        "Reconoce desviaciones típicas: Rampa térmica lenta, mezcla heterogénea, formación de grumos y las relaciona con alto amperaje de agitador, cavitación de bomba o error de secuencia/receta.",
+        "Reconoce instrumentación crítica de maceración: Temperatura, nivel, caudal, presión y pH, explicando el impacto de una medición errónea sobre receta, calidad y seguridad. Es capaz de identificar en el SCADA cuando se presenta una falla en el instrumento de medición y genera avisos de mantenimiento.",
+        "Relaciona fallas de agitadores, bombas, válvulas o sensores con baja conversión, variación de extracto, aumento de viscosidad, mala homogeneidad y problemas de filtrabilidad.",
+        "Verifica condición operaciónal del sistema de calentamiento: válvulas de vapor, trampas, retorno de condensado, camisa/calandria, control de temperatura y ausencia de golpes de ariete.",
+        "Conoce y hace uso del histórico de gráficas, protocolo de pasos, reporte de alarmas del sistema SCADA/HMI para identificar fallas o desviaciones en el comportamiento de los principales equipos de la sala de maceración.",
+        "Valida la transferencia hacia filtración confirmando volumen, temperatura, homogeneidad, secuencia correcta, ausencia de alarmas y condición segura de bombas y válvulas."
       ]
     },
     {
-      "category": "SISTEMAS DE FERMENTACION Y MADURACION DE CERVEZA",
+      "category": "FILTRO DE MOSTO",
       "skills": [
-        "Comprende el funcionamiento mecánico de los diferentes equipos que forman parte un sistema de fermenación y maduración de cerveza, tales como propagadores de levadura, centrífugas, tanques de fermentación y maduración, enfriadores de levadura, sistema CIP.",
-        "Comprende y explica las variables críticas de seguridad (PSM) y control de los sistemas de generación de frio (aplicados sen fermentación y maduración), y las monitorea de manera rutinaria (Rutinas PM).",
-        "Comprende los controles del sistema de fermentación y maduración.  Es capaz de eliminar una falla en los HMI de los equipos, puede activar manualmente el equipo y ponerlo en automático.",
-        "Conoce y esta en capacidad de realizar la regulación de la válvula de recuperación de CO2 en tanques fermentadores. (Si aplica)",
-        "Conoce y ejecuta el procedimiento de ajuste de faja(banda) de transmisión tazon - motor, para garantizar la valocidad nominal de operación de la centrifuga",
-        "Conoce y ajusta el sistema de regulación de presión de descarga en la centrifuga.",
-        "Conoce y ejecuta el procedimiento de ajuste para bombas del sistemas de preparación y dosificación de aditivos.",
-        "Conoce y ejecuta el procedimiento de ajuste para sistemas estabilizantes",
-        "Conoce y ejecuta el procedimiento de ajuste para sistemas de limpieza Caustic Shot (si aplica)",
-        "Conoce y ejecuta el procedimiento de ajuste para temperatura de autolisis en sistemas de recolección de levadura",
-        "Cuenta con la habilidad de validar que los ajustes realizados al sistema, trabajen acorde a los requerimientos de proceso."
+        "Comprende el funcionamiento de los principales equipos y componentes del sistema de filtración de mosto: lauter tun o mash filter, fondo falso/telas/placas, cuchillas/rakes, sistema hidráulico, bombas, sistema desalojo de bagazo, válvulas e instrumentación.",
+        "Explica las etapas del ciclo y es capaz de identificar la secuencia en los pasos de la receta: Llenado, formación de cama, recirculación, filtración, lavado de bagazo, drenaje, descarga de bagazo y limpieza CIP.",
+        "Interpreta variables críticas: Turbidez, caudal, nivel, presión diferencial, temperatura, extracto de lavado y estabilidad del flujo de mosto. Es capaz de identificar en el SCADA cuando se presenta una falla en el instrumento de medición y genera un avisos de mantenimiento.",
+        "Relaciona molienda, viscosidad de maceración y operación de cuchillas y falso fondo/ telas y membranas con filtrabilidad, claridad de mosto, rendimiento y tiempo total de ciclo.",
+        "Verifica condición operaciónal de bombas de recirculación, bombas de mosto, sistema hidráulico, válvulas de transferencia, válvulas de lavado y retorno, identificando cavitación, pérdida de capacidad, aumento de amperaje.",
+        "Explica la función de cuchilla, profundidad de corte, velocidad y secuencia, reconociendo el impacto de un ajuste incorrecto sobre la cama filtrante. Es capaz de realizar la regulación de ser requerido.",
+        "Reconoce la función del sistema hidráulico o de prensado, identificando presión, movimientos, cilindros, actuadores, finales de carrera y riesgos por energía acumulada. Valida el tipo y nivel de aceite requerido.",
+        "Identifica los componentes del sistema de remoción y desalojo de bagazo (tolva de bagazo). Participa en ajuste y verificación de alineamiento rutinario.",
+        "Participa en actividades de mantenimiento básicas como limpieza mecánica de falso fondo: Desarmado, limpieza y armado de falso fondo para filtro lauter. Para mash filter participa en el reemplazo de telas y membranas filtrantes.",
+        "Reconoce la función de las válvulas de llenado, válvulas y bomba de recirculación de mosto y su impacto en la eficiencia de filtración. Identifica fallas por cavitación, presencia de burbujas de aire, alta turbidez en el mosto y las reporta identificando las posibles causas en avisos de mantenimiento.",
+        "Conoce y hace uso del histórico de gráficas, protocolo de pasos, reporte de alarmas del sistema SCADA/HMI para identificar fallas o desviaciones en el comportamiento de los principales equipos del proceso de filtración de mosto.",
+        "Valida que los ajustes realizados en la máquina impactan en el mosto filtrado confirmando claridad, caudal estable, tiempo de ciclo, extracto esperado, ausencia de alarmas y transferencia correcta a cocimiento."
       ]
     },
     {
-      "category": "SISTEMAS DE FILTRACIÓN / CARBONATACIÓN",
+      "category": "SALA DE COCIMIENTO",
       "skills": [
-        "Comprende el funcionamiento mecánico de los diferentes equipos que conforman parte de sistemas de  filtración / mezclas / carbonatación de producto terminado, tales como filtros de cerveza, carbonatadores, mezcladores, sistemas de descarga de lodos, sistema CIP.",
-        "Comprende y explica las variables críticas de seguridad y control de los sistemas de filtración / mezclas / carbonatación de producto terminado, y las monitorea de manera rutinaria (Rutinas PM).",
-        "Comprende los controles de los sistemas de filtración / mezclas / carbonatación de producto terminado.  Capaz de eliminar una falla en los HMI de los equipos, puede activar manualmente el equipo y ponerlo en automático.",
-        "Conoce y esta en capacidad de realizar la regulación del sistema de regulación de inyección de tierra filtrante en filtros de cerveza. (Si aplica)",
-        "Conoce y esta en capacidad de realizar la medición y regulación del sistema hidráulico de giro en filtros de cerveza de placas para garantizar la velocidad de trabajo durante proceso de limpieza. (Si aplica)",
-        "Conoce y esta en capacidad de realizar la regulación de la válvula de recuperación de CO2 en tanques de gobierno. (Si aplica)",
-        "Conoce y esta en capacidad de realizar la regulación de la válvula de inyección de CO2 en sistemas de carbonatación. (Si aplica)",
-        "Conoce y esta en capacidad de realizar la regulación del sistema de mezcla (blending). (Si aplica)",
-        "Cuenta con la habilidad de validar que los ajustes realizados al sistema, trabajen acorde a los requerimientos de proceso."
+        "Comprende el funcionamiento de los principales equipos de cocimiento: Olla de hervor, calandria/calentador externo, whirlpool, bombas de mosto, dosificación de lúpulo/aditivos, condensador de vapores e intercambiadores de calor.",
+        "Interpreta variables críticas: Temperatura, presión de vapor, nivel, pH, extracto, dosificación, caudal, flujómetro de agua, mosto y aireación y secuencia de receta. Es capaz de identificar en el SCADA cuando se presenta una falla en el instrumento de medición y genera avisos de mantenimiento.",
+        "Reconoce desviaciones del sistema de calentamiento: Rampa lenta, bajo hervor, alta presión, retorno deficiente de condensado, falla de trampa, válvula de vapor inestable o golpe de ariete. Genera avisos de mantenimiento.",
+        "Explica la función del whirlpool y relaciona entrada tangencial, tiempo de reposo, separación de trub, turbidez y arrastre de sólidos con calidad de mosto.",
+        "Verifica rutas de trasiego, alineación de válvulas, estado de bombas y prevención de mezcla de lotes durante transferencias entre cocimiento, whirlpool y enfriamiento identificando cavitación, golpes de ariete o pérdida de capacidad.",
+        "Reconoce puntos críticos del enfriamiento y aireación/oxigenación: Intercambiador, agua helada/glicol, caudal, temperatura de salida y dosificación de oxígeno según receta.",
+        "Conoce y hace uso del histórico de gráficas, protocolo de pasos, reporte de alarmas del sistema SCADA/HMI para identificar fallas o desviaciones en el comportamiento de los principales equipos de la sala de cocimientos.",
+        "Valida que los ajustes estén alineados a los requerimientos de proceso como son liberación del mosto a fermentación confirmando lote, volumen, extracto, temperatura, oxigenación, ausencia de trub excesivo, ruta correcta y registros completos."
+      ]
+    },
+    {
+      "category": "SALA DE FERMENTACIÓN",
+      "skills": [
+        "Comprende el funcionamiento de los principales equipos de fermentación: Fermentadores, maduradores, propagadores, centrífugas, CMF, líneas de levadura, matriz de válvulas sanitarias, enfriamiento por camisas, venteos, CO₂, CIP, sensores y puntos de muestreo.",
+        "Interpreta variables críticas: temperatura, presión, extracto, pH, nivel y secuencia de receta. Es capaz de identificar en el SCADA cuando se presenta una falla en el instrumento de medición y genera avisos de mantenimiento.",
+        "Comprende los principales impactos del funcionamiento inadecuado de los equipos Centrífugas/CMF identificando alta vibración, ruido anormal, sobrecorriente, bajo flujo, alta tasa de descargas.",
+        "Verifica condiciones de inoculación, transferencia de levadura, cosecha, descarte y trazabilidad, diferenciando fallas operativas, sanitarias y de instrumentación.",
+        "Relaciona fallas de válvulas de glicol, sensores de temperatura, presión o nivel con pérdida de control fermentativo, desviación de calidad y riesgo de seguridad.",
+        "Reconoce condiciones inseguras: sobrepresión, vacío, falla de válvula de alivio, ingreso de oxígeno, fuga de CO₂, bloqueo incorrecto de líneas o intervención no autorizada.",
+        "Conoce y comprende los riesgos sanitarios en fermentadores, válvulas sanitarias y matriz de válvulas. Conoce el control de cambio de asientos y empaques en estos equipos.",
+        "Conoce y hace uso del histórico de gráficas, protocolo de pasos, reporte de alarmas del sistema SCADA/HMI para identificar fallas o desviaciones en el comportamiento de los principales equipos de la sala de fermentación.",
+        "Valida que los ajustes estén alineados a los requerimientos de proceso como son transferencia o liberación interna del tanque confirmando estado de lote, análisis de calidad, ruta, presión, temperatura, condición sanitaria y registros completos."
+      ]
+    },
+    {
+      "category": "SALA DE FILTROS",
+      "skills": [
+        "Comprende el funcionamiento de los principales equipos de filtración y estabilización: Centrífuga, filtro de placas/velas/membranas, sistema de dilución, PVPP, Generación de agua desaireada, cartuchos, bombas, válvulas, instrumentos y líneas sanitarias.",
+        "Identifica instrumentos críticos: Turbidímetro, medidor de oxígeno disuelto, caudalímetro, transmisores de presión, temperatura, medidor de extracto, conductividad y medición de CO₂. Es capaz de identificar en el SCADA/HMI cuando se presenta una falla en el instrumento de medición y genera avisos de mantenimiento.",
+        "Reconoce fallas típicas de funcionamiento de los filtros de cerveza en el reporte histórico de gráficas del sistema SCADA: Turbidez elevada, incremento de diferencial, rotura de medio filtrante, mala formación de precapa, dosificación irregular o entrada de aire.",
+        "Relaciona bombas, sellos, empaques, uniones, válvulas y purgas con riesgo de ingreso de oxígeno, contaminación, espuma o pérdida de presión.",
+        "Reconoce puntos críticos de CIP/sanitización en filtros, centrífuga, dosificadores, líneas, válvulas, drenajes, venteos y retorno de limpieza.",
+        "Conoce y hace uso del histórico de gráficas, protocolo de pasos, reporte de alarmas del sistema SCADA/HMI para identificar fallas o desviaciones en el comportamiento de los principales equipos de la sala de filtración y estabilización.",
+        "Valida que los ajustes estén alineados a los requerimientos de proceso de filtración de cerveza hacia BBT confirmando turbidez, oxígeno, CO₂, presión, temperatura, ruta de transferencia, liberación de calidad y ausencia de alarmas."
+      ]
+    },
+    {
+      "category": "SALA BBT",
+      "skills": [
+        "Comprende el funcionamiento de los principales equipos de sala BBTs: BBTs, carbonatadores, manifold de transferencia, líneas a envasado, CIP, suministro de CO₂, válvulas de presión/vacío, sensores y puntos de muestreo.",
+        "Identifica instrumentos críticos: Caudalímetro, transmisores de presión, temperatura, nivel, volumen, medidor de CO₂, conductividad. Es capaz de identificar en el SCADA/HMI cuando se presenta una falla en el instrumento de medición y genera avisos de mantenimiento.",
+        "Identifica válvulas, reguladores, filtros estériles, sensores de presión/nivel/temperatura, puntos de muestra y elementos de seguridad asociados al BBT.",
+        "Relaciona condición de bombas, líneas, válvulas, sellos y conexiones sanitarias con pérdida de CO₂, incremento de oxígeno, contaminación o transferencia inestable.",
+        "Reconoce los puntos críticos de CIP/sanitización del BBT: conductividad, temperatura, caudal, retorno, drenaje, purgas, integridad de empaques.",
+        "Conoce y hace uso del histórico de gráficas, protocolo de pasos, reporte de alarmas del sistema SCADA/HMI para identificar fallas o desviaciones en el comportamiento de los principales equipos de la sala de BBTs.",
+        "Conoce y comprende los riesgos sanitarios en BBTs, bombas y válvulas sanitarias. Conoce el control de cambio de asientos y empaques en estos equipos.",
+        "Valida que los ajustes estén alineados a los requerimientos de proceso presión estable, CO₂/O₂ dentro de especificación y registros completos."
       ]
     }
   ],
   "L7": [
     {
-      "category": "MANEJO DE MATERIAS PRIMAS - TRANSPORTE",
+      "category": "MANEJO DE MATERIA PRIMA",
       "skills": [
-        "Conoce y esta en capacidad de identificar desgaste, realizar reemplazo, ajuste y regulación de las compuertas de descarga en la salida de silos.",
-        "Conoce y esta en capacidad de  indentificar desgaste, realizar reemplazo, ajuste y regulación del tensado de las cadenas en transportadores de grano.",
-        "Conoce y esta en capacidad de indentificar desgaste, realizar reemplazo, ajuste y regulación de la bomba de aspiración. Ejecuta el cambio de mangas.",
-        "Conoce y esta en capacidad de indentificar desgaste, realizar reemplazo de cangilones y faja en elevadores de cangilones. Realizar ajuste y regulación posterior al cambio.",
-        "Conoce y esta en capacidad de indeitificar desgaste, realizar reemplazo de las rotoesclusas asi como los componentes asociados al equipo.",
-        "Conoce y esta en capacidad de indeitificar desgaste, realizar reemplazo de tamices en sistema de limpieza de grano (zarandas, despedradoras).",
-        "Conoce y esta en la capacidad de realizar lectura técnica de esquemas y componentes del sistema de manejo de materias primas.",
-        "Ejecuta cambios de lubricantes en sistemas complejos: centralizados, periféricos.",
-        "Soluciona las fallas recurrentes en los equipos mediante intervenciones especializadas durante la operación o ventana de mantenimiento.",
-        "Conoce  los  tipos de motores que  se usan en los dif equipos de  Transporte  Materias Prmas",
-        "Es Capaz de identificar  fallas en los motores electricos(calentamiento, vibración o ruido anormal)",
-        "Identifica y conoce el funcionamiento del sistema electrico de seguridad  en los diferentes equipos de Transporte  Materias Primas",
-        "Es capaz de identificar  fallas en los equipos de seguridad",
-        "Conoce  el  sistema de control  de  procesos  SCADA - Braumat  - AVEVA - Factory Talk",
-        "Es capaz de identificar fallas en los sistemas SCADA",
-        "Conoce los sistema de instrumentación de Transporte de Materias Primas  - planos neumaticos",
-        "Es capaz de identificar fallas en los sistemas neumaticos"
+        "Inspecciona transportadores, elevadores, cadenas, bandas, cangilones, raspadores y guardas, identificando desgaste, elongación, desalineación, fisuras y fijaciones sueltas.",
+        "Participa en la intervención mecánica en cangilones, bandas, cadenas, poleas, raspadores, compuertas y elementos de fijación, aplicando bloqueo de energías y procedimientos estandarizados.",
+        "Interpreta planos P&D mecánicos, eléctricos y neumáticos básicos para aislar, intervenir y liberar equipos de materia prima con control de energías peligrosas.",
+        "Evalúa rodamientos, chumaceras, reductores, acoplamientos, sellos y soportes, definiendo si requieren ajuste, lubricación, reemplazo o seguimiento por condición.",
+        "Realiza inspección interna de filtros de mangas, colectores, ductos, ventiladores y sistemas de pulso, verificando taponamiento, rotura, fugas, corrosión y hermeticidad.",
+        "Verifica básculas, celdas de carga, sensores de nivel, desvío de banda y detectores de atasco después de una intervención mecánica o eléctrica.",
+        "Alinea poleas, acoples y transmisiones, validando tensión, paralelismo, sentido de giro, ausencia de fricción, vibración anormal y calentamiento.",
+        "Participa en el análisis para corrección de fallas típicas en compuertas, actuadores, sensores y enclavamientos locales, diferenciando falla mecánica, neumática, eléctrica o de señal.",
+        "Realiza pruebas funcionales sin carga y con carga controlada, confirmando capacidad, estabilidad, limpieza técnica, secuencia automática y retorno seguro a operación.",
+        "Documenta hallazgos de intervención indicando equipo, componente, modo de falla, causa probable, repuesto utilizado, condición final y recomendación preventiva."
       ]
     },
     {
-      "category": "MOLIENDA DE MATRIAS PRIMAS",
+      "category": "MOLIENDA",
       "skills": [
-        "Conoce y esta en capacidad de verificar desgaste en piezas del alimentador de grano al molino, realizar reemplazo, ajuste y regulación. (Si aplica)",
-        "Conoce y esta en capacidad de realizar cambio de rodillos, rodamientos, verificar desgaste en piezas, reemplazo, ajuste y regulación. ( Si aplica)",
-        "Conoce y esta en capacidad de indentificar fallas y realizar el reemplazo de rociadores del sistema de humectación de grano (Si aplica)",
-        "Conoce y esta en capacidad de indentificar desgaste y realizar reemplazo de estator en la bomba de descargue de masas (Si aplica)",
-        "Conoce y esta en capacidad de identificar desgaste y realizar cambio de martillos, rodamientos, verificar desgaste en piezas, reemplazo, ajuste y regulación. (Si aplica)",
-        "Conoce y esta en la capacidad de realizar lectura técnica de esquemas y componentes del sistema de manejo de materias primas.",
-        "Ejecuta cambios de lubricantes en sistemas complejos: centralizados, periféricos.",
-        "Soluciona las fallas recurrentes en los equipos mediante intervenciones especializadas durante la operación o ventana de mantenimiento",
-        "Conoce  los  tipos de motores que  se usan en los sistemas de materias primas",
-        "Es Capaz de identificar  fallas en los motores electricos(calentamiento, vibración o ruido anormal)",
-        "Identifica y conoce el funcionamiento del sistema electrico de seguridad  en los diferentes equipos de Materias primas",
-        "Es capaz de identificar  fallas en los equipos de seguridad",
-        "Conoce  el  sistema de control  de  procesos  SCADA - Braumat  - AVEVA - Factory Talk",
-        "Es capaz de identificar fallas en los sistemas SCADA",
-        "Conoce los sistema de instrumentación de Materias primas  - planos neumaticos",
-        "Es capaz de identificar fallas en los sistemas neumaticos"
+        "Inspecciona alimentadores, imanes, compuertas, rodillos, martillos, cribas, placa perforada, rotoesclusa, rodamientos y sistemas de aspiración.",
+        "Ejecuta reemplazo, ajuste o calibración mecánica de rodillos, martillos, cribas, placas perforadas, sellos, rodamientos y fijaciones según tecnología instalada y estándar del fabricante.",
+        "Verifica gap/luz de rodillos, paralelismo, presión de molienda, balance de rotor, condición de martillos/cribas y uniformidad de alimentación.",
+        "Evalúa motores, reductores, acoplamientos, correas, poleas y cadenas relacionando condición mecánica con capacidad y consumo eléctrico.",
+        "Realiza limpieza técnica e inspección de filtros de polvo, ductos, ventiladores, mangas, esclusas y puntos de captación del sistema de molienda.",
+        "Participa en el análisis para corrección de fallas típicas de molienda: vibración, ruido metálico, sobrecorriente, baja capacidad, atascamiento, calentamiento y variación de granulometría.",
+        "Interpreta planos P&D mecánicos, eléctricos y neumáticos básicos para aislar, intervenir y liberar equipos de molienda con control de energías peligrosas.",
+        "Valida enclavamientos de seguridad, sensores de apertura, velocidad, nivel, presión diferencial, detectores metálicos e interlocks después de mantenimiento.",
+        "Ejecuta lubricación técnica, cambio de aceite/grasa y verificación de puntos críticos, evitando contaminación de producto y sobrelubricación.",
+        "Realiza prueba de molienda con carga controlada, validando granulometría, estabilidad mecánica, consumo, ausencia de fugas de polvo y cumplimiento del proceso.",
+        "Documenta hallazgos de intervención indicando equipo, componente, modo de falla, causa probable, repuesto utilizado, condición final y recomendación preventiva."
       ]
     },
     {
-      "category": "COCIMIENTO",
+      "category": "MACERACIÓN",
       "skills": [
-        "Conoce y esta en capacidad de indentificar desgaste y realizar reemplazo de cuchillas, barreadores para la remoción de bagazo en filtro lauter (Si aplica)",
-        "Conoce y esta en capacidad de realizar el reemplazo del sistema de limpieza y remoción de trup en whirpool (Si aplica)",
-        "Conoce y esta en capacidad de identificar desgaste en la bomba de vacio asi como realizar reemplazo de la misma en los sistema de generación de vacío en evaporadores al vacío. (Si aplica)",
-        "Conoce y esta en capacidad de indentificar desgaste en placas y empaques de intercambiadores de calor. Asi como tambien es capaz de realizar el procedimiento de desarmado, reemplazo y armado. (Si aplica)",
-        "Conoce y esta en capacidad de indentificar pérdida de eficiencia asi como pase de producto en intercambiadores de casco y tubo. Asi como tambien es capaz de realizar el procedimiento de desarmado, limpieza, reemplazo de componentes y armado. (Si aplica)",
-        "Conoce y esta en capacidad de identificar fallas los sistemas de trampeo de condensado y realizar reemplazo de trampas de vapor (total o de piezas) en caso fuera requerido.",
-        "Conoce y esta en capacidad de identificar fallas en bombas centrífugas, realizar mantenimiento o reemplazo (total o de piezas) en caso fuera requerido.",
-        "Conoce y esta en capacidad de identificar fallas en válvulas de proceso, realizar mantenimiento o reemplazo (total o de piazas) en caso fuera requerido.",
-        "Conoce y esta en capacidad de identificar obstrucción por suciedad y desgaste de espesor en tuberías de proceso.",
-        "Conoce y esta en capacidad de realizar cambio de empaques y juntas en tuberias de proceso asi como indentificar los materiales correctos para el empaque en cada aplicación.",
-        "Conoce y esta en la capacidad de realizar lectura técnica de esquemas y componentes del sistema de manejo de materias primas.",
-        "Ejecuta cambios de lubricantes en sistemas complejos: centralizados, periféricos.",
-        "Soluciona las fallas recurrentes en los equipos mediante intervenciones especializadas durante la operación o ventana de mantenimiento",
-        "Conoce  los  tipos de motores que  se usan en los dif equipos de Cocimiento",
-        "Es Capaz de identificar  fallas en los motores electricos(calentamiento, vibración o ruido anormal)",
-        "Identifica y conoce el funcionamiento del sistema electrico de seguridad  en los diferentes equipos de Cocimiento",
-        "Es capaz de identificar  fallas en los equipos de seguridad",
-        "Conoce  el  sistema de control  de  procesos  SCADA - Braumat  - AVEVA - Factory Talk",
-        "Es capaz de identificar fallas en los sistemas SCADA",
-        "Conoce los sistema de instrumentación de Cocimiento - planos neumaticos",
-        "Es capaz de identificar fallas en los sistemas neumaticos"
+        "Inspecciona cocedor, macerador, agitadores, ejes, paletas, reductores, acoplamientos, sellos, soportes y bombas de macerado, identificando holguras, desgaste y fugas.",
+        "Ejecuta mantenimiento de agitadores, acoples, sellos mecánicos, empaques, rodamientos, reductores y bases, aplicando alineación y torque según estándar.",
+        "Verifica chaquetas de calentamiento, serpentines, calandria, válvulas de vapor, trampas, retorno de condensado y aislamiento térmico, identificando restricciones, fugas o baja transferencia.",
+        "Interviene bombas de macerado, válvulas de transferencia, actuadores neumáticos y posicionadores, validando estanqueidad y respuesta funcional.",
+        "Evalúa instrumentos de temperatura, nivel, caudal, presión y pH, coordinando calibración/verificación cuando la medición afecte receta o seguridad.",
+        "Inspecciona sistema CIP: roto-jet, boquillas, líneas, drenajes, válvulas de retorno, conductividad y temperatura, detectando baja cobertura o zonas muertas.",
+        "Participa en el análisis para corrección de fallas de mezcla, calentamiento, transferencia o limpieza que afecten rampas térmicas, conversión, viscosidad, inocuidad y disponibilidad del equipo.",
+        "Interpreta P&ID, planos mecánicos y secuencias de proceso para aislar maceradores, bombas y líneas antes de una intervención.",
+        "Realiza prueba funcional de agitador, bombas, válvulas, calentamiento y CIP antes de liberar el sistema a producción.",
+        "Documenta condición final indicando componente intervenido, modo de falla, repuestos, pruebas realizadas, riesgos remanentes y criterios de liberación."
       ]
     },
     {
-      "category": "SISTEMAS DE FERMENTACION Y MADURACION DE CERVEZA",
+      "category": "FILTRO DE MOSTO",
       "skills": [
-        "Conoce y esta en capacidad de indentificar desgaste y realizar mantenimiento o reemplazo  (total o de piezas) de las válvulas de regulaciòn de presiòn de CO2 en tanques fermentadores. (Si aplica)",
-        "Conoce y esta en capacidad de realizar mantenimiento  intermedios y mayores en centrifuga. (Si aplica)",
-        "Conoce y esta en capacidad de indentificar desgaste y realizar mantenimiento o reemplazo (total o de pieas) de las bombas del sistemas de preparación y dosificación de aditivos.",
-        "Conoce y esta en capacidad de identificar fallas en intercambiadores de calor, realizar reemplazo de placas y empaques en caso fuera requerido.",
-        "Conoce y esta en capacidad de identificar fallas en válvulas de proceso, realizar mantenimiento o reemplazo (total o de piazas) en caso fuera requerido.",
-        "Conoce y esta en capacidad de identificar fallas en bombas de proceso, realizar mantenimiento o reemplazo (total o de compontenes) en caso fuera requerido.",
-        "Conoce y esta en capacidad de ejecutar cambio de empaquetaduras en Tanques Fermentadores, Maduradores, Propagadores y almacenamiento de levadura.",
-        "Conoce y esta en capacidad de ejecutar cambio de empaquetaduras en tanques de sistema CIP.",
-        "Conoce y esta en capacidad de identificar fallas, ejecutar cambio de kit de sellos en valvulas doble asiento de matrices. (Levadura, Cerveza). (Si aplica)",
-        "Ejecuta cambios de lubricantes en sistemas complejos: centralizados, periféricos.",
-        "Soluciona las fallas recurrentes en los equipos mediante intervenciones especializadas durante la operación o ventana de mantenimiento",
-        "Conoce  los  tipos de motores que  se usan en los dif equipos de Fermentación / Maduración",
-        "Es Capaz de identificar  fallas en los motores electricos(calentamiento, vibración o ruido anormal)",
-        "Identifica y conoce el funcionamiento del sistema electrico de seguridad  en los diferentes equipos de Fermentación / Maduración",
-        "Es capaz de identificar  fallas en los equipos de seguridad",
-        "Conoce  el  sistema de control  de  procesos  SCADA - Braumat  - AVEVA - Factory Talk",
-        "Es capaz de identificar fallas en los sistemas SCADA",
-        "Conoce los sistema de instrumentación de Fermentación / Maduración  - planos neumaticos",
-        "Es capaz de identificar fallas en los sistemas neumaticos"
+        "Inspecciona lauter tun o mash filter identificando desgaste, deformación, daño sanitario, obstrucción, holguras, fugas y condición de superficies en contacto con producto.",
+        "Ejecuta mantenimiento de cuchillas/rakes, ejes, reductores, válvulas, actuadores, cilindros, telas, placas, fondo falso, empaques y elementos de fijación según tecnología instalada.",
+        "Verifica bombas de recirculación, bombas de mosto, válvulas de trasiego/lavado, válvulas de drenaje y actuadores, validando caudal, estanqueidad y respuesta.",
+        "Evalúa sistema hidráulico o de prensado: aceite, filtros, mangueras, cilindros, manifolds, presiones, fugas, finales de carrera y dispositivos de seguridad.",
+        "Inspecciona instrumentos de caudal, presión diferencial, turbidez, nivel y temperatura, confirmando señal, ubicación y limpieza después de intervención.",
+        "Participa en intervenciones de OVH en Filtros de Mosto, conoce e identifica desgaste en piezas de cambio.",
+        "Valida integridad de telas, placas soporte, empaques, falso fondo, boquillas CIP, drenajes y mirillas, evitando bypass, arrastre de sólidos o contaminación.",
+        "Participa en el análisis para corrección de fallas: baja filtrabilidad, diferencial alto, movimiento irregular de cuchillas, fugas, turbidez elevada, atascos o descarga incompleta de bagazo.",
+        "Interpreta P&ID y secuencias de bloqueo para aislar mosto caliente, vapor, hidráulica, neumática, electricidad y energía potencial antes de intervenir.",
+        "Ejecuta pruebas funcionales de movimiento, filtración simulada, recirculación, lavado, drenaje, descarga de bagazo y CIP antes de liberar.",
+        "Documenta hallazgos, modo de falla, causa probable, repuestos, pruebas de estanqueidad/funcionales y condición final para operación."
       ]
     },
     {
-      "category": "SISTEMAS DE FILTRACIÓN / CARBONATACIÓN",
+      "category": "SALA DE COCIMIENTO",
       "skills": [
-        "Conoce y esta en capacidad de indentificar desgaste y realizar mantenimiento o reemplazo  (total o de piezas) de las válvulas de regulaciòn de presiòn de CO2 en tanques de cerveza. (Si aplica)",
-        "Conoce y esta en capacidad de realizar mantenimiento de filtros de cerveza de placas. Reemplazo de empaquetaduras, cambio de mallas, partes molviles, rodamientos, sellos. (Si aplica)",
-        "Conoce y esta en capacidad de realizar mantenimiento de filtros de cerveza de bujìas. Reemplazo de empaquetaduras, cambio de bujìas, sellos. (Si aplica)",
-        "Conoce y esta en capacidad de indentificar desgaste y realizar mantenimiento o reemplazo (total o de pieas) del sistema de carbonataciòn.",
-        "Conoce y esta en capacidad de indentificar desgaste y realizar mantenimiento o reemplazo (total o de pieas) del sistema de diluciòn.",
-        "Conoce y esta en capacidad de ejecutar cambio de empaquetaduras en tanques de filtro, prefiltro, almacenamiento de cerveza.",
-        "Conoce y esta en capacidad de identificar fallas en bombas de proceso, realizar mantenimiento o reemplazo (total o de compontenes) en caso fuera requerido.",
-        "Conoce y esta en capacidad de identificar fallas en intercambiadores de calor, realizar reemplazo de placas y empaques en caso fuera requerido.",
-        "Conoce y esta en capacidad de ejecutar cambio de empaquetaduras en tanques de sistema CIP.",
-        "Conoce y esta en capacidad de identificar fallas en válvulas de proceso, realizar mantenimiento o reemplazo (total o de piazas) en caso fuera requerido.",
-        "Conoce y esta en capacidad de identificar fallas en sistema de dosificaciòn de tierra diatomeas, reelizar reemplazo de componentes y reparaciones en bombas de dosificaciòn.",
-        "Ejecuta cambios de lubricantes en sistemas complejos: centralizados, periféricos.",
-        "Soluciona las fallas recurrentes en los equipos mediante intervenciones especializadas durante la operación o ventana de mantenimiento",
-        "Conoce  los  tipos de motores que  se usan en los dif equipos de Filtración / Carbonatación",
-        "Es Capaz de identificar  fallas en los motores electricos(calentamiento, vibración o ruido anormal)",
-        "Identifica y conoce el funcionamiento del sistema electrico de seguridad  en los diferentes equipos de Filtración / Carbonatación",
-        "Es capaz de identificar  fallas en los equipos de seguridad",
-        "Conoce  el  sistema de control  de  procesos  SCADA - Braumat  - AVEVA - Factory Talk",
-        "Es capaz de identificar fallas en los sistemas SCADA",
-        "Conoce los sistema de instrumentación de Filtración / Carbonatación  - planos neumaticos",
-        "Es capaz de identificar fallas en los sistemas neumaticos"
+        "Inspecciona olla de hervido, calandria interna o externa, whirlpool, condensador de vapores, bombas, líneas, válvulas, dosificadores y sistema de enfriamiento.",
+        "Ejecuta mantenimiento de bombas de mosto caliente, sellos mecánicos, acoplamientos, válvulas sanitarias, actuadores, empaques y conexiones higiénicas.",
+        "Verifica sistema de vapor y condensado: válvulas de control, trampas, filtros, purgas, retornos, aislamiento y presencia de golpes de ariete o fugas.",
+        "Evalúa calandria interna o externa, camisas de calentamiento, placas de intercambio o superficies térmicas, identificando incrustación, baja transferencia, corrosión, fugas o restricciones.",
+        "Inspecciona whirlpool y rutas de trasiego, verificando boquillas de limpieza, drenajes, líneas de trub, válvulas y condición sanitaria.",
+        "Interviene dosificadores de lúpulo/aditivos, válvulas, tolvas y líneas asociadas, validando sellado, secuencia, limpieza y ausencia de contaminación cruzada.",
+        "Verifica intercambiador de calor, válvulas de agua helada/glicol, líneas de oxigenación y sensores de temperatura/caudal antes de liberar mosto frío.",
+        "Participa en el análisis para corrección de fallas del hervido, evaporación, separación de trub, enfriamiento, oxigenación, transferencia o seguridad por vapor.",
+        "Realiza pruebas funcionales de vapor, bombas, válvulas, dosificación, whirlpool, enfriamiento y CIP, confirmando parámetros de liberación.",
+        "Documenta hallazgos de intervención, pruebas de estanqueidad, condición sanitaria, riesgos remanentes y liberación técnica del sistema."
+      ]
+    },
+    {
+      "category": "SALA DE FERMENTACIÓN",
+      "skills": [
+        "Inspecciona fermentadores, centrífugas, propagadores, válvulas sanitarias, camisas de enfriamiento, líneas de levadura, CO₂, CIP, venteos y elementos de seguridad.",
+        "Ejecuta mantenimiento de válvulas mixproof/mariposa/diafragma, actuadores, sellos, empaques, clamps, líneas sanitarias y conexiones críticas de tanque.",
+        "Verifica sistema de enfriamiento: válvulas de glicol, camisas de enfriamiento, sensores de temperatura, aislamiento, caudal, fugas y respuesta del lazo de control.",
+        "Inspecciona elementos de presión/vacío, válvulas de alivio, venteos, filtros estériles, manómetros y transmisores, validando seguridad del tanque.",
+        "Interviene bombas o líneas de levadura, cosecha, descarte y transferencia, controlando condición sanitaria, estanqueidad y trazabilidad de rutas.",
+        "Participa en intervenciones OVH de Centrífugas conoce e identifica las piezas de cambio. Revisa bowl, discos, sistema hidráulico, agua de maniobra, lubricación, transmisión, vibración y condición de descarga.",
+        "Participa en intervenciones OVH de CMF conoce e identifica las piezas de cambio. Conoce procedimiento de identificación de rotura de membrana y de cambio.",
+        "Participa en intervenciones OVH de Intercambiadores de calor, conoce e identifica las piezas de cambio. Realiza inspección de placas y empaques. Conoce procedimiento de inspección de placas e identificación de rotura.",
+        "Evalúa instrumentos de temperatura, presión, nivel, conductividad, caudal y CO₂ asociados a fermentación, CIP y transferencias.",
+        "Participa en el análisis para corrección de fallas en fermentación: pérdida de enfriamiento, válvula trabada, fuga sanitaria, sobrepresión, ingreso de oxígeno o CIP incompleto.",
+        "Interpreta P&ID y matrices de válvulas para aislar tanques, centrífuga, CMF y líneas sin riesgo de mezcla de lotes, contaminación o liberación de CO₂.",
+        "Realiza pruebas de estanqueidad, funcionalidad de válvulas, respuesta de enfriamiento, CIP y secuencia automática antes de entregar el equipo.",
+        "Documenta intervención indicando tanque, componente, modo de falla, acción correctiva, pruebas, condición sanitaria y liberación de mantenimiento."
+      ]
+    },
+    {
+      "category": "SALA DE FILTROS",
+      "skills": [
+        "Inspecciona centrífugas, filtro de placas/velas/membranas, dosificadores, bombas, líneas, válvulas, cartuchos, PVPP y elementos de medición asociados a cerveza filtrada.",
+        "Ejecuta mantenimiento de bombas, sellos, acoples, válvulas sanitarias, actuadores, empaques, conexiones y componentes de filtros según estándar de higiene.",
+        "Participa en intervenciones OVH de filtro de placas/velas/membranas verificando placas, velas, membranas, colectores, precapa, juntas, drenajes, venteos y puntos de posible bypass o rotura.",
+        "Participa en intervenciones OVH de Centrífugas conoce e identifica las piezas de cambio. Revisa bowl, discos, sistema hidráulico, agua de maniobra, lubricación, transmisión, vibración y condición de descarga.",
+        "Verifica dosificación de tierra/PVPP/estabilizantes: bombas, agitadores, tolvas, líneas, concentración, válvulas y puntos de inyección.",
+        "Inspecciona instrumentos críticos: turbidímetro, oxígeno disuelto, caudal, presión diferencial, temperatura, CO₂ y conductividad CIP.",
+        "Participa en el análisis para corrección de fallas en filtración de cerveza que generen turbidez alta, oxígeno elevado, pérdida de CO₂, diferencial alto, colmatación, fuga sanitaria o transferencia inestable.",
+        "Interpreta P&ID y secuencias de CIP para aislar filtros, centrífuga, dosificadores y líneas sin contaminación ni mezcla de producto.",
+        "Realiza pruebas funcionales de filtración, dosificación, presión diferencial, estanqueidad, purga, CIP y transferencia hacia BBT.",
+        "Documenta hallazgos, modo de falla, condición sanitaria, repuestos, pruebas de calidad asociadas y restricciones de liberación."
+      ]
+    },
+    {
+      "category": "SALA BBT",
+      "skills": [
+        "Inspecciona BBTs, carbonatadores, generador de agua desaireada, manifold de transferencia, líneas de envío a envasado, válvulas, filtros estériles, CIP, CO₂ y elementos de seguridad.",
+        "Ejecuta mantenimiento de los principales equipos como BBTs, válvulas sanitarias, actuadores, reguladores, sellos, empaques, clamps, conexiones, bombas y accesorios de transferencia.",
+        "Verifica carbonatador, sistema de inyección, control de CO₂, presión, caudal y estabilidad de mezcla antes de liberar.",
+        "Inspecciona válvulas de presión/vacío, venteos, filtros estériles, manómetros, transmisores y dispositivos de seguridad del tanque.",
+        "Evalúa instrumentos de presión, nivel, temperatura, CO₂, oxígeno disuelto, turbidez y caudal asociados a BBT y envío a envasado.",
+        "Participa en el análisis para corrección de fallas en BBTs que generen ingreso de oxígeno, pérdida de CO₂, espuma, mezcla de lotes, presión inestable, contaminación o bloqueo de transferencia.",
+        "Interviene válvulas y bombas de las matrices de válvulas y rutas a envasado para prevenir riesgo de mezcla de lotes o contaminación.",
+        "Realiza pruebas de estanqueidad, purga, presurización, CIP, transferencia y estabilidad de presión antes de entregar el BBT.",
+        "Documenta intervención indicando tanque, componente, causa probable, pruebas funcionales, condición sanitaria y restricciones de operación."
       ]
     }
   ],
   "L8": [
     {
-      "category": "MANEJO DE MATERIAS PRIMAS - TRANSPORTE",
+      "category": "MANEJO DE MATERIA PRIMA",
       "skills": [
-        "Ejecuta actividades de mantenimiento predictivo, utiliza equipos especializados de análsiis y conoce su aplicaciòn. Entiende los resultados y genera acciones de intervencion. (Vibraciòn, termografìa).",
-        "Esta en la capacidad de desarrollar RCM de los equipos que forman parte del sistema de transporte y manejo de manterias primas. (Aspiradores Polvo, Limpiadores de Grano, Elevadores de Grano)",
-        "Conoce y està en la capacidad de sugerir y realizar mejoras en los equipos que forman parte del sistema de transporte y manejo de materias primas. (Aplicar buenas pràcticas)",
-        "Conoce y esta en la capacidad de desarrollar intervenciones avanzadas en los elevadores de granos. (Reemplazos de reductor principal)."
+        "Interpreta resultados de análisis de vibración en motores, reductores, ventiladores, elevadores y transportadores. Relaciona los resultados con principales fallas por condiciones relacionadas a desbalance, desalineación, holgura y falla de rodamientos.",
+        "Interpreta resultados de análisis de termografía en motores, rodamientos, reductores y puntos de fricción. Relaciona los resultados con principales fallas por fricción, exceso de carga y lubricación deficiente.",
+        "Interpreta resultados de análisis de ultrasonido para detectar fugas neumáticas, fricción, falla incipiente de rodamientos, descarga parcial y pérdidas de aspiración en sistemas de polvo.",
+        "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+        "Identifica y correlaciona comportamiento de presión diferencial de filtros de polvo, amperaje, alarmas de atasco y capacidad transportada para anticipar fallas y pérdida de confiabilidad.",
+        "Participa en elaboración de RCM y/o CBM para transportadores, elevadores, limpiadoras, aspiradores y básculas, priorizando modos de falla por seguridad, producción y calidad. Interpreta los resultados y entiende los beneficios en su proceso."
       ]
     },
     {
-      "category": "MOLIENDA DE MATRIAS PRIMAS",
+      "category": "MOLIENDA",
       "skills": [
-        "Ejecuta actividades de mantenimiento predictivo, utiliza equipos especializados de análisis y conoce su aplicaciòn. Entiende los resultados y genera acciones de intervencion. (Vibraciòn, termografìa).",
-        "Desarrolla RCM de los equipos que forman parte del sistema de molienda de materias primas. (Aspiradores Polvo, Limpiadores de Grano, Molinos)",
-        "Conoce y està en la capacidad de sugerir y realizar mejoras en los equipos que forman parte del sistema de molienda de materias primas. (Aplicar buenas pràcticas)",
-        "Conoce y esta en la capacidad de desarrollar intervenciones avanzadas en los molinos de malta, reemplazo de eje principal en molinos de martillos. (Si aplica)",
-        "Comprende la aplicación de CBM para transportadores en el sistema de molienda.  Entiende los resultados y genera acciones de intervencion."
+        "Interpreta resultados de análisis de vibración en molienda, motor, reductor, rodamientos, molino y ventiladores. Relaciona los resultados con principales fallas por condiciones relacionadas a desbalance, desalineación, holgura y falla de rodamientos.",
+        "Interpreta resultados de análisis de termografía en motores, rodamientos, reductores y puntos de fricción. Relaciona los resultados con sobrecarga y lubricación deficiente.",
+        "Interpreta resultados de análisis de ultrasonido para detectar fugas neumáticas, fricción, falla incipiente de rodamientos, descarga parcial y pérdidas de aspiración en sistemas de molienda.",
+        "Interpreta resultados de condición de lubricantes (análisis de aceites), identificando contaminación, temperatura y partículas en reductores o sistemas centralizados, definiendo severidad y ventana de intervención.",
+        "Participa en la elaboración de CBM y/o RCM de molinos considerando impacto en extracción, filtrabilidad, consumo energético y tiempo de ciclo. Interpreta resultados y entiende los beneficios en su proceso."
       ]
     },
     {
-      "category": "SISTEMAS DE COCIMIENTO",
+      "category": "MACERACIÓN",
       "skills": [
-        "Ejecuta actividades de mantenimiento predictivo, utiliza equipos especializados de análisis y conoce su aplicaciòn. Entiende los resultados y genera acciones de intervencion. (Vibraciòn, termografìa, ultrasonido).",
-        "Desarrolla RCM de los equipos que forman parte del sistema de molienda de materias primas. (Filtro de mosto, Mezcladores, Ollas de Coccion)",
-        "Conoce y està en la capacidad de sugerir y realizar mejoras en los equipos que forman parte del sistema de cocimiento. (Aplicar buenas pràcticas)",
-        "Conoce y desarrolla intervenciones avanzadas en filtro lauter, reemplazo de eje principal, reductor principal. SI aplica.",
-        "Entiende CBM para valvulas y bombas.  Entiende los resultados y genera acciones de intervencion.",
-        "Conoce y y desarrolla interveciones avanzadas en filtro lauter, reemplazo de eje principal, reductor principal. SI aplica.",
-        "Conoce y  desarrolla interveciones avanzadas en filtro lauter, reemplazo de pistones hidraulicos. SI aplica."
+        "Interpreta resultados de análisis de vibración en reductores, motores, bombas y acoplamientos para detectar desalineación, falla de rodamientos, cavitación o pérdida de balance.",
+        "Interpreta resultados de análisis de termografía en motores, reductores y puntos de fricción.",
+        "Interpreta resultados de análisis de termografía en trampas de vapor identificando su correcto funcionamiento e impactos en consumo energético.",
+        "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+        "Analiza comportamiento de los principales lazos de control para anticipar inestabilidad o pérdida de control del proceso. Conoce y es capaz de sugerir ajustes en controladores PID.",
+        "Interpreta y conoce los beneficios del monitoreo de condiciones AFJ (Alarmas, Fallas y Forzados)/ ISA (Indicador de Salud de Automatización) . Evidencia control y seguimiento.",
+        "Interpreta y participa en el desarrollo del Toolkit de Válvulas y Bombas de Brewingrewing. Analisa resultados y genera avisos de mantenimiento. Evidencia control y seguimiento.",
+        "Participa en la elaboración de CBM y/o RCM de los principales equipos del sistema de maceración priorizando modos de falla que afecten conversión, mezcla, inocuidad, seguridad por vapor y disponibilidad."
       ]
     },
     {
-      "category": "SISTEMAS DE FERMENTACION Y MADURACION DE CERVEZA",
+      "category": "FILTRO DE MOSTO",
       "skills": [
-        "Ejecuta actividades de mantenimiento predictivo, utiliza equipos especializados de análsiis y conoce su aplicaciòn. Entiende los resultados y genera acciones de intervencion. (Vibraciòn, termografìa, ultrasonido).",
-        "Esta en la capacidad de desarrollar RCM de los equipos que forman parte del sistema de molienda de materias primas. (Centrifuga, propagador levadura, intercambiadores de calor)",
-        "Conoce y està en la capacidad de sugerir y realizar mejoras en los equipos que forman parte del sistema de cocimiento. (Aplicar buenas pràcticas)",
-        "Conoce y esta en la capacidad de desarrollar intervenciones avanzadas en filtro lauter, reemplazo de eje principal, reductor principal. SI aplica.",
-        "Comprende CBM para valvulas y bombas.  Entiende los resultados y genera acciones de intervencion.",
-        "Conoce y desarrolla interveciones avanzadas en centrifuga, reemplazo de tambor principal, centrifuga. SI aplica."
+        "Interpreta resultados de análisis de vibración en reductores, motores, bombas y acoplamientos para detectar desalineación, falla de rodamientos, cavitación o pérdida de balance.",
+        "Interpreta resultados de análisis de termografía aplicado a anillos colectores, calentadores de cascos tubos y placas a fin de determinar deficiciencia en transferencia de calor, obstrucciones, perdidas de flujo.",
+        "Aplica ultrasonido y termografía para detectar fugas hidráulicas, cavitación, fricción, sobrecalentamiento, aire atrapado o pérdida de eficiencia en actuadores.",
+        "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+        "Interpreta y conoce los beneficios del monitoreo de condiciones AFJ (Alarmas, Fallas y Forzados)/ ISA (Indicador de Salud de Automatización) . Evidencia control y seguimiento.",
+        "Interpreta y participa en el desarrollo del Toolkit de Válvulas y Bombas de Brewingrewing. Analisa resultados y genera avisos de mantenimiento. Evidencia control y seguimiento.",
+        "Participa en la elaboración de CBM/RCM para lauter tun o mash filter considerando claridad de mosto, rendimiento, tiempo de ciclo, seguridad e impacto en producción."
       ]
     },
     {
-      "category": "SISTEMAS DE FILTRACIÓN / CARBONATACIÓN",
+      "category": "SALA DE COCIMIENTO",
       "skills": [
-        "Ejecuta actividades de mantenimiento predictivo, utiliza equipos especializados de análsiis y conoce su aplicaciòn. Entiende los resultados y genera acciones de intervencion. (Vibraciòn, termografìa, ultrasonido).",
-        "Esta en la capacidad de desarrollar RCM de los equipos que forman parte del sistema de molienda de materias primas. (filtros de cerveza, carbonatadores, blendeing)",
-        "Conoce y està en la capacidad de sugerir y realizar mejoras en los equipos que forman parte del sistema de cocimiento. (Aplicar buenas pràcticas)",
-        "Conoce y esta en la capacidad de desarrollar interveciones avanzadas en filtro de cerveza de placas, reemplazo de eje principal y unidad hidraulica, centrifuga. SI aplica.",
-        "Esta en la capacidad de entder CBM para valvulas y bombas.  Entiende los resultados y genera acciones de intervencion."
+        "Interpreta resultados de análisis de vibración en reductores, motores, bombas y acoplamientos para detectar desalineación, falla de rodamientos, cavitación o pérdida de balance.",
+        "Interpreta resultados de análisis de termografía aplicado a intercambiadores de calor a fin de determinar deficiciencia en transferencia de calor, obstrucciones, perdidas de flujo.",
+        "Interpreta resultados de análisis de termografía en trampas de vapor identificando su correcto funcionamiento e impactos en consumo energético.",
+        "Interpreta resultados de ultrasonido y termografía para detectar fugas hidráulicas, cavitación, fricción, sobrecalentamiento, aire atrapado o pérdida de eficiencia en actuadores.",
+        "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+        "Interpreta y conoce los beneficios del monitoreo de condiciones AFJ (Alarmas, Fallas y Forzados)/ ISA (Indicador de Salud de Automatización) . Evidencia control y seguimiento.",
+        "Interpreta y participa en el desarrollo del Toolkit de Válvulas y Bombas de Brewingrewing. Analisa resultados y genera avisos de mantenimiento. Evidencia control y seguimiento.",
+        "Participa en la elaboración de CBM/RCM en Whirlpool / evaporador / enfriador identificando modos críticos que afecten inocuidad, hervor, separación de trub, enfriamiento, seguridad por vapor y disponibilidad."
+      ]
+    },
+    {
+      "category": "SALA DE FERMENTACIÓN",
+      "skills": [
+        "Interpreta resultados de análisis de vibración en reductores, motores, bombas, centrífugas y acoplamientos para detectar desalineación, falla de rodamientos, cavitación o pérdida de balance.",
+        "Interpreta resultados de análisis de termografía aplicado a intercambiadores de calor a fin de determinar deficiciencia en transferencia de calor, obstrucciones, perdidas de flujo.",
+        "Interpreta resultados de ultrasonido y termografía para detectar fugas hidráulicas, cavitación, fricción, sobrecalentamiento, aire atrapado o pérdida de eficiencia en actuadores.",
+        "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+        "Interpreta y conoce los beneficios del monitoreo de condiciones AFJ (Alarmas, Fallas y Forzados)/ ISA (Indicador de Salud de Automatización) . Evidencia control y seguimiento.",
+        "Interpreta y participa en el desarrollo del Toolkit de Válvulas y Bombas de Brewingrewing. Analisa resultados y genera avisos de mantenimiento. Evidencia control y seguimiento.",
+        "Participa en la elaboración de RCM/CBM para centrífugas, CMF, propagadores, matriz de válvulas y sistemas de enfriamiento priorizando calidad, seguridad, inocuidad y continuidad operativa."
+      ]
+    },
+    {
+      "category": "SALA DE FILTROS",
+      "skills": [
+        "Interpreta resultados de análisis de vibración en reductores, motores, bombas, centrífugas y acoplamientos para detectar desalineación, falla de rodamientos, cavitación o pérdida de balance.",
+        "Interpreta resultados de análisis de termografía aplicado a intercambiadores de calor a fin de determinar deficiciencia en transferencia de calor, obstrucciones, perdidas de flujo.",
+        "Interpreta resultados de  ultrasonido y termografía para detectar fugas hidráulicas, cavitación, fricción, sobrecalentamiento, aire atrapado o pérdida de eficiencia en actuadores.",
+        "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+        "Interpreta y conoce los beneficios del monitoreo de condiciones AFJ (Alarmas, Fallas y Forzados)/ ISA (Indicador de Salud de Automatización) . Evidencia control y seguimiento.",
+        "Interpreta y participa en el desarrollo del Toolkit de Válvulas y Bombas de Brewingrewing. Analisa resultados y genera avisos de mantenimiento. Evidencia control y seguimiento.",
+        "Participa en la elaboración de RCM/CBM para filtros de cerveza, centrífugas, sistemas de mezcla evitando la ganancia de oxígeno, mejorando la claridad, seguridad e inocuidad."
+      ]
+    },
+    {
+      "category": "SALA BBT",
+      "skills": [
+        "Interpreta resultados de análisis de vibración en reductores, motores, bombas, centrífugas y acoplamientos para detectar desalineación, falla de rodamientos, cavitación o pérdida de balance.",
+        "Interpreta resultados de análisis de termografía aplicado a motores y bombas a fin de determinar friccón, cavitación, deficiencias en lubricación.",
+        "Interpreta resultados de  ultrasonido y termografía para detectar fugas hidráulicas, cavitación, fricción, sobrecalentamiento, aire atrapado o pérdida de eficiencia en actuadores.",
+        "Interpreta resultados de análisis de aceite en reductores, sistemas de bombeo y sistemas hidráulicos, relaciona con fallas de desgaste en piezas mecánicas (partículas en aceite) y viscosidad.",
+        "Interpreta y conoce los beneficios del monitoreo de condiciones AFJ (Alarmas, Fallas y Forzados)/ ISA (Indicador de Salud de Automatización) . Evidencia control y seguimiento.",
+        "Interpreta y participa en el desarrollo del Toolkit de Válvulas y Bombas de Brewingrewing. Analisa resultados y genera avisos de mantenimiento. Evidencia control y seguimiento.",
+        "Participa en la elaboración de RCM/CBM del sistema BBT y carbonatación priorizando modos de falla que afecten oxígeno, CO₂, presión, inocuidad, trazabilidad y continuidad de envasado."
       ]
     }
   ]

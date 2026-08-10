@@ -35,41 +35,98 @@ function parseAndSave(filename, sheetName, outputFilename, options = {}) {
 }
 
 function parseAndSaveGuias() {
-  const filename = '26_Guías-Técnicas-Elaboración-V2 2026.xlsx';
+  const filesInPublic = fs.readdirSync(publicDir);
+  // Find the most recent Guías Técnicas Excel file
+  const candidate = filesInPublic
+    .filter(f => f.startsWith('26_Guías-Técnicas-Elaboración') && f.endsWith('.xlsx'))
+    .sort((a, b) => b.localeCompare(a))[0];
+
+  const filename = candidate || '26_Guías-Técnicas-Elaboración-V2---ANEXO (1).xlsx';
   const outputFilename = 'guias_tecnicas.json';
   const filePath = path.join(publicDir, filename);
-  
+
   if (!fs.existsSync(filePath)) {
     console.warn(`⚠️ File not found: ${filePath}`);
     return;
   }
-  
+
   try {
     const fileBuffer = fs.readFileSync(filePath);
     const wb = XLSX.read(fileBuffer, { type: 'buffer' });
-    const result = {};
+    
+    const isV2Anexo = wb.SheetNames.includes('RESUMEN') || wb.SheetNames.includes('ANEXO - Criterios transversales');
+    const versionTag = isV2Anexo ? 'V2_ANEXO' : 'V1_ANTERIOR';
+
+    const result = {
+      metadata: {
+        version: versionTag,
+        fileProcessed: filename,
+        tieneHojaResumen: isV2Anexo,
+        processedAt: new Date().toISOString()
+      },
+      levels: {}
+    };
+
+    // Parse RESUMEN mapping if present
+    if (wb.SheetNames.includes('RESUMEN')) {
+      const resumenSheet = wb.Sheets['RESUMEN'];
+      const resumenRows = XLSX.utils.sheet_to_json(resumenSheet, { header: 1 });
+      const posMap = [];
+      resumenRows.forEach((r, idx) => {
+        if (idx >= 3 && r && r[0] && r[1]) {
+          posMap.push({
+            puesto: String(r[0]).trim(),
+            equipoSala: String(r[1]).trim()
+          });
+        }
+      });
+      result.resumenMapeo = posMap;
+    }
+
+    // Parse Criterios Transversales if present
+    if (wb.SheetNames.includes('ANEXO - Criterios transversales')) {
+      const anexoSheet = wb.Sheets['ANEXO - Criterios transversales'];
+      const anexoRows = XLSX.utils.sheet_to_json(anexoSheet, { header: 1 });
+      const criterios = {};
+      anexoRows.forEach((r, idx) => {
+        if (idx >= 3 && r && r[0] && r[2]) {
+          const lvl = String(r[0]).trim();
+          if (lvl.match(/^L\d+/)) {
+            criterios[lvl] = {
+              enfoque: r[1] ? String(r[1]).trim() : '',
+              competenciasTransversales: String(r[2]).trim(),
+              evidenciaMinima: r[3] ? String(r[3]).trim() : '',
+              aplicacion: r[4] ? String(r[4]).trim() : ''
+            };
+          }
+        }
+      });
+      result.criteriosTransversales = criterios;
+    }
+
+    let totalGuiasCount = 0;
 
     for (const sheetName of wb.SheetNames) {
       const match = sheetName.match(/L\d+/);
       if (!match) continue;
       const levelKey = match[0];
-      
+
       const sheet = wb.Sheets[sheetName];
       const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-      
+
       const categories = [];
       let currentCategory = null;
-      
+
       rows.forEach((row, index) => {
         if (!row || row.length === 0) return;
         if (index < 2) return;
-        
+
         const col0 = row[0];
         const col1 = row[1];
         const col2 = row[2];
-        
+
         const isCategory = !col0 && col1 && typeof col1 === 'string' && col1 === col1.toUpperCase() && (col2 === 0 || col2 === null || col2 === undefined || typeof col2 === 'string');
-        
+
         if (isCategory) {
           currentCategory = {
             category: col1.trim(),
@@ -79,18 +136,31 @@ function parseAndSaveGuias() {
         } else {
           if (col1 && typeof col1 === 'string' && col1.trim().length > 0) {
             if (currentCategory) {
-              currentCategory.skills.push(col1.trim());
+              const skillObj = {
+                name: col1.trim(),
+                metodoValidacion: row[3] && typeof row[3] === 'string' ? row[3].trim() : '',
+                herramientas: row[4] && typeof row[4] === 'string' ? row[4].trim() : ''
+              };
+              currentCategory.skills.push(skillObj);
+              totalGuiasCount++;
             }
           }
         }
       });
-      
-      result[levelKey] = categories;
+
+      result.levels[levelKey] = categories;
+      // Backward compatibility array format: levelKey legacy key
+      result[levelKey] = categories.map(cat => ({
+        category: cat.category,
+        skills: cat.skills.map(s => s.name)
+      }));
     }
+
+    result.metadata.totalGuias = totalGuiasCount;
 
     const outputPath = path.join(publicDir, outputFilename);
     fs.writeFileSync(outputPath, JSON.stringify(result, null, 2), 'utf-8');
-    console.log(`✅ Parsed ${filename} -> ${outputFilename}`);
+    console.log(`✅ Parsed ${filename} (${versionTag}) -> ${outputFilename} (${totalGuiasCount} guías en total)`);
   } catch (error) {
     console.error(`❌ Failed to parse ${filename}:`, error);
   }
@@ -234,7 +304,55 @@ parseAndSave('EABF.xlsx', null, 'eabf.json');
 parseAndSave('BPRE.xlsx', null, 'bpre.json');
 
 // "DATOS.xlsx" -> datos.json
+
 parseAndSave('DATOS.xlsx', null, 'datos.json');
+
+// Re-order datos.json by #POSICION (1, 2, 3)
+try {
+  const opsFile = path.join(publicDir, 'operators.json');
+  const datosFile = path.join(publicDir, 'datos.json');
+  if (fs.existsSync(opsFile) && fs.existsSync(datosFile)) {
+    const opsData = JSON.parse(fs.readFileSync(opsFile, 'utf8'));
+    const datosData = JSON.parse(fs.readFileSync(datosFile, 'utf8'));
+    const opsMapById = {};
+    opsData.forEach(o => { opsMapById[o.id] = o; });
+
+    const grouped = {};
+    const unmapped = [];
+    datosData.forEach(r => {
+      const emp = String(r.Employee || '');
+      const idMatch = emp.match(/\[(\d+)\]/);
+      if (idMatch) {
+        const id = idMatch[1];
+        if (!grouped[id]) grouped[id] = [];
+        grouped[id].push(r);
+      } else {
+        unmapped.push(r);
+      }
+    });
+
+    const orderedDatos = [];
+    Object.keys(grouped).forEach(id => {
+      const rows = grouped[id];
+      const master = opsMapById[id];
+      if (master && master.puesto) {
+        const pIdx = rows.findIndex(r => String(r['SKAP Position'] || r.Position || '').trim().toLowerCase() === master.puesto.trim().toLowerCase());
+        if (pIdx > 0) {
+          const pRow = rows[pIdx];
+          rows.splice(pIdx, 1);
+          rows.unshift(pRow);
+        }
+      }
+      orderedDatos.push(...rows);
+    });
+    orderedDatos.push(...unmapped);
+    fs.writeFileSync(datosFile, JSON.stringify(orderedDatos, null, 2), 'utf-8');
+    console.log('✅ Post-processed datos.json to prioritize Posición #1 puestos.');
+  }
+} catch (errPost) {
+  console.error('Error post-processing datos.json:', errPost);
+}
+
 
 // "Cursos.xlsx" -> cursos.json (Optimizado y filtrado por IDs activos)
 parseAndOptimizeCursos();

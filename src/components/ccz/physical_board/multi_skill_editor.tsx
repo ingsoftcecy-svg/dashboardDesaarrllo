@@ -105,7 +105,21 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos, puedeEdi
   const [newSkillText, setNewSkillText] = useState("");
   const [selectedSuggestion, setSelectedSuggestion] = useState("");
 
-  const currentEquipos = config.equipos || equipos || [];
+  const masterEquipos = equipos && equipos.length > 0 ? equipos : [];
+  let rawEquipos = config.equipos || equipos || [];
+
+  if (masterEquipos.length > 0) {
+    rawEquipos = [...rawEquipos].sort((a, b) => {
+      const idxA = masterEquipos.findIndex(e => e.trim().toLowerCase() === a.trim().toLowerCase());
+      const idxB = masterEquipos.findIndex(e => e.trim().toLowerCase() === b.trim().toLowerCase());
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return 0;
+    });
+  }
+
+  const currentEquipos = rawEquipos;
 
   const save_config = async (primary: string | undefined, updatedEquipos: string[]) => {
     if (!puedeEditar) return;
@@ -167,8 +181,10 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos, puedeEdi
   };
 
   const sorted_equipos = [...currentEquipos].sort((a, b) => {
-    if (a === config.primary) return -1;
-    if (b === config.primary) return 1;
+    if (config.primary) {
+      if (a.toLowerCase() === config.primary.toLowerCase()) return -1;
+      if (b.toLowerCase() === config.primary.toLowerCase()) return 1;
+    }
     return 0;
   });
 

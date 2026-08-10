@@ -517,6 +517,31 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             const areaStr = ((operator as any)._area || (operator as any).area || (operator as any).equipoAutonomo || (operator as any).equipo || "").toLowerCase();
             const teamStr = ((operator as any).equipoAutonomo || (operator as any).equipo || "").toLowerCase();
             const opNameStr = (operator.nombre || "").toLowerCase();
+            const puestoStr = ((operator as any).puesto || "").toLowerCase();
+
+            const isMantenimientoArea = 
+              areaStr.includes("mantenimiento") || 
+              areaStr.includes("brewing maintenance") || 
+              areaStr.includes("maintenance") ||
+              teamStr.includes("nahual") ||
+              teamStr.includes("munich") ||
+              puestoStr.includes("técnico") ||
+              puestoStr.includes("tecnico");
+
+            if (isMantenimientoArea) {
+              return (
+                <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32">
+                  <div className="mx-auto flex w-full max-w-[100px] flex-col overflow-hidden rounded border border-[#1a4491] shadow-sm select-none opacity-80">
+                    <div className="bg-[#1a4491] py-0.5 text-[10px] font-bold text-white uppercase text-center">
+                      ATO
+                    </div>
+                    <div className="flex h-10 items-center justify-center bg-slate-200 text-sm font-black text-slate-600">
+                      N/A
+                    </div>
+                  </div>
+                </td>
+              );
+            }
 
             const isCocimientosArea = 
               areaStr.includes("warm") || 

@@ -1,0 +1,12 @@
+¡HOLA, DESARROLLADOR! ⚠️ IMPORTANTE ⚠️
+
+Si vas a agregar o actualizar fotos de los operadores en esta carpeta, por favor ten en cuenta el nuevo formato obligatorio:
+
+1. FORMATO WEBP: Todas las fotos deben estar estrictamente en formato .webp (ya no se admite .jpg ni .png).
+2. NOMBRE DEL ARCHIVO: El nombre de la foto DEBE ser exactamente la Ficha ID del operador (por ejemplo: 32043739.webp).
+3. OPTIMIZACIÓN: Las fotos deben ser cuadradas y pesar menos de 50KB de preferencia para que el Dashboard cargue rápido.
+
+Si intentas subir archivos con formato .png o .jpg, la aplicación no los va a leer correctamente.
+
+¡Gracias por tu apoyo!
+El equipo de desarrollo.
