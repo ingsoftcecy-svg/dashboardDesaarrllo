@@ -186,13 +186,37 @@ foreach ($item in $pendingFiles) {
             continue
         }
 
-        # Extraer ruta relativa dentro de Guias Tecnicas (Evita confundirse con el nombre de la carpeta raiz 03 ATO MEJORADO)
+        # Extraer ruta relativa dentro de Guias Tecnicas
         $relativePath = $file.FullName.Replace($OneDrivePath, "").TrimStart("\")
         $pathParts = $relativePath.Split("\")
-        $equipo = if ($pathParts.Count -gt 1) { $pathParts[0] } else { "Cocimientos" }
-        $subcarpeta = if ($pathParts.Count -gt 2) { $pathParts[1] } else { "General" }
 
-        # Clasificación de tipoGuia evaluando SOLAMENTE la subcarpeta relativa (MASH-RAMPA\COMPETENTE)
+        $area = "Cocimientos"
+        $equipo = "Cocimientos"
+        $subcarpeta = "General"
+
+        if ($pathParts.Count -gt 0 -and ($pathParts[0] -like "*BLOQUE*FRIO*" -or $pathParts[0] -like "*BLOQUE*FRÍO*")) {
+            $area = "Bloque Frío"
+            if ($pathParts.Count -gt 1) { $equipo = $pathParts[1] } else { $equipo = "Bloque Frío" }
+            if ($pathParts.Count -gt 2) { $subcarpeta = $pathParts[2] }
+        } else {
+            $area = "Cocimientos"
+            if ($pathParts.Count -gt 0) { $equipo = $pathParts[0] }
+            if ($pathParts.Count -gt 1) { $subcarpeta = $pathParts[1] }
+        }
+
+        # Normalizar nombres de equipos
+        $eqUpper = $equipo.ToUpper().Trim()
+        if ($eqUpper -eq "BRAVOS") { $equipo = "BRAVOS DEL FRIO" }
+        elseif ($eqUpper -eq "BRONCOS") { $equipo = "LOS BRONCOS" }
+        elseif ($eqUpper -eq "FUERTES") { $equipo = "LOS FUERTES DEL FRIO" }
+        elseif ($eqUpper -eq "REYES") { $equipo = "REYES DE LA MEZCLA" }
+        elseif ($eqUpper -like "*CAZADORES*") { $equipo = "LOS CAZADORES DEL AMARGOR" }
+        elseif ($eqUpper -like "*MOSTO*") { $equipo = "MOSTO-BOYS" }
+        elseif ($eqUpper -like "*PANCHITOS*") { $equipo = "LOS PANCHITOS" }
+        elseif ($eqUpper -like "*CUCHILLAS*") { $equipo = "CUCHILLAS" }
+        elseif ($eqUpper -like "*MASH*") { $equipo = "MASH-RAINBOW" }
+
+        # Clasificación de tipoGuia evaluando la subcarpeta relativa y nombre de archivo
         $subPathLower  = $relativePath.ToLower()
         $fileNameLower = $file.Name.ToLower()
         $tipoGuia = "COMPETENTE"
@@ -210,7 +234,7 @@ foreach ($item in $pendingFiles) {
         $cleanOperatorName = $operatorName -replace '\s+(COMPETENTE|MEJORADO)$', ''
 
         $processedCount++
-        Write-Host "[$processedCount/$($pendingFiles.Count)] Leido: $($file.Name) ($tipoGuia)" -ForegroundColor White
+        Write-Host "[$processedCount/$($pendingFiles.Count)] Leido: $($file.Name) ($area - $equipo - $tipoGuia)" -ForegroundColor White
 
         $wb = $excel.Workbooks.Open($file.FullName, 0, $true, 5, "", "", $true)
         # Forzar Excel oculto por si alguna plantilla activa macros
@@ -222,7 +246,7 @@ foreach ($item in $pendingFiles) {
             sharpId = $sharpId
             nombre = "$cleanOperatorName".Trim()
             equipo = $equipo
-            area = "Cocimientos"
+            area = $area
             subcarpeta = $subcarpeta
             tipoGuia = $tipoGuia
             fileLastModified = $item.LocalLastMod
