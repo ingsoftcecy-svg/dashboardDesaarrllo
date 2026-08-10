@@ -260,11 +260,16 @@ foreach ($item in $pendingFiles) {
         foreach ($ws in $wb.Sheets) {
             $sheetName = $ws.Name
 
+            # Omitir hojas de resumen o portada para no confundir la tabla resumen con preguntas de habilidades
+            if ($sheetName -like "*RESUMEN*" -or $sheetName -like "*PORTADA*" -or $sheetName -like "*INSTRUCCIONES*") {
+                continue
+            }
+
             $detectedLevel = ""
             if ($sheetName -like "*L6*" -or $sheetName -like "*N6*" -or $sheetName -like "*NIVEL 6*" -or $sheetName -like "*6*") { $detectedLevel = "L6" }
             elseif ($sheetName -like "*L7*" -or $sheetName -like "*N7*" -or $sheetName -like "*NIVEL 7*" -or $sheetName -like "*7*") { $detectedLevel = "L7" }
             elseif ($sheetName -like "*L8*" -or $sheetName -like "*N8*" -or $sheetName -like "*NIVEL 8*" -or $sheetName -like "*8*") { $detectedLevel = "L8" }
-            elseif ($sheetName -like "*GUIA*" -or $sheetName -like "*FORMATO*" -or $sheetName -like "*MATRIZ*" -or $ws.Index -eq 1) { $detectedLevel = "L6" }
+            elseif ($sheetName -like "*GUIA*" -or $sheetName -like "*FORMATO*" -or $sheetName -like "*MATRIZ*") { $detectedLevel = "L6" }
 
             # Para COMPETENTE, omitir L7 y L8
             if ($tipoGuia -eq "COMPETENTE" -and ($detectedLevel -eq "L7" -or $detectedLevel -eq "L8")) {
