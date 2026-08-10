@@ -112,12 +112,12 @@ foreach ($file in $excelFiles) {
     $docId = $sharpId
     $localLastMod = $file.LastWriteTimeUtc.ToString("o")
 
-    # Comparar timestamp local vs marca remota (Firestore o local previa)
+    # Comparar timestamp local vs cache inteligente (omitir cache si se ejecuta en modo SoloLocal)
     $cacheKey = $docId
     $fileKey = $file.Name
     $prevTimeStr = if ($syncCache.ContainsKey($cacheKey)) { "$($syncCache[$cacheKey])" } elseif ($syncCache.ContainsKey($fileKey)) { "$($syncCache[$fileKey])" } else { $null }
 
-    if ($prevTimeStr) {
+    if (-not $SoloLocal -and $prevTimeStr) {
         $skipFile = $false
         try {
             $dtLocal = [DateTime]::Parse($localLastMod)
