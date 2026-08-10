@@ -261,9 +261,10 @@ foreach ($item in $pendingFiles) {
             $sheetName = $ws.Name
 
             $detectedLevel = ""
-            if ($sheetName -like "*L6*" -or $sheetName -like "*N6*" -or $sheetName -like "*6*") { $detectedLevel = "L6" }
-            elseif ($sheetName -like "*L7*" -or $sheetName -like "*N7*" -or $sheetName -like "*7*") { $detectedLevel = "L7" }
-            elseif ($sheetName -like "*L8*" -or $sheetName -like "*N8*" -or $sheetName -like "*8*") { $detectedLevel = "L8" }
+            if ($sheetName -like "*L6*" -or $sheetName -like "*N6*" -or $sheetName -like "*NIVEL 6*" -or $sheetName -like "*6*") { $detectedLevel = "L6" }
+            elseif ($sheetName -like "*L7*" -or $sheetName -like "*N7*" -or $sheetName -like "*NIVEL 7*" -or $sheetName -like "*7*") { $detectedLevel = "L7" }
+            elseif ($sheetName -like "*L8*" -or $sheetName -like "*N8*" -or $sheetName -like "*NIVEL 8*" -or $sheetName -like "*8*") { $detectedLevel = "L8" }
+            elseif ($sheetName -like "*GUIA*" -or $sheetName -like "*FORMATO*" -or $sheetName -like "*MATRIZ*" -or $ws.Index -eq 1) { $detectedLevel = "L6" }
 
             # Para COMPETENTE, omitir L7 y L8
             if ($tipoGuia -eq "COMPETENTE" -and ($detectedLevel -eq "L7" -or $detectedLevel -eq "L8")) {
@@ -275,10 +276,12 @@ foreach ($item in $pendingFiles) {
                 $marcadasSI = 0
                 $categoriasList = @()
                 $currentCategory = $null
+                $formatoDetectado = "V1_VIEJO"
 
                 $checkedRows = @{}
                 try {
                     if ($ws.CheckBoxes.Count -gt 0) {
+                        $formatoDetectado = "V2_NUEVO"
                         foreach ($cb in $ws.CheckBoxes) {
                             $cbRow = $cb.TopLeftCell.Row
                             if ($cb.Value -eq 1) {
@@ -288,46 +291,53 @@ foreach ($item in $pendingFiles) {
                     }
                 } catch {}
 
-                for ($row = 3; $row -le 150; $row++) {
+                for ($row = 2; $row -le 180; $row++) {
+                    $textA = "$($ws.Cells.Item($row, 1).Value2)".Trim()
                     $textB = "$($ws.Cells.Item($row, 2).Value2)".Trim()
-                    $cellC = "$($ws.Cells.Item($row, 3).Value2)".Trim()
+                    $textC = "$($ws.Cells.Item($row, 3).Value2)".Trim()
 
-                    if ($textB.Length -gt 0 -and $textB -notlike "*INSTRUCCIONES*" -notlike "*COMPETENCIAS*") {
+                    $skillText = if ($textB.Length -gt 4) { $textB } elseif ($textA.Length -gt 4) { $textA } elseif ($textC.Length -gt 4) { $textC } else { "" }
 
-                        # Deteccion Inteligente de Categorias (Mayusculas + Negrita o %)
+                    if ($skillText.Length -gt 0 -and $skillText -notlike "*INSTRUCCIONES*" -notlike "*COMPETENCIAS*" -notlike "*NOMBRE*" -notlike "*FECHA*") {
+
+                        # Detección Inteligente de Categorías
                         $isHeader = $false
                         $isFontBold = $false
                         try { $isFontBold = [bool]($ws.Cells.Item($row, 2).Font.Bold) } catch {}
+                        if (-not $isFontBold) { try { $isFontBold = [bool]($ws.Cells.Item($row, 1).Font.Bold) } catch {} }
 
-                        if ($cellC -like "*%" -or ($isFontBold -and $textB -eq $textB.ToUpper() -and $textB.Length -gt 3)) {
+                        if ($textC -like "*%" -or ($isFontBold -and $skillText -eq $skillText.ToUpper() -and $skillText.Length -gt 3 -and $skillText.Length -lt 80)) {
                             $isHeader = $true
                         }
 
                         if ($isHeader) {
-                            $pctText = $cellC
-                            if ($cellC -as [double] -or $cellC -as [single]) {
-                                $pctVal = [math]::Round([double]$cellC * 100)
+                            $pctText = $textC
+                            if ($textC -as [double] -or $textC -as [single]) {
+                                $pctVal = [math]::Round([double]$textC * 100)
                                 $pctText = "$pctVal%"
                             }
 
                             $currentCategory = [ordered]@{
-                                categoria = $textB
+                                categoria = $skillText
                                 porcentajeOficial = $pctText
                                 habilidades = @()
                             }
                             $categoriasList += $currentCategory
                         }
-                        elseif ($textB.Length -gt 6) {
+                        elseif ($skillText.Length -gt 6) {
                             $totalPreguntas++
                             $isChecked = $false
 
                             if ($checkedRows.ContainsKey($row) -and $checkedRows[$row] -eq $true) {
                                 $isChecked = $true
                             } else {
-                                $valC = $cellC.ToLower()
+                                $valC = $textC.ToLower()
                                 $valD = "$($ws.Cells.Item($row, 4).Value2)".Trim().ToLower()
+                                $valE = "$($ws.Cells.Item($row, 5).Value2)".Trim().ToLower()
+                                $valF = "$($ws.Cells.Item($row, 6).Value2)".Trim().ToLower()
 
-                                if ($valC -match '1|x|si|certified|true|ok|cumple|competente' -or $valD -match '1|x|si|certified|true|ok|cumple|competente') {
+                                $matchPattern = '1|x|si|s|certified|true|ok|cumple|competente|verdad|verdadero|v|c|✔|✓|aprobado'
+                                if ($valC -match $matchPattern -or $valD -match $matchPattern -or $valE -match $matchPattern -or $valF -match $matchPattern) {
                                     $isChecked = $true
                                 }
                             }
@@ -338,7 +348,7 @@ foreach ($item in $pendingFiles) {
 
                             $habilidadItem = [ordered]@{
                                 fila = $row
-                                habilidad = $textB
+                                habilidad = $skillText
                                 marcado = $isChecked
                             }
 
@@ -368,6 +378,7 @@ foreach ($item in $pendingFiles) {
 
                 $operatorRecord.niveles[$detectedLevel] = [ordered]@{
                     pestana = $sheetName
+                    formato = $formatoDetectado
                     porcentajeAvanceGlobal = "$porcentajeCalculado%"
                     totalHabilidades = $totalPreguntas
                     habilidadesAprobadas = $marcadasSI
@@ -422,7 +433,7 @@ if (-not $SoloLocal) {
                     sharpId = @{ stringValue = "$($op.sharpId)" }
                     nombre = @{ stringValue = "$($op.nombre)" }
                     equipo = @{ stringValue = "$($op.equipo)" }
-                    area = @{ stringValue = "Cocimientos" }
+                    area = @{ stringValue = "$($op.area)" }
                     tipoGuia = @{ stringValue = "$($op.tipoGuia)" }
                     fileLastModified = @{ stringValue = "$($op.fileLastModified)" }
                     l6Progress = @{ doubleValue = [double]$op.l6Pct }
