@@ -34,6 +34,7 @@ export function AutonomyCard({
   const subtitleText = subtitle || STRINGS.SUBTITLE;
   const isCapacitacion = titleText.toLowerCase().includes("capacitac") || titleText.toLowerCase().includes("curso");
   const isGuias = titleText.toLowerCase().includes("guía") || titleText.toLowerCase().includes("técnica");
+  const isBrechas = titleText.toLowerCase().includes("brecha");
 
   return (
     <motion.section 
@@ -50,7 +51,9 @@ export function AutonomyCard({
           ? "bg-gradient-to-r from-purple-700 to-indigo-800"
           : isGuias
             ? "bg-gradient-to-r from-emerald-700 to-teal-800"
-            : "bg-gradient-to-r from-blue-700 to-blue-800"
+            : isBrechas
+              ? "bg-gradient-to-r from-blue-600 to-cyan-700"
+              : "bg-gradient-to-r from-blue-700 to-blue-800"
       )}>
         <div className="flex items-center gap-3">
           <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20">
@@ -177,7 +180,7 @@ export function AutonomyCard({
               stroke_width={15} 
               customText={customText} 
               customSubText={customSubText} 
-              color={isCapacitacion ? "#9333ea" : undefined}
+              color={isCapacitacion ? "#9333ea" : isBrechas ? "#0891b2" : undefined}
             />
           </div>
           

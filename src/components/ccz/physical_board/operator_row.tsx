@@ -14,6 +14,7 @@ import { get_capability_color, is_assessment_expired, get_initials } from "./uti
 import { CHAMPION_ICONS, STRINGS } from "./constants";
 import { cn, getLeaderColor } from "@/lib/utils";
 import { GuiasEditorDialog } from "./guias_editor_dialog";
+import { OperatorBrechasDialog } from "./operator_brechas_dialog";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -26,7 +27,7 @@ interface OperatorRowProps {
   full_team_members?: { id: string; name: string; puesto: string; score: number; lastAssessmentDate?: string }[];
   puedeEditar?: boolean; // Nueva prop para controlar la edición
   teamRankings?: any[];
-  metricMode?: "autonomia" | "cursos" | "guias";
+  metricMode?: "autonomia" | "cursos" | "guias" | "cierre-brecha";
 }
 
 const obtenerLogoFallbacks = (name: string): string[] => {
@@ -189,6 +190,12 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                     <OperatorCoursesDialog 
                       operatorName={operator.nombre}
                       operatorId={operator.id}
+                    />
+                  ) : metricMode === "cierre-brecha" ? (
+                    <OperatorBrechasDialog
+                      operatorName={operator.nombre}
+                      operatorId={operator.id}
+                      brechasDetalle={operator.brechasDetalle}
                     />
                   ) : (
                     <OperatorHistoryDialog 
@@ -362,6 +369,129 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                 )}>
                   {operator.guiasL8Progress !== undefined ? `${operator.guiasL8Progress.toFixed(1)}%` : "0.0%"}
                 </span>
+              );
+            })()}
+          </td>
+        </>
+      ) : metricMode === "cierre-brecha" ? (
+        <>
+          {/* HABILIDADES */}
+          <td className="border-b border-r border-slate-200/50 p-3 align-middle w-48 bg-slate-50/30">
+            <div className="flex flex-col gap-1.5 text-[11px] font-semibold text-slate-600">
+              <div className="flex items-center justify-between">
+                <span>{STRINGS.DRIVERS_LICENSE}</span>
+                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.basico))}>
+                  {operator.basico > 0 ? Math.round(operator.basico) : "-"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>{STRINGS.INTERMEDIATE}</span>
+                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.intermedio))}>
+                  {operator.intermedio > 0 ? Math.round(operator.intermedio) : "-"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>{STRINGS.ADVANCED}</span>
+                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.avanzado))}>
+                  {operator.avanzado > 0 ? Math.round(operator.avanzado) : "-"}
+                </span>
+              </div>
+            </div>
+          </td>
+          {/* MULTI-HABILIDAD */}
+          <td className="border-b border-r border-slate-200/50 p-2 align-middle w-48 bg-slate-50/30">
+            <MultiSkillEditor 
+              operator_id={operator.id} 
+              operator_name={operator.nombre} 
+              equipos={operator.equipos || []} 
+              puedeEditar={puedeEditar}
+            />
+          </td>
+          {/* TOTAL */}
+          <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-28">
+            <span className="px-2.5 py-1 rounded font-black text-sm bg-slate-100 text-slate-700 border border-slate-200 shadow-sm min-w-[36px] inline-block tabular-nums">
+              {operator.brechasTotal ?? 0}
+            </span>
+          </td>
+          {/* COMPLETADAS */}
+          <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-28">
+            <span className="px-2.5 py-1 rounded font-black text-sm bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm min-w-[36px] inline-block tabular-nums">
+              {operator.brechasCompletadas ?? 0}
+            </span>
+          </td>
+          {/* EN PROCESO */}
+          <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-28">
+            <span className={cn(
+              "px-2.5 py-1 rounded font-black text-sm shadow-sm min-w-[36px] inline-block border tabular-nums",
+              (operator.brechasEnProceso ?? 0) > 0 ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-slate-50 text-slate-400 border-slate-200"
+            )}>
+              {operator.brechasEnProceso ?? 0}
+            </span>
+          </td>
+          {/* PROGRESO DE CIERRE - with stacked bar */}
+          <td className="border-b border-r border-slate-200/50 p-2 align-middle w-44">
+            <div className="flex flex-col items-center gap-1.5">
+              <span className={cn(
+                "text-sm font-black tabular-nums",
+                (operator.brechasProgress ?? 0) === 100 
+                  ? "text-yellow-600" 
+                  : (operator.brechasProgress ?? 0) >= 80 
+                    ? "text-emerald-700" 
+                    : (operator.brechasProgress ?? 0) >= 50 
+                      ? "text-amber-600"
+                      : (operator.brechasProgress ?? 0) > 0
+                        ? "text-blue-600"
+                        : "text-slate-400"
+              )}>
+                {operator.brechasProgress !== undefined ? `${operator.brechasProgress.toFixed(1)}%` : "0.0%"}
+              </span>
+              {/* Stacked progress bar */}
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden flex">
+                {(operator.brechasTotal ?? 0) > 0 && (
+                  <>
+                    <div 
+                      className="h-full bg-emerald-500 transition-all duration-500" 
+                      style={{ width: `${((operator.brechasCompletadas ?? 0) / (operator.brechasTotal ?? 1)) * 100}%` }} 
+                    />
+                    <div 
+                      className="h-full bg-amber-400 transition-all duration-500" 
+                      style={{ width: `${((operator.brechasEnProceso ?? 0) / (operator.brechasTotal ?? 1)) * 100}%` }} 
+                    />
+                  </>
+                )}
+              </div>
+              <div className="flex items-center gap-2 text-[8px] font-bold text-slate-400">
+                <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />OK</span>
+                <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />Proc</span>
+              </div>
+            </div>
+          </td>
+          {/* FOCO PRINCIPAL (PILAR) */}
+          <td className="border-b border-slate-200/50 p-2 align-middle text-center w-40">
+            {(() => {
+              const brechas = operator.brechasDetalle || [];
+              const activas = brechas.filter(b => b.estado === "En Proceso");
+              
+              if (activas.length === 0) return <span className="text-slate-400 text-[10px] italic">Sin brechas</span>;
+              
+              const counts: Record<string, number> = {};
+              activas.forEach(b => {
+                if (b.pilar) {
+                  counts[b.pilar] = (counts[b.pilar] || 0) + 1;
+                }
+              });
+              
+              if (Object.keys(counts).length === 0) return <span className="text-slate-400 text-[10px] italic">N/A</span>;
+              
+              const topPilar = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+              
+              return (
+                <div className="flex flex-col items-center justify-center gap-1">
+                  <span className="px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200 text-[9px] font-bold uppercase text-center leading-tight shadow-sm max-w-[130px] truncate" title={topPilar[0]}>
+                    {topPilar[0]}
+                  </span>
+                  <span className="text-[8px] font-black text-slate-400">{topPilar[1]} abierta{topPilar[1] > 1 ? 's' : ''}</span>
+                </div>
               );
             })()}
           </td>

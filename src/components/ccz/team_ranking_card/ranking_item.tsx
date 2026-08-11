@@ -29,7 +29,7 @@ interface RankingItemProps {
   is_best: boolean;
   is_worst: boolean;
   operadores?: any[];
-  metricMode?: "autonomia" | "cursos" | "guias";
+  metricMode?: "autonomia" | "cursos" | "guias" | "cierre-brecha";
 }
 
 /**
@@ -133,7 +133,11 @@ export function RankingItem({ team, index, is_best, is_worst, operadores = [], m
       guiasL6Progress: op.guiasL6Progress,
       guiasL7Progress: op.guiasL7Progress,
       guiasL8Progress: op.guiasL8Progress,
-      guiasActiveLevel: op.guiasActiveLevel
+      guiasActiveLevel: op.guiasActiveLevel,
+      brechasProgress: op.brechasProgress,
+      brechasTotal: op.brechasTotal,
+      brechasCompletadas: op.brechasCompletadas,
+      brechasDetalle: op.brechasDetalle
     }));
   const handle_dialog_image_error = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const nextIndex = dialogFallbackIndex + 1;

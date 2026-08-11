@@ -88,16 +88,18 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
     return importedData.niveles[activeLevel] || null;
   }, [importedData, activeLevel]);
 
-  // Filtrar categorías que contengan habilidades definidas
+  // Filtrar ÚNICAMENTE las categorías que tienen evaluación / calificación asignada a este puesto
   const evaluatedCategories = useMemo(() => {
     if (!activeLevelData || !activeLevelData.categorias) return [];
     return activeLevelData.categorias.filter((cat: any) => {
       const habs = cat.habilidades || [];
-      return habs.length > 0;
+      const aprobadas = habs.filter((h: any) => h.marcado).length;
+      const pctOficial = parseFloat(String(cat.porcentajeOficial || "0").replace("%", ""));
+      return aprobadas > 0 || (!isNaN(pctOficial) && pctOficial > 0);
     });
   }, [activeLevelData]);
 
-  // Porcentaje del nivel activo recalculado sobre el total de habilidades del nivel
+  // Porcentaje del nivel activo recalculado ÚNICAMENTE sobre las categorías que corresponden a su puesto
   const levelPercentage = useMemo(() => {
     if (activeLevelData && activeLevelData.porcentajeAvanceGlobal) {
       const parsed = parseFloat(String(activeLevelData.porcentajeAvanceGlobal).replace('%', ''));

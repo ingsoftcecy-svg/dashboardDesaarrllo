@@ -13,7 +13,7 @@ export interface PhysicalBoardProps {
   show_ato?: boolean;
   puedeEditar?: boolean; // Nueva prop para controlar la edición
   teamRankings?: any[];
-  metricMode?: "autonomia" | "cursos" | "guias";
+  metricMode?: "autonomia" | "cursos" | "guias" | "cierre-brecha";
 }
 
 export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false, teamRankings = [], metricMode = "autonomia" }: PhysicalBoardProps) {
@@ -46,7 +46,7 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
     return filteredOperadores.slice(0, visibleCount);
   }, [filteredOperadores, visibleCount]);
 
-  const headerBgClass = metricMode === "cursos" ? "bg-purple-800" : metricMode === "guias" ? "bg-emerald-800" : "bg-[#1a4491]";
+  const headerBgClass = metricMode === "cursos" ? "bg-purple-800" : metricMode === "guias" ? "bg-emerald-800" : metricMode === "cierre-brecha" ? "bg-blue-800" : "bg-[#1a4491]";
 
   return (
     <div className="flex flex-col gap-4">
@@ -81,7 +81,7 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
       >
         <table
           className="w-full table-fixed border-collapse text-left text-sm"
-          style={{ minWidth: metricMode === "autonomia" ? (show_ato ? "1696px" : "1568px") : metricMode === "cursos" ? (show_ato ? "1328px" : "1200px") : "1024px" }}
+          style={{ minWidth: metricMode === "autonomia" ? (show_ato ? "1696px" : "1568px") : metricMode === "cursos" ? (show_ato ? "1328px" : "1200px") : metricMode === "guias" ? "1024px" : metricMode === "cierre-brecha" ? "1500px" : "1100px" }}
         >
           <thead className="sticky top-0 z-30">
             <tr className={cn("text-xs font-bold text-white uppercase tracking-wider", headerBgClass)}>
@@ -95,6 +95,16 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
                   <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-32 text-center z-30 transition-colors duration-300", headerBgClass)}>L7</th>
                   <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-32 text-center z-30 transition-colors duration-300", headerBgClass)}>L8</th>
                   <th className={cn("sticky top-0 border-b border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>PROGRESO TOTAL</th>
+                </>
+              ) : metricMode === "cierre-brecha" ? (
+                <>
+                  <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-48 text-center z-30 transition-colors duration-300", headerBgClass)}>HABILIDADES</th>
+                  <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-48 text-center z-30 transition-colors duration-300", headerBgClass)}>MULTI-HABILIDAD</th>
+                  <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-28 text-center z-30 transition-colors duration-300", headerBgClass)}>TOTAL</th>
+                  <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-28 text-center z-30 transition-colors duration-300", headerBgClass)}>COMPLETADAS</th>
+                  <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-28 text-center z-30 transition-colors duration-300", headerBgClass)}>EN PROCESO</th>
+                  <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-44 text-center z-30 transition-colors duration-300", headerBgClass)}>PROGRESO DE CIERRE</th>
+                  <th className={cn("sticky top-0 border-b border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>FOCO PRINCIPAL (PILAR)</th>
                 </>
               ) : (
                 <>
@@ -167,7 +177,9 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
                 ? "text-purple-700 border-purple-700 hover:text-purple-800" 
                 : metricMode === "guias"
                   ? "text-emerald-700 border-emerald-700 hover:text-emerald-800"
-                  : "text-[#1a4491] border-[#1a4491] hover:text-[#1a4491]/90"
+                  : metricMode === "cierre-brecha"
+                    ? "text-blue-700 border-blue-700 hover:text-blue-800"
+                    : "text-[#1a4491] border-[#1a4491] hover:text-[#1a4491]/90"
             )}
           >
             Cargar 10 más (Mostrando {visibleCount} de {filteredOperadores.length})
@@ -180,7 +192,9 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
                 ? "bg-purple-700 hover:bg-purple-800" 
                 : metricMode === "guias"
                   ? "bg-emerald-700 hover:bg-emerald-800"
-                  : "bg-[#1a4491] hover:bg-[#1a4491]/90"
+                  : metricMode === "cierre-brecha"
+                    ? "bg-blue-700 hover:bg-blue-800"
+                    : "bg-[#1a4491] hover:bg-[#1a4491]/90"
             )}
           >
             Mostrar todos

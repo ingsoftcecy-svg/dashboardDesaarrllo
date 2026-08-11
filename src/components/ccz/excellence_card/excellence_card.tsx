@@ -12,7 +12,7 @@ interface ExcellenceCardProps {
   podio: Podium[];
   logros: string[];
   excelenciaEquipo: number;
-  metricMode?: "autonomia" | "cursos" | "guias";
+  metricMode?: "autonomia" | "cursos" | "guias" | "cierre-brecha";
 }
 
 export function ExcellenceCard({ podio, logros, excelenciaEquipo, metricMode = "autonomia" }: ExcellenceCardProps) {

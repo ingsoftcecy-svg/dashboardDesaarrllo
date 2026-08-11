@@ -21,7 +21,7 @@ export function useOperators() {
             equipoAutonomo: op.equipoAutonomo,
             lider: op.lider,
             // Fallbacks for other expected fields if needed
-            roles: op.roles || [],
+            equipos: op.equipos || [],
           };
         });
         

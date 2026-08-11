@@ -8,7 +8,7 @@ interface OperatorHistoryDialogProps {
   operatorName: string;
   operatorId: string;
   operatorPuesto: string;
-  metricMode?: "autonomia" | "cursos" | "guias";
+  metricMode?: "autonomia" | "cursos" | "guias" | "cierre-brecha";
   guiasProgress?: number;
   guiasL6Progress?: number;
   guiasL7Progress?: number;

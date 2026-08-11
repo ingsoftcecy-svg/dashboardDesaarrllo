@@ -149,6 +149,15 @@ export function useExcelData() {
           }
         }
 
+        // Carga brechas_resumen
+        let brechasResumen: Record<string, { total: number; completadas: number; enProceso: number; porcentaje: number; brechas: any[] }> = {};
+        try {
+          const brechasRes = await fetch(`/brechas_resumen.json?t=${timestamp}`);
+          brechasResumen = await brechasRes.json();
+        } catch (e) {
+          console.error("Error loading brechas summary:", e);
+        }
+
         // Procesar Base Config (championMap)
         for (const row of baseRows) {
           const id = row["ID Sharp"] ? String(row["ID Sharp"]) : null;
@@ -591,6 +600,13 @@ export function useExcelData() {
               const pendientesC = empCursos.p;
               const cursosProgress = totalC > 0 ? parseFloat(((aprobadosC / totalC) * 100).toFixed(2)) : 0;
 
+              const empBrechas = brechasResumen[id] || { total: 0, completadas: 0, enProceso: 0, porcentaje: 0, brechas: [] as any[] };
+              const brechasProgress = empBrechas.porcentaje || 0;
+              const brechasTotal = empBrechas.total || 0;
+              const brechasCompletadas = empBrechas.completadas || 0;
+              const brechasEnProceso = empBrechas.enProceso || 0;
+              const brechasDetalle = empBrechas.brechas || [];
+
               // Guías Técnicas properties calculation — per level
               const guiasData = guiasMap[id] || guiasMap[String(id).trim()] || {};
               const guiasEvaluations = guiasData.evaluations || {};
@@ -705,7 +721,11 @@ export function useExcelData() {
                 guiasL6Progress,
                 guiasL7Progress,
                 guiasL8Progress,
-                guiasEvaluations
+                brechasProgress,
+                brechasTotal,
+                brechasCompletadas,
+                brechasEnProceso,
+                brechasDetalle
               };
             };
 
@@ -791,7 +811,6 @@ export function useExcelData() {
                     champions: championMap[mod.id] || [],
                     equipoAutonomo: mod.equipoAutonomo || masterOp?.equipoAutonomo || "Sin Equipo",
                     lider: mod.lider || masterOp?.lider || "No asignado",
-                    roles: [],
                     equipos: [],
                     maxEquipos: 1,
                     _count: 1,
@@ -800,7 +819,12 @@ export function useExcelData() {
                     guiasL6Progress: 0,
                     guiasL7Progress: 0,
                     guiasL8Progress: 0,
-                    guiasEvaluations: {}
+                    guiasEvaluations: {},
+                    brechasProgress: 0,
+                    brechasTotal: 0,
+                    brechasCompletadas: 0,
+                    brechasEnProceso: 0,
+                    brechasDetalle: []
                   };
                 }
               }

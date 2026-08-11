@@ -21,7 +21,7 @@ interface TeamCardProps {
   variant: "best" | "worst";
   team?: TeamData;
   operadores?: any[];
-  metricMode?: "autonomia" | "cursos" | "guias";
+  metricMode?: "autonomia" | "cursos" | "guias" | "cierre-brecha";
 }
 
 /**
@@ -337,7 +337,15 @@ export function TeamCard({ variant, team, operadores = [], metricMode = "autonom
             </div>
             <span className={`text-xs font-black ${progress_text}`}>{team?.avg || 0}%</span>
           </div>
-          <div className={`text-[9px] font-bold uppercase tracking-widest ${progress_label}`}>{metricMode === "autonomia" ? STRINGS.TEAM_AUTONOMY : "PROGRESO CURSOS"}</div>
+          <div className={`text-[9px] font-bold uppercase tracking-widest ${progress_label}`}>
+            {metricMode === "autonomia" 
+              ? STRINGS.TEAM_AUTONOMY 
+              : metricMode === "cursos" 
+                ? "PROGRESO CURSOS" 
+                : metricMode === "guias"
+                  ? "PROGRESO GUÍAS"
+                  : "PROGRESO DE CIERRE"}
+          </div>
         </div>
       </div>
 

@@ -29,6 +29,7 @@ export interface Operator {
   noEvaluado?: boolean;
   autonomyScore?: number;
   evaluacionesDetalle?: EvaluacionDetalle[];
+  evaluacionesPorPuesto?: Record<string, EvaluacionDetalle>;
   cursosProgress?: number;
   cursosAprobados?: number;
   cursosTotal?: number;
@@ -40,6 +41,23 @@ export interface Operator {
   guiasL7Progress?: number;
   guiasL8Progress?: number;
   guiasEvaluations?: Record<string, { checked: boolean[] }>;
+  brechasProgress?: number;
+  brechasTotal?: number;
+  brechasCompletadas?: number;
+  brechasEnProceso?: number;
+  brechasDetalle?: Array<{
+    desc: string;
+    nivel: string;
+    origen: string;
+    pilar: string;
+    estado: string;
+    fechaCierre: string | null;
+    accion: string;
+    kpi?: string;
+    fechaDeteccion?: string | null;
+    ganancia?: string;
+    evidencia?: string;
+  }>;
 }
 
 export interface IPRow {

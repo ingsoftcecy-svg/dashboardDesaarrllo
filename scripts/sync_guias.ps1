@@ -87,12 +87,13 @@ $excelFiles = Get-ChildItem -Path $OneDrivePath -Recurse -Filter "*.xlsx" -Error
 Write-Host "[INFO] Archivos encontrados en OneDrive: $($excelFiles.Count)" -ForegroundColor Green
 Write-Host ""
 
-# Filtrar archivos que requieren procesamiento (Delta Filter)
-$pendingFiles = @()
+# Group candidate files by SHARP ID to pick V2 (Formato Nuevo) and newest date
+$groupedCandidates = @{}
+
 foreach ($file in $excelFiles) {
     $fileNameRaw = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
 
-    # 1. Filtro estricto: Omitir archivos maestros/anexos/plantillas que no son de un operador
+    # 1. Filtro estricto: Omitir plantillas/anexos
     if ($fileNameRaw -like "*ANEXO*" -or $fileNameRaw -like "*Guías-Técnicas*" -or $fileNameRaw -like "*Guias-Tecnicas*" -or $fileNameRaw -like "*Plantilla*") {
         Write-Host "[OMITIDO - PLANTILLA/ANEXO] $($file.Name)" -ForegroundColor Gray
         continue
@@ -104,18 +105,48 @@ foreach ($file in $excelFiles) {
         $sharpId = $matches[1]
         $operatorName = $matches[2]
     } else {
-        # Si el archivo no empieza con ID SHARP (7-10 dígitos), no es guía de operador
         Write-Host "[OMITIDO - NO ES OPERADOR] $($file.Name)" -ForegroundColor Gray
         continue
     }
 
-    $docId = $sharpId
-    $localLastMod = $file.LastWriteTimeUtc.ToString("o")
+    $fileNameUpper = $file.Name.ToUpper()
+    $pathUpper = $file.FullName.ToUpper()
 
-    # Comparar timestamp local vs cache inteligente (omitir cache si se ejecuta en modo SoloLocal)
-    $cacheKey = $docId
-    $fileKey = $file.Name
-    $prevTimeStr = if ($syncCache.ContainsKey($cacheKey)) { "$($syncCache[$cacheKey])" } elseif ($syncCache.ContainsKey($fileKey)) { "$($syncCache[$fileKey])" } else { $null }
+    # Calcular puntaje del archivo (Priorizar V2/NUEVO > MEJORADO > Fecha Mas Reciente)
+    $v2Score = 0
+    if ($fileNameUpper -like "*NUEVO*" -or $fileNameUpper -like "*NUEVA*" -or $fileNameUpper -like "*V2*") { $v2Score += 200 }
+    if ($pathUpper -like "*NUEVO*" -or $pathUpper -like "*V2*") { $v2Score += 100 }
+    if ($fileNameUpper -like "*MEJORADO*") { $v2Score += 10 }
+
+    $candidateObj = [pscustomobject]@{
+        File = $file
+        DocId = $sharpId
+        SharpId = $sharpId
+        OperatorName = $operatorName
+        LocalLastMod = $file.LastWriteTimeUtc.ToString("o")
+        V2Score = $v2Score
+        LastWriteTime = $file.LastWriteTime
+    }
+
+    if (-not $groupedCandidates.ContainsKey($sharpId)) {
+        $groupedCandidates[$sharpId] = @()
+    }
+    $groupedCandidates[$sharpId] += $candidateObj
+}
+
+# Seleccionar el MEJOR archivo para cada SHARP ID
+$pendingFiles = @()
+foreach ($sharpId in $groupedCandidates.Keys) {
+    $candidates = $groupedCandidates[$sharpId] | Sort-Object -Property @{Expression={$_.V2Score}; Descending=$true}, @{Expression={$_.LastWriteTime}; Descending=$true}
+    $best = $candidates[0]
+
+    if ($candidates.Count -gt 1) {
+        Write-Host "[DUPLICADO DETECTADO] SHARP: $sharpId -> Seleccionado: $($best.File.Name) (Score: $($best.V2Score), Fecha: $($best.LastWriteTime.ToString('yyyy-MM-dd HH:mm')))" -ForegroundColor Yellow
+    }
+
+    $docId = $best.DocId
+    $localLastMod = $best.LocalLastMod
+    $prevTimeStr = if ($syncCache.ContainsKey($docId)) { "$($syncCache[$docId])" } elseif ($syncCache.ContainsKey($best.File.Name)) { "$($syncCache[$best.File.Name])" } else { $null }
 
     if (-not $SoloLocal -and $prevTimeStr) {
         $skipFile = $false
@@ -131,18 +162,12 @@ foreach ($file in $excelFiles) {
             }
         }
         if ($skipFile) {
-            Write-Host "[SIN CAMBIOS - OMITIDO] $($file.Name) (SHARP: $docId)" -ForegroundColor Gray
+            Write-Host "[SIN CAMBIOS - OMITIDO] $($best.File.Name) (SHARP: $docId)" -ForegroundColor Gray
             continue
         }
     }
 
-    $pendingFiles += [pscustomobject]@{
-        File = $file
-        DocId = $docId
-        SharpId = $sharpId
-        OperatorName = $operatorName
-        LocalLastMod = $localLastMod
-    }
+    $pendingFiles += $best
 }
 
 Write-Host ""
@@ -289,7 +314,31 @@ foreach ($item in $pendingFiles) {
                         $formatoDetectado = "V2_NUEVO"
                         foreach ($cb in $ws.CheckBoxes) {
                             $cbRow = $cb.TopLeftCell.Row
-                            if ($cb.Value -eq 1) {
+                            $isCbChecked = $false
+
+                            # 1. Validar LinkedCell si la casilla de control tiene celda vinculada en Excel
+                            if ($cb.LinkedCell -and $cb.LinkedCell.Length -gt 0) {
+                                try {
+                                    $linkedVal = "$($ws.Range($cb.LinkedCell).Value2)".Trim().ToUpper()
+                                    if ($linkedVal -eq "TRUE" -or $linkedVal -eq "1" -or $linkedVal -eq "VERDADERO") {
+                                        $isCbChecked = $true
+                                    }
+                                } catch {}
+                            }
+
+                            # 2. Si no hay LinkedCell o dio dudoso, validar Value pero asegurar que no sea celda FALSE
+                            if (-not $isCbChecked -and "$($cb.Value)" -eq "1") {
+                                try {
+                                    $valC = "$($ws.Cells.Item($cbRow, 3).Value2)".Trim().ToUpper()
+                                    if ($valC -ne "FALSE" -and $valC -ne "FALSO" -and $valC -ne "0" -and $valC -ne "") {
+                                        $isCbChecked = $true
+                                    }
+                                } catch {
+                                    $isCbChecked = $true
+                                }
+                            }
+
+                            if ($isCbChecked) {
                                 $checkedRows[$cbRow] = $true
                             }
                         }
@@ -364,11 +413,33 @@ foreach ($item in $pendingFiles) {
                     }
                 }
 
-                # Filtrar solo categorias que tengan habilidades o porcentaje evaluado
+                # Filtrar ÚNICAMENTE las categorías que fueron evaluadas para el puesto del colaborador
                 $filteredCategories = @()
+                $totalPreguntas = 0
+                $marcadasSI = 0
+
                 foreach ($cat in $categoriasList) {
-                    if ($cat.habilidades.Count -gt 0 -or ($cat.porcentajeOficial -and $cat.porcentajeOficial -ne "0%")) {
+                    $habs = $cat.habilidades
+                    $aprobCount = 0
+                    if ($habs) {
+                        $aprobCount = ($habs | Where-Object { $_.marcado -eq $true }).Count
+                    }
+                    $pctOf = 0
+                    try { $pctOf = [double]("$($cat.porcentajeOficial)".Replace("%","").Trim()) } catch {}
+
+                    # Si hay habilidades aprobadas, sincronizar el porcentaje de la categoría con las aprobadas
+                    if ($aprobCount -gt 0 -and $habs -and $habs.Count -gt 0) {
+                        $calcCatPct = [math]::Round(($aprobCount / $habs.Count) * 100, 1)
+                        $cat.porcentajeOficial = "$calcCatPct%"
+                        $pctOf = $calcCatPct
+                    }
+
+                    if ($aprobCount -gt 0 -or $pctOf -gt 0) {
                         $filteredCategories += $cat
+                        if ($habs) {
+                            $totalPreguntas += $habs.Count
+                        }
+                        $marcadasSI += $aprobCount
                     }
                 }
 

@@ -286,6 +286,174 @@ function parseAndOptimizeCursos() {
   }
 }
 
+function parseAndSaveBrechas() {
+  const filename = '02. FORMATO_PLAN_CIERRE_DE_BRECHAS_2.0.xlsx';
+  const sheetName = 'PLAN CIERRE DE BRECHAS';
+  const outputFilename = 'brechas_resumen.json';
+  const filePath = path.join(publicDir, filename);
+
+  if (!fs.existsSync(filePath)) {
+    console.warn(`⚠️ File not found: ${filePath}`);
+    return;
+  }
+
+  try {
+    // 1. Cargar IDs activos (empleados del dashboard)
+    const activeIds = new Set();
+    const knownIds = [
+      "32173442", "32043900", "32145333", "32044316", "32043835", "32045469", 
+      "32043301", "32043739", "32043861", "32044301", "32045769", "32044319",
+      "32197863", "32244174"
+    ];
+    knownIds.forEach(id => activeIds.add(id));
+
+    const estPath = path.join(publicDir, 'estructura_nueva.json');
+    if (fs.existsSync(estPath)) {
+      try {
+        const estData = JSON.parse(fs.readFileSync(estPath, 'utf-8'));
+        for (const row of estData) {
+          if (row.SHARP) activeIds.add(String(row.SHARP).trim());
+        }
+      } catch (err) {}
+    }
+
+    const datosPath = path.join(publicDir, 'datos.json');
+    if (fs.existsSync(datosPath)) {
+      try {
+        const datosData = JSON.parse(fs.readFileSync(datosPath, 'utf-8'));
+        for (const row of datosData) {
+          const empMatch = row["Employee"] ? String(row["Employee"]).match(/\[(\d+)\]/) : null;
+          if (empMatch) activeIds.add(empMatch[1].trim());
+        }
+      } catch (err) {}
+    }
+
+    // Usar la tabla de traducción de IDs si el dashboard la usa
+    const translations = {
+      "32173442": "32043900",
+      "32145333": "32044316",
+      "32043835": "32145333",
+      "32043900": "32045469",
+      "32043301": "32043739",
+      "32043861": "32043835",
+      "32044301": "32043861",
+      "32044319": "32045769",
+    };
+
+    const isTargetActive = (idGlobal) => {
+      if (activeIds.has(idGlobal)) return true;
+      if (translations[idGlobal] && activeIds.has(translations[idGlobal])) return true;
+      const transKey = Object.keys(translations).find(k => translations[k] === idGlobal);
+      if (transKey && activeIds.has(transKey)) return true;
+      return false;
+    };
+
+    // 2. Leer Excel
+    const fileBuffer = fs.readFileSync(filePath);
+    const wb = XLSX.read(fileBuffer, { type: 'buffer' });
+    const targetSheet = wb.Sheets[sheetName];
+    if (!targetSheet) {
+      console.warn(`⚠️ Sheet ${sheetName} not found in ${filename}`);
+      return;
+    }
+
+    const rows = XLSX.utils.sheet_to_json(targetSheet, { header: 1 });
+    const summary = {};
+    const missingEmployees = {};
+
+    // Helper to convert Excel serial dates
+    const excelDateToStr = (serial) => {
+      if (!serial || typeof serial !== 'number') return null;
+      const utc_days = Math.floor(serial - 25569);
+      const d = new Date(utc_days * 86400 * 1000);
+      return d.toISOString().split('T')[0]; // YYYY-MM-DD
+    };
+
+    // Headers are at row index 2 (row[2]), data starts at row index 3
+    // Columns:
+    //  [0] AREA, [1] SUB AREA, [2] EQUIPO AUTÓNOMO, [3] SHARP ID, [4] NOMBRE
+    //  [5] MÁQUINA/PROCESO/POSICIÓN, [6] ORIGEN DE BRECHA, [7] CONSECUTIVO
+    //  [8] NIVEL, [9] PILAR, [10] ITEM, [11] DESCRIPCIÓN DEL ITEM
+    //  [12] KPI IMPACTADO, [13] FECHA DETECCIÓN, [14] ACCIÓN PARA CERRAR
+    //  [15] RESPONSABLE/LIDER, [16] ESTADO, [17] FECHA PROGRAMADA DE CIERRE
+    //  [18] GANANCIA ESPERADA, [19] EVIDENCIA DE CIERRE
+    for (let i = 3; i < rows.length; i++) {
+      const row = rows[i];
+      if (!row || row.length === 0) continue;
+      
+      const rawId = row[3];
+      if (!rawId) continue;
+      
+      const idGlobal = String(rawId).trim();
+      const nombre = row[4] ? String(row[4]).trim() : "Desconocido";
+      const statusRaw = row[16] ? String(row[16]).trim() : "";
+      const statusLower = statusRaw.toLowerCase();
+
+      // Determine normalized status
+      let estado = "";
+      if (statusLower === "completado") estado = "Completado";
+      else if (statusLower === "en proceso") estado = "En Proceso";
+
+      if (!estado) continue; // Si no tiene un status válido (Completado/En Proceso), no es una brecha (ej. filas en blanco)
+
+      if (!isTargetActive(idGlobal)) {
+        if (!missingEmployees[idGlobal]) {
+          missingEmployees[idGlobal] = { nombre, conteo: 0 };
+        }
+        missingEmployees[idGlobal].conteo++;
+        continue;
+      }
+
+      if (!summary[idGlobal]) {
+        summary[idGlobal] = { total: 0, completadas: 0, enProceso: 0, brechas: [] };
+      }
+
+      summary[idGlobal].total++;
+      if (estado === "Completado") {
+        summary[idGlobal].completadas++;
+      } else if (estado === "En Proceso") {
+        summary[idGlobal].enProceso++;
+      }
+
+      // Store individual brecha detail (compact)
+      summary[idGlobal].brechas.push({
+        desc: row[11] ? String(row[11]).trim().substring(0, 120) : "",
+        nivel: row[8] ? String(row[8]).trim() : "",
+        origen: row[6] ? String(row[6]).trim() : "",
+        pilar: row[9] ? String(row[9]).trim() : "",
+        estado,
+        fechaCierre: excelDateToStr(row[17]),
+        accion: row[14] ? String(row[14]).trim().substring(0, 100) : "",
+        kpi: row[12] ? String(row[12]).trim() : "",
+        fechaDeteccion: excelDateToStr(row[13]),
+        ganancia: row[18] ? String(row[18]).trim() : "",
+        evidencia: row[19] ? String(row[19]).trim() : ""
+      });
+    }
+
+    // Calcular porcentaje
+    Object.keys(summary).forEach(id => {
+      const data = summary[id];
+      data.porcentaje = data.total > 0 ? Number(((data.completadas / data.total) * 100).toFixed(2)) : 0;
+    });
+
+    const outputPath = path.join(publicDir, outputFilename);
+    fs.writeFileSync(outputPath, JSON.stringify(summary, null, 2), 'utf-8');
+    console.log(`✅ Generated ${outputFilename} for ${Object.keys(summary).length} employees`);
+
+    const missingKeys = Object.keys(missingEmployees);
+    if (missingKeys.length > 0) {
+      console.warn(`⚠️ Found ${missingKeys.length} employees in Plan de Cierre de Brechas that are NOT in the Dashboard.`);
+      const missingPath = path.join(publicDir, 'brechas_faltantes.json');
+      fs.writeFileSync(missingPath, JSON.stringify(missingEmployees, null, 2), 'utf-8');
+      console.log(`📝 Wrote missing employees list to public/brechas_faltantes.json`);
+    }
+
+  } catch (error) {
+    console.error(`❌ Failed to parse ${filename}:`, error);
+  }
+}
+
 console.log('🔄 Parsing Excel files in public/ to JSON...');
 
 // "0. BASE EQUIPOS AUTÓNOMOS CCZ (3).xlsx" -> base.json (hoja "BD_ZAC_OFICIAL")
@@ -359,6 +527,9 @@ parseAndOptimizeCursos();
 
 // "26_Guías-Técnicas-Elaboración-V2 2026.xlsx" -> guias_tecnicas.json
 parseAndSaveGuias();
+
+// "02. FORMATO_PLAN_CIERRE_DE_BRECHAS_2.0.xlsx" -> brechas_resumen.json
+parseAndSaveBrechas();
 
 console.log('🎉 Done parsing Excel files.');
 

@@ -13,7 +13,7 @@ interface TeamRanking {
 interface TeamRankingCardProps {
   rankings?: TeamRanking[];
   operadores?: any[];
-  metricMode?: "autonomia" | "cursos" | "guias";
+  metricMode?: "autonomia" | "cursos" | "guias" | "cierre-brecha";
   className?: string;
 }
 
@@ -31,7 +31,9 @@ export function TeamRankingCard({ rankings = [], operadores = [], metricMode = "
           ? "bg-gradient-to-r from-purple-800 to-indigo-900"
           : metricMode === "guias"
             ? "bg-gradient-to-r from-emerald-800 to-teal-900"
-            : "bg-gradient-to-r from-[#1a4491] to-blue-800"
+            : metricMode === "cierre-brecha"
+              ? "bg-gradient-to-r from-blue-600 to-cyan-700"
+              : "bg-gradient-to-r from-[#1a4491] to-blue-800"
       )}>
         <Users className="h-5 w-5 text-yellow-400" />
         <div>

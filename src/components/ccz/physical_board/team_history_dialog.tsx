@@ -8,8 +8,9 @@ import { cn } from "@/lib/utils";
 import { Tooltip as ShadcnTooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { OperatorHistoryDialog } from "./operator_history_dialog";
-import { AutonomyGauge } from "@/components/ccz/autonomy_card";
 import { OperatorCoursesDialog } from "./operator_courses_dialog";
+import { OperatorBrechasDialog } from "./operator_brechas_dialog";
+import { AutonomyGauge } from "@/components/ccz/autonomy_card";
 
 
 interface TeamMember {
@@ -29,6 +30,10 @@ interface TeamMember {
   guiasL7Progress?: number;
   guiasL8Progress?: number;
   guiasActiveLevel?: "L6" | "L7" | "L8";
+  brechasProgress?: number;
+  brechasTotal?: number;
+  brechasCompletadas?: number;
+  brechasDetalle?: any[];
 }
 
 interface TeamHistoryDialogProps {
@@ -49,7 +54,7 @@ interface TeamHistoryDialogProps {
   faseActual?: string;
   fase2026?: number;
   fechaCompromiso?: string;
-  metricMode?: "autonomia" | "cursos" | "guias";
+  metricMode?: "autonomia" | "cursos" | "guias" | "cierre-brecha";
 }
 
 interface EvaluacionPunto {
@@ -770,6 +775,9 @@ export function TeamHistoryDialog({
     if (metricMode === "guias") {
       return renderGuiasSection();
     }
+    if (metricMode === "cierre-brecha") {
+      return renderBrechasSection();
+    }
 
     if (members.length === 0) {
       return (
@@ -856,6 +864,96 @@ export function TeamHistoryDialog({
     );
   };
 
+  const renderBrechasSection = () => {
+    if (members.length === 0) {
+      return (
+        <div className="h-48 bg-slate-50 border border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center p-6 space-y-2 mt-4">
+          <Users className="h-8 w-8 text-slate-300" />
+          <p className="text-xs font-black uppercase text-slate-500 tracking-wider">Sin integrantes registrados</p>
+          <p className="text-[11px] text-slate-400 max-w-xs font-medium">No se encontraron operadores asignados a este equipo para el módulo de Brechas.</p>
+        </div>
+      );
+    }
+
+    const sortedMembers = [...members].sort((a, b) => {
+      const progA = a.brechasProgress ?? 0;
+      const progB = b.brechasProgress ?? 0;
+      if (progB !== progA) return progB - progA;
+      const compA = a.brechasCompletadas ?? 0;
+      const compB = b.brechasCompletadas ?? 0;
+      if (compB !== compA) return compB - compA;
+      return a.name.localeCompare(b.name);
+    });
+
+    return (
+      <div className="flex-1 overflow-y-auto pr-1 mt-4 custom-scrollbar space-y-4">
+        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+          <Users className="h-3.5 w-3.5 text-amber-600" />
+          <span>Progreso de Cierre de Brechas</span>
+        </h3>
+
+        <div className="rounded-xl border border-slate-200/60 overflow-hidden bg-white">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="bg-slate-100 text-[10px] font-black uppercase text-slate-500 tracking-wider sticky top-0">
+                <th className="p-3 border-b border-slate-200">Operador</th>
+                <th className="p-3 border-b border-slate-200">Puesto</th>
+                <th className="p-3 border-b border-slate-200 text-center">Brechas Completadas</th>
+                <th className="p-3 border-b border-slate-200 text-center">Progreso</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+              {sortedMembers.map((member) => {
+                const total = member.brechasTotal || 0;
+                const aprobados = member.brechasCompletadas || 0;
+                const progress = member.brechasProgress ?? 0;
+
+                return (
+                  <tr key={member.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="p-3 font-bold text-slate-900">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <button className="hover:underline hover:text-amber-700 text-left focus:outline-none cursor-pointer flex items-center gap-1.5">
+                            <ChevronRight className="h-3 w-3 text-amber-600 opacity-60 shrink-0" />
+                            <span>{member.name}</span>
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl sm:max-w-5xl bg-white p-6 rounded-2xl border-none shadow-2xl max-h-[92vh] flex flex-col overflow-y-auto custom-scrollbar">
+                          <OperatorBrechasDialog
+                            operatorName={member.name}
+                            operatorId={member.id}
+                            brechasDetalle={member.brechasDetalle}
+                          />
+                        </DialogContent>
+                      </Dialog>
+                    </td>
+                    <td className="p-3 text-slate-500 uppercase font-semibold text-[10px]">{member.puesto}</td>
+                    <td className="p-3 text-center align-middle text-slate-600 font-bold">
+                      {total > 0 ? `${aprobados} / ${total}` : "0 / 0"}
+                    </td>
+                    <td className="p-3 align-middle">
+                      <div className="flex items-center gap-2 justify-center">
+                        <div className="h-2 w-24 rounded-full bg-slate-100 overflow-hidden shrink-0 border border-slate-200/40">
+                          <div
+                            className="h-full bg-amber-500 rounded-full"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <span className="text-[11px] font-black text-slate-800 w-10 text-right tabular-nums">
+                          {progress}%
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col text-slate-800 h-full max-h-[calc(90vh-48px)] overflow-hidden">
       {/* 👥 CABECERA DEL MODAL */}
@@ -871,9 +969,11 @@ export function TeamHistoryDialog({
                 ? "bg-blue-50 text-[#1a4491] border-blue-200"
                 : metricMode === "cursos"
                 ? "bg-purple-50 text-purple-750 border-purple-200"
-                : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                : metricMode === "guias"
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                : "bg-amber-50 text-amber-700 border-amber-200"
             )}>
-              {metricMode === "autonomia" ? "Modo Promedio Habilidades" : metricMode === "cursos" ? "Modo Cursos (Capacitación)" : "Modo Guías Técnicas"}
+              {metricMode === "autonomia" ? "Modo Promedio Habilidades" : metricMode === "cursos" ? "Modo Cursos (Capacitación)" : metricMode === "guias" ? "Modo Guías Técnicas" : "Modo Cierre de Brechas"}
             </span>
           </div>
           <h2 className="text-2xl font-black text-[#1a4491] leading-tight uppercase">
@@ -975,6 +1075,16 @@ export function TeamHistoryDialog({
                 )}
               >
                 Progreso de Cursos
+              </button>
+            ) : metricMode === "cierre-brecha" ? (
+              <button
+                onClick={() => setActiveSubTab("progress")}
+                className={cn(
+                  "pb-2 border-b-2 px-1 transition-colors focus:outline-none flex items-center gap-1.5 cursor-pointer",
+                  activeSubTab === "progress" ? "border-amber-600 text-amber-700 font-black" : "border-transparent text-slate-400 hover:text-slate-600"
+                )}
+              >
+                Cierre de Brechas
               </button>
             ) : (
               <button
