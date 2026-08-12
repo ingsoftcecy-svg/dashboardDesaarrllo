@@ -1402,7 +1402,7 @@ function CargarDatos() {
             try {
               const data = new Uint8Array(e.target?.result as ArrayBuffer);
               const workbook = XLSX.read(data, { type: 'array' });
-              const sheetName = workbook.SheetNames.includes("Hoja1") ? "Hoja1" : workbook.SheetNames[0];
+              const sheetName = workbook.SheetNames.includes("Usuarios") ? "Usuarios" : (workbook.SheetNames.includes("Hoja1") ? "Hoja1" : workbook.SheetNames[0]);
               const json = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { range: 14 });
               resolve(json);
             } catch (err) { reject(err); }
@@ -1468,6 +1468,12 @@ function CargarDatos() {
 
       const optimizedRows = rawRows
         .filter(row => {
+          // Filtrado por departamento
+          const depto = row["Departamento"] ? String(row["Departamento"]).trim() : "";
+          if (depto !== "COCIMIENTOS" && depto !== "BLOQUE FRIO" && depto !== "MTTO ELABORACION") {
+            return false;
+          }
+
           const idGlobal = row["ID GLOBAL"] ? String(row["ID GLOBAL"]).trim() : "";
           return targetIdsIncludesAlternative(idGlobal);
         })

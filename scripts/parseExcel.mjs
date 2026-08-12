@@ -168,7 +168,7 @@ function parseAndSaveGuias() {
 
 function parseAndOptimizeCursos() {
   const filename = 'Cursos.xlsx';
-  const sheetName = 'Hoja1';
+  const sheetName = 'Usuarios';
   const outputFilename = 'cursos.json';
   
   const filePath = path.join(publicDir, filename);
@@ -235,15 +235,20 @@ function parseAndOptimizeCursos() {
 
     const fileBuffer = fs.readFileSync(filePath);
     const wb = XLSX.read(fileBuffer, { type: 'buffer' });
-    const targetSheet = wb.Sheets[sheetName];
+    const targetSheet = wb.Sheets[sheetName] || wb.Sheets['Hoja1'] || wb.Sheets[wb.SheetNames[0]];
     if (!targetSheet) {
-      console.warn(`⚠️ Sheet ${sheetName} not found in ${filename}`);
+      console.warn(`⚠️ Sheet not found in ${filename}`);
       return;
     }
     
     const rows = XLSX.utils.sheet_to_json(targetSheet, { range: 14 });
     const optimizedRows = rows
       .filter(row => {
+        const depto = row["Departamento"] ? String(row["Departamento"]).trim() : "";
+        if (depto !== "COCIMIENTOS" && depto !== "BLOQUE FRIO" && depto !== "MTTO ELABORACION") {
+          return false;
+        }
+        
         const idGlobal = row["ID GLOBAL"] ? String(row["ID GLOBAL"]).trim() : "";
         return targetIdsIncludesAlternative(idGlobal);
       })
