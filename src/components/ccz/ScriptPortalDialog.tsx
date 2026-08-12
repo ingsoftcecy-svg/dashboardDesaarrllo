@@ -783,7 +783,7 @@ export function ScriptPortalDialog({ isOpen, onClose }: ScriptPortalDialogProps)
         count++;
       }
 
-      setUploadStatus(`¡Éxito! Se subieron ${count} operadores a Firebase Firestore.`);
+      setUploadStatus(`¡Éxito! Se subieron ${count} operadores a la base de datos central.`);
     } catch (err: any) {
       setUploadStatus(`Error al subir: ${err.message}`);
     } finally {
@@ -1001,7 +1001,7 @@ export function ScriptPortalDialog({ isOpen, onClose }: ScriptPortalDialogProps)
 
               <label className="mt-2 px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-xl cursor-pointer transition-all">
                 <Upload className="w-4 h-4" />
-                {uploading ? "Subiendo a Firebase..." : "Seleccionar resultado_extraccion.json"}
+                {uploading ? "Subiendo datos..." : "Seleccionar resultado_extraccion.json"}
                 <input
                   type="file"
                   accept=".json"

@@ -291,8 +291,8 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
             <p className="text-xs font-bold text-slate-600">
               No hay habilidades evaluadas en el nivel {activeLevel} para este colaborador.
             </p>
-            <p className="text-[11px] text-slate-400">
-              El nivel activo {activeLevel} se actualizará automáticamente cuando se registre en OneDrive.
+            <p className="mt-2 text-[10px] text-slate-400 font-medium uppercase text-center w-full max-w-[500px]">
+              EL NIVEL ACTIVO {activeLevel} SE ACTUALIZARÁ AUTOMÁTICAMENTE CUANDO SE REGISTRE EN LA PLATAFORMA CENTRAL.
             </p>
           </div>
         )}
