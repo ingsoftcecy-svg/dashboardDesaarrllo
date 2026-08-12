@@ -157,7 +157,11 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
                     guiasL6Progress: op.guiasL6Progress,
                     guiasL7Progress: op.guiasL7Progress,
                     guiasL8Progress: op.guiasL8Progress,
-                    guiasActiveLevel: op.guiasActiveLevel
+                    guiasActiveLevel: op.guiasActiveLevel,
+                    brechasProgress: op.brechasProgress,
+                    brechasTotal: op.brechasTotal,
+                    brechasCompletadas: op.brechasCompletadas,
+                    brechasDetalle: op.brechasDetalle || []
                   }))
                 }
               />

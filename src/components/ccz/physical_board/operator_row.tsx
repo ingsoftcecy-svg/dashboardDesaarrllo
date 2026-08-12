@@ -195,7 +195,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                     <OperatorBrechasDialog
                       operatorName={operator.nombre}
                       operatorId={operator.id}
-                      brechasDetalle={operator.brechasDetalle}
+                      brechasDetalle={operator.brechasDetalle || []}
                     />
                   ) : (
                     <OperatorHistoryDialog 
@@ -857,6 +857,70 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                 <GuiasEditorDialog 
                   operator={operator}
                   puedeEditar={puedeEditar}
+                />
+              </DialogContent>
+            </Dialog>
+          );
+        })() : metricMode === "cierre-brecha" ? (() => {
+          const progress = operator.brechasProgress ?? 0;
+          let colorHeader = "bg-slate-500";
+          let colorBorder = "border-slate-500";
+          let colorText = "text-slate-700";
+
+          if (progress === 100) {
+            colorHeader = "bg-yellow-500";
+            colorBorder = "border-yellow-500";
+            colorText = "text-yellow-600";
+          } else if (progress >= 80) {
+            colorHeader = "bg-emerald-600";
+            colorBorder = "border-emerald-600";
+            colorText = "text-emerald-700";
+          } else if (progress >= 50) {
+            colorHeader = "bg-amber-500";
+            colorBorder = "border-amber-500";
+            colorText = "text-amber-600";
+          } else if (progress > 0) {
+            colorHeader = "bg-blue-600";
+            colorBorder = "border-blue-600";
+            colorText = "text-blue-700";
+          }
+
+          const badgeEl = (
+            <div 
+              title={`Brechas Cerradas\nProgreso: ${progress}%`}
+              className={cn(
+                "mx-auto flex w-20 flex-col items-center justify-center overflow-hidden rounded border shadow-sm transition-all cursor-pointer hover:scale-105 active:scale-95 duration-200 group",
+                colorBorder,
+                progress === 100 && "animate-glow-gold scale-110"
+              )}
+            >
+              <div className={cn(
+                "w-full py-1 text-center text-[10px] font-black leading-tight text-white uppercase tracking-widest",
+                colorHeader
+              )}>
+                BRECHAS
+              </div>
+              <div className={cn("flex w-full items-center justify-center bg-white py-1 min-h-[30px]", colorText)}>
+                <span className="text-xs font-black tabular-nums">{progress.toFixed(2)}%</span>
+              </div>
+              <div className="w-full bg-slate-50 border-t border-slate-100 py-0.5 text-center text-[7px] font-black uppercase text-slate-400 tracking-wider group-hover:text-[#1a4491] group-hover:bg-slate-100 transition-all">
+                ver detalles
+              </div>
+            </div>
+          );
+
+          return (
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="focus:outline-none block mx-auto">{badgeEl}</button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+                <DialogTitle className="sr-only">Brechas de {operator.nombre}</DialogTitle>
+                <DialogDescription className="sr-only">Detalle de cierre de brechas de {operator.nombre}</DialogDescription>
+                <OperatorBrechasDialog 
+                  operatorName={operator.nombre}
+                  operatorId={operator.id}
+                  brechasDetalle={operator.brechasDetalle || []}
                 />
               </DialogContent>
             </Dialog>

@@ -1206,6 +1206,12 @@ export function TeamHistoryDialog({
                                         operatorName={member.name}
                                         operatorId={member.id}
                                       />
+                                    ) : metricMode === "cierre-brecha" ? (
+                                      <OperatorBrechasDialog
+                                        operatorName={member.name}
+                                        operatorId={member.id}
+                                        brechasDetalle={member.brechasDetalle || []}
+                                      />
                                     ) : (
                                       <OperatorHistoryDialog
                                         operatorName={member.name}

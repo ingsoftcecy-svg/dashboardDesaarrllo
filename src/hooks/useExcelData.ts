@@ -820,11 +820,11 @@ export function useExcelData() {
                     guiasL7Progress: 0,
                     guiasL8Progress: 0,
                     guiasEvaluations: {},
-                    brechasProgress: 0,
-                    brechasTotal: 0,
-                    brechasCompletadas: 0,
-                    brechasEnProceso: 0,
-                    brechasDetalle: []
+                    brechasProgress: brechasResumen[mod.id]?.porcentaje || 0,
+                    brechasTotal: brechasResumen[mod.id]?.total || 0,
+                    brechasCompletadas: brechasResumen[mod.id]?.completadas || 0,
+                    brechasEnProceso: brechasResumen[mod.id]?.enProceso || 0,
+                    brechasDetalle: brechasResumen[mod.id]?.brechas || []
                   };
                 }
               }
