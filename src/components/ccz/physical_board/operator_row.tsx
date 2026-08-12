@@ -430,41 +430,57 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
           </td>
           {/* PROGRESO DE CIERRE - with stacked bar */}
           <td className="border-b border-r border-slate-200/50 p-2 align-middle w-44">
-            <div className="flex flex-col items-center gap-1.5">
-              <span className={cn(
-                "text-sm font-black tabular-nums",
-                (operator.brechasProgress ?? 0) === 100 
-                  ? "text-yellow-600" 
-                  : (operator.brechasProgress ?? 0) >= 80 
-                    ? "text-emerald-700" 
-                    : (operator.brechasProgress ?? 0) >= 50 
-                      ? "text-amber-600"
-                      : (operator.brechasProgress ?? 0) > 0
-                        ? "text-blue-600"
-                        : "text-slate-400"
-              )}>
-                {operator.brechasProgress !== undefined ? `${operator.brechasProgress.toFixed(1)}%` : "0.0%"}
-              </span>
-              {/* Stacked progress bar */}
-              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden flex">
-                {(operator.brechasTotal ?? 0) > 0 && (
-                  <>
-                    <div 
-                      className="h-full bg-emerald-500 transition-all duration-500" 
-                      style={{ width: `${((operator.brechasCompletadas ?? 0) / (operator.brechasTotal ?? 1)) * 100}%` }} 
-                    />
-                    <div 
-                      className="h-full bg-amber-400 transition-all duration-500" 
-                      style={{ width: `${((operator.brechasEnProceso ?? 0) / (operator.brechasTotal ?? 1)) * 100}%` }} 
-                    />
-                  </>
-                )}
-              </div>
-              <div className="flex items-center gap-2 text-[8px] font-bold text-slate-400">
-                <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />OK</span>
-                <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />Proc</span>
-              </div>
-            </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="w-full flex flex-col items-center gap-1.5 focus:outline-none hover:bg-slate-50/50 p-2 rounded transition-colors cursor-pointer group active:scale-95 duration-200">
+                  <span className={cn(
+                    "text-sm font-black tabular-nums group-hover:scale-105 transition-transform",
+                    (operator.brechasProgress ?? 0) === 100 
+                      ? "text-yellow-600 drop-shadow-sm" 
+                      : (operator.brechasProgress ?? 0) >= 80 
+                        ? "text-emerald-700" 
+                        : (operator.brechasProgress ?? 0) >= 50 
+                          ? "text-amber-600"
+                          : (operator.brechasProgress ?? 0) > 0
+                            ? "text-blue-600"
+                            : "text-slate-400"
+                  )}>
+                    {operator.brechasProgress !== undefined ? `${operator.brechasProgress.toFixed(1)}%` : "0.0%"}
+                  </span>
+                  {/* Stacked progress bar */}
+                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden flex group-hover:shadow-inner transition-shadow">
+                    {(operator.brechasTotal ?? 0) > 0 && (
+                      <>
+                        <div 
+                          className="h-full bg-emerald-500 transition-all duration-500" 
+                          style={{ width: `${((operator.brechasCompletadas ?? 0) / (operator.brechasTotal ?? 1)) * 100}%` }} 
+                        />
+                        <div 
+                          className="h-full bg-amber-400 transition-all duration-500" 
+                          style={{ width: `${((operator.brechasEnProceso ?? 0) / (operator.brechasTotal ?? 1)) * 100}%` }} 
+                        />
+                      </>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-[8px] font-bold text-slate-400 mt-0.5">
+                    <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />OK</span>
+                    <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />PROC</span>
+                  </div>
+                  <span className="text-[7px] font-black uppercase text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-1">
+                    Ver Detalles
+                  </span>
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+                <DialogTitle className="sr-only">Brechas de {operator.nombre}</DialogTitle>
+                <DialogDescription className="sr-only">Detalle de cierre de brechas de {operator.nombre}</DialogDescription>
+                <OperatorBrechasDialog 
+                  operatorName={operator.nombre}
+                  operatorId={operator.id}
+                  brechasDetalle={operator.brechasDetalle || []}
+                />
+              </DialogContent>
+            </Dialog>
           </td>
           {/* FOCO PRINCIPAL (PILAR) */}
           <td className="border-b border-slate-200/50 p-2 align-middle text-center w-40">
@@ -857,70 +873,6 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                 <GuiasEditorDialog 
                   operator={operator}
                   puedeEditar={puedeEditar}
-                />
-              </DialogContent>
-            </Dialog>
-          );
-        })() : metricMode === "cierre-brecha" ? (() => {
-          const progress = operator.brechasProgress ?? 0;
-          let colorHeader = "bg-slate-500";
-          let colorBorder = "border-slate-500";
-          let colorText = "text-slate-700";
-
-          if (progress === 100) {
-            colorHeader = "bg-yellow-500";
-            colorBorder = "border-yellow-500";
-            colorText = "text-yellow-600";
-          } else if (progress >= 80) {
-            colorHeader = "bg-emerald-600";
-            colorBorder = "border-emerald-600";
-            colorText = "text-emerald-700";
-          } else if (progress >= 50) {
-            colorHeader = "bg-amber-500";
-            colorBorder = "border-amber-500";
-            colorText = "text-amber-600";
-          } else if (progress > 0) {
-            colorHeader = "bg-blue-600";
-            colorBorder = "border-blue-600";
-            colorText = "text-blue-700";
-          }
-
-          const badgeEl = (
-            <div 
-              title={`Brechas Cerradas\nProgreso: ${progress}%`}
-              className={cn(
-                "mx-auto flex w-20 flex-col items-center justify-center overflow-hidden rounded border shadow-sm transition-all cursor-pointer hover:scale-105 active:scale-95 duration-200 group",
-                colorBorder,
-                progress === 100 && "animate-glow-gold scale-110"
-              )}
-            >
-              <div className={cn(
-                "w-full py-1 text-center text-[10px] font-black leading-tight text-white uppercase tracking-widest",
-                colorHeader
-              )}>
-                BRECHAS
-              </div>
-              <div className={cn("flex w-full items-center justify-center bg-white py-1 min-h-[30px]", colorText)}>
-                <span className="text-xs font-black tabular-nums">{progress.toFixed(2)}%</span>
-              </div>
-              <div className="w-full bg-slate-50 border-t border-slate-100 py-0.5 text-center text-[7px] font-black uppercase text-slate-400 tracking-wider group-hover:text-[#1a4491] group-hover:bg-slate-100 transition-all">
-                ver detalles
-              </div>
-            </div>
-          );
-
-          return (
-            <Dialog>
-              <DialogTrigger asChild>
-                <button className="focus:outline-none block mx-auto">{badgeEl}</button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
-                <DialogTitle className="sr-only">Brechas de {operator.nombre}</DialogTitle>
-                <DialogDescription className="sr-only">Detalle de cierre de brechas de {operator.nombre}</DialogDescription>
-                <OperatorBrechasDialog 
-                  operatorName={operator.nombre}
-                  operatorId={operator.id}
-                  brechasDetalle={operator.brechasDetalle || []}
                 />
               </DialogContent>
             </Dialog>
