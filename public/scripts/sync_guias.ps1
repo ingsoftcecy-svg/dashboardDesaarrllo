@@ -2,7 +2,8 @@
 param (
     [string]$OneDrivePath = "",
     [string]$ProjectId = "preview-bbe71",
-    [switch]$SoloLocal = $false
+    [switch]$SoloLocal = $false,
+    [switch]$ForceSync = $false
 )
 
 Write-Host "==========================================================" -ForegroundColor Cyan
@@ -125,9 +126,9 @@ foreach ($file in $excelFiles) {
     # Comparar timestamp local vs marca remota (Firestore o local previa)
     $cacheKey = $docId
     $fileKey = $file.Name
-    $prevTimeStr = if ($syncCache.ContainsKey($cacheKey)) { "$($syncCache[$cacheKey])" } elseif ($syncCache.ContainsKey($fileKey)) { "$($syncCache[$fileKey])" } else { $null }
+    $prevTimeStr = if ($syncCache.ContainsKey($docId)) { "$($syncCache[$docId])" } elseif ($syncCache.ContainsKey($file.Name)) { "$($syncCache[$file.Name])" } else { $null }
 
-    if ($prevTimeStr) {
+    if (-not $SoloLocal -and -not $ForceSync -and $prevTimeStr) {
         $skipFile = $false
         try {
             $dtLocal = [DateTime]::Parse($localLastMod)
