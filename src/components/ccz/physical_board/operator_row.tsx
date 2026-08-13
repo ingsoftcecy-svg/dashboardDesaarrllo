@@ -226,6 +226,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               const isMejorado = (operator as any).tipoGuia === "MEJORADO" || 
                                 (operator.guiasL7Progress && operator.guiasL7Progress > 0) || 
                                 (operator.guiasL8Progress && operator.guiasL8Progress > 0);
+              const isTecnico = (operator as any).tipoGuia === "TECNICO";
               return (
                 <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
                   {operator.lider && (
@@ -238,12 +239,19 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                       "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-wider shadow-2xs border transition-all",
                       isMejorado
                         ? "bg-gradient-to-r from-purple-500/15 via-fuchsia-500/15 to-violet-500/10 text-purple-700 border-purple-500/30 shadow-[0_0_8px_rgba(168,85,247,0.15)] hover:scale-105"
+                        : isTecnico
+                        ? "bg-gradient-to-r from-orange-500/15 via-amber-500/15 to-orange-500/10 text-orange-700 border-orange-500/30 shadow-[0_0_8px_rgba(249,115,22,0.15)] hover:scale-105"
                         : "bg-gradient-to-r from-emerald-500/15 via-teal-500/15 to-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.15)] hover:scale-105"
                     )}>
                       {isMejorado ? (
                         <>
                           <Sparkles className="h-2.5 w-2.5 text-purple-600 animate-pulse" />
                           <span>MEJORADO (L6-L8)</span>
+                        </>
+                      ) : isTecnico ? (
+                        <>
+                          <Wrench className="h-2.5 w-2.5 text-orange-600" />
+                          <span>TÉCNICO (L6)</span>
                         </>
                       ) : (
                         <>

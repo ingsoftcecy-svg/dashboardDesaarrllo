@@ -258,7 +258,7 @@ foreach ($item in $pendingFiles) {
 
         if ($subPathLower -like "*\mejorado\*" -or $subPathLower -like "*mejorado\*") {
             $tipoGuia = "MEJORADO"
-        } elseif ($subPathLower -like "*\tecnico\*" -or $subPathLower -like "*tecnico\*" -or $subPathLower -like "*\técnico\*" -or $subPathLower -like "*técnico\*") {
+        } elseif ($subPathLower -like "*\tecnico\*" -or $subPathLower -like "*tecnico\*" -or $subPathLower -like "*\técnico\*" -or $subPathLower -like "*técnico\*" -or $subPathLower -like "*\tecnicos\*" -or $subPathLower -like "*tecnicos\*" -or $subPathLower -like "*\técnicos\*" -or $subPathLower -like "*técnicos\*") {
             $tipoGuia = "TECNICO"
         } elseif ($subPathLower -like "*\competente\*" -or $subPathLower -like "*competente\*") {
             $tipoGuia = "COMPETENTE"
@@ -270,7 +270,7 @@ foreach ($item in $pendingFiles) {
             $tipoGuia = "COMPETENTE"
         }
 
-        $cleanOperatorName = $operatorName -replace '\s+(COMPETENTE|MEJORADO|TECNICO|TÉCNICO)$', ''
+        $cleanOperatorName = $operatorName -replace '\s+(COMPETENTE|MEJORADO|TECNICO|TÉCNICO|TECNICOS|TÉCNICOS)$', ''
 
         $wb = $excel.Workbooks.Open($file.FullName, 0, $true, 5, "", "", $true)
         $excel.Visible = $false

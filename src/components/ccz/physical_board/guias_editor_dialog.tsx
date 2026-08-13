@@ -79,10 +79,10 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
     return "COMPETENTE";
   }, [importedData, firestoreData, operator.nombre]);
 
-  // Nombre limpio sin sufijo COMPETENTE / MEJORADO / TÉCNICO
+  // Nombre limpio sin sufijo COMPETENTE / MEJORADO / TÉCNICO / TÉCNICOS
   const cleanNombre = useMemo(() => {
     const rawName = importedData?.nombre || operator.nombre || "";
-    return rawName.replace(/\s+(COMPETENTE|MEJORADO|TECNICO|TÉCNICO)$/i, "").trim();
+    return rawName.replace(/\s+(COMPETENTE|MEJORADO|TECNICO|TÉCNICO|TECNICOS|TÉCNICOS)$/i, "").trim();
   }, [importedData, operator.nombre]);
 
   // Datos del nivel activo desde el JSON importado de OneDrive

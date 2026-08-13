@@ -269,7 +269,7 @@ foreach ($item in $pendingFiles) {
 
         if ($subPathLower -like "*\\mejorado\\*" -or $subPathLower -like "*mejorado\\*") {
             $tipoGuia = "MEJORADO"
-        } elseif ($subPathLower -like "*\\tecnico\\*" -or $subPathLower -like "*tecnico\\*" -or $subPathLower -like "*\\técnico\\*" -or $subPathLower -like "*técnico\\*") {
+        } elseif ($subPathLower -like "*\\tecnico\\*" -or $subPathLower -like "*tecnico\\*" -or $subPathLower -like "*\\técnico\\*" -or $subPathLower -like "*técnico\\*" -or $subPathLower -like "*\\tecnicos\\*" -or $subPathLower -like "*tecnicos\\*" -or $subPathLower -like "*\\técnicos\\*" -or $subPathLower -like "*técnicos\\*") {
             $tipoGuia = "TECNICO"
         } elseif ($subPathLower -like "*\\competente\\*" -or $subPathLower -like "*competente\\*") {
             $tipoGuia = "COMPETENTE"
@@ -281,7 +281,7 @@ foreach ($item in $pendingFiles) {
             $tipoGuia = "COMPETENTE"
         }
 
-        $cleanOperatorName = $operatorName -replace '\\s+(COMPETENTE|MEJORADO|TECNICO|TÉCNICO)$', ''
+        $cleanOperatorName = $operatorName -replace '\\s+(COMPETENTE|MEJORADO|TECNICO|TÉCNICO|TECNICOS|TÉCNICOS)$', ''
 
         $processedCount++
         Write-Host "[$processedCount/$($pendingFiles.Count)] Leido: $($file.Name) ($area - $equipo - $tipoGuia)" -ForegroundColor White
