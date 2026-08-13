@@ -237,9 +237,6 @@ foreach ($item in $pendingFiles) {
         Write-Host "[$processedCount/$($pendingFiles.Count)] Leido: $($file.Name) ($area - $equipo - $tipoGuia)" -ForegroundColor White
 
         $wb = $excel.Workbooks.Open($file.FullName, 0, $true, 5, "", "", $true)
-        # Forzar Excel oculto por si alguna plantilla activa macros
-        $excel.Visible = $false
-        $excel.DisplayAlerts = $false
 
         $operatorRecord = [ordered]@{
             docId = $docId

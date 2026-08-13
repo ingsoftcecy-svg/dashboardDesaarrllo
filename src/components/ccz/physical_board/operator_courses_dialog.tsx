@@ -39,6 +39,7 @@ export function OperatorCoursesDialog({ operatorName, operatorId }: OperatorCour
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterEstado, setFilterEstado] = useState("Todos");
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -91,10 +92,21 @@ export function OperatorCoursesDialog({ operatorName, operatorId }: OperatorCour
     fetchCourses();
   }, [operatorId]);
 
-  const filteredCourses = courses.filter(c => 
-    c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (c.modulo && c.modulo.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredCourses = courses.filter(c => {
+    const matchesSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (c.modulo && c.modulo.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const isAprobado = c.estado === "Aprobado";
+    const isEnProgreso = c.estado === "En progreso" || c.estado === "En Progreso";
+    
+    let estadoVirtual = "Pendiente";
+    if (isAprobado) estadoVirtual = "Aprobado";
+    if (isEnProgreso) estadoVirtual = "En Progreso";
+
+    const matchesEstado = filterEstado === "Todos" || estadoVirtual === filterEstado;
+
+    return matchesSearch && matchesEstado;
+  });
 
   const stats = courses.reduce((acc, c) => {
     if (c.estado === "Aprobado") acc.aprobados++;
@@ -133,16 +145,28 @@ export function OperatorCoursesDialog({ operatorName, operatorId }: OperatorCour
         )}
       </DialogHeader>
 
-      {/* Buscador */}
-      <div className="relative mb-4 shrink-0">
-        <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-        <input
-          type="text"
-          placeholder="Buscar curso por nombre..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1a4491] focus:border-[#1a4491] transition"
-        />
+      {/* Buscador y Filtros */}
+      <div className="flex gap-2 mb-4 shrink-0">
+        <select
+          value={filterEstado}
+          onChange={(e) => setFilterEstado(e.target.value)}
+          className="px-3 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#1a4491] cursor-pointer"
+        >
+          <option value="Todos">Todos (Estado)</option>
+          <option value="Aprobado">Aprobados</option>
+          <option value="En Progreso">En Progreso</option>
+          <option value="Pendiente">Pendientes</option>
+        </select>
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Buscar curso por nombre..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1a4491] focus:border-[#1a4491] transition"
+          />
+        </div>
       </div>
 
       {loading ? (

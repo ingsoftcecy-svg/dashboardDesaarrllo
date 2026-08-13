@@ -47,7 +47,6 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos, puedeEdi
   });
 
   useEffect(() => {
-    if (!usuario) return;
     const doc_ref = doc(db, "multi_habilidades", operator_id);
 
     const getAlternativeIds = (id: string): string[] => {

@@ -127,6 +127,7 @@ export function PromedioPorFactorCard({ area, className }: PromedioPorFactorCard
             currentFactors={factors}
             puedeEditar={puedeEditar}
             isGeneral={selectedTeam === "general"}
+            teamOperators={operatorsToShow}
           />
         </div>
       </header>

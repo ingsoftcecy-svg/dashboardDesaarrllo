@@ -178,6 +178,7 @@ function CargarDatos() {
   const [archivoCursos, setArchivoCursos] = useState<File | null>(null);
   const [textoCursosPegado, setTextoCursosPegado] = useState("");
   const [cargandoCursos, setCargandoCursos] = useState(false);
+  const [cursosLastUpdated, setCursosLastUpdated] = useState<string | null>(null);
   const [cursosResumen, setCursosResumen] = useState<Record<string, { t: number; a: number; e: number; p: number }>>({});
   const [selectedDepto, setSelectedDepto] = useState("Todos");
   const [selectedEquipo, setSelectedEquipo] = useState("Todos");
@@ -690,6 +691,9 @@ function CargarDatos() {
             const sumSnap = await getDoc(sumRef);
             if (sumSnap.exists() && sumSnap.data().summary) {
               summary = sumSnap.data().summary;
+              if (sumSnap.data().updatedAt) {
+                setCursosLastUpdated(sumSnap.data().updatedAt);
+              }
             } else {
               const res = await fetch("/cursos_resumen.json");
               summary = await res.json();
@@ -1513,7 +1517,9 @@ function CargarDatos() {
 
       // Guardar a Firestore
       await setDoc(doc(db, "config_dashboard", "cursos_detallados"), { list: optimizedRows });
-      await setDoc(doc(db, "config_dashboard", "cursos_resumen"), { summary });
+      const currentIso = new Date().toISOString();
+      await setDoc(doc(db, "config_dashboard", "cursos_resumen"), { summary, updatedAt: currentIso });
+      setCursosLastUpdated(currentIso);
 
       // Registrar auditoría
       if (usuario) {
@@ -2259,13 +2265,20 @@ function CargarDatos() {
           <div className="space-y-6 animate-fade-in">
             {/* SECCIÓN A: CARGA RÁPIDA DE CURSOS */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="bg-[#1a4491] px-6 py-3.5 flex items-center gap-3 border-b border-blue-900 text-white">
-                <div className="bg-blue-950 text-blue-200 border border-blue-700 text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-widest">
-                  CURSOS
+              <div className="bg-[#1a4491] px-6 py-3.5 flex items-center justify-between border-b border-blue-900 text-white">
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-950 text-blue-200 border border-blue-700 text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-widest">
+                    CURSOS
+                  </div>
+                  <h2 className="text-xs font-black uppercase tracking-wider">
+                    Carga Masiva de Capacitación
+                  </h2>
                 </div>
-                <h2 className="text-xs font-black uppercase tracking-wider">
-                  Carga Masiva de Capacitación
-                </h2>
+                {cursosLastUpdated && (
+                  <div className="text-[10px] font-bold text-blue-200">
+                    Última carga: {new Date(cursosLastUpdated).toLocaleString()}
+                  </div>
+                )}
               </div>
 
               <div className="p-6 space-y-4">

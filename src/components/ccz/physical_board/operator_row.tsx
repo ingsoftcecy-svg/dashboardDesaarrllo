@@ -560,7 +560,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                           "w-full py-1 text-center text-[7.5px] font-black leading-none text-white uppercase tracking-tighter px-0.5 flex items-center justify-center gap-0.5",
                           operator.autonomyScore === 100 ? "bg-yellow-500" : "bg-[#1a4491]"
                         )}>
-                          {esMultihabilidad ? `PROMEDIO (${numEvals} POS)` : STRINGS.AUTONOMY_LEVEL}
+                          {esMultihabilidad ? `PRINCIPAL (${numEvals} POS)` : STRINGS.AUTONOMY_LEVEL}
                         </div>
                         <div className="flex w-full flex-col items-center justify-center bg-white py-1 text-[#1a4491] min-h-[38px]">
                           {operator.noEvaluado ? (
@@ -573,7 +573,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                               <span className="text-xs font-black text-[#1a4491]">{autonomy_score_pct}</span>
                               {esMultihabilidad && (
                                 <span className="text-[7.5px] font-black text-blue-900 uppercase tracking-tight leading-none mt-0.5 bg-blue-50 px-1 py-0.2 rounded border border-blue-200">
-                                  Promediado
+                                  Principal
                                 </span>
                               )}
                             </>
@@ -585,14 +585,14 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                       <TooltipContent side="top" className="bg-[#0b1329] text-white p-3.5 rounded-xl border border-blue-800 shadow-2xl max-w-sm space-y-2.5 z-50">
                         <div className="border-b border-blue-900 pb-2 flex items-center justify-between gap-3">
                           <span className="text-[10px] font-black uppercase tracking-wider text-yellow-400 flex items-center gap-1">
-                            📊 Score Promediado (Multihabilidad)
+                            📊 Score Principal (Multihabilidad)
                           </span>
                           <span className="text-[9px] font-extrabold bg-blue-900 text-blue-200 px-1.5 py-0.5 rounded border border-blue-700">
                             {numEvals} Posiciones
                           </span>
                         </div>
                         <p className="text-[10px] text-slate-200 font-medium leading-normal">
-                          El puntaje mostrado (<strong className="text-yellow-400 font-bold">{autonomy_score_pct}</strong>) es el <strong className="text-white font-bold">promedio consolidado</strong> de sus evaluaciones en cada puesto:
+                          El puntaje mostrado (<strong className="text-yellow-400 font-bold">{autonomy_score_pct}</strong>) es el de su <strong className="text-white font-bold">habilidad principal</strong> ({operator.puesto || "N/A"}). Evaluaciones en cada puesto:
                         </p>
                         <div className="space-y-1.5 pt-1 max-h-56 overflow-y-auto pr-1 custom-scrollbar">
                           {evals.map((ev: any, idx) => (
@@ -760,8 +760,32 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
       )}
 
       {metricMode !== "autonomia" && (
-        <td className="border-b p-3 align-middle text-center w-40">
-          {metricMode === "cursos" ? (() => {
+        <>
+          {metricMode === "cursos" && (
+            <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32">
+              <div className="flex flex-col items-center justify-center gap-1">
+                <span className="font-black text-slate-700 text-xl leading-none">{operator.cursosTotal || 0}</span>
+                {(operator.cursosTotal || 0) > 0 && (
+                  <div className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider">
+                    <span className="text-emerald-600 flex items-center gap-0.5" title="Aprobados">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                      {operator.cursosAprobados || 0}
+                    </span>
+                    <span className="text-blue-600 flex items-center gap-0.5" title="En Progreso">
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                      {operator.cursosEnProgreso || 0}
+                    </span>
+                    <span className="text-slate-400 flex items-center gap-0.5" title="Pendientes">
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                      {operator.cursosPendientes || 0}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </td>
+          )}
+          <td className="border-b p-3 align-middle text-center w-40">
+            {metricMode === "cursos" ? (() => {
           const progress = operator.cursosProgress ?? 0;
           let colorHeader = "bg-[#1a4491]";
           let colorBorder = "border-[#1a4491]";
@@ -879,6 +903,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
           );
         })() : null}
       </td>
+        </>
       )}
 
     </motion.tr>

@@ -19,7 +19,13 @@ export interface PhysicalBoardProps {
 export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false, teamRankings = [], metricMode = "autonomia" }: PhysicalBoardProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [filterPuesto, setFilterPuesto] = useState("Todos");
+  const [filterEquipo, setFilterEquipo] = useState("Todos");
+  const [filterTipoGuia, setFilterTipoGuia] = useState("Todos");
   const [visibleCount, setVisibleCount] = useState(10);
+
+  const uniquePuestos = useMemo(() => Array.from(new Set(operadores.map(o => o.puesto).filter(Boolean))).sort(), [operadores]);
+  const uniqueEquipos = useMemo(() => Array.from(new Set(operadores.map(o => o.equipoAutonomo).filter(Boolean))).sort(), [operadores]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -32,15 +38,27 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
   const filteredOperadores = useMemo(() => {
     const term = normalize_string(debouncedSearch.trim());
     const indexed = operadores.map((operator, index) => ({ operator, original_index: index }));
-    if (!term) return indexed;
+    
     return indexed.filter(({ operator }) => {
-      return (
+      const matchesSearch = !term || (
         normalize_string(operator.nombre).includes(term) ||
         normalize_string(operator.puesto || "").includes(term) ||
         normalize_string(operator.equipoAutonomo || "").includes(term)
       );
+
+      const matchesPuesto = filterPuesto === "Todos" || operator.puesto === filterPuesto;
+      const matchesEquipo = filterEquipo === "Todos" || operator.equipoAutonomo === filterEquipo;
+      
+      let matchesTipoGuia = true;
+      if (metricMode === "guias" && filterTipoGuia !== "Todos") {
+        const isMejorado = (operator as any).tipoGuia === "MEJORADO" || (operator.guiasL7Progress && operator.guiasL7Progress > 0) || (operator.guiasL8Progress && operator.guiasL8Progress > 0);
+        const opTipo = isMejorado ? "Mejorado" : "Competente";
+        matchesTipoGuia = filterTipoGuia === opTipo;
+      }
+
+      return matchesSearch && matchesPuesto && matchesEquipo && matchesTipoGuia;
     });
-  }, [operadores, debouncedSearch]);
+  }, [operadores, debouncedSearch, filterPuesto, filterEquipo, filterTipoGuia, metricMode]);
 
   const visibleOperators = useMemo(() => {
     return filteredOperadores.slice(0, visibleCount);
@@ -51,24 +69,56 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
   return (
     <div className="flex flex-col gap-4">
       {/* 🔍 BARRA DE BÚSQUEDA Y EXPORTAR */}
-      <div className="flex w-full items-center justify-between">
-        <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-400" />
-          <input
-            type="text"
-            placeholder={STRINGS.SEARCH_PLACEHOLDER}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-10 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all placeholder:text-slate-400 focus:border-[#1a4491] focus:ring-1 focus:ring-[#1a4491] outline-none"
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm("")}
-              className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 transition-colors"
+      <div className="flex w-full items-center justify-between gap-4">
+        <div className="flex items-center gap-2 w-full max-w-3xl">
+          <select
+            value={filterEquipo}
+            onChange={(e) => setFilterEquipo(e.target.value)}
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all focus:border-[#1a4491] focus:ring-1 focus:ring-[#1a4491] outline-none cursor-pointer max-w-[160px] truncate"
+          >
+            <option value="Todos">Todos los Equipos</option>
+            {uniqueEquipos.map(eq => <option key={eq as string} value={eq as string}>{eq as string}</option>)}
+          </select>
+          
+          <select
+            value={filterPuesto}
+            onChange={(e) => setFilterPuesto(e.target.value)}
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all focus:border-[#1a4491] focus:ring-1 focus:ring-[#1a4491] outline-none cursor-pointer max-w-[160px] truncate"
+          >
+            <option value="Todos">Todos los Puestos</option>
+            {uniquePuestos.map(p => <option key={p as string} value={p as string}>{p as string}</option>)}
+          </select>
+
+          {metricMode === "guias" && (
+            <select
+              value={filterTipoGuia}
+              onChange={(e) => setFilterTipoGuia(e.target.value)}
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all focus:border-[#1a4491] focus:ring-1 focus:ring-[#1a4491] outline-none cursor-pointer max-w-[140px]"
             >
-              <X className="h-4.5 w-4.5" />
-            </button>
+              <option value="Todos">Todos (Nivel)</option>
+              <option value="Competente">Competentes</option>
+              <option value="Mejorado">Mejorados</option>
+            </select>
           )}
+
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder={STRINGS.SEARCH_PLACEHOLDER}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-10 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all placeholder:text-slate-400 focus:border-[#1a4491] focus:ring-1 focus:ring-[#1a4491] outline-none"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X className="h-4.5 w-4.5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -81,7 +131,7 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
       >
         <table
           className="w-full table-fixed border-collapse text-left text-sm"
-          style={{ minWidth: metricMode === "autonomia" ? (show_ato ? "1696px" : "1568px") : metricMode === "cursos" ? (show_ato ? "1328px" : "1200px") : metricMode === "guias" ? "1024px" : metricMode === "cierre-brecha" ? "1500px" : "1100px" }}
+          style={{ minWidth: metricMode === "autonomia" ? (show_ato ? "1696px" : "1568px") : metricMode === "cursos" ? (show_ato ? "1456px" : "1328px") : metricMode === "guias" ? "1024px" : metricMode === "cierre-brecha" ? "1500px" : "1100px" }}
         >
           <thead className="sticky top-0 z-30">
             <tr className={cn("text-xs font-bold text-white uppercase tracking-wider", headerBgClass)}>
@@ -118,54 +168,73 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
                   <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-44 z-30 transition-colors duration-300", headerBgClass)}>IPs ASIGNADOS</th>
                   {metricMode === "autonomia" && <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-64 z-30 transition-colors duration-300", headerBgClass)}>USABILIDAD EN HERRAMIENTAS DIGITALES</th>}
                   {metricMode === "cursos" && (
-                    <th className={cn("sticky top-0 border-b border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>PROGRESO CURSOS</th>
+                    <>
+                      <th className={cn("sticky top-0 border-b border-r border-slate-300 p-3 w-32 text-center z-30 transition-colors duration-300", headerBgClass)}>CURSOS ASIGNADOS</th>
+                      <th className={cn("sticky top-0 border-b border-slate-300 p-3 w-40 text-center z-30 transition-colors duration-300", headerBgClass)}>PROGRESO CURSOS</th>
+                    </>
                   )}
                 </>
               )}
             </tr>
           </thead>
           <tbody>
-            {visibleOperators.map(({ operator, original_index }, visual_index) => (
-              <OperatorRow
-                key={operator.id}
-                operator={operator}
-                original_index={original_index}
-                visual_index={visual_index}
-                show_ato={show_ato}
-                puedeEditar={puedeEditar}
-                teamRankings={teamRankings}
-                metricMode={metricMode}
-                team_members={operadores
-                  .filter(op => op.equipoAutonomo && op.equipoAutonomo === operator.equipoAutonomo && op.id !== operator.id)
-                  .map(op => ({ id: op.id, name: op.nombre }))
-                }
-                full_team_members={operadores
-                  .filter(op => op.equipoAutonomo && op.equipoAutonomo === operator.equipoAutonomo)
-                  .map(op => ({ 
-                    id: op.id, 
-                    name: op.nombre, 
-                    puesto: op.puesto, 
-                    score: op.autonomyScore, 
-                    lastAssessmentDate: op.lastAssessmentDate, 
-                    noEvaluado: op.noEvaluado,
-                    cursosProgress: op.cursosProgress,
-                    cursosAprobados: op.cursosAprobados,
-                    cursosTotal: op.cursosTotal,
-                    cursosEnProgreso: op.cursosEnProgreso,
-                    cursosPendientes: op.cursosPendientes,
-                    guiasProgress: op.guiasProgress,
-                    guiasL6Progress: op.guiasL6Progress,
-                    guiasL7Progress: op.guiasL7Progress,
-                    guiasL8Progress: op.guiasL8Progress,
-                    guiasActiveLevel: op.guiasActiveLevel,
-                    brechasProgress: op.brechasProgress,
-                    brechasTotal: op.brechasTotal,
-                    brechasCompletadas: op.brechasCompletadas,
-                    brechasDetalle: op.brechasDetalle || []
-                  }))
-                }
-              />
-            ))}
+            {visibleOperators.length === 0 ? (
+              <tr>
+                <td colSpan={100} className="py-10 text-center border-b border-slate-200 bg-slate-50/50 backdrop-blur-sm">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-slate-200/50 flex items-center justify-center mb-1">
+                      <Search className="w-5 h-5 text-slate-400" />
+                    </div>
+                    <h3 className="text-sm font-black text-slate-700 uppercase tracking-tight">Sin resultados</h3>
+                    <p className="text-xs font-medium text-slate-500 max-w-xs mx-auto">
+                      No encontramos ningún operador que coincida con los filtros.
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              visibleOperators.map(({ operator, original_index }, visual_index) => (
+                <OperatorRow
+                  key={operator.id}
+                  operator={operator}
+                  original_index={original_index}
+                  visual_index={visual_index}
+                  show_ato={show_ato}
+                  puedeEditar={puedeEditar}
+                  teamRankings={teamRankings}
+                  metricMode={metricMode}
+                  team_members={operadores
+                    .filter(op => op.equipoAutonomo && op.equipoAutonomo === operator.equipoAutonomo && op.id !== operator.id)
+                    .map(op => ({ id: op.id, name: op.nombre }))
+                  }
+                  full_team_members={operadores
+                    .filter(op => op.equipoAutonomo && op.equipoAutonomo === operator.equipoAutonomo)
+                    .map(op => ({ 
+                      id: op.id, 
+                      name: op.nombre, 
+                      puesto: op.puesto, 
+                      score: op.autonomyScore, 
+                      lastAssessmentDate: op.lastAssessmentDate, 
+                      noEvaluado: op.noEvaluado,
+                      cursosProgress: op.cursosProgress,
+                      cursosAprobados: op.cursosAprobados,
+                      cursosTotal: op.cursosTotal,
+                      cursosEnProgreso: op.cursosEnProgreso,
+                      cursosPendientes: op.cursosPendientes,
+                      guiasProgress: op.guiasProgress,
+                      guiasL6Progress: op.guiasL6Progress,
+                      guiasL7Progress: op.guiasL7Progress,
+                      guiasL8Progress: op.guiasL8Progress,
+                      guiasActiveLevel: op.guiasActiveLevel,
+                      brechasProgress: op.brechasProgress,
+                      brechasTotal: op.brechasTotal,
+                      brechasCompletadas: op.brechasCompletadas,
+                      brechasDetalle: op.brechasDetalle || []
+                    }))
+                  }
+                />
+              ))
+            )}
           </tbody>
         </table>
       </motion.div>

@@ -47,7 +47,7 @@ service cloud.firestore {
     // ── Colección: config_dashboard ────────────────────────────────────────
     match /config_dashboard/{docId} {
       allow read: if true;
-      allow write: if esAdmin();
+      allow write: if esAdmin() || docId == 'brechas_resumen';
     }
 
     // ── Colección: prerequisitos (Herramientas Digitales) ──────────────────

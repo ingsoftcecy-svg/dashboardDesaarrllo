@@ -152,10 +152,22 @@ export function useExcelData() {
         // Carga brechas_resumen
         let brechasResumen: Record<string, { total: number; completadas: number; enProceso: number; porcentaje: number; brechas: any[] }> = {};
         try {
-          const brechasRes = await fetch(`/brechas_resumen.json?t=${timestamp}`);
-          brechasResumen = await brechasRes.json();
+          const brechasDocRef = doc(db, "config_dashboard", "brechas_resumen");
+          const brechasDocSnap = await getDoc(brechasDocRef);
+          if (brechasDocSnap.exists() && brechasDocSnap.data().summary) {
+            brechasResumen = brechasDocSnap.data().summary;
+          } else {
+            const brechasRes = await fetch(`/brechas_resumen.json?t=${timestamp}`);
+            brechasResumen = await brechasRes.json();
+          }
         } catch (e) {
-          console.error("Error loading brechas summary:", e);
+          console.error("Error loading brechas summary, trying local fallback:", e);
+          try {
+            const brechasRes = await fetch(`/brechas_resumen.json?t=${timestamp}`);
+            brechasResumen = await brechasRes.json();
+          } catch (err) {
+            console.error("Local fallback for brechas summary failed:", err);
+          }
         }
 
         // Procesar Base Config (championMap)
@@ -226,7 +238,10 @@ export function useExcelData() {
                 const posCol = Object.keys(fila).find(k => k.toLowerCase().trim() === 'skap position' || k.toLowerCase().trim() === 'position');
                 const posVal = posCol ? String(fila[posCol]).trim() : '';
                 if (empVal) {
-                  const key = `${empVal}_${posVal}`;
+                  let empKey = empVal;
+                  const empMatch = empVal.match(/\[(\d+)\]/);
+                  if (empMatch) empKey = empMatch[1];
+                  const key = `${empKey}_${posVal}`.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, ' ').trim();
                   skapMap[key] = fila;
                 }
               });
@@ -877,10 +892,20 @@ export function useExcelData() {
                  else if (mantTeams.includes(eqUpper)) op._area = "Brewing Maintenance";
                }
 
-               op.basico = Number((op.basico / op._count).toFixed(2));
-               op.intermedio = Number((op.intermedio / op._count).toFixed(2));
-               op.avanzado = Number((op.avanzado / op._count).toFixed(2));
-               op.autonomyScore = Number((op.autonomyScore / op._count).toFixed(2));
+               if (op._count > 1 && op.evaluacionesDetalle && op.evaluacionesDetalle.length > 0) {
+                 const mainEval = op.evaluacionesDetalle.find(e => e.puesto && e.puesto.trim().toLowerCase() === op.puesto?.trim().toLowerCase()) || op.evaluacionesDetalle[0];
+                 if (mainEval) {
+                   op.basico = mainEval.basico;
+                   op.intermedio = mainEval.intermedio;
+                   op.avanzado = mainEval.avanzado;
+                   op.autonomyScore = mainEval.score;
+                 }
+               } else {
+                 op.basico = Number((op.basico / op._count).toFixed(2));
+                 op.intermedio = Number((op.intermedio / op._count).toFixed(2));
+                 op.avanzado = Number((op.avanzado / op._count).toFixed(2));
+                 op.autonomyScore = Number((op.autonomyScore / op._count).toFixed(2));
+               }
                
                if (op._area === "Warm Block") cocimientosOps.push(op);
                else if (op._area === "Cold Block") bloqueFrioOps.push(op);

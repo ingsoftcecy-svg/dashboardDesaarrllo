@@ -58,6 +58,11 @@ function Index() {
         if (progressB !== progressA) {
           return progressB - progressA;
         }
+        const totalA = a.cursosTotal ?? 0;
+        const totalB = b.cursosTotal ?? 0;
+        if (totalB !== totalA) {
+          return totalB - totalA;
+        }
         return a.nombre.localeCompare(b.nombre);
       } else if (metricMode === "guias") { // guias
         const progressA = a.guiasProgress ?? 0;

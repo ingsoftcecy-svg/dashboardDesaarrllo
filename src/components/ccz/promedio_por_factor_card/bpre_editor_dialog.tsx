@@ -22,7 +22,8 @@ export function BpreEditorDialog({
   onSave,
   puedeEditar = true,
   isGeneral = false,
-}: BpreEditorDialogProps) {
+  teamOperators = [],
+}: BpreEditorDialogProps & { teamOperators?: any[] }) {
   const [open, setOpen] = useState(false);
   const [factors, setFactors] = useState<Record<string, number>>(currentFactors);
   const [saving, setSaving] = useState(false);
@@ -35,7 +36,7 @@ export function BpreEditorDialog({
   const handleSliderChange = (key: string, val: number) => {
     setFactors((prev) => ({
       ...prev,
-      [key]: Math.min(4.0, Math.max(0.0, parseFloat(val.toFixed(2)))),
+      [key]: Math.min(4, Math.max(0, Math.round(val))),
     }));
   };
 
@@ -57,10 +58,24 @@ export function BpreEditorDialog({
         updatedAt: new Date().toISOString(),
       };
 
-      await Promise.all([
+      const updatePromises = [
         setDoc(docRef1, payload, { merge: true }),
         setDoc(docRef2, payload, { merge: true }),
-      ]);
+      ];
+
+      // Update ATO for all operators in the team
+      if (factors.ato !== undefined && teamOperators.length > 0) {
+        teamOperators.forEach(op => {
+          const opRef = doc(db, "config_operadores", op.id);
+          updatePromises.push(setDoc(opRef, { 
+            ato: factors.ato,
+            operatorName: op.nombre,
+            updatedAt: new Date().toISOString()
+          }, { merge: true }));
+        });
+      }
+
+      await Promise.all(updatePromises);
 
       if (onSave) onSave(factors);
 
@@ -134,7 +149,7 @@ export function BpreEditorDialog({
                     type="number"
                     min="0"
                     max="4"
-                    step="0.1"
+                    step="1"
                     disabled={isNA}
                     value={val}
                     onChange={(e) => handleSliderChange(key, parseFloat(e.target.value) || 0)}
@@ -148,7 +163,7 @@ export function BpreEditorDialog({
                   type="range"
                   min="0"
                   max="4"
-                  step="0.05"
+                  step="1"
                   disabled={isNA}
                   value={val}
                   onChange={(e) => handleSliderChange(key, parseFloat(e.target.value))}
