@@ -29,6 +29,16 @@ if (-not $OneDrivePath) {
             $OneDrivePath = (Get-Item "$env:USERPROFILE\OneDrive - Anheuser-Busch InBev\Brewery Operations - *\5.0  Mantto\2026\04 ATO\*\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
         } catch {}
     }
+    if (-not $OneDrivePath) {
+        try {
+            $OneDrivePath = (Get-Item "$env:USERPROFILE\Anheuser-Busch InBev\Brewery Operations - *\5.0  Mantto*\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+        } catch {}
+    }
+    if (-not $OneDrivePath) {
+        try {
+            $OneDrivePath = (Get-Item "$env:USERPROFILE\Anheuser-Busch InBev\Brewery Operations - *\*\5.0  Mantto*\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+        } catch {}
+    }
 }
 
 if (-not $OneDrivePath -or -not (Test-Path -Path $OneDrivePath)) {
