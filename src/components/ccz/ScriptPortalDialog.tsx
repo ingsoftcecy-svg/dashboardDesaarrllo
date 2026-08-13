@@ -259,15 +259,19 @@ foreach ($item in $pendingFiles) {
 
         if ($subPathLower -like "*\\mejorado\\*" -or $subPathLower -like "*mejorado\\*") {
             $tipoGuia = "MEJORADO"
+        } elseif ($subPathLower -like "*\\tecnico\\*" -or $subPathLower -like "*tecnico\\*" -or $subPathLower -like "*\\técnico\\*" -or $subPathLower -like "*técnico\\*") {
+            $tipoGuia = "TECNICO"
         } elseif ($subPathLower -like "*\\competente\\*" -or $subPathLower -like "*competente\\*") {
             $tipoGuia = "COMPETENTE"
         } elseif ($fileNameLower -like "*mejorado*") {
             $tipoGuia = "MEJORADO"
+        } elseif ($fileNameLower -like "*tecnico*" -or $fileNameLower -like "*técnico*") {
+            $tipoGuia = "TECNICO"
         } elseif ($fileNameLower -like "*competente*") {
             $tipoGuia = "COMPETENTE"
         }
 
-        $cleanOperatorName = $operatorName -replace '\\s+(COMPETENTE|MEJORADO)$', ''
+        $cleanOperatorName = $operatorName -replace '\\s+(COMPETENTE|MEJORADO|TECNICO|TÉCNICO)$', ''
 
         $processedCount++
         Write-Host "[$processedCount/$($pendingFiles.Count)] Leido: $($file.Name) ($area - $equipo - $tipoGuia)" -ForegroundColor White
@@ -329,7 +333,7 @@ foreach ($item in $pendingFiles) {
         $calcL7 = 0; if ($resumenEvalMap["L7"].Count -gt 0) { $sum = 0; foreach ($v in $resumenEvalMap["L7"].Values) { $sum += (Helper-ParsePct $v) }; $calcL7 = [math]::Round($sum / $resumenEvalMap["L7"].Count, 1) }
         $calcL8 = 0; if ($resumenEvalMap["L8"].Count -gt 0) { $sum = 0; foreach ($v in $resumenEvalMap["L8"].Values) { $sum += (Helper-ParsePct $v) }; $calcL8 = [math]::Round($sum / $resumenEvalMap["L8"].Count, 1) }
 
-        $detectedTipoGuia = "COMPETENTE"
+        $detectedTipoGuia = $tipoGuia
         if ($calcL7 -gt 0 -or $calcL8 -gt 0) { $detectedTipoGuia = "MEJORADO" }
 
         $operatorRecord = [ordered]@{

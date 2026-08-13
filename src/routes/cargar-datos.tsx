@@ -2232,30 +2232,7 @@ function CargarDatos() {
               </div>
             </div>
 
-            {/* ACCIONES COMPLEMENTARIAS / CARGAS ÚNICAS DE CATÁLOGOS */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-              <div className="border-b border-slate-100 pb-2">
-                <h3 className="text-xs font-black text-[#1a4491] uppercase tracking-wider">Cargas Administrativas Especiales</h3>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Actualización directa de estructuras fijas globales</p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <label className="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer text-center">
-                  <span className="text-[10px] font-black uppercase text-slate-600 tracking-wide mb-1">Base Equipos</span>
-                  <input type="file" accept=".xlsx,.xls" disabled={cargando} onChange={(e) => handleCargaUnica(e, 'base_equipos')} className="text-[9px] w-full text-slate-400 max-w-[150px]" />
-                </label>
-
-                <label className="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer text-center">
-                  <span className="text-[10px] font-black uppercase text-slate-600 tracking-wide mb-1">Catálogo EAC</span>
-                  <input type="file" accept=".xlsx,.xls" disabled={cargando} onChange={(e) => handleCargaUnica(e, 'eac')} className="text-[9px] w-full text-slate-400 max-w-[150px]" />
-                </label>
-
-                <label className="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer text-center">
-                  <span className="text-[10px] font-black uppercase text-slate-600 tracking-wide mb-1">Catálogo EABF</span>
-                  <input type="file" accept=".xlsx,.xls" disabled={cargando} onChange={(e) => handleCargaUnica(e, 'eabf')} className="text-[9px] w-full text-slate-400 max-w-[150px]" />
-                </label>
-              </div>
-            </div>
+            {/* ACCIONES COMPLEMENTARIAS / CARGAS ÚNICAS DE CATÁLOGOS - Oculto por ahora */}
 
 
 

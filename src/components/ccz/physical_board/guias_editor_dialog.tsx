@@ -59,11 +59,14 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
     setExpandedCategories({});
   }, [activeLevel]);
 
-  // Determinar tipoGuia: COMPETENTE vs MEJORADO
+  // Determinar tipoGuia: COMPETENTE vs MEJORADO vs TECNICO
   const tipoGuia = useMemo(() => {
     const opName = (importedData?.nombre || operator.nombre || "").toUpperCase();
     const fileStr = ((importedData?.subcarpeta || "") + " " + (importedData?.archivo || "")).toUpperCase();
 
+    if (opName.includes("TECNICO") || fileStr.includes("TECNICO") || opName.includes("TÉCNICO") || fileStr.includes("TÉCNICO") || importedData?.tipoGuia === "TECNICO" || firestoreData?.tipoGuia === "TECNICO") {
+      return "TECNICO";
+    }
     if (opName.includes("COMPETENTE") || fileStr.includes("COMPETENTE")) {
       return "COMPETENTE";
     }
@@ -76,10 +79,10 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
     return "COMPETENTE";
   }, [importedData, firestoreData, operator.nombre]);
 
-  // Nombre limpio sin sufijo COMPETENTE / MEJORADO
+  // Nombre limpio sin sufijo COMPETENTE / MEJORADO / TÉCNICO
   const cleanNombre = useMemo(() => {
     const rawName = importedData?.nombre || operator.nombre || "";
-    return rawName.replace(/\s+(COMPETENTE|MEJORADO)$/i, "").trim();
+    return rawName.replace(/\s+(COMPETENTE|MEJORADO|TECNICO|TÉCNICO)$/i, "").trim();
   }, [importedData, operator.nombre]);
 
   // Datos del nivel activo desde el JSON importado de OneDrive
@@ -145,7 +148,11 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
             <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">
               Guías Técnicas — {cleanNombre}
             </h2>
-            {tipoGuia === "COMPETENTE" ? (
+            {tipoGuia === "TECNICO" ? (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-orange-100 text-orange-800 border border-orange-300 uppercase tracking-tight">
+                TÉCNICO (Solo L6)
+              </span>
+            ) : tipoGuia === "COMPETENTE" ? (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-800 border border-blue-300 uppercase tracking-tight">
                 COMPETENTE (Solo L6)
               </span>
@@ -166,7 +173,7 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
         {/* Selector de Nivel */}
         <div className="flex rounded-xl bg-slate-100 p-1 border shadow-inner">
           {(["L6", "L7", "L8"] as const).map((lvl) => {
-            const isDisabled = tipoGuia === "COMPETENTE" && (lvl === "L7" || lvl === "L8");
+            const isDisabled = (tipoGuia === "COMPETENTE" || tipoGuia === "TECNICO") && (lvl === "L7" || lvl === "L8");
             return (
               <button
                 key={lvl}
@@ -212,7 +219,7 @@ export function GuiasEditorDialog({ operator }: GuiasEditorDialogProps) {
       <div className="flex-1 overflow-y-auto pr-1 space-y-3 custom-scrollbar">
         {evaluatedCategories && evaluatedCategories.length > 0 ? (
           evaluatedCategories.map((catItem: any, idx: number) => {
-            const isExpanded = !!expandedCategories[idx]; // Plegado/cerrado por defecto
+            const isExpanded = expandedCategories[idx] !== false; // Desplegado/abierto por defecto
             const habilidades = catItem.habilidades || [];
             const aprobadas = habilidades.filter((h: any) => h.marcado).length;
             const pctVal = catItem.porcentajeOficial || "0%";
