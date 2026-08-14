@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { doc, getDoc, collection, query, orderBy, limit, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { TopNav, type AreaTab } from "@/components/ccz/TopNav";
 import { TeamHeader } from "@/components/ccz/team_header";
 import { PhysicalBoard } from "@/components/ccz/physical_board";
@@ -15,6 +17,7 @@ import { Settings } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { ChangePasswordModal } from "@/components/ChangePasswordModal";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -37,6 +40,35 @@ function Index() {
   const usuario = useAuth();
   const puedeEditar = usuario?.rol === 'admin'; // Solo administradores pueden editar
   const [metricMode, setMetricMode] = useState<"autonomia" | "cursos" | "guias" | "cierre-brecha">("autonomia");
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+  const [cursosLastUpdated, setCursosLastUpdated] = useState<string | null>(null);
+  const [autonomiaLastUpdated, setAutonomiaLastUpdated] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDates = async () => {
+      try {
+        // Fetch Cursos last updated
+        const sumRef = doc(db, "config_dashboard", "cursos_resumen");
+        const sumSnap = await getDoc(sumRef);
+        if (sumSnap.exists() && sumSnap.data().updatedAt) {
+          setCursosLastUpdated(sumSnap.data().updatedAt);
+        }
+
+        // Fetch Autonomia last updated (from latest historicos_excel)
+        const q = query(collection(db, "historicos_excel"), orderBy("__name__", "desc"), limit(1));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          const latestDoc = snap.docs[0].data();
+          if (latestDoc.updatedAt) {
+            setAutonomiaLastUpdated(latestDoc.updatedAt);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching last updated dates:", error);
+      }
+    };
+    fetchDates();
+  }, []);
 
   const area = tab === "general" ? general : tab === "cocimientos" ? cocimientos : tab === "bloqueFrio" ? bloqueFrio : mantenimiento;
 
@@ -223,7 +255,30 @@ function Index() {
     <div className="flex h-screen flex-col bg-slate-100 overflow-hidden">
       <TopNav tab={tab} onTabChange={setTab} />
 
-      <main id="dashboard-content" className="flex-1 overflow-auto">
+      <main id="dashboard-content" className="flex-1 overflow-auto relative">
+        {usuario?.requiresPasswordChange && (
+          <div className="fixed bottom-6 right-6 z-40 bg-[#1a4491] text-white p-5 rounded-2xl shadow-2xl flex flex-col gap-3 max-w-sm border border-blue-400/30">
+            <div>
+              <h3 className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
+                <span className="text-yellow-400 text-lg">⚠️</span> Aviso de Seguridad
+              </h3>
+              <p className="text-xs font-medium text-blue-100 mt-1 leading-relaxed">
+                Estás usando una contraseña temporal. Por seguridad, te recomendamos cambiarla ahora.
+              </p>
+            </div>
+            <button 
+              onClick={() => setIsChangePasswordModalOpen(true)}
+              className="mt-1 bg-white text-[#1a4491] text-xs font-black uppercase tracking-widest py-2.5 rounded-xl hover:bg-blue-50 transition-colors shadow-sm"
+            >
+              Actualizar Contraseña
+            </button>
+          </div>
+        )}
+        <ChangePasswordModal 
+          isOpen={isChangePasswordModalOpen} 
+          onClose={() => setIsChangePasswordModalOpen(false)} 
+        />
+        
         {loading ? (
           <DashboardSkeleton />
         ) : (
@@ -231,8 +286,20 @@ function Index() {
             {/* Control de Métrica Selector */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border border-white/50 bg-white/60 backdrop-blur-md p-4 rounded-xl shadow-sm gap-4">
               <div className="flex flex-col">
-                <h1 className="text-lg font-black text-slate-800 uppercase tracking-tight">Tablero de Control</h1>
-                <p className="text-xs text-slate-500 font-semibold">Visualiza el promedio de habilidades de la planta o el avance del plan de capacitación.</p>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-lg font-black text-slate-800 uppercase tracking-tight">Tablero de Control</h1>
+                  {metricMode === "cursos" && cursosLastUpdated && (
+                    <div className="bg-[#1a4491] text-[10px] font-bold text-blue-200 px-3 py-1 rounded-md shadow-sm uppercase tracking-widest whitespace-nowrap">
+                      Última carga: {new Date(cursosLastUpdated).toLocaleString()}
+                    </div>
+                  )}
+                  {metricMode === "autonomia" && autonomiaLastUpdated && (
+                    <div className="bg-[#1a4491] text-[10px] font-bold text-blue-200 px-3 py-1 rounded-md shadow-sm uppercase tracking-widest whitespace-nowrap">
+                      Última carga: {new Date(autonomiaLastUpdated).toLocaleString()}
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-slate-500 font-semibold mt-0.5">Visualiza el promedio de habilidades de la planta o el avance del plan de capacitación.</p>
               </div>
               <div className="flex gap-1 rounded-lg bg-slate-200/60 p-1 shrink-0 self-end sm:self-center shadow-inner">
                 <button
@@ -453,6 +520,7 @@ function Index() {
                     </h3>
                   </div>
                   <PhysicalBoard
+                    key={`${tab}-${metricMode}`}
                     operadores={computedArea.operadores as any}
                     show_ato={tab !== "mantenimiento"}
                     puedeEditar={puedeEditar}

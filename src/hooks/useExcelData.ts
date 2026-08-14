@@ -71,103 +71,48 @@ export function useExcelData() {
           "REYES_MEZCLA": { leader: "RODRIGO REGALADO PALOMEQUE" }
         };
 
-        // Carga overrides
-        try {
-          const overridesSnapshot = await getDocs(collection(db, "team_overrides"));
-          overridesSnapshot.forEach((doc) => {
+        // Lanzar todas las peticiones a Firestore y JSON concurrentemente
+        const isDev = import.meta.env.DEV;
+        const pOverrides = getDocs(collection(db, "team_overrides")).catch(e => { console.error(e); return null; });
+        const pCatFijos = !isDev ? getDoc(doc(db, "config_dashboard", "catalogos_fijos")).catch(e => { console.error(e); return null; }) : Promise.resolve(null);
+        const pCursos = getDoc(doc(db, "config_dashboard", "cursos_resumen")).catch(e => { console.error(e); return null; });
+        const pBrechas = getDoc(doc(db, "config_dashboard", "brechas_resumen")).catch(e => { console.error(e); return null; });
+        const pOpsJSON = fetch(`/operators.json?t=${timestamp}`).then(r => r.json()).catch(e => { console.error(e); return []; });
+        const pHistoricos = getDocs(query(collection(db, "historicos_excel"))).catch(e => { console.error(e); return null; });
+
+        const [overridesSnap, catSnap, cursosDocSnap, brechasDocSnap, centralizedOperators, historicosSnap] = await Promise.all([
+          pOverrides, pCatFijos, pCursos, pBrechas, pOpsJSON, pHistoricos
+        ]);
+
+        if (overridesSnap) {
+          overridesSnap.forEach((doc) => {
             overridesMap[doc.id] = doc.data() as { leader: string };
           });
-        } catch (e) {
-          console.error("Error loading team overrides:", e);
         }
 
-        // Carga catálogos fijos
         let baseRows: any[] = [];
         let eacRows: any[] = [];
         let eabfRows: any[] = [];
         let estructuraNuevaRows: any[] = [];
         let catalogosCargados = false;
 
-        const isDev = import.meta.env.DEV;
-        if (!isDev) {
-          try {
-            const catDocRef = doc(db, "config_dashboard", "catalogos_fijos");
-            const catSnap = await getDoc(catDocRef);
-            if (catSnap.exists()) {
-              const data = catSnap.data();
-              baseRows = data.base_equipos || [];
-              eacRows = data.eac || [];
-              eabfRows = data.eabf || [];
-              estructuraNuevaRows = data.estructura_nueva || [];
-              catalogosCargados = true;
-            }
-          } catch (e) {
-            console.error("Error loading fixed catalogs from Firestore:", e);
-          }
+        if (catSnap && catSnap.exists()) {
+          const data = catSnap.data();
+          baseRows = data.base_equipos || [];
+          eacRows = data.eac || [];
+          eabfRows = data.eabf || [];
+          estructuraNuevaRows = data.estructura_nueva || [];
+          catalogosCargados = true;
         }
 
         if (!catalogosCargados) {
-          try {
-            const baseRes = await fetch(`/base.json?t=${timestamp}`);
-            baseRows = await baseRes.json() as any[];
-          } catch (e) { console.error("Error loading fallback base.json:", e); }
-
-          try {
-            const eacRes = await fetch(`/eac.json?t=${timestamp}`);
-            eacRows = await eacRes.json() as any[];
-          } catch (e) { console.error("Error loading fallback eac.json:", e); }
-
-          try {
-            const eabfRes = await fetch(`/eabf.json?t=${timestamp}`);
-            eabfRows = await eabfRes.json() as any[];
-          } catch (e) { console.error("Error loading fallback eabf.json:", e); }
-
-          try {
-            const estRes = await fetch(`/estructura_nueva.json?t=${timestamp}`);
-            estructuraNuevaRows = await estRes.json() as any[];
-          } catch (e) { console.error("Error loading fallback estructura_nueva.json:", e); }
-        }
-
-        // Carga cursos_resumen
-        let cursosResumen: Record<string, { t: number; a: number; e: number; p: number }> = {};
-        try {
-          const cursosDocRef = doc(db, "config_dashboard", "cursos_resumen");
-          const cursosDocSnap = await getDoc(cursosDocRef);
-          if (cursosDocSnap.exists() && cursosDocSnap.data().summary) {
-            cursosResumen = cursosDocSnap.data().summary;
-          } else {
-            const cursosRes = await fetch(`/cursos_resumen.json?t=${timestamp}`);
-            cursosResumen = await cursosRes.json();
-          }
-        } catch (e) {
-          console.error("Error loading courses summary, trying local fallback:", e);
-          try {
-            const cursosRes = await fetch(`/cursos_resumen.json?t=${timestamp}`);
-            cursosResumen = await cursosRes.json();
-          } catch (err) {
-            console.error("Local fallback for courses summary failed:", err);
-          }
-        }
-
-        // Carga brechas_resumen
-        let brechasResumen: Record<string, { total: number; completadas: number; enProceso: number; porcentaje: number; brechas: any[] }> = {};
-        try {
-          const brechasDocRef = doc(db, "config_dashboard", "brechas_resumen");
-          const brechasDocSnap = await getDoc(brechasDocRef);
-          if (brechasDocSnap.exists() && brechasDocSnap.data().summary) {
-            brechasResumen = brechasDocSnap.data().summary;
-          } else {
-            const brechasRes = await fetch(`/brechas_resumen.json?t=${timestamp}`);
-            brechasResumen = await brechasRes.json();
-          }
-        } catch (e) {
-          console.error("Error loading brechas summary, trying local fallback:", e);
-          try {
-            const brechasRes = await fetch(`/brechas_resumen.json?t=${timestamp}`);
-            brechasResumen = await brechasRes.json();
-          } catch (err) {
-            console.error("Local fallback for brechas summary failed:", err);
-          }
+          const fallbackFetches = await Promise.all([
+            fetch(`/base.json?t=${timestamp}`).then(r => r.json()).catch(() => []),
+            fetch(`/eac.json?t=${timestamp}`).then(r => r.json()).catch(() => []),
+            fetch(`/eabf.json?t=${timestamp}`).then(r => r.json()).catch(() => []),
+            fetch(`/estructura_nueva.json?t=${timestamp}`).then(r => r.json()).catch(() => [])
+          ]);
+          [baseRows, eacRows, eabfRows, estructuraNuevaRows] = fallbackFetches;
         }
 
         // Procesar Base Config (championMap)
@@ -193,16 +138,26 @@ export function useExcelData() {
           }
         }
 
-        // Cargar operadores centralizados
-        let centralizedOperators: any[] = [];
-        try {
-          const opsRes = await fetch(`/operators.json?t=${timestamp}`);
-          centralizedOperators = await opsRes.json();
-        } catch (e) {
-          console.error("Error loading centralized operators.json:", e);
+        let cursosResumen: Record<string, { t: number; a: number; e: number; p: number }> = {};
+        if (cursosDocSnap && cursosDocSnap.exists() && cursosDocSnap.data().summary) {
+          cursosResumen = cursosDocSnap.data().summary;
+        } else {
+          try {
+            const cursosRes = await fetch(`/cursos_resumen.json?t=${timestamp}`);
+            cursosResumen = await cursosRes.json();
+          } catch (e) { console.error(e); }
         }
 
-        // Poblar eaMap usando operators.json
+        let brechasResumen: Record<string, { total: number; completadas: number; enProceso: number; porcentaje: number; brechas: any[] }> = {};
+        if (brechasDocSnap && brechasDocSnap.exists() && brechasDocSnap.data().summary) {
+          brechasResumen = brechasDocSnap.data().summary;
+        } else {
+          try {
+            const brechasRes = await fetch(`/brechas_resumen.json?t=${timestamp}`);
+            brechasResumen = await brechasRes.json();
+          } catch (e) { console.error(e); }
+        }
+
         if (centralizedOperators && centralizedOperators.length > 0) {
           for (const op of centralizedOperators) {
             if (op.id) {
@@ -214,69 +169,58 @@ export function useExcelData() {
           }
         }
 
-        // Cargar datos activos
         let bpreRows: any[] = [];
         let rows: any[] = [];
         let datosCargados = false;
 
-        try {
-          const q = query(collection(db, "historicos_excel"));
-          const snap = await getDocs(q);
-          if (!snap.empty) {
-            const sortedDocs = [...snap.docs].sort((a, b) => a.id.localeCompare(b.id));
-            const skapMap: Record<string, any> = {};
-            const bpreMap: Record<string, any> = {};
+        if (historicosSnap && !historicosSnap.empty) {
+          const sortedDocs = [...historicosSnap.docs].sort((a, b) => a.id.localeCompare(b.id));
+          const skapMap: Record<string, any> = {};
+          const bpreMap: Record<string, any> = {};
 
-            sortedDocs.forEach(docSnap => {
-              const docData = docSnap.data();
-              const weekSkap = docData.datos_skap || [];
-              const weekBpre = docData.bpre || [];
+          sortedDocs.forEach(docSnap => {
+            const docData = docSnap.data();
+            const weekSkap = docData.datos_skap || [];
+            const weekBpre = docData.bpre || [];
 
-              weekSkap.forEach((fila: any) => {
-                const empCol = Object.keys(fila).find(k => k.toLowerCase().trim() === 'employee');
-                const empVal = empCol ? String(fila[empCol]).trim() : '';
-                const posCol = Object.keys(fila).find(k => k.toLowerCase().trim() === 'skap position' || k.toLowerCase().trim() === 'position');
-                const posVal = posCol ? String(fila[posCol]).trim() : '';
-                if (empVal) {
-                  let empKey = empVal;
-                  const empMatch = empVal.match(/\[(\d+)\]/);
-                  if (empMatch) empKey = empMatch[1];
-                  const key = `${empKey}_${posVal}`.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, ' ').trim();
-                  skapMap[key] = fila;
-                }
-              });
-
-              weekBpre.forEach((fila: any) => {
-                const nameCol = Object.keys(fila).find(k => k.toLowerCase().trim() === 'nombre');
-                const areaCol = Object.keys(fila).find(k => k.toLowerCase().trim() === 'area' || k.toLowerCase().trim() === 'área');
-                const nameVal = nameCol ? String(fila[nameCol]).trim() : '';
-                const areaVal = areaCol ? String(fila[areaCol]).trim() : '';
-                
-                const key = `${nameVal}_${areaVal}`.toUpperCase();
-                if (nameVal || areaVal) {
-                  bpreMap[key] = fila;
-                }
-              });
+            weekSkap.forEach((fila: any) => {
+              const empCol = Object.keys(fila).find(k => k.toLowerCase().trim() === 'employee');
+              const empVal = empCol ? String(fila[empCol]).trim() : '';
+              const posCol = Object.keys(fila).find(k => k.toLowerCase().trim() === 'skap position' || k.toLowerCase().trim() === 'position');
+              const posVal = posCol ? String(fila[posCol]).trim() : '';
+              if (empVal) {
+                let empKey = empVal;
+                const empMatch = empVal.match(/\[(\d+)\]/);
+                if (empMatch) empKey = empMatch[1];
+                const key = `${empKey}_${posVal}`.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, ' ').trim();
+                skapMap[key] = fila;
+              }
             });
 
-            rows = Object.values(skapMap);
-            bpreRows = Object.values(bpreMap);
-            datosCargados = true;
-          }
-        } catch (e) {
-          console.error("Error loading active data from Firestore:", e);
+            weekBpre.forEach((fila: any) => {
+              const nameCol = Object.keys(fila).find(k => k.toLowerCase().trim() === 'nombre');
+              const areaCol = Object.keys(fila).find(k => k.toLowerCase().trim() === 'area' || k.toLowerCase().trim() === 'área');
+              const nameVal = nameCol ? String(fila[nameCol]).trim() : '';
+              const areaVal = areaCol ? String(fila[areaCol]).trim() : '';
+              
+              const key = `${nameVal}_${areaVal}`.toUpperCase();
+              if (nameVal || areaVal) {
+                bpreMap[key] = fila;
+              }
+            });
+          });
+
+          rows = Object.values(skapMap);
+          bpreRows = Object.values(bpreMap);
+          datosCargados = true;
         }
 
         if (!datosCargados) {
-          try {
-            const bpreRes = await fetch(`/bpre.json?t=${timestamp}`);
-            bpreRows = await bpreRes.json() as any[];
-          } catch (e) { console.error("Error loading fallback bpre.json:", e); }
-
-          try {
-            const response = await fetch(`/datos.json?t=${timestamp}`);
-            rows = await response.json() as any[];
-          } catch (e) { console.error("Error loading fallback datos.json:", e); }
+          const fallbackDatos = await Promise.all([
+            fetch(`/bpre.json?t=${timestamp}`).then(r => r.json()).catch(() => []),
+            fetch(`/datos.json?t=${timestamp}`).then(r => r.json()).catch(() => [])
+          ]);
+          [bpreRows, rows] = fallbackDatos;
         }
 
         // Definir variables para guardar el estado en tiempo real
@@ -681,11 +625,26 @@ export function useExcelData() {
               else if (guiasL7Progress > 0 && guiasL7Progress < 100) guiasActiveLevel = "L7";
               else if (guiasL8Progress > 0) guiasActiveLevel = "L8";
 
-              const tipoGuia = guiasData.tipoGuia || "COMPETENTE";
-
+              let tipoGuia = guiasData.tipoGuia || "COMPETENTE";
+              let fileStr = "";
+              if (guiasData.evaluationsJson) {
+                try {
+                  const parsed = JSON.parse(guiasData.evaluationsJson);
+                  fileStr = ((parsed.subcarpeta || "") + " " + (parsed.archivo || "")).toUpperCase();
+                } catch (e) {}
+              }
+              const opNameStr = (nombre || "").toUpperCase();
+              
+              if (opNameStr.includes("TECNICO") || fileStr.includes("TECNICO") || opNameStr.includes("TÉCNICO") || fileStr.includes("TÉCNICO") || guiasData.tipoGuia === "TECNICO") {
+                tipoGuia = "TECNICO";
+              } else if (opNameStr.includes("COMPETENTE") || fileStr.includes("COMPETENTE")) {
+                tipoGuia = "COMPETENTE";
+              } else if (opNameStr.includes("MEJORADO") || fileStr.includes("MEJORADO") || guiasData.tipoGuia === "MEJORADO") {
+                tipoGuia = "MEJORADO";
+              }
               // Porcentaje de Habilitación Total Absoluta según tipo de guía
               let guiasProgress = (guiasL6Progress + guiasL7Progress + guiasL8Progress) / 3;
-              if (tipoGuia === "COMPETENTE") {
+              if (tipoGuia === "COMPETENTE" || tipoGuia === "TECNICO") {
                 guiasProgress = guiasL6Progress;
               } else if (guiasL7Progress > 0 || guiasL8Progress > 0) {
                 const activeLevels = [guiasL6Progress, guiasL7Progress, guiasL8Progress].filter(p => p > 0);
@@ -731,6 +690,7 @@ export function useExcelData() {
                 cursosEnProgreso: enProgresoC,
                 cursosPendientes: pendientesC,
                 // Guías Técnicas properties
+                tipoGuia,
                 guiasActiveLevel,
                 guiasProgress,
                 guiasL6Progress,
@@ -1073,6 +1033,9 @@ export function useExcelData() {
 
           } catch (errRec) {
             console.error("Error in recalculate:", errRec);
+            if (import.meta.env.DEV) {
+               alert("Error in recalculate: " + String(errRec) + "\n" + (errRec as Error).stack);
+            }
           } finally {
             setLoading(false);
           }

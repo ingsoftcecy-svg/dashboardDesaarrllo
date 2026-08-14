@@ -223,10 +223,13 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             
             {/* Indicador Diseñador Chido: COMPETENTE vs MEJORADO */}
             {(() => {
+              const opName = operator.nombre.toUpperCase();
               const isMejorado = (operator as any).tipoGuia === "MEJORADO" || 
                                 (operator.guiasL7Progress && operator.guiasL7Progress > 0) || 
-                                (operator.guiasL8Progress && operator.guiasL8Progress > 0);
-              const isTecnico = (operator as any).tipoGuia === "TECNICO";
+                                (operator.guiasL8Progress && operator.guiasL8Progress > 0) ||
+                                opName.includes("MEJORADO");
+              const isTecnico = (operator as any).tipoGuia === "TECNICO" ||
+                                opName.includes("TECNICO") || opName.includes("TÉCNICO");
               return (
                 <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
                   {operator.lider && (

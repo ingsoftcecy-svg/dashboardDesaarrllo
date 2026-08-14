@@ -52,7 +52,8 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
       let matchesTipoGuia = true;
       if (metricMode === "guias" && filterTipoGuia !== "Todos") {
         const isMejorado = (operator as any).tipoGuia === "MEJORADO" || (operator.guiasL7Progress && operator.guiasL7Progress > 0) || (operator.guiasL8Progress && operator.guiasL8Progress > 0);
-        const opTipo = isMejorado ? "Mejorado" : "Competente";
+        const isTecnico = (operator as any).tipoGuia === "TECNICO";
+        const opTipo = isMejorado ? "Mejorado" : isTecnico ? "Técnico" : "Competente";
         matchesTipoGuia = filterTipoGuia === opTipo;
       }
 
@@ -97,6 +98,7 @@ export function PhysicalBoard({ operadores, show_ato = true, puedeEditar = false
             >
               <option value="Todos">Todos (Nivel)</option>
               <option value="Competente">Competentes</option>
+              <option value="Técnico">Técnicos</option>
               <option value="Mejorado">Mejorados</option>
             </select>
           )}

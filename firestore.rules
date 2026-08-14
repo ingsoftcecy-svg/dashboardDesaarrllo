@@ -27,7 +27,8 @@ service cloud.firestore {
     // Solo un admin puede crear, modificar o eliminar perfiles.
     match /usuarios/{uid} {
       allow read: if estaAutenticado() && (request.auth.uid == uid || esAdmin());
-      allow write: if esAdmin();
+      allow create, delete: if esAdmin();
+      allow update: if esAdmin() || (estaAutenticado() && request.auth.uid == uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['requiresPasswordChange']));
     }
 
     // ── Colección: historicos_excel ────────────────────────────────────────

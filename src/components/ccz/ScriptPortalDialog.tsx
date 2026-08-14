@@ -286,7 +286,9 @@ foreach ($item in $pendingFiles) {
         $processedCount++
         Write-Host "[$processedCount/$($pendingFiles.Count)] Leido: $($file.Name) ($area - $equipo - $tipoGuia)" -ForegroundColor White
 
-        $wb = $excel.Workbooks.Open($file.FullName, 0, $true, 5, "", "", $true)
+        $tempFile = Join-Path $env:TEMP -ChildPath ("tmp_sync_" + [Guid]::NewGuid().ToString().Substring(0,8) + ".xlsx")
+        Copy-Item -Path $file.FullName -Destination $tempFile -Force
+        $wb = $excel.Workbooks.Open($tempFile, 0, $true, 5, "", "", $true)
 
         $resumenSheet = $null
         foreach ($checkWs in $wb.Sheets) {
@@ -491,6 +493,7 @@ foreach ($item in $pendingFiles) {
 
         $wb.Close($false)
         $wb = $null
+        try { Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue } catch {}
         $processedOperators[$docId] = $operatorRecord
         $syncCache[$docId] = $item.LocalLastMod
         $syncCache[$file.Name] = $item.LocalLastMod
@@ -498,6 +501,7 @@ foreach ($item in $pendingFiles) {
     catch {
         Write-Host "[ERROR] En $($file.Name): $_" -ForegroundColor Red
         if ($wb) { try { $wb.Close($false) } catch {} }
+        try { if ($tempFile -and (Test-Path $tempFile)) { Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue } } catch {}
     }
 }
 

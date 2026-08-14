@@ -6,6 +6,7 @@ import { registrarEvento } from './auditLog';
 
 interface ExtendedUser extends User {
   rol?: string;
+  requiresPasswordChange?: boolean;
 }
 
 const AuthContext = createContext<ExtendedUser | null>(null);
@@ -29,6 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           if (userDocSnapshot.exists()) {
             usuarioConRol.rol = userDocSnapshot.data().rol || 'operador';
+            usuarioConRol.requiresPasswordChange = userDocSnapshot.data().requiresPasswordChange;
           } else {
             usuarioConRol.rol = 'operador';
           }
