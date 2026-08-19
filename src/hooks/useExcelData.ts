@@ -3,6 +3,7 @@ import * as xlsx from "xlsx";
 import { collection, getDocs, doc, getDoc, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Operator, ChampionKey, cocimientos as defaultCocimientos, bloqueFrio as defaultBloqueFrio, mantenimiento as defaultMantenimiento, AreaData, OPERATORS_MAX_SKILLS } from "@/data/ccz";
+import { BPRE_STATIC_DATA } from "@/data/bpre_static";
 
 export const normalizarNombreEquipo = (name: string): string => {
   const n = name.trim().toUpperCase();
@@ -28,10 +29,12 @@ export function useExcelData() {
   const [general, setGeneral] = useState<AreaData>({ ...defaultCocimientos, team: "Vista General", lema: "Toda la Planta" });
   const [loading, setLoading] = useState(true);
   const [guiasCatalog, setGuiasCatalog] = useState<any>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     let unsubscribeGuias: (() => void) | null = null;
     let unsubscribeModificados: (() => void) | null = null;
+    let unsubscribeBpreOverrides: (() => void) | null = null;
 
     const loadData = async () => {
       const timestamp = new Date().getTime();
@@ -74,20 +77,39 @@ export function useExcelData() {
         // Lanzar todas las peticiones a Firestore y JSON concurrentemente
         const isDev = import.meta.env.DEV;
         const pOverrides = getDocs(collection(db, "team_overrides")).catch(e => { console.error(e); return null; });
+        const pBpreOverrides = getDocs(collection(db, "bpre_overrides")).catch(e => { console.error(e); return null; });
         const pCatFijos = !isDev ? getDoc(doc(db, "config_dashboard", "catalogos_fijos")).catch(e => { console.error(e); return null; }) : Promise.resolve(null);
         const pCursos = getDoc(doc(db, "config_dashboard", "cursos_resumen")).catch(e => { console.error(e); return null; });
         const pBrechas = getDoc(doc(db, "config_dashboard", "brechas_resumen")).catch(e => { console.error(e); return null; });
         const pOpsJSON = fetch(`/operators.json?t=${timestamp}`).then(r => r.json()).catch(e => { console.error(e); return []; });
         const pHistoricos = getDocs(query(collection(db, "historicos_excel"))).catch(e => { console.error(e); return null; });
 
-        const [overridesSnap, catSnap, cursosDocSnap, brechasDocSnap, centralizedOperators, historicosSnap] = await Promise.all([
-          pOverrides, pCatFijos, pCursos, pBrechas, pOpsJSON, pHistoricos
+        const [overridesSnap, bpreOverridesSnap, catSnap, cursosDocSnap, brechasDocSnap, centralizedOperators, historicosSnap] = await Promise.all([
+          pOverrides, pBpreOverrides, pCatFijos, pCursos, pBrechas, pOpsJSON, pHistoricos
         ]);
 
         if (overridesSnap) {
           overridesSnap.forEach((doc) => {
             overridesMap[doc.id] = doc.data() as { leader: string };
           });
+        }
+
+        const bpreOverridesMap: Record<string, any> = {};
+        if (bpreOverridesSnap) {
+          bpreOverridesSnap.forEach((doc) => {
+            bpreOverridesMap[doc.id] = doc.data();
+          });
+        }
+
+        let maxDate = "";
+        if (historicosSnap) {
+          historicosSnap.forEach(d => {
+            const u = d.data().ultima_actualizacion || d.data().updatedAt;
+            if (u && u > maxDate) maxDate = u;
+          });
+        }
+        if (maxDate) {
+          setLastUpdated(maxDate);
         }
 
         let baseRows: any[] = [];
@@ -177,9 +199,17 @@ export function useExcelData() {
           const sortedDocs = [...historicosSnap.docs].sort((a, b) => a.id.localeCompare(b.id));
           const skapMap: Record<string, any> = {};
           const bpreMap: Record<string, any> = {};
+          
+          let latestDate = 0;
 
           sortedDocs.forEach(docSnap => {
             const docData = docSnap.data();
+            
+            if (docData.ultima_actualizacion) {
+               const time = new Date(docData.ultima_actualizacion).getTime();
+               if (time > latestDate) latestDate = time;
+            }
+
             const weekSkap = docData.datos_skap || [];
             const weekBpre = docData.bpre || [];
 
@@ -213,12 +243,20 @@ export function useExcelData() {
           rows = Object.values(skapMap);
           bpreRows = Object.values(bpreMap);
           datosCargados = true;
+          
+          if (latestDate > 0) {
+             setLastUpdated(new Date(latestDate).toISOString());
+          }
         }
 
         if (!datosCargados) {
           const fallbackDatos = await Promise.all([
             fetch(`/bpre.json?t=${timestamp}`).then(r => r.json()).catch(() => []),
-            fetch(`/datos.json?t=${timestamp}`).then(r => r.json()).catch(() => [])
+            fetch(`/datos.json?t=${timestamp}`).then(r => {
+               const lm = r.headers.get('Last-Modified');
+               if (lm) setLastUpdated(new Date(lm).toISOString());
+               return r.json();
+            }).catch(() => [])
           ]);
           [bpreRows, rows] = fallbackDatos;
         }
@@ -924,7 +962,21 @@ export function useExcelData() {
                 .filter(([name]) => name !== "Sin Equipo")
                 .map(([name, data]) => {
                   const bpreName = normalizarNombreEquipo(name);
-                  const bpreRow = bpreRows.find(r => normalizarNombreEquipo(r["NOMBRE"] || "") === bpreName);
+                  const getRawVal = (row: any, ...possibleNames: string[]) => {
+                    if (!row) return undefined;
+                    const colName = Object.keys(row).find(key => {
+                      const cleanKey = key.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '');
+                      return possibleNames.some(pn => cleanKey.includes(pn.toLowerCase().replace(/\s+/g, '')));
+                    });
+                    return colName ? row[colName] : undefined;
+                  };
+
+                  const bpreRowDynamic = bpreRows.find(r => {
+                    const rowName = getRawVal(r, "nombre", "equipo") || "";
+                    return normalizarNombreEquipo(String(rowName)) === bpreName;
+                  });
+
+                  const staticData = BPRE_STATIC_DATA[bpreName];
 
                   const getVal = (row: any, keyword: string) => {
                     if (!row) return 0;
@@ -939,8 +991,11 @@ export function useExcelData() {
                       }
                       const normKey = keyLower
                         .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '');
-                      return normKey.includes(normKeyword);
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .replace(/\s+/g, '');
+                      
+                      const cleanKeyword = normKeyword.replace(/\s+/g, '');
+                      return normKey.includes(cleanKeyword);
                     });
                     if (!colName) return 0;
                     let val = row[colName];
@@ -951,30 +1006,90 @@ export function useExcelData() {
                     return isNaN(num) ? 0 : num;
                   };
 
-                  const autonomyFactors = bpreRow ? {
-                    dinamica: getVal(bpreRow, "DINÁMICA") || getVal(bpreRow, "DINAMICA"),
-                    liderazgo: getVal(bpreRow, "LIDERAZGO") || getVal(bpreRow, "LIDERAZ"),
-                    skap: getVal(bpreRow, "SKAP"),
-                    ato: getVal(bpreRow, "ATO"),
-                    seguridad: getVal(bpreRow, "SEGURIDAD"),
-                    quas: getVal(bpreRow, "QUAS") || getVal(bpreRow, "CALIDAD"),
-                    multihab: getVal(bpreRow, "MULTIHAB") || getVal(bpreRow, "MULTIHA") || getVal(bpreRow, "MULTI"),
-                    vpo: getVal(bpreRow, "VPO"),
-                    solucionProb: getVal(bpreRow, "SOLUCIÓN") || getVal(bpreRow, "SOLUCION") || getVal(bpreRow, "PROB"),
-                    infraest: getVal(bpreRow, "INFRAEST") || getVal(bpreRow, "INFRAESTRUCTURA"),
-                  } : undefined;
+                  let autonomyFactors = undefined;
+                  let faseActual = "F2";
+                  let fechaCompromiso = "No definida";
+
+                  if (staticData) {
+                    autonomyFactors = {
+                      dinamica: staticData.dinamica,
+                      liderazgo: staticData.liderazgo,
+                      skap: staticData.skap,
+                      ato: staticData.ato,
+                      seguridad: staticData.seguridad,
+                      quas: staticData.quas,
+                      multihab: staticData.multihab,
+                      vpo: staticData.vpo,
+                      solucionProb: staticData.solucionProb,
+                      infraest: staticData.infraest
+                    };
+                    faseActual = staticData.faseActual;
+                    fechaCompromiso = staticData.fechaCompromiso;
+                  } else if (bpreRowDynamic) {
+                    autonomyFactors = {
+                      dinamica: getVal(bpreRowDynamic, "DINÁMICA") || getVal(bpreRowDynamic, "DINAMICA"),
+                      liderazgo: getVal(bpreRowDynamic, "LIDERAZGO") || getVal(bpreRowDynamic, "LIDERAZ"),
+                      skap: getVal(bpreRowDynamic, "SKAP"),
+                      ato: getVal(bpreRowDynamic, "ATO"),
+                      seguridad: getVal(bpreRowDynamic, "SEGURIDAD"),
+                      quas: getVal(bpreRowDynamic, "QUAS") || getVal(bpreRowDynamic, "CALIDAD"),
+                      multihab: getVal(bpreRowDynamic, "MULTIHAB") || getVal(bpreRowDynamic, "MULTIHA") || getVal(bpreRowDynamic, "MULTI"),
+                      vpo: getVal(bpreRowDynamic, "VPO"),
+                      solucionProb: getVal(bpreRowDynamic, "SOLUCIÓN") || getVal(bpreRowDynamic, "SOLUCION") || getVal(bpreRowDynamic, "PROB"),
+                      infraest: getVal(bpreRowDynamic, "INFRAEST") || getVal(bpreRowDynamic, "INFRAESTRUCTURA"),
+                    };
+                    faseActual = String(getRawVal(bpreRowDynamic, "fase") || "F2");
+                    fechaCompromiso = String(getRawVal(bpreRowDynamic, "fecha", "compromiso") || "No definida");
+                  }
+
+                  const overrideData = bpreOverridesMap[bpreName];
+                  if (overrideData) {
+                    if (overrideData.factors) {
+                      autonomyFactors = {
+                        ...(autonomyFactors || {}),
+                        ...overrideData.factors
+                      };
+                    }
+                    if (overrideData.faseActual) faseActual = overrideData.faseActual;
+                    if (overrideData.fechaCompromiso) fechaCompromiso = overrideData.fechaCompromiso;
+                  }
 
                   return {
                     name,
                     avg: data.count > 0 ? Number((data.sum / data.count).toFixed(2)) : 0,
                     leader: overridesMap[name]?.leader || data.leader,
                     autonomyFactors,
-                    faseActual: bpreRow ? bpreRow["FASE ACTUAL"] || "F2" : "F2",
+                    faseActual,
                     fase2026: 4,
-                    fechaCompromiso: bpreRow ? bpreRow["FECHA COMPROMISO CAMBIO DE FASE"] || "No definida" : "No definida",
+                    fechaCompromiso,
                   };
                 })
-                .sort((a, b) => b.avg - a.avg);
+                .sort((a, b) => {
+                  const fA = parseInt(a.faseActual?.replace(/\D/g, '') || '0', 10);
+                  const fB = parseInt(b.faseActual?.replace(/\D/g, '') || '0', 10);
+                  if (fA !== fB) return fB - fA;
+
+                  const calcAvg = (team: any) => {
+                    const f = team.autonomyFactors;
+                    if (!f) return 0;
+                    let sum = 0;
+                    const tName = team.name?.toLowerCase() || "";
+                    const isMantenimiento = tName.includes("munich") || tName.includes("nahuales");
+                    const keys = ["dinamica", "liderazgo", "skap", "seguridad", "vpo", "solucionProb", "infraest"];
+                    if (!isMantenimiento) keys.push("ato", "quas", "multihab");
+                    keys.forEach(k => {
+                      const val = Number(f[k]);
+                      if (!isNaN(val)) sum += val;
+                    });
+                    return sum / keys.length;
+                  };
+
+                  const avgA = calcAvg(a);
+                  const avgB = calcAvg(b);
+                  if (avgA !== avgB) return avgB - avgA;
+
+                  return b.avg - a.avg;
+                });
 
               const excelenciaEquipo = teamRankings.length > 0
                 ? Number((teamRankings.reduce((sum, t) => sum + t.avg, 0) / teamRankings.length).toFixed(2))
@@ -1081,6 +1196,21 @@ export function useExcelData() {
           }
         );
 
+        // Escuchar en tiempo real overrides de BPRE
+        unsubscribeBpreOverrides = onSnapshot(
+          collection(db, "bpre_overrides"),
+          (bpreSnap) => {
+            Object.keys(bpreOverridesMap).forEach(k => delete bpreOverridesMap[k]);
+            bpreSnap.forEach(d => {
+              bpreOverridesMap[d.id] = d.data();
+            });
+            executeRecalculate();
+          },
+          (err) => {
+            console.warn("onSnapshot bpre_overrides error:", err.message);
+          }
+        );
+
       } catch (e) {
         console.error("Error loading initial data:", e);
         setLoading(false);
@@ -1092,8 +1222,9 @@ export function useExcelData() {
     return () => {
       if (unsubscribeGuias) unsubscribeGuias();
       if (unsubscribeModificados) unsubscribeModificados();
+      if (unsubscribeBpreOverrides) unsubscribeBpreOverrides();
     };
   }, []);
 
-  return { general, cocimientos, bloqueFrio, mantenimiento, loading };
+  return { general, cocimientos, bloqueFrio, mantenimiento, loading, lastUpdated };
 }

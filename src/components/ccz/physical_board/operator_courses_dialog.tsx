@@ -70,19 +70,29 @@ export function OperatorCoursesDialog({ operatorName, operatorId }: OperatorCour
 
         const targetIds = getAlternativeIds(operatorId);
         
-        const filtered = allCourses
-          .filter(c => {
-            const idGlobal = c.id ? String(c.id).trim() : "";
-            return targetIds.includes(idGlobal);
-          })
-          .map(c => ({
-            name: c.n || "Sin nombre",
-            estado: c.e || "Pendiente",
-            fechaAprobacion: c.f !== "-" ? c.f : undefined,
-            modulo: c.m !== "-" ? c.m : undefined
-          }));
+        const uniqueCourses = new Map<string, Course>();
 
-        setCourses(filtered);
+        allCourses.forEach(c => {
+          const idGlobal = c.id ? String(c.id).trim() : "";
+          if (targetIds.includes(idGlobal)) {
+            const name = c.n || "Sin nombre";
+            const estado = c.e || "Pendiente";
+            
+            const prev = uniqueCourses.get(name);
+            const getPriority = (st: string) => st === "Aprobado" ? 3 : st.toLowerCase().includes("progreso") ? 2 : 1;
+            
+            if (!prev || getPriority(estado) > getPriority(prev.estado)) {
+              uniqueCourses.set(name, {
+                name,
+                estado,
+                fechaAprobacion: c.f !== "-" ? c.f : undefined,
+                modulo: c.m !== "-" ? c.m : undefined
+              });
+            }
+          }
+        });
+
+        setCourses(Array.from(uniqueCourses.values()));
       } catch (err) {
         console.error("Error loading courses for dialog:", err);
       } finally {

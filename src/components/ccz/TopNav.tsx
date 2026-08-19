@@ -5,7 +5,7 @@ import { useNavigate, Link } from '@tanstack/react-router';
 import { ScriptPortalDialog } from "./ScriptPortalDialog";
 import { useAuth } from "@/lib/auth";
 
-export type AreaTab = "general" | "cocimientos" | "bloqueFrio" | "mantenimiento";
+export type AreaTab = "resumen" | "general" | "cocimientos" | "bloqueFrio" | "mantenimiento";
 
 interface Props {
   tab: AreaTab;
@@ -43,6 +43,7 @@ export function TopNav({ tab, onTabChange }: Props) {
   }).format(now);
 
   const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -50,7 +51,7 @@ export function TopNav({ tab, onTabChange }: Props) {
   return (
     <>
       <header className="sticky top-0 z-50 bg-blue-900 text-white shadow-lg">
-        <div className="flex h-16 items-center gap-6 px-6">
+        <div className="flex h-12 items-center gap-6 px-6">
           {/* Brand */}
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg shadow bg-white overflow-hidden">
@@ -62,16 +63,16 @@ export function TopNav({ tab, onTabChange }: Props) {
           </div>
 
           {/* Tabs */}
-          <nav className="mx-auto flex items-center gap-1 rounded-full bg-blue-950/60 p-1 shadow-inner">
-            {(["general", "cocimientos", "bloqueFrio", "mantenimiento"] as AreaTab[]).map((t) => {
+          <nav className="mx-auto flex items-center gap-1 rounded-full bg-blue-950/60 p-0.5 shadow-inner">
+            {(["resumen", "general", "cocimientos", "bloqueFrio", "mantenimiento"] as AreaTab[]).map((t) => {
               const active = tab === t;
-              const label = t === "general" ? "GENERAL" : t === "cocimientos" ? "COCIMIENTOS" : t === "bloqueFrio" ? "BLOQUE FRÍO" : "MANTENIMIENTO";
+              const label = t === "resumen" ? "RESUMEN" : t === "general" ? "GENERAL" : t === "cocimientos" ? "COCIMIENTOS" : t === "bloqueFrio" ? "BLOQUE FRÍO" : "MANTENIMIENTO";
               return (
                 <button
                   key={t}
                   onClick={() => onTabChange(t)}
                   className={cn(
-                    "rounded-full px-6 py-2 text-sm font-semibold tracking-wide transition-all",
+                    "rounded-full px-4 py-1 text-xs font-semibold tracking-wide transition-all",
                     active
                       ? "bg-yellow-400 text-blue-900 shadow"
                       : "text-blue-100 hover:bg-blue-800/60 hover:text-white",
@@ -118,6 +119,8 @@ export function TopNav({ tab, onTabChange }: Props) {
                 <Terminal className="h-5 w-5" />
               </button>
             )}
+
+
 
             {/* ⚙️ Icono de Configuración interactivo al lado del reloj */}
             <button

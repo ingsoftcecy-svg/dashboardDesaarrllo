@@ -206,6 +206,8 @@ function CargarDatos() {
   const [creatingUser, setCreatingUser] = useState(false);
   const [userSuccessMessage, setUserSuccessMessage] = useState("");
   const [userErrorMessage, setUserErrorMessage] = useState("");
+  const [systemUsers, setSystemUsers] = useState<any[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -248,12 +250,53 @@ function CargarDatos() {
       setUserSuccessMessage(`Usuario ${newUserEmail} creado con éxito.`);
       setNewUserEmail("");
       setNewUserPassword("");
+      // Refresh the list after successful creation
+      const fetchUsers = async () => {
+        try {
+          const snapshot = await getDocs(collection(db, 'usuarios'));
+          const usersList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setSystemUsers(usersList);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        }
+      };
+      fetchUsers();
     } catch (err: any) {
       setUserErrorMessage(err.message || "Error al crear el usuario.");
     } finally {
       setCreatingUser(false);
     }
   };
+
+  useEffect(() => {
+    let unsubs: (() => void)[] = [];
+    if (seccionActiva === 'cursos') {
+      const q = query(collection(db, 'operadores'), orderBy('sharpId'));
+      const uns = onSnapshot(q, (snapshot) => {
+        const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setOperators(list);
+      });
+      unsubs.push(uns);
+    }
+    return () => unsubs.forEach(u => u());
+  }, [seccionActiva]);
+
+  useEffect(() => {
+    if (seccionActiva === 'usuarios') {
+      const fetchUsers = async () => {
+        setLoadingUsers(true);
+        try {
+          const snapshot = await getDocs(collection(db, 'usuarios'));
+          const usersList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setSystemUsers(usersList);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        }
+        setLoadingUsers(false);
+      };
+      fetchUsers();
+    }
+  }, [seccionActiva]);
 
   // Estados para Gestión de Operadores (Altas, Bajas, Reasignaciones)
   const [modificados, setModificados] = useState<any[]>([]);
@@ -1533,24 +1576,51 @@ function CargarDatos() {
         return false;
       };
 
-      const optimizedRows = rawRows
-        .filter(row => {
-          // Filtrado por departamento
-          const depto = row["Departamento"] ? String(row["Departamento"]).trim() : "";
-          if (depto !== "COCIMIENTOS" && depto !== "BLOQUE FRIO" && depto !== "MTTO ELABORACION") {
-            return false;
-          }
+      // Agrupar y deduplicar por ID Canónico y Nombre de Curso
+      const canonicalMap: Record<string, string> = {};
+      for (const [canonical, alts] of Object.entries(translations)) {
+        canonicalMap[canonical] = canonical;
+        // The translations object has old -> new mapping
+        // Wait, translations object is mapping OLD -> NEW?
+        canonicalMap[canonical] = translations[canonical]; 
+      }
+      
+      const getCanonicalId = (idGlobal: string) => {
+        if (translations[idGlobal]) return translations[idGlobal];
+        const transKey = Object.keys(translations).find(k => translations[k] === idGlobal);
+        if (transKey) return translations[transKey]; // return new
+        return idGlobal;
+      };
 
-          const idGlobal = row["ID GLOBAL"] ? String(row["ID GLOBAL"]).trim() : "";
-          return targetIdsIncludesAlternative(idGlobal);
-        })
-        .map(row => ({
-          id: row["ID GLOBAL"] ? Number(row["ID GLOBAL"]) : null,
-          n: row["Nombre de Curso"] ? String(row["Nombre de Curso"]).trim() : "",
-          e: row["Estado"] ? String(row["Estado"]).trim() : "Pendiente",
-          f: row["Fecha de aprobación"] || "-",
-          m: row["Submódulo 1"] || "-"
-        }));
+      const uniqueCourses = new Map<string, any>();
+
+      rawRows.forEach(row => {
+        const depto = row["Departamento"] ? String(row["Departamento"]).trim() : "";
+        if (depto !== "COCIMIENTOS" && depto !== "BLOQUE FRIO" && depto !== "MTTO ELABORACION") return;
+
+        const idGlobal = row["ID GLOBAL"] ? String(row["ID GLOBAL"]).trim() : "";
+        if (!targetIdsIncludesAlternative(idGlobal)) return;
+
+        const canonicalId = getCanonicalId(idGlobal);
+        const name = row["Nombre de Curso"] ? String(row["Nombre de Curso"]).trim() : "";
+        const estado = row["Estado"] ? String(row["Estado"]).trim() : "Pendiente";
+        const key = `${canonicalId}_${name}`;
+
+        const getPriority = (st: string) => st === "Aprobado" ? 3 : st.toLowerCase().includes("progreso") ? 2 : 1;
+
+        const existing = uniqueCourses.get(key);
+        if (!existing || getPriority(estado) > getPriority(existing.e)) {
+          uniqueCourses.set(key, {
+            id: Number(canonicalId),
+            n: name,
+            e: estado,
+            f: row["Fecha de aprobación"] || "-",
+            m: row["Submódulo 1"] || "-"
+          });
+        }
+      });
+
+      const optimizedRows = Array.from(uniqueCourses.values());
 
       if (optimizedRows.length === 0) {
         alert("No se encontraron registros que correspondan a operadores activos del dashboard.");
@@ -1930,15 +2000,37 @@ function CargarDatos() {
         const datosSkapExistentes = dataVieja.datos_skap || [];
         const nuevosDatosSkap = gruposPorSemana[semanaID].datos_skap || [];
         const mapaSkap: Record<string, any> = {};
+        
+        let conteoNuevas = 0;
+        let nombresNuevosEvaluados: string[] = [];
+
         datosSkapExistentes.forEach((fila: any) => {
           const clave = obtenerClaveRegistro(fila);
           if (clave) mapaSkap[clave] = fila;
         });
+        
         nuevosDatosSkap.forEach((fila: any) => {
           const clave = obtenerClaveRegistro(fila);
-          if (clave) mapaSkap[clave] = fila; // Inserta o actualiza
+          if (clave) {
+            if (!mapaSkap[clave]) {
+              conteoNuevas++;
+              const colEmp = Object.keys(fila).find(k => k.toLowerCase().trim() === 'employee');
+              if (colEmp && fila[colEmp]) {
+                const nombreLimpio = String(fila[colEmp]).replace(/\[\d+\]\s*/, '').trim();
+                if (!nombresNuevosEvaluados.includes(nombreLimpio)) {
+                  nombresNuevosEvaluados.push(nombreLimpio);
+                }
+              }
+            }
+            mapaSkap[clave] = fila; // Inserta o actualiza
+          }
         });
+        
         const datosSkapFusionados = Object.values(mapaSkap);
+        
+        if (conteoNuevas > 0) {
+          setLogProceso(prev => [...prev, `🌟 Semana ${semanaID}: Se agregaron ${conteoNuevas} evaluaciones nuevas de Autonomía/SKAP para: ${nombresNuevosEvaluados.join(', ')}`]);
+        }
 
         // Fusión semanal acumulativa de bpre
         const bpreExistentes = dataVieja.bpre || [];
@@ -2340,63 +2432,135 @@ function CargarDatos() {
                 </div>
               </div>
 
-              <div className="p-6 space-y-6">
-                <div className="bg-slate-50 border border-slate-150 p-4 rounded-xl text-sm text-slate-600">
-                  <p>Aquí puedes crear cuentas para nuevos líderes o supervisores. Se generará una contraseña temporal que podrán cambiar después de iniciar sesión.</p>
+              <div className="p-6">
+                <div className="bg-slate-50 border border-slate-150 p-4 rounded-xl text-sm text-slate-600 mb-6">
+                  <p>Aquí puedes crear cuentas para nuevos líderes o supervisores y ver la lista de usuarios en el sistema.</p>
                 </div>
                 
-                {usuario?.email && ["adminelaboracion@gmail.com", "ingsoftcecy@gmail.com"].includes(usuario.email.toLowerCase()) ? (
-                  <form onSubmit={handleCreateUser} className="space-y-4 max-w-md">
-                    {userErrorMessage && <div className="text-red-600 text-xs font-bold bg-red-50 p-3 rounded-lg border border-red-200">{userErrorMessage}</div>}
-                    {userSuccessMessage && <div className="text-emerald-600 text-xs font-bold bg-emerald-50 p-3 rounded-lg border border-emerald-200">{userSuccessMessage}</div>}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Panel Izquierdo: Formulario */}
+                  <div>
+                    <h3 className="text-xs font-black uppercase tracking-wider text-[#1a4491] mb-4">Crear Nuevo Usuario</h3>
                     
-                    <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">Correo Electrónico</label>
-                      <input 
-                        type="email" 
-                        required 
-                        value={newUserEmail}
-                        onChange={e => setNewUserEmail(e.target.value)}
-                        className="w-full rounded-xl bg-white px-3 py-2 text-xs font-bold text-slate-800 outline-none border border-slate-200 focus:border-[#1a4491] transition-all"
-                        placeholder="usuario@abinbev.com"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">Contraseña Temporal</label>
-                      <input 
-                        type="text" 
-                        required 
-                        value={newUserPassword}
-                        onChange={e => setNewUserPassword(e.target.value)}
-                        className="w-full rounded-xl bg-white px-3 py-2 text-xs font-bold text-slate-800 outline-none border border-slate-200 focus:border-[#1a4491] transition-all"
-                        placeholder="Ej: Temporal123!"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">Rol</label>
-                      <select 
-                        value={newUserRole}
-                        onChange={e => setNewUserRole(e.target.value)}
-                        className="w-full rounded-xl bg-white px-3 py-2 text-xs font-bold text-slate-800 outline-none border border-slate-200 focus:border-[#1a4491] transition-all"
-                      >
-                        <option value="operador">Operador (Solo lectura)</option>
-                        <option value="admin">Administrador (Puede editar info de su área)</option>
-                      </select>
-                    </div>
+                    {usuario?.email && ["adminelaboracion@gmail.com", "ingsoftcecy@gmail.com"].includes(usuario.email.toLowerCase()) ? (
+                      <form onSubmit={handleCreateUser} className="space-y-4">
+                        {userErrorMessage && <div className="text-red-600 text-xs font-bold bg-red-50 p-3 rounded-lg border border-red-200">{userErrorMessage}</div>}
+                        {userSuccessMessage && <div className="text-emerald-600 text-xs font-bold bg-emerald-50 p-3 rounded-lg border border-emerald-200">{userSuccessMessage}</div>}
+                        
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">Correo Electrónico</label>
+                          <input 
+                            type="email" 
+                            required 
+                            value={newUserEmail}
+                            onChange={e => setNewUserEmail(e.target.value)}
+                            className="w-full rounded-xl bg-white px-3 py-2 text-xs font-bold text-slate-800 outline-none border border-slate-200 focus:border-[#1a4491] transition-all"
+                            placeholder="usuario@abinbev.com"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">Contraseña Temporal</label>
+                          <input 
+                            type="text" 
+                            required 
+                            value={newUserPassword}
+                            onChange={e => setNewUserPassword(e.target.value)}
+                            className="w-full rounded-xl bg-white px-3 py-2 text-xs font-bold text-slate-800 outline-none border border-slate-200 focus:border-[#1a4491] transition-all"
+                            placeholder="Ej: Temporal123!"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">Rol</label>
+                          <select 
+                            value={newUserRole}
+                            onChange={e => setNewUserRole(e.target.value)}
+                            className="w-full rounded-xl bg-white px-3 py-2 text-xs font-bold text-slate-800 outline-none border border-slate-200 focus:border-[#1a4491] transition-all"
+                          >
+                            <option value="operador">Operador (Solo lectura)</option>
+                            <option value="admin">Administrador (Puede editar info de su área)</option>
+                          </select>
+                        </div>
 
-                    <button 
-                      type="submit" 
-                      disabled={creatingUser}
-                      className="w-full mt-2 py-3 bg-[#1a4491] hover:bg-blue-800 disabled:bg-slate-400 text-white font-black rounded-xl transition-colors uppercase text-xs tracking-widest shadow-md"
-                    >
-                      {creatingUser ? 'Creando Usuario...' : 'Crear Usuario'}
-                    </button>
-                  </form>
-                ) : (
-                  <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-bold border border-red-200 max-w-md">
-                    No tienes permisos para crear nuevos usuarios. Solamente los administradores autorizados pueden realizar esta acción.
+                        <button 
+                          type="submit" 
+                          disabled={creatingUser}
+                          className="w-full mt-2 py-3 bg-[#1a4491] hover:bg-blue-800 disabled:bg-slate-400 text-white font-black rounded-xl transition-colors uppercase text-xs tracking-widest shadow-md"
+                        >
+                          {creatingUser ? 'Creando Usuario...' : 'Crear Usuario'}
+                        </button>
+                      </form>
+                    ) : (
+                      <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-bold border border-red-200">
+                        No tienes permisos para crear nuevos usuarios. Solamente los administradores autorizados pueden realizar esta acción.
+                      </div>
+                    )}
                   </div>
-                )}
+
+                  {/* Panel Derecho: Lista de Usuarios */}
+                  <div className="border-t md:border-t-0 md:border-l border-slate-200 pt-6 md:pt-0 md:pl-8">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xs font-black uppercase tracking-wider text-[#1a4491]">Usuarios del Sistema</h3>
+                      <span className="text-[10px] font-bold text-slate-500">{systemUsers.length} registros</span>
+                    </div>
+                    
+                    {loadingUsers ? (
+                      <div className="flex items-center justify-center py-12">
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#1a4491] border-t-transparent"></div>
+                      </div>
+                    ) : (
+                      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <div className="max-h-[350px] overflow-y-auto">
+                          <table className="w-full text-left text-xs">
+                            <thead className="bg-slate-50 text-[9px] font-black text-slate-500 uppercase tracking-wider sticky top-0 border-b border-slate-200 z-10 shadow-sm">
+                              <tr>
+                                <th className="p-3">Correo</th>
+                                <th className="p-3">Rol</th>
+                                <th className="p-3 text-center">Estado</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                              {systemUsers.map((u, idx) => (
+                                <tr key={u.id || idx} className="hover:bg-slate-50/80 transition-colors">
+                                  <td className="p-3 font-bold text-slate-800 max-w-[150px] truncate" title={u.email}>
+                                    {u.email}
+                                  </td>
+                                  <td className="p-3">
+                                    <span className={cn(
+                                      "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border",
+                                      u.rol === 'admin' 
+                                        ? "bg-amber-50 text-amber-700 border-amber-200" 
+                                        : "bg-slate-50 text-slate-600 border-slate-200"
+                                    )}>
+                                      {u.rol || 'operador'}
+                                    </span>
+                                  </td>
+                                  <td className="p-3 text-center">
+                                    {u.requiresPasswordChange ? (
+                                      <span className="text-[9px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 shadow-sm" title="Requiere cambio de contraseña">
+                                        Pendiente
+                                      </span>
+                                    ) : (
+                                      <span className="text-[9px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 shadow-sm" title="Contraseña actualizada">
+                                        Activo
+                                      </span>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                              {systemUsers.length === 0 && (
+                                <tr>
+                                  <td colSpan={3} className="p-8 text-center text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                    No se encontraron usuarios
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

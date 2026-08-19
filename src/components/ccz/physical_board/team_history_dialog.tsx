@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { Calendar, Users, TrendingUp, TrendingDown, Clock, Award, ChevronRight, CheckCircle2, AlertCircle, HelpCircle, FileSpreadsheet } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
+import { Calendar, Users, TrendingUp, TrendingDown, Clock, Award, ChevronRight, CheckCircle2, AlertCircle, HelpCircle, FileSpreadsheet, Activity } from "lucide-react";
 import { obtenerTodoElHistorico } from "@/lib/fetchHistorico";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -11,6 +11,7 @@ import { OperatorHistoryDialog } from "./operator_history_dialog";
 import { OperatorCoursesDialog } from "./operator_courses_dialog";
 import { OperatorBrechasDialog } from "./operator_brechas_dialog";
 import { AutonomyGauge } from "@/components/ccz/autonomy_card";
+import { OperatorAvatar } from "./operator_avatar";
 
 
 interface TeamMember {
@@ -224,7 +225,124 @@ export function TeamHistoryDialog({
     return metricMode !== "autonomia" ? "progress" : "history";
   });
   const [datosGrafico, setDatosGrafico] = useState<MesProgreso[]>([]);
+  const [teamRawRows, setTeamRawRows] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  const generarDiagnosticoEquipo = (score: number, rawRows: any[], currentMembers: TeamMember[]) => {
+    let fortalezas = "";
+    let areasOportunidad = "";
+    let operadoresFoco: TeamMember[] = [];
+    let chartData: { pilar: string; score: number; basico: number; intermedio: number; avanzado: number; rawBasico: number; rawIntermedio: number; rawAvanzado: number }[] = [];
+
+    const pilares = ["Safety", "Quality", "Environment", "Management", "People", "Maintenance", "Logistics", "Operation"];
+    const traducciones: Record<string, string> = {
+      "Safety": "Seguridad",
+      "Quality": "Calidad",
+      "Environment": "Medio Ambiente",
+      "Management": "Gestión",
+      "People": "Gente",
+      "Maintenance": "Mantenimiento",
+      "Logistics": "Logística",
+      "Operation": "Operación"
+    };
+
+    if (rawRows.length > 0) {
+      const parseVal = (cell: any) => {
+        if (cell === undefined || cell === null || cell === "-") return 0;
+        if (typeof cell === "number") return cell * 100;
+        if (cell === "Certified" || cell === "100%") return 100;
+        if (cell === "Qualified" || cell === "75%") return 75;
+        if (cell === "In Training" || cell === "50%") return 50;
+        if (cell === "Novice" || cell === "25%") return 25;
+        return 0;
+      };
+
+      const pillarScores = pilares.map(p => {
+        let sumBasico = 0, sumIntermedio = 0, sumAvanzado = 0;
+        
+        rawRows.forEach(row => {
+          sumBasico += parseVal(row[p]);
+          sumIntermedio += parseVal(row[`${p}_1`]);
+          sumAvanzado += parseVal(row[`${p}_2`]);
+        });
+
+        const numMembers = rawRows.length;
+        const basico = sumBasico / numMembers;
+        const intermedio = sumIntermedio / numMembers;
+        const avanzado = sumAvanzado / numMembers;
+
+        const avg = (basico + intermedio + avanzado) / 3;
+        return { 
+          pilar: traducciones[p], 
+          rawPilar: p,
+          score: avg, 
+          basico: parseFloat((basico / 3).toFixed(2)), 
+          intermedio: parseFloat((intermedio / 3).toFixed(2)), 
+          avanzado: parseFloat((avanzado / 3).toFixed(2)),
+          rawBasico: basico,
+          rawIntermedio: intermedio,
+          rawAvanzado: avanzado
+        };
+      });
+
+      chartData = [...pillarScores];
+      
+      const mejores = [...pillarScores].filter(p => p.score > 0).sort((a, b) => b.score - a.score);
+      const peores = [...pillarScores].sort((a, b) => a.score - b.score);
+      
+      const topPilar = mejores[0];
+      const peorPilar = peores[0];
+
+      if (topPilar && topPilar.score >= 50) {
+        fortalezas = `La principal fortaleza colectiva es ${topPilar.pilar} con un ${topPilar.score.toFixed(1)}% de dominio.`;
+      } else {
+        fortalezas = "El equipo presenta niveles de dominio bajos de forma generalizada.";
+      }
+      
+      if (peorPilar && peorPilar.score <= 80) {
+        let fallas = [];
+        if (peorPilar.rawBasico < 90) fallas.push("Básico");
+        if (peorPilar.rawIntermedio < 90) fallas.push("Intermedio");
+        if (peorPilar.rawAvanzado < 90) fallas.push("Avanzado");
+        
+        const validMembers = [...currentMembers].filter(m => !m.noEvaluado);
+        validMembers.sort((a, b) => a.score - b.score);
+        operadoresFoco = validMembers.slice(0, 2);
+        
+        let detalleFallas = fallas.length > 0 ? `, lastrado por deficiencias en el nivel ${fallas.join(" y ")}` : "";
+        areasOportunidad = `El equipo debe priorizar el desarrollo en ${peorPilar.pilar} (${peorPilar.score.toFixed(1)}%)${detalleFallas}.`;
+      } else if (score >= 90) {
+        areasOportunidad = `El equipo es sumamente maduro y no presenta deficiencias críticas grupales.`;
+      }
+    }
+
+    const baseMsg = (() => {
+      if (score >= 90) return "El equipo cuenta con una alta autonomía y madurez operativa.";
+      if (score >= 75) return "El equipo es estable pero requiere empuje para alcanzar excelencia.";
+      if (score >= 50) return "El equipo domina los básicos pero depende del liderazgo en tareas complejas.";
+      return "El equipo requiere fuerte intervención y entrenamiento básico en piso.";
+    })();
+
+    const mensajeFinal = `${baseMsg} ${fortalezas} ${areasOportunidad}`.trim();
+
+    const colors = (() => {
+      if (score >= 90) return { bg: "bg-emerald-50 border-emerald-200", text: "text-emerald-800", icon: "text-emerald-600 bg-emerald-100" };
+      if (score >= 75) return { bg: "bg-blue-50 border-blue-200", text: "text-blue-800", icon: "text-blue-600 bg-blue-100" };
+      if (score >= 50) return { bg: "bg-amber-50 border-amber-200", text: "text-amber-800", icon: "text-amber-600 bg-amber-100" };
+      return { bg: "bg-rose-50 border-rose-200", text: "text-rose-800", icon: "text-rose-600 bg-rose-100" };
+    })();
+
+    return {
+      titulo: score >= 90 ? "EQUIPO DE ALTO RENDIMIENTO" : score >= 75 ? "EQUIPO ESTABLE" : score >= 50 ? "EQUIPO EN DESARROLLO" : "EQUIPO CRÍTICO",
+      mensaje: mensajeFinal,
+      chartData,
+      operadoresFoco: rawRows.length > 0 ? operadoresFoco : [],
+      colorBg: colors.bg,
+      colorTexto: colors.text,
+      colorIcono: colors.icon,
+      icono: <Activity className="w-5 h-5" />
+    };
+  };
 
   useEffect(() => {
     setActiveSubTab(metricMode !== "autonomia" ? "progress" : "history");
@@ -313,6 +431,7 @@ export function TeamHistoryDialog({
           score: number;
           mesKey: string;
           noEvaluado: boolean;
+          rawRow?: any;
         }
         const evPoints: EvaluacionMiembro[] = [];
 
@@ -371,7 +490,8 @@ export function TeamHistoryDialog({
                   id: id || String(Math.random()),
                   score: res.score,
                   mesKey: mesKey,
-                  noEvaluado: res.noEvaluado
+                  noEvaluado: res.noEvaluado,
+                  rawRow: row
                 });
               }
             }
@@ -395,6 +515,15 @@ export function TeamHistoryDialog({
               }
             }
           });
+
+          // For the last month, set teamRawRows for the diagnostic chart
+          if (mesKey === uniqueMeses[uniqueMeses.length - 1]) {
+            const rawRowsToSave: any[] = [];
+            Array.from(activeMembers.values()).forEach(m => {
+              if (!m.noEvaluado && m.rawRow) rawRowsToSave.push(m.rawRow);
+            });
+            setTeamRawRows(rawRowsToSave);
+          }
 
           let sum = 0;
           let count = 0;
@@ -1155,6 +1284,125 @@ export function TeamHistoryDialog({
                     )}
                   </div>
                 </div>
+
+                {/* 📊 DIAGNÓSTICO DEL EQUIPO */}
+                {teamRawRows.length > 0 && datosGrafico.length > 0 && (
+                  <div className="bg-slate-50/60 rounded-2xl border border-slate-200/50 p-4">
+                    <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-1.5">
+                      <Activity className="h-3.5 w-3.5 text-[#1a4491]" />
+                      <span>Diagnóstico Colectivo (Radiografía de Pilares)</span>
+                    </h3>
+
+                    {(() => {
+                      const ultimoScore = datosGrafico[datosGrafico.length - 1].score;
+                      const diag = generarDiagnosticoEquipo(ultimoScore, teamRawRows, members);
+                      
+                      return (
+                        <div className={cn("rounded-xl border p-4 shadow-sm flex flex-col md:flex-row gap-6 items-center", diag.colorBg)}>
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center gap-2">
+                              <div className={cn("p-1.5 rounded-lg", diag.colorIcono)}>
+                                {diag.icono}
+                              </div>
+                              <h4 className={cn("text-xs font-black uppercase tracking-wider", diag.colorTexto)}>
+                                {diag.titulo}
+                              </h4>
+                            </div>
+                            <p className="text-[11px] font-semibold text-slate-700 leading-relaxed uppercase">
+                              {diag.mensaje}
+                            </p>
+                            {diag.operadoresFoco && diag.operadoresFoco.length > 0 && (
+                              <div className="mt-3 flex flex-wrap items-center gap-3 bg-rose-50 border border-rose-100 rounded-lg p-2.5 px-3">
+                                <span className="text-[10px] font-black uppercase text-rose-600 flex items-center gap-1.5">
+                                  <AlertCircle className="w-3.5 h-3.5" />
+                                  Operadores Foco:
+                                </span>
+                                <div className="flex gap-2">
+                                  {diag.operadoresFoco.map((op: TeamMember) => (
+                                    <Dialog key={op.id}>
+                                      <DialogTrigger asChild>
+                                        <button className="flex items-center gap-2 bg-white pl-1.5 pr-2.5 py-1 rounded-md shadow-sm border border-rose-200 hover:bg-rose-50 transition-colors cursor-pointer group">
+                                          <div className="w-5 h-5 shrink-0 overflow-hidden rounded-sm [&_.h-12]:h-full [&_.w-12]:w-full [&_.text-lg]:text-[8px] group-hover:scale-105 transition-transform">
+                                            <OperatorAvatar operator_name={op.name} />
+                                          </div>
+                                          <span className="text-[10px] font-extrabold text-rose-800 uppercase leading-none mt-px group-hover:text-rose-900">
+                                            {op.name}
+                                          </span>
+                                        </button>
+                                      </DialogTrigger>
+                                      <DialogContent className="max-w-4xl sm:max-w-5xl bg-white p-6 rounded-2xl border-none shadow-2xl max-h-[92vh] flex flex-col overflow-y-auto custom-scrollbar">
+                                        {metricMode === "cursos" ? (
+                                          <OperatorCoursesDialog 
+                                            operatorName={op.name}
+                                            operatorId={op.id}
+                                          />
+                                        ) : metricMode === "cierre-brecha" ? (
+                                          <OperatorBrechasDialog
+                                            operatorName={op.name}
+                                            operatorId={op.id}
+                                            brechasDetalle={op.brechasDetalle || []}
+                                          />
+                                        ) : (
+                                          <OperatorHistoryDialog
+                                            operatorName={op.name}
+                                            operatorId={op.id}
+                                            operatorPuesto={op.puesto}
+                                            metricMode={metricMode}
+                                            guiasProgress={op.guiasProgress}
+                                            guiasL6Progress={op.guiasL6Progress}
+                                            guiasL7Progress={op.guiasL7Progress}
+                                            guiasL8Progress={op.guiasL8Progress}
+                                            guiasActiveLevel={op.guiasActiveLevel}
+                                          />
+                                        )}
+                                      </DialogContent>
+                                    </Dialog>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="w-full md:w-[320px] h-[160px] shrink-0 bg-white rounded-xl border border-slate-200/60 shadow-inner p-1">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <BarChart data={diag.chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                <XAxis dataKey="pilar" tick={{ fontSize: 7, fontWeight: 'bold' }} angle={-35} textAnchor="end" interval={0} />
+                                <YAxis domain={[0, 100]} tick={{ fontSize: 8, fontWeight: 'bold' }} tickFormatter={(val) => `${val}%`} />
+                                <Tooltip 
+                                  cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                                  content={({ active, payload, label }) => {
+                                    if (active && payload && payload.length) {
+                                      const data = payload[0].payload;
+                                      return (
+                                        <div className="bg-white p-3 rounded-lg shadow-md border border-slate-100 text-[10px] font-bold">
+                                          <p className="text-slate-800 mb-2 uppercase tracking-wider">{label} (Promedio del Equipo)</p>
+                                          <div className="space-y-1">
+                                            <p style={{ color: '#93c5fd' }}>BÁSICO: {data.rawBasico?.toFixed(1) || 0}%</p>
+                                            <p style={{ color: '#3b82f6' }}>INTERMEDIO: {data.rawIntermedio?.toFixed(1) || 0}%</p>
+                                            <p style={{ color: '#1e3a8a' }}>AVANZADO: {data.rawAvanzado?.toFixed(1) || 0}%</p>
+                                          </div>
+                                          <div className="mt-2 pt-2 border-t border-slate-100">
+                                            <p className="text-slate-700">SCORE TOTAL: {data.score?.toFixed(1)}%</p>
+                                          </div>
+                                        </div>
+                                      );
+                                    }
+                                    return null;
+                                  }}
+                                />
+                                <Legend wrapperStyle={{ fontSize: '9px', fontWeight: 'bold', bottom: -5 }} />
+                                <Bar dataKey="basico" name="Básico" stackId="a" fill="#93c5fd" radius={[0, 0, 4, 4]} />
+                                <Bar dataKey="intermedio" name="Intermedio" stackId="a" fill="#3b82f6" />
+                                <Bar dataKey="avanzado" name="Avanzado" stackId="a" fill="#1e3a8a" radius={[4, 4, 0, 0]} />
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
 
                 {/* 📋 TABLA DETALLADA DE INTEGRANTES */}
                 <div className="space-y-2.5">

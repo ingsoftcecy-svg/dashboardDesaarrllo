@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -10,6 +10,8 @@ interface BpreEditorDialogProps {
   teamKey: string;
   teamName: string;
   currentFactors: Record<string, number>;
+  currentFase?: string;
+  currentFecha?: string;
   onSave?: (newFactors: Record<string, number>) => void;
   puedeEditar?: boolean;
   isGeneral?: boolean;
@@ -19,6 +21,8 @@ export function BpreEditorDialog({
   teamKey,
   teamName,
   currentFactors,
+  currentFase = "F2",
+  currentFecha = "No definida",
   onSave,
   puedeEditar = true,
   isGeneral = false,
@@ -26,12 +30,40 @@ export function BpreEditorDialog({
 }: BpreEditorDialogProps & { teamOperators?: any[] }) {
   const [open, setOpen] = useState(false);
   const [factors, setFactors] = useState<Record<string, number>>(currentFactors);
+  const [fechaCompromiso, setFechaCompromiso] = useState(currentFecha);
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
+  const esMantenimiento = teamName.toUpperCase().includes("MANTENIMIENTO") || 
+                         teamName.toUpperCase().includes("TECH") || 
+                         teamName.toUpperCase().includes("GUARDIANS") ||
+                         teamName.toUpperCase().includes("MAINTENANCE") ||
+                         teamName.toUpperCase().includes("MUNICH") ||
+                         teamName.toUpperCase().includes("NAHUALES");
+
+  const isFactorNA = (key: string) => {
+    if (!esMantenimiento) return false;
+    const k = key.toLowerCase();
+    return k === "ato" || k === "quas" || k === "multihab" || k === "multihabilidad";
+  };
+
+  // Calcular la fase automáticamente como el menor factor, ignorando los N/A
+  const computedFase = useMemo(() => {
+    const validVals: number[] = [];
+    Object.entries(factors).forEach(([key, val]) => {
+      if (!isFactorNA(key) && val !== undefined && val !== null) {
+        validVals.push(val);
+      }
+    });
+    
+    if (validVals.length === 0) return currentFase;
+    return `F${Math.min(...validVals)}`;
+  }, [factors, currentFase, esMantenimiento]);
+
   useEffect(() => {
     setFactors(currentFactors);
-  }, [currentFactors, open]);
+    setFechaCompromiso(currentFecha);
+  }, [currentFactors, currentFase, currentFecha, open]);
 
   const handleSliderChange = (key: string, val: number) => {
     setFactors((prev) => ({
@@ -42,17 +74,19 @@ export function BpreEditorDialog({
 
   const handleReset = () => {
     setFactors(currentFactors);
+    setFechaCompromiso(currentFecha);
   };
 
   const handleSave = async () => {
     if (isGeneral) return;
     setSaving(true);
     try {
-      const docRef1 = doc(db, "evaluaciones_guias_tecnicas", `bpre_${teamKey}`);
-      const docRef2 = doc(db, "bpre_factors", `bpre_${teamKey}`);
+      const docRef1 = doc(db, "bpre_overrides", teamKey);
 
       const payload = {
         factors,
+        faseActual: computedFase,
+        fechaCompromiso,
         teamKey,
         teamName,
         updatedAt: new Date().toISOString(),
@@ -60,20 +94,10 @@ export function BpreEditorDialog({
 
       const updatePromises = [
         setDoc(docRef1, payload, { merge: true }),
-        setDoc(docRef2, payload, { merge: true }),
       ];
 
-      // Update ATO for all operators in the team
-      if (factors.ato !== undefined && teamOperators.length > 0) {
-        teamOperators.forEach(op => {
-          const opRef = doc(db, "config_operadores", op.id);
-          updatePromises.push(setDoc(opRef, { 
-            ato: factors.ato,
-            operatorName: op.nombre,
-            updatedAt: new Date().toISOString()
-          }, { merge: true }));
-        });
-      }
+      // Note: We leave ATO on operators untouched as the user requested individual ATO editing to be removed.
+      // The ATO factor comes from the global BPRE matrix overrides now.
 
       await Promise.all(updatePromises);
 
@@ -91,23 +115,13 @@ export function BpreEditorDialog({
     }
   };
 
-  const esMantenimiento = teamName.toUpperCase().includes("MANTENIMIENTO") || 
-                         teamName.toUpperCase().includes("TECH") || 
-                         teamName.toUpperCase().includes("GUARDIANS") ||
-                         teamName.toUpperCase().includes("MAINTENANCE");
-
-  const isFactorNA = (key: string) => {
-    if (!esMantenimiento) return false;
-    const k = key.toLowerCase();
-    return k === "ato" || k === "quas" || k === "multihab" || k === "multihabilidad";
-  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button
           disabled={!puedeEditar || isGeneral}
-          title={isGeneral ? "Selecciona un equipo específico para editar factores BPRE" : "Editar Factores BPRE del equipo"}
+          title={isGeneral ? "Selecciona un equipo específico para editar factores" : "Editar Factores del equipo"}
           className={cn(
             "flex h-7 w-7 items-center justify-center rounded bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white focus:outline-none border border-slate-700 shadow-sm",
             (!puedeEditar || isGeneral) && "opacity-40 cursor-not-allowed hover:bg-slate-800 hover:text-slate-300"
@@ -119,15 +133,49 @@ export function BpreEditorDialog({
       <DialogContent className="max-w-md sm:max-w-lg bg-white p-6 rounded-2xl border-none shadow-2xl">
         <DialogHeader className="border-b pb-3">
           <DialogTitle className="text-lg font-black text-slate-800 uppercase tracking-tight flex items-center justify-between">
-            <span>Editor BPRE — {teamName}</span>
+            <span>Editor — {teamName}</span>
           </DialogTitle>
           <p className="text-xs font-semibold text-slate-500">
-            Ajusta los puntajes de autonomía BPRE (0.00 a 4.00) para este equipo.
+            Ajusta los puntajes de autonomía (0.00 a 4.00) para este equipo.
             {esMantenimiento && " Los factores N/A para Mantenimiento están bloqueados."}
           </p>
         </DialogHeader>
 
         <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+          
+          <div className="grid grid-cols-2 gap-4 pb-2 border-b border-slate-100">
+            <div className="flex flex-col gap-1.5 p-2.5 rounded-lg bg-blue-50 border border-blue-100">
+              <label className="text-xs font-bold text-blue-900">Fase Actual</label>
+              <div className="px-2 py-1.5 text-sm font-bold border rounded bg-slate-100 text-slate-800 border-slate-300 flex items-center justify-between">
+                <span>{computedFase}</span>
+                <span className="text-[9px] text-slate-400 font-normal tracking-wide">(Calculada auto.)</span>
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5 p-2.5 rounded-lg bg-emerald-50 border border-emerald-100">
+              <label className="text-xs font-bold text-emerald-900">Fecha Cambio Fase</label>
+              <select
+                value={fechaCompromiso}
+                onChange={(e) => setFechaCompromiso(e.target.value)}
+                className="px-2 py-1.5 text-sm font-bold border rounded bg-white text-slate-800 border-emerald-200 outline-none focus:ring-1 focus:ring-emerald-500"
+              >
+                <option value="ENERO">ENERO</option>
+                <option value="FEBRERO">FEBRERO</option>
+                <option value="MARZO">MARZO</option>
+                <option value="ABRIL">ABRIL</option>
+                <option value="MAYO">MAYO</option>
+                <option value="JUNIO">JUNIO</option>
+                <option value="JULIO">JULIO</option>
+                <option value="AGOSTO">AGOSTO</option>
+                <option value="SEPTIEMBRE">SEPTIEMBRE</option>
+                <option value="OCTUBRE">OCTUBRE</option>
+                <option value="NOVIEMBRE">NOVIEMBRE</option>
+                <option value="DICIEMBRE">DICIEMBRE</option>
+                <option value="No definida">NO DEFINIDA</option>
+                <option value="CUMPLIENDO">CUMPLIENDO...</option>
+              </select>
+            </div>
+          </div>
+
           {Object.entries(FACTORS_LABELS).map(([key, label]) => {
             const isNA = isFactorNA(key);
             const val = isNA ? 4.0 : (factors[key] !== undefined ? factors[key] : 2.0);

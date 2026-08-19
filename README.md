@@ -26,6 +26,7 @@ El dashboard cuenta con un selector global en la cabecera que conmuta toda la in
    * Visualiza el nivel de autonomía (Escala 1 a 4) de cada operador y equipo.
    * Muestra las tarjetas de **Promedio por Factor** (Dinámica, Liderazgo, SKAP, Avanzado, ATO, QUAS, Multihabilidad).
    * Despliega la **Matriz SKAP interactiva** completa.
+   * Genera una **Radiografía de Equipo (Diagnóstico Colectivo)** con gráficos apilados por nivel (Básico, Intermedio, Avanzado) e identifica automáticamente a los **Operadores Foco** (top 2 con mayores áreas de oportunidad).
 
 2. **Cursos (Capacitación):**
    * Visualiza el porcentaje de cumplimiento y horas aprobadas de capacitación.
@@ -81,7 +82,7 @@ Consola de administración protegida para la actualización periódica del desem
 
 Dentro del dashboard existen flujos interactivos adaptativos según la métrica activa:
 * **Historial de Equipo:**
-  * En modo **Promedio de Habilidades**: Muestra el gráfico histórico mensual y el desglose de autonomía de sus miembros.
+  * En modo **Promedio de Habilidades**: Muestra el gráfico histórico mensual y una **Radiografía de Equipo** inteligente que calcula automáticamente las fortalezas y debilidades del equipo por pilar. Además, lista a los **Operadores Foco** con sus avatares fotográficos interactivos.
   * En modo **Cursos**: Muestra la lista de integrantes con su progreso de capacitación y acceso clickeable a sus cursos individuales.
   * En modo **Guías Técnicas**: Muestra tarjetas KPI con promedios L6/L7/L8 del equipo y tabla de habilitación individual.
 * **Ficha de Operario:** 

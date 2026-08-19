@@ -10,7 +10,7 @@ interface ScriptPortalDialogProps {
   onClose: () => void;
 }
 
-const POWERSHELL_CODE = `# Sincronizador de Guias Tecnicas (Cocimientos y Bloque Frio) - Delta Sync & Clasificacion Competente/Mejorado
+const POWERSHELL_CODE = `# Sincronizador de Guias Tecnicas (Cocimientos) - Delta Sync & Clasificacion Competente/Mejorado
 param (
     [string]$OneDrivePath = "",
     [string]$ProjectId = "preview-bbe71",
@@ -18,7 +18,7 @@ param (
 )
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "   SINCRONIZADOR DE GUIAS TECNICAS - AREA COCIMIENTOS & FRIO " -ForegroundColor Cyan
+Write-Host "   SINCRONIZADOR DE GUIAS TECNICAS - AREA COCIMIENTOS    " -ForegroundColor Cyan
 if ($SoloLocal) {
     Write-Host "   [MODO PRUEBA SEGURA LOCAL - LECTURA FIRESTORE HABILITADA] " -ForegroundColor Yellow
 }
@@ -39,6 +39,16 @@ if (-not $OneDrivePath) {
     if (-not $OneDrivePath) {
         try {
             $OneDrivePath = (Get-Item "$env:USERPROFILE\\OneDrive - Anheuser-Busch InBev\\Brewery Operations - *\\5.0  Mantto\\2026\\04 ATO\\*\\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+        } catch {}
+    }
+    if (-not $OneDrivePath) {
+        try {
+            $exactPathItem = Get-Item "$env:USERPROFILE\\OneDrive - Anheuser-Busch InBev\\Brewery Operations - ELABORACI*N\\5.0  Mantto\\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($exactPathItem) {
+                $OneDrivePath = $exactPathItem.FullName
+            } else {
+                $OneDrivePath = (Get-Item "$env:USERPROFILE\\OneDrive - Anheuser-Busch InBev\\Brewery Operations - *\\5.0  Mantto*\\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+            }
         } catch {}
     }
     if (-not $OneDrivePath) {
@@ -115,6 +125,7 @@ $groupedCandidates = @{}
 foreach ($file in $excelFiles) {
     $fileNameRaw = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
 
+    # 1. Filtro estricto: Omitir plantillas/anexos
     if ($fileNameRaw -like "*ANEXO*" -or $fileNameRaw -like "*Guías-Técnicas*" -or $fileNameRaw -like "*Guias-Tecnicas*" -or $fileNameRaw -like "*Plantilla*") {
         Write-Host "[OMITIDO - PLANTILLA/ANEXO] $($file.Name)" -ForegroundColor Gray
         continue
@@ -130,9 +141,7 @@ foreach ($file in $excelFiles) {
         continue
     }
 
-    $fileNameUpper = $file.Name.ToUpper()
-    $pathUpper = $file.FullName.ToUpper()
-
+    # Indicador de Formato Nuevo: Tener NUEVO, NUEVA o V2 en el nombre o ruta del archivo
     $v2Score = 0
     if ($fileNameUpper -like "*NUEVO*" -or $fileNameUpper -like "*NUEVA*" -or $fileNameUpper -like "*V2*") { $v2Score += 200 }
     if ($pathUpper -like "*NUEVO*" -or $pathUpper -like "*NUEVA*" -or $pathUpper -like "*V2*") { $v2Score += 100 }
@@ -153,12 +162,14 @@ foreach ($file in $excelFiles) {
     $groupedCandidates[$sharpId] += $candidateObj
 }
 
+# Seleccionar el MEJOR archivo V2 para cada SHARP ID
 $pendingFiles = @()
 foreach ($sharpId in $groupedCandidates.Keys) {
     $candidates = $groupedCandidates[$sharpId] | Sort-Object -Property @{Expression={$_.V2Score}; Descending=$true}, @{Expression={$_.LastWriteTime}; Descending=$true}
     
     $v2Candidates = $candidates | Where-Object { $_.V2Score -gt 0 }
 
+    # Si ninguno tiene NUEVO/NUEVA/V2 en el nombre o ruta, tomamos el candidato más reciente para verificar si tiene hoja RESUMEN al abrirlo
     $best = if ($v2Candidates.Count -gt 0) { $v2Candidates[0] } else { $candidates[0] }
 
     if ($candidates.Count -gt 1) {
@@ -197,14 +208,14 @@ Write-Host ""
 
 if ($pendingFiles.Count -eq 0) {
     Write-Host "==========================================================" -ForegroundColor Cyan
-    Write-Host "   TODOS LOS ARCHIVOS ESTAN AL DIA. NADA QUE SUBIR.      " -ForegroundColor Green
+    Write-Host "   TODOS LOS ARCHIVOS ESTAN AL DIA. NADA QUE PROCESAR.   " -ForegroundColor Green
     Write-Host "==========================================================" -ForegroundColor Cyan
     exit 0
 }
 
 # Configuracion Anti-Bloqueos de Excel COM (Disable All Macros & Forced Background Mode)
 $excel = New-Object -ComObject Excel.Application
-try { $excel.AutomationSecurity = 3 } catch {}
+try { $excel.AutomationSecurity = 3 } catch {} # 3 = msoAutomationSecurityForceDisable
 $excel.Visible = $false
 $excel.DisplayAlerts = $false
 $excel.ScreenUpdating = $false
@@ -215,7 +226,7 @@ $processedOperators = [ordered]@{}
 $processedCount = 0
 
 Write-Host "----------------------------------------------------------" -ForegroundColor Gray
-Write-Host " FASE 1: LECTURA DINAMICA DE EXCEL (COCIMIENTOS & FRIO)   " -ForegroundColor Yellow
+Write-Host " FASE 1: LECTURA DINAMICA DE EXCEL (COCIMIENTOS Y FRIO)  " -ForegroundColor Yellow
 Write-Host "----------------------------------------------------------" -ForegroundColor Gray
 
 foreach ($item in $pendingFiles) {
@@ -261,8 +272,9 @@ foreach ($item in $pendingFiles) {
         elseif ($eqUpper -like "*PANCHITOS*") { $equipo = "LOS PANCHITOS" }
         elseif ($eqUpper -like "*CUCHILLAS*") { $equipo = "CUCHILLAS" }
         elseif ($eqUpper -like "*MASH*") { $equipo = "MASH-RAINBOW" }
+        elseif ($eqUpper -like "*NAHUALES*") { $equipo = "LOS NAHUALES" }
 
-        # Clasificación de tipoGuia evaluando la subcarpeta relativa y nombre de archivo
+        # Clasificación de tipoGuia
         $subPathLower  = $relativePath.ToLower()
         $fileNameLower = $file.Name.ToLower()
         $tipoGuia = "COMPETENTE"
@@ -283,13 +295,11 @@ foreach ($item in $pendingFiles) {
 
         $cleanOperatorName = $operatorName -replace '\\s+(COMPETENTE|MEJORADO|TECNICO|TÉCNICO|TECNICOS|TÉCNICOS)$', ''
 
-        $processedCount++
-        Write-Host "[$processedCount/$($pendingFiles.Count)] Leido: $($file.Name) ($area - $equipo - $tipoGuia)" -ForegroundColor White
+        $wb = $excel.Workbooks.Open($file.FullName, 0, $true, 5, "", "", $true)
+        $excel.Visible = $false
+        $excel.DisplayAlerts = $false
 
-        $tempFile = Join-Path $env:TEMP -ChildPath ("tmp_sync_" + [Guid]::NewGuid().ToString().Substring(0,8) + ".xlsx")
-        Copy-Item -Path $file.FullName -Destination $tempFile -Force
-        $wb = $excel.Workbooks.Open($tempFile, 0, $true, 5, "", "", $true)
-
+        # FASE A: Leer primero la hoja "RESUMEN" para obtener porcentajes oficiales y categorías evaluadas
         $resumenSheet = $null
         foreach ($checkWs in $wb.Sheets) {
             if ($checkWs.Name.ToUpper() -like "*RESUMEN*") {
@@ -298,15 +308,20 @@ foreach ($item in $pendingFiles) {
             }
         }
 
-        if (-not $resumenSheet) {
+        if (-not $resumenSheet -and $equipo -ne "LOS NAHUALES") {
             Write-Host "[OMITIDO - NO TIENE HOJA RESUMEN] $($file.Name) (SHARP: $docId)" -ForegroundColor Gray
             $wb.Close($false)
             continue
         }
 
         $processedCount++
-        Write-Host "[$processedCount/$($pendingFiles.Count)] PROCESANDO GUÍA V2 (RESUMEN ENCONTRADO): $($file.Name) ($area - $equipo)" -ForegroundColor Green
+        if ($resumenSheet) {
+            Write-Host "[$processedCount/$($pendingFiles.Count)] PROCESANDO GUÍA V2 (RESUMEN ENCONTRADO): $($file.Name) ($area - $equipo)" -ForegroundColor Green
+        } else {
+            Write-Host "[$processedCount/$($pendingFiles.Count)] PROCESANDO GUÍA (SIN RESUMEN): $($file.Name) ($area - $equipo)" -ForegroundColor Yellow
+        }
 
+        # Mapeo de porcentajes y categorías evaluadas desde RESUMEN por nivel
         $resumenEvalMap = @{
             "L6" = [ordered]@{}
             "L7" = [ordered]@{}
@@ -324,29 +339,32 @@ foreach ($item in $pendingFiles) {
             return 0
         }
 
-        for ($r = 4; $r -le 25; $r++) {
-            $catName = "$($resumenSheet.Cells.Item($r, 2).Value2)".Trim()
-            $vL6 = "$($resumenSheet.Cells.Item($r, 3).Value2)".Trim()
-            $vL7 = "$($resumenSheet.Cells.Item($r, 4).Value2)".Trim()
-            $vL8 = "$($resumenSheet.Cells.Item($r, 5).Value2)".Trim()
+        if ($resumenSheet) {
+            for ($r = 4; $r -le 25; $r++) {
+                $catName = "$($resumenSheet.Cells.Item($r, 2).Value2)".Trim()
+                $vL6 = "$($resumenSheet.Cells.Item($r, 3).Value2)".Trim()
+                $vL7 = "$($resumenSheet.Cells.Item($r, 4).Value2)".Trim()
+                $vL8 = "$($resumenSheet.Cells.Item($r, 5).Value2)".Trim()
 
-            if ($catName.Length -gt 2) {
-                $pL6 = Helper-ParsePct $vL6
-                $pL7 = Helper-ParsePct $vL7
-                $pL8 = Helper-ParsePct $vL8
+                if ($catName.Length -gt 2) {
+                    $pL6 = Helper-ParsePct $vL6
+                    $pL7 = Helper-ParsePct $vL7
+                    $pL8 = Helper-ParsePct $vL8
 
-                if ($pL6 -gt 0) { $resumenEvalMap["L6"][$catName.ToUpper()] = "$pL6%" }
-                if ($pL7 -gt 0) { $resumenEvalMap["L7"][$catName.ToUpper()] = "$pL7%" }
-                if ($pL8 -gt 0) { $resumenEvalMap["L8"][$catName.ToUpper()] = "$pL8%" }
+                    if ($pL6 -gt 0) { $resumenEvalMap["L6"][$catName.ToUpper()] = "$pL6%" }
+                    if ($pL7 -gt 0) { $resumenEvalMap["L7"][$catName.ToUpper()] = "$pL7%" }
+                    if ($pL8 -gt 0) { $resumenEvalMap["L8"][$catName.ToUpper()] = "$pL8%" }
+                }
             }
         }
 
+        # Calcular avance por nivel directamente de RESUMEN
         $calcL6 = 0; if ($resumenEvalMap["L6"].Count -gt 0) { $sum = 0; foreach ($v in $resumenEvalMap["L6"].Values) { $sum += (Helper-ParsePct $v) }; $calcL6 = [math]::Round($sum / $resumenEvalMap["L6"].Count, 1) }
         $calcL7 = 0; if ($resumenEvalMap["L7"].Count -gt 0) { $sum = 0; foreach ($v in $resumenEvalMap["L7"].Values) { $sum += (Helper-ParsePct $v) }; $calcL7 = [math]::Round($sum / $resumenEvalMap["L7"].Count, 1) }
         $calcL8 = 0; if ($resumenEvalMap["L8"].Count -gt 0) { $sum = 0; foreach ($v in $resumenEvalMap["L8"].Values) { $sum += (Helper-ParsePct $v) }; $calcL8 = [math]::Round($sum / $resumenEvalMap["L8"].Count, 1) }
 
-        $detectedTipoGuia = $tipoGuia
-        if ($calcL7 -gt 0 -or $calcL8 -gt 0) { $detectedTipoGuia = "MEJORADO" }
+        $detectedTipoGuia = "COMPETENTE"
+        if ($calcL7 -gt 0 -or $calcL8 -gt 0 -or $equipo -eq "LOS NAHUALES") { $detectedTipoGuia = "MEJORADO" }
 
         $operatorRecord = [ordered]@{
             docId = $docId
@@ -364,6 +382,7 @@ foreach ($item in $pendingFiles) {
             niveles = [ordered]@{}
         }
 
+        # FASE B: Viajar a las hojas de detalle (L6, L7, L8) y extraer las categorías evaluadas
         foreach ($ws in $wb.Sheets) {
             $sheetName = $ws.Name
 
@@ -372,10 +391,21 @@ foreach ($item in $pendingFiles) {
             }
 
             $detectedLevel = ""
-            if ($sheetName -like "*L6*" -or $sheetName -like "*N6*" -or $sheetName -like "*NIVEL 6*") { $detectedLevel = "L6" }
-            elseif ($sheetName -like "*L7*" -or $sheetName -like "*N7*" -or $sheetName -like "*NIVEL 7*") { $detectedLevel = "L7" }
-            elseif ($sheetName -like "*L8*" -or $sheetName -like "*N8*" -or $sheetName -like "*NIVEL 8*") { $detectedLevel = "L8" }
+            if ($sheetName -like "*L6*" -or $sheetName -like "*L-6*" -or $sheetName -like "*L 6*" -or $sheetName -like "*N6*" -or $sheetName -like "*NIVEL 6*") { $detectedLevel = "L6" }
+            elseif ($sheetName -like "*L7*" -or $sheetName -like "*L-7*" -or $sheetName -like "*L 7*" -or $sheetName -like "*N7*" -or $sheetName -like "*NIVEL 7*") { $detectedLevel = "L7" }
+            elseif ($sheetName -like "*L8*" -or $sheetName -like "*L-8*" -or $sheetName -like "*L 8*" -or $sheetName -like "*N8*" -or $sheetName -like "*NIVEL 8*") { $detectedLevel = "L8" }
             elseif ($sheetName -like "*GUIA*" -or $sheetName -like "*MATRIZ*") { $detectedLevel = "L6" }
+            
+            if (-not $detectedLevel) {
+                # Fallback: check cell B1 or A1 for the level
+                try {
+                    $b1Text = "$($ws.Cells.Item(1, 2).Value2)".ToUpper()
+                    if ($b1Text -like "*L6*" -or $b1Text -like "*L-6*" -or $b1Text -like "*L 6*") { $detectedLevel = "L6" }
+                    elseif ($b1Text -like "*L7*" -or $b1Text -like "*L-7*" -or $b1Text -like "*L 7*") { $detectedLevel = "L7" }
+                    elseif ($b1Text -like "*L8*" -or $b1Text -like "*L-8*" -or $b1Text -like "*L 8*") { $detectedLevel = "L8" }
+                    elseif ($b1Text -like "*GUÍA*" -or $b1Text -like "*GUIA*") { $detectedLevel = "L6" }
+                } catch {}
+            }
 
             if ($detectedLevel -and -not $operatorRecord.niveles[$detectedLevel]) {
                 $targetMap = $resumenEvalMap[$detectedLevel]
@@ -391,10 +421,21 @@ foreach ($item in $pendingFiles) {
                             $cbRow = $cb.TopLeftCell.Row
                             $isCbChecked = $false
 
+                            # 1. Validar LinkedCell de la casilla en Excel
                             if ($cb.LinkedCell -and $cb.LinkedCell.Length -gt 0) {
                                 try {
                                     $linkedVal = "$($ws.Range($cb.LinkedCell).Value2)".Trim().ToUpper()
                                     if ($linkedVal -eq "TRUE" -or $linkedVal -eq "1" -or $linkedVal -eq "VERDADERO") {
+                                        $isCbChecked = $true
+                                    }
+                                } catch {}
+                            }
+                                
+                            # 2. Validar Value directo de la casilla (Form Control = 1, ActiveX = True)
+                            if (-not $isCbChecked) {
+                                try {
+                                    $cbVal = "$($cb.Value)".Trim().ToUpper()
+                                    if ($cb.Value -eq 1 -or $cbVal -eq "1" -or $cbVal -eq "TRUE" -or $cbVal -eq "VERDADERO") {
                                         $isCbChecked = $true
                                     }
                                 } catch {}
@@ -436,11 +477,11 @@ foreach ($item in $pendingFiles) {
                                 }
                             }
 
-                            if ($matchedPct -or ($targetMap.Count -eq 0 -and $textC -like "*%" -and $textC -ne "0%")) {
+                            if ($matchedPct -or ($targetMap.Count -eq 0 -and $isHeader)) {
                                 $isCurrentCatEvaluated = $true
                                 $currentCategory = [ordered]@{
                                     categoria = $skillText
-                                    porcentajeOficial = if ($matchedPct) { $matchedPct } else { $textC }
+                                    porcentajeOficial = if ($matchedPct) { $matchedPct } elseif ($textC -like "*%") { $textC } else { "N/A" }
                                     habilidades = @()
                                 }
                                 $categoriasList += $currentCategory
@@ -450,8 +491,13 @@ foreach ($item in $pendingFiles) {
                             }
                         }
                         elseif ($isCurrentCatEvaluated -and $currentCategory -and $skillText.Length -gt 6) {
+                            if ($skillText -match '^[\\d\\.,\\s]+$' -or $skillText -match '^\\d+\\.?\\d*\\s*%$') {
+                                continue
+                            }
+                            
                             $isChecked = $false
 
+                            # Evaluar única y estrictamente el valor de la Celda C y su casilla vinculada
                             if ($checkedRows.ContainsKey($row) -and $checkedRows[$row] -eq $true) {
                                 $isChecked = $true
                             } else {
@@ -480,6 +526,26 @@ foreach ($item in $pendingFiles) {
                 $totalHabs = ($categoriasList | ForEach-Object { $_.habilidades.Count } | Measure-Object -Sum).Sum
                 $aprobHabs = ($categoriasList | ForEach-Object { ($_.habilidades | Where-Object { $_.marcado -eq $true }).Count } | Measure-Object -Sum).Sum
 
+                # Calcular porcentajes individuales por categoría si vienen como N/A
+                foreach ($cat in $categoriasList) {
+                    if ($cat.porcentajeOficial -eq "N/A" -or -not $cat.porcentajeOficial) {
+                        $catTotal = $cat.habilidades.Count
+                        if ($catTotal -gt 0) {
+                            $catAprob = ($cat.habilidades | Where-Object { $_.marcado -eq $true }).Count
+                            $cat.porcentajeOficial = "$([math]::Round(($catAprob / $catTotal) * 100, 1))%"
+                        } else {
+                            $cat.porcentajeOficial = "0%"
+                        }
+                    }
+                }
+
+                if ($levelPctVal -eq 0 -and $totalHabs -gt 0) {
+                    $levelPctVal = [math]::Round(($aprobHabs / $totalHabs) * 100, 1)
+                    if ($detectedLevel -eq "L6") { $calcL6 = $levelPctVal; $operatorRecord.l6Pct = $levelPctVal }
+                    elseif ($detectedLevel -eq "L7") { $calcL7 = $levelPctVal; $operatorRecord.l7Pct = $levelPctVal }
+                    elseif ($detectedLevel -eq "L8") { $calcL8 = $levelPctVal; $operatorRecord.l8Pct = $levelPctVal }
+                }
+
                 $operatorRecord.niveles[$detectedLevel] = [ordered]@{
                     pestana = $sheetName
                     formato = "V2_NUEVO"
@@ -493,7 +559,6 @@ foreach ($item in $pendingFiles) {
 
         $wb.Close($false)
         $wb = $null
-        try { Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue } catch {}
         $processedOperators[$docId] = $operatorRecord
         $syncCache[$docId] = $item.LocalLastMod
         $syncCache[$file.Name] = $item.LocalLastMod
@@ -501,19 +566,21 @@ foreach ($item in $pendingFiles) {
     catch {
         Write-Host "[ERROR] En $($file.Name): $_" -ForegroundColor Red
         if ($wb) { try { $wb.Close($false) } catch {} }
-        try { if ($tempFile -and (Test-Path $tempFile)) { Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue } } catch {}
     }
 }
 
+# Cerrar Excel COM forzosamente sin dejar ventanas
 try { $excel.Quit() } catch {}
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel) | Out-Null
 [System.GC]::Collect()
 
+# Guardar o actualizar siempre el archivo de cache local .sync_cache.json
 try {
     $cacheJson = $syncCache | ConvertTo-Json -Depth 5
     [System.IO.File]::WriteAllText($CacheFile, $cacheJson, [System.Text.Encoding]::UTF8)
 } catch {}
 
+# Guardar resultado_extraccion.json localmente
 $allDataList = @($processedOperators.Values)
 $jsonResult = $allDataList | ConvertTo-Json -Depth 8
 [System.IO.File]::WriteAllText($OutputFile, $jsonResult, [System.Text.Encoding]::UTF8)
@@ -549,7 +616,7 @@ if (-not $SoloLocal) {
 
             $response = Invoke-RestMethod -Uri $firestoreUrl -Method Patch -ContentType "application/json; charset=utf-8" -Body $bodyObj -TimeoutSec 10 -UseBasicParsing
             $uploadCount++
-            Write-Host "[OK Firebase] SHARP: $($op.sharpId) | $($op.nombre) | Area: $($op.area) | Team: $($op.equipo) | Type: $($op.tipoGuia) | L6: $($op.l6Pct)%" -ForegroundColor Green
+            Write-Host "[OK Firebase] SHARP: $($op.sharpId) | $($op.nombre) | Type: $($op.tipoGuia) | L6: $($op.l6Pct)%" -ForegroundColor Green
         } catch {
             Write-Host "[WARN] Red diferida para SHARP $($op.sharpId) -> $_" -ForegroundColor Yellow
         }
@@ -564,7 +631,8 @@ Write-Host "   Nuevos / Modificados : $processedCount" -ForegroundColor Green
 Write-Host "   Subidos Directos     : $uploadCount" -ForegroundColor Green
 Write-Host "   Archivo JSON         : $OutputFile" -ForegroundColor White
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host ""`;
+Write-Host ""
+`;
 
 const BAT_CODE = `@echo off
 title Sincronizador de Guías Técnicas 2026

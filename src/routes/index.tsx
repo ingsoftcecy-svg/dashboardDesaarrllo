@@ -11,6 +11,8 @@ import { AutonomyCard } from "@/components/ccz/autonomy_card";
 import { PromedioPorFactorCard } from "@/components/ccz/promedio_por_factor_card";
 import { BrechasPorPilarCard } from "@/components/ccz/brechas_pilar_card";
 import { CursosCardDetails } from "@/components/ccz/cursos_card_details";
+import { BpreMatrixCard } from "@/components/ccz/bpre_matrix_card";
+import { ResumenHeader } from "@/components/ccz/resumen_header";
 import { useExcelData } from "@/hooks/useExcelData";
 import { DashboardSkeleton } from "@/components/ccz/dashboard_skeleton";
 import { Settings } from "lucide-react";
@@ -35,7 +37,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [tab, setTab] = useState<AreaTab>("general");
-  const { general, cocimientos, bloqueFrio, mantenimiento, loading } = useExcelData();
+  const { general, cocimientos, bloqueFrio, mantenimiento, loading, lastUpdated } = useExcelData();
 
   const usuario = useAuth();
   const puedeEditar = usuario?.rol === 'admin'; // Solo administradores pueden editar
@@ -45,32 +47,21 @@ function Index() {
   const [autonomiaLastUpdated, setAutonomiaLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchDates = async () => {
+    const fetchCursosDate = async () => {
       try {
-        // Fetch Cursos last updated
         const sumRef = doc(db, "config_dashboard", "cursos_resumen");
         const sumSnap = await getDoc(sumRef);
         if (sumSnap.exists() && sumSnap.data().updatedAt) {
           setCursosLastUpdated(sumSnap.data().updatedAt);
         }
-
-        // Fetch Autonomia last updated (from latest historicos_excel)
-        const q = query(collection(db, "historicos_excel"), orderBy("__name__", "desc"), limit(1));
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          const latestDoc = snap.docs[0].data();
-          if (latestDoc.updatedAt) {
-            setAutonomiaLastUpdated(latestDoc.updatedAt);
-          }
-        }
       } catch (error) {
-        console.error("Error fetching last updated dates:", error);
+        console.error("Error fetching cursos date:", error);
       }
     };
-    fetchDates();
+    fetchCursosDate();
   }, []);
 
-  const area = tab === "general" ? general : tab === "cocimientos" ? cocimientos : tab === "bloqueFrio" ? bloqueFrio : mantenimiento;
+  const area = (tab === "general" || tab === "resumen") ? general : tab === "cocimientos" ? cocimientos : tab === "bloqueFrio" ? bloqueFrio : mantenimiento;
 
   const computedArea = useMemo(() => {
     // 1. Ordenar operadores
@@ -169,9 +160,7 @@ function Index() {
         };
       }
     });
-    if (metricMode === "cursos" || metricMode === "guias" || metricMode === "cierre-brecha") {
-      teamRankings.sort((a, b) => b.avg - a.avg);
-    }
+    teamRankings.sort((a, b) => (b.avg ?? 0) - (a.avg ?? 0));
 
     // 4. Promedio general de la métrica (excelenciaEquipo)
     let excelenciaEquipo = area.excelenciaEquipo;
@@ -284,7 +273,8 @@ function Index() {
         ) : (
           <div className="flex flex-col gap-4 p-4">
             {/* Control de Métrica Selector */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border border-white/50 bg-white/60 backdrop-blur-md p-4 rounded-xl shadow-sm gap-4">
+            {tab !== "resumen" && (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border border-white/50 bg-white/60 backdrop-blur-md p-4 rounded-xl shadow-sm gap-4">
               <div className="flex flex-col">
                 <div className="flex items-center gap-3">
                   <h1 className="text-lg font-black text-slate-800 uppercase tracking-tight">Tablero de Control</h1>
@@ -293,9 +283,9 @@ function Index() {
                       Última carga: {new Date(cursosLastUpdated).toLocaleString()}
                     </div>
                   )}
-                  {metricMode === "autonomia" && autonomiaLastUpdated && (
+                  {metricMode === "autonomia" && lastUpdated && (
                     <div className="bg-[#1a4491] text-[10px] font-bold text-blue-200 px-3 py-1 rounded-md shadow-sm uppercase tracking-widest whitespace-nowrap">
-                      Última carga: {new Date(autonomiaLastUpdated).toLocaleString()}
+                      Última carga: {new Date(lastUpdated).toLocaleString()}
                     </div>
                   )}
                 </div>
@@ -348,11 +338,18 @@ function Index() {
                 </button>
               </div>
             </div>
+          )}
 
               <>
-                <TeamHeader area={computedArea} metricMode={metricMode} />
-
-                {/* Top Section Grid */}
+                {tab === "resumen" ? (
+                  <div className="mt-4 animate-fade-in">
+                    <ResumenHeader area={computedArea} />
+                    <BpreMatrixCard area={computedArea} />
+                  </div>
+                ) : (
+                  <>
+                    <TeamHeader area={computedArea} metricMode={metricMode as any} />
+                    {/* Top Section Grid */}
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 mb-4">
                   <ExcellenceCard
                     podio={computedArea.podio}
@@ -529,9 +526,9 @@ function Index() {
                   />
                 </div>
               </>
-
+            )}
+            </>
           </div>
-
         )}
       </main>
     </div>

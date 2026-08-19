@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { Calendar, User, TrendingUp, TrendingDown, Clock, Award, ChevronRight } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, BarChart, Bar } from "recharts";
+import { Calendar, User, TrendingUp, TrendingDown, Clock, Award, ChevronRight, AlertCircle, Activity, Lightbulb } from "lucide-react";
 import { obtenerTodoElHistorico, ReporteMensual } from "@/lib/fetchHistorico";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +24,7 @@ interface EvaluacionPunto {
   evaluador: string;
   mesKey: string;
   noEvaluado?: boolean;
+  rawRow?: any;
 }
 
 interface MesProgreso {
@@ -243,7 +244,8 @@ export function OperatorHistoryDialog({
                   corregido: res.corregido,
                   evaluador: row.Evaluator || "Sistema",
                   mesKey: mesKey,
-                  noEvaluado: res.noEvaluado
+                  noEvaluado: res.noEvaluado,
+                  rawRow: row
                 });
               }
             }
@@ -309,6 +311,137 @@ export function OperatorHistoryDialog({
 
   const puestosUnicos = Array.from(new Set(evaluaciones.map(ev => ev.puesto)));
 
+  const generarDiagnostico = (score: number, rawRow?: any) => {
+    let fortalezas = "";
+    let areasOportunidad = "";
+    let chartData: { pilar: string; score: number; basico: number; intermedio: number; avanzado: number }[] = [];
+
+    if (rawRow) {
+      const pilares = ["Safety", "Quality", "Environment", "Management", "People", "Maintenance", "Logistics", "Operation"];
+      const traducciones: Record<string, string> = {
+        "Safety": "Seguridad",
+        "Quality": "Calidad",
+        "Environment": "Medio Ambiente",
+        "Management": "Gestión",
+        "People": "Gente",
+        "Maintenance": "Mantenimiento",
+        "Logistics": "Logística",
+        "Operation": "Operación"
+      };
+
+      const pillarScores = pilares.map(p => {
+        const valB = rawRow[p];
+        const valI = rawRow[`${p}_1`];
+        const valA = rawRow[`${p}_2`];
+        
+        const parseVal = (cell: any) => {
+          if (cell === undefined || cell === null || cell === "-") return 0;
+          if (typeof cell === "number") return cell * 100;
+          if (cell === "Certified" || cell === "100%") return 100;
+          if (cell === "Qualified" || cell === "75%") return 75;
+          if (cell === "In Training" || cell === "50%") return 50;
+          if (cell === "Novice" || cell === "25%") return 25;
+          return 0;
+        };
+        
+        const basico = parseVal(valB);
+        const intermedio = parseVal(valI);
+        const avanzado = parseVal(valA);
+
+        const avg = (basico + intermedio + avanzado) / 3;
+        return { 
+          pilar: traducciones[p], 
+          score: avg, 
+          basico: parseFloat((basico / 3).toFixed(2)), 
+          intermedio: parseFloat((intermedio / 3).toFixed(2)), 
+          avanzado: parseFloat((avanzado / 3).toFixed(2)),
+          rawBasico: basico,
+          rawIntermedio: intermedio,
+          rawAvanzado: avanzado
+        };
+      });
+
+      chartData = [...pillarScores];
+      
+      const mejores = [...pillarScores].filter(p => p.score > 0).sort((a, b) => b.score - a.score);
+      const peores = [...pillarScores].sort((a, b) => a.score - b.score);
+      
+      const topPilar = mejores[0];
+      const peorPilar = peores[0];
+
+      if (topPilar && topPilar.score >= 50) {
+        fortalezas = `Su principal fortaleza es el pilar de ${topPilar.pilar} con un ${topPilar.score.toFixed(1)}% de dominio.`;
+      } else {
+        fortalezas = "Se detectan niveles bajos de dominio generalizados.";
+      }
+      
+      if (peorPilar && peorPilar.score <= 80) {
+        let fallas = [];
+        if (peorPilar.rawBasico < 100) fallas.push("Básico");
+        if (peorPilar.rawIntermedio < 100) fallas.push("Intermedio");
+        if (peorPilar.rawAvanzado < 100) fallas.push("Avanzado");
+        
+        let detalleFallas = fallas.length > 0 ? `, específicamente arrastrado por brechas en el nivel ${fallas.join(" y ")}` : "";
+        areasOportunidad = `Debe enfocar su plan de desarrollo urgentemente en ${peorPilar.pilar} (${peorPilar.score.toFixed(1)}%)${detalleFallas}.`;
+      } else if (score >= 90) {
+        areasOportunidad = `Mantiene un perfil de excelencia sumamente equilibrado sin deficiencias críticas.`;
+      }
+
+      // Combine for the final specific message
+    }
+
+    const baseMsg = (() => {
+      if (score >= 90) return "El operador cuenta con gran autonomía y dominio avanzado de sus funciones. Está capacitado para liderar tareas críticas.";
+      if (score >= 75) return "Muestra un sólido entendimiento operativo y buen progreso en matriz.";
+      if (score >= 50) return "El operador domina las funciones básicas, pero requiere seguimiento continuo.";
+      return "Requiere un plan intensivo de formación y acompañamiento en piso.";
+    })();
+
+    const mensajeFinal = `${baseMsg} ${fortalezas}${areasOportunidad}`.trim();
+
+    if (score >= 90) {
+      return {
+        titulo: "Nivel de Excelencia",
+        colorBg: "bg-emerald-50 border-emerald-200",
+        colorIcono: "text-emerald-600 bg-emerald-100",
+        colorTexto: "text-emerald-800",
+        icono: <Award className="h-4 w-4" />,
+        mensaje: mensajeFinal,
+        chartData
+      };
+    } else if (score >= 75) {
+      return {
+        titulo: "Desempeño Sólido",
+        colorBg: "bg-blue-50 border-blue-200",
+        colorIcono: "text-blue-600 bg-blue-100",
+        colorTexto: "text-blue-800",
+        icono: <TrendingUp className="h-4 w-4" />,
+        mensaje: mensajeFinal,
+        chartData
+      };
+    } else if (score >= 50) {
+      return {
+        titulo: "Nivel en Desarrollo",
+        colorBg: "bg-amber-50 border-amber-200",
+        colorIcono: "text-amber-600 bg-amber-100",
+        colorTexto: "text-amber-800",
+        icono: <AlertCircle className="h-4 w-4" />,
+        mensaje: mensajeFinal,
+        chartData
+      };
+    } else {
+      return {
+        titulo: "Nivel Inicial",
+        colorBg: "bg-rose-50 border-rose-200",
+        colorIcono: "text-rose-600 bg-rose-100",
+        colorTexto: "text-rose-800",
+        icono: <Activity className="h-4 w-4" />,
+        mensaje: mensajeFinal,
+        chartData
+      };
+    }
+  };
+
   return (
     <div className="flex flex-col space-y-6 text-slate-800">
       
@@ -352,9 +485,9 @@ export function OperatorHistoryDialog({
           </div>
         ) : tieneDatos && (
           <div className="flex gap-4">
-            <div className="bg-slate-50 border border-slate-200/60 rounded-xl px-4 py-2 text-center flex flex-col justify-center min-w-[100px]">
-              <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Último Score</span>
-              <span className="text-lg font-black text-[#1a4491]">{ultimoScore}%</span>
+            <div className="bg-gradient-to-br from-[#1a4491] to-blue-600 border border-blue-500/50 rounded-xl px-5 py-2.5 text-center flex flex-col justify-center min-w-[110px] shadow-lg shadow-blue-900/20">
+              <span className="text-[10px] font-black text-blue-200 uppercase tracking-widest mb-0.5 drop-shadow-sm">Último Score</span>
+              <span className="text-2xl font-black text-white drop-shadow-md">{ultimoScore}%</span>
             </div>
             <div className={cn(
               "border rounded-xl px-4 py-2 text-center flex flex-col justify-center min-w-[100px]",
@@ -539,6 +672,81 @@ export function OperatorHistoryDialog({
               )}
             </div>
           </div>
+
+          {/* 💡 DIAGNÓSTICO DE LA ÚLTIMA EVALUACIÓN */}
+          {metricMode === "autonomia" && tieneDatos && (
+            <div className="space-y-2.5 mt-6 mb-2">
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                <Lightbulb className="h-3.5 w-3.5 text-amber-500" />
+                <span>Diagnóstico de la Evaluación Más Reciente</span>
+              </h3>
+              
+              {(() => {
+                const evaluacionPrincipal = evaluaciones.find(ev => ev.puesto === operatorPuesto) || evaluaciones[0];
+                const diag = generarDiagnostico(evaluacionPrincipal?.score || ultimoScore, evaluacionPrincipal?.rawRow);
+                return (
+                  <div className={cn("rounded-xl border p-4 shadow-sm flex flex-col md:flex-row gap-6 items-center", diag.colorBg)}>
+                    
+                    <div className="flex-1 flex gap-4 items-start w-full">
+                      <div className={cn("p-2 rounded-lg flex-shrink-0 mt-0.5", diag.colorIcono)}>
+                        {diag.icono}
+                      </div>
+                      <div>
+                        <h4 className={cn("text-xs font-black uppercase tracking-wider mb-1.5", diag.colorTexto)}>
+                          {diag.titulo}
+                        </h4>
+                        <p className="text-xs font-medium text-slate-600 leading-relaxed">
+                          {diag.mensaje}
+                        </p>
+                      </div>
+                    </div>
+
+                    {diag.chartData && diag.chartData.length > 0 && (
+                      <div className="w-full md:w-[360px] h-60 flex-shrink-0 bg-white/60 rounded-xl border border-slate-200/50 relative overflow-hidden flex flex-col items-center justify-center p-2 pt-6">
+                        <div className="absolute top-2 left-3 text-[9px] font-black uppercase tracking-widest text-slate-400">Radiografía de Pilares</div>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={diag.chartData} margin={{ top: 10, right: 10, left: -20, bottom: 25 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                            <XAxis dataKey="pilar" tick={{ fontSize: 7, fontWeight: "900", fill: "#64748b" }} interval={0} angle={-35} textAnchor="end" height={35} />
+                            <YAxis domain={[0, 100]} tick={{ fontSize: 8 }} tickFormatter={(v) => `${v}%`} />
+                            
+                            <Bar dataKey="basico" name="Básico" stackId="a" fill="#93c5fd" />
+                            <Bar dataKey="intermedio" name="Intermedio" stackId="a" fill="#3b82f6" />
+                            <Bar dataKey="avanzado" name="Avanzado" stackId="a" fill="#1e3a8a" radius={[4, 4, 0, 0]} />
+
+                            <Tooltip 
+                              cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                              content={({ active, payload, label }) => {
+                                if (active && payload && payload.length) {
+                                  const data = payload[0].payload;
+                                  return (
+                                    <div className="bg-white p-3 rounded-lg shadow-md border border-slate-100 text-[10px] font-bold">
+                                      <p className="text-slate-800 mb-2 uppercase tracking-wider">{label}</p>
+                                      <div className="space-y-1">
+                                        <p style={{ color: '#3b82f6' }}>BÁSICO: {data.rawBasico?.toFixed(1) || 0}%</p>
+                                        <p style={{ color: '#2563eb' }}>INTERMEDIO: {data.rawIntermedio?.toFixed(1) || 0}%</p>
+                                        <p style={{ color: '#1e3a8a' }}>AVANZADO: {data.rawAvanzado?.toFixed(1) || 0}%</p>
+                                      </div>
+                                      <div className="mt-2 pt-2 border-t border-slate-100">
+                                        <p className="text-slate-700">SCORE TOTAL: {data.score?.toFixed(1)}%</p>
+                                      </div>
+                                    </div>
+                                  );
+                                }
+                                return null;
+                              }}
+                            />
+                            <Legend wrapperStyle={{ fontSize: '9px', fontWeight: 'bold', bottom: -5 }} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    )}
+                    
+                  </div>
+                );
+              })()}
+            </div>
+          )}
 
           {/* 📋 TABLA DETALLADA DE EVALUACIONES */}
           <div className="space-y-2.5">

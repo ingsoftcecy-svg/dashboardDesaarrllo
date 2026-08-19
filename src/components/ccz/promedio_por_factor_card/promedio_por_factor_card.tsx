@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
 import { BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import type { AreaData } from "@/data/ccz";
 import { STRINGS, FACTORS_LABELS } from "./constants";
 import { FactorItem } from "./factor_item";
-import { BpreEditorDialog } from "./bpre_editor_dialog";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
@@ -19,34 +16,11 @@ export function PromedioPorFactorCard({ area, className }: PromedioPorFactorCard
   const usuario = useAuth();
   const puedeEditar = true;
   const [selectedTeam, setSelectedTeam] = useState<string>("general");
-  const [customFactors, setCustomFactors] = useState<Record<string, number> | null>(null);
 
   // Reiniciar a "general" al cambiar de departamento/área
   useEffect(() => {
     setSelectedTeam("general");
   }, [area.team]);
-
-  // Sincronizar en tiempo real con Firestore para puntuaciones editadas del equipo
-  useEffect(() => {
-    if (selectedTeam === "general") {
-      setCustomFactors(null);
-      return;
-    }
-
-    const cleanUpper = selectedTeam.trim().toUpperCase();
-    const teamKey = cleanUpper.replace(/[^A-Z0-9]/g, '_');
-    const docRef = doc(db, "evaluaciones_guias_tecnicas", `bpre_${teamKey}`);
-
-    const unsubscribe = onSnapshot(docRef, (snap) => {
-      if (snap.exists() && snap.data().factors) {
-        setCustomFactors(snap.data().factors);
-      } else {
-        setCustomFactors(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [selectedTeam]);
 
   const selectedTeamData = area.teamRankings?.find((t) => t.name === selectedTeam);
 
@@ -63,7 +37,7 @@ export function PromedioPorFactorCard({ area, className }: PromedioPorFactorCard
     infraest: 0,
   };
 
-  const factors = customFactors || baseFactors;
+  const factors = baseFactors;
 
   const factor_items = Object.entries(FACTORS_LABELS).map(([key, label]) => ({
     key,
@@ -119,16 +93,6 @@ export function PromedioPorFactorCard({ area, className }: PromedioPorFactorCard
               ))}
             </select>
           )}
-
-          {/* Botón compacto de Editor BPRE */}
-          <BpreEditorDialog
-            teamKey={currentTeamKey}
-            teamName={displayAreaName}
-            currentFactors={factors}
-            puedeEditar={puedeEditar}
-            isGeneral={selectedTeam === "general"}
-            teamOperators={operatorsToShow}
-          />
         </div>
       </header>
 

@@ -23,11 +23,21 @@ try {
 
 if (-not $OneDrivePath) {
     try {
-        $OneDrivePath = (Get-Item "$env:USERPROFILE\OneDrive - Anheuser-Busch InBev\Brewery Operations - *\5.0  Mantto\2026\04 ATO\03 ATO MEJORADO\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+        $OneDrivePath = (Get-Item "$env:USERPROFILE\OneDrive - Anheuser-Busch InBev\Brewery Operations - *\5.0  Mantto\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
     } catch {}
     if (-not $OneDrivePath) {
         try {
-            $OneDrivePath = (Get-Item "$env:USERPROFILE\OneDrive - Anheuser-Busch InBev\Brewery Operations - *\5.0  Mantto\2026\04 ATO\*\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+            $OneDrivePath = (Get-Item "$env:USERPROFILE\OneDrive - Anheuser-Busch InBev\Brewery Operations - *\5.0  Mantto\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+        } catch {}
+    }
+    if (-not $OneDrivePath) {
+        try {
+            $exactPath = "$env:USERPROFILE\OneDrive - Anheuser-Busch InBev\Brewery Operations - ELABORACIÓN\5.0  Mantto\Guias Tecnicas"
+            if (Test-Path $exactPath) {
+                $OneDrivePath = $exactPath
+            } else {
+                $OneDrivePath = (Get-Item "$env:USERPROFILE\OneDrive - Anheuser-Busch InBev\Brewery Operations - *\5.0  Mantto*\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+            }
         } catch {}
     }
     if (-not $OneDrivePath) {
@@ -226,6 +236,7 @@ foreach ($item in $pendingFiles) {
         elseif ($eqUpper -like "*PANCHITOS*") { $equipo = "LOS PANCHITOS" }
         elseif ($eqUpper -like "*CUCHILLAS*") { $equipo = "CUCHILLAS" }
         elseif ($eqUpper -like "*MASH*") { $equipo = "MASH-RAINBOW" }
+        elseif ($eqUpper -like "*NAHUALES*") { $equipo = "LOS NAHUALES" }
 
         # Clasificación de tipoGuia evaluando la subcarpeta relativa y nombre de archivo
         $subPathLower  = $relativePath.ToLower()
@@ -244,6 +255,11 @@ foreach ($item in $pendingFiles) {
             $tipoGuia = "TECNICO"
         } elseif ($fileNameLower -like "*competente*") {
             $tipoGuia = "COMPETENTE"
+        }
+
+        # Excepción solicitada: Si es del equipo Nahuales y no se detectó por nombre, forzamos que sean "MEJORADO" (las nuevas)
+        if ($equipo -eq "LOS NAHUALES") {
+            $tipoGuia = "MEJORADO"
         }
 
         $cleanOperatorName = $operatorName -replace '\s+(COMPETENTE|MEJORADO|TECNICO|TÉCNICO|TECNICOS|TÉCNICOS)$', ''

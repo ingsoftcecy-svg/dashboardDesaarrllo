@@ -31,6 +31,16 @@ if (-not $OneDrivePath) {
     }
     if (-not $OneDrivePath) {
         try {
+            $exactPathItem = Get-Item "$env:USERPROFILE\OneDrive - Anheuser-Busch InBev\Brewery Operations - ELABORACI*N\5.0  Mantto\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($exactPathItem) {
+                $OneDrivePath = $exactPathItem.FullName
+            } else {
+                $OneDrivePath = (Get-Item "$env:USERPROFILE\OneDrive - Anheuser-Busch InBev\Brewery Operations - *\5.0  Mantto*\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+            }
+        } catch {}
+    }
+    if (-not $OneDrivePath) {
+        try {
             $OneDrivePath = (Get-Item "$env:USERPROFILE\Anheuser-Busch InBev\Brewery Operations - *\5.0  Mantto*\Guias Tecnicas" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
         } catch {}
     }
@@ -250,6 +260,7 @@ foreach ($item in $pendingFiles) {
         elseif ($eqUpper -like "*PANCHITOS*") { $equipo = "LOS PANCHITOS" }
         elseif ($eqUpper -like "*CUCHILLAS*") { $equipo = "CUCHILLAS" }
         elseif ($eqUpper -like "*MASH*") { $equipo = "MASH-RAINBOW" }
+        elseif ($eqUpper -like "*NAHUALES*") { $equipo = "LOS NAHUALES" }
 
         # Clasificación de tipoGuia
         $subPathLower  = $relativePath.ToLower()
@@ -285,14 +296,18 @@ foreach ($item in $pendingFiles) {
             }
         }
 
-        if (-not $resumenSheet) {
+        if (-not $resumenSheet -and $equipo -ne "LOS NAHUALES") {
             Write-Host "[OMITIDO - NO TIENE HOJA RESUMEN] $($file.Name) (SHARP: $docId)" -ForegroundColor Gray
             $wb.Close($false)
             continue
         }
 
         $processedCount++
-        Write-Host "[$processedCount/$($pendingFiles.Count)] PROCESANDO GUÍA V2 (RESUMEN ENCONTRADO): $($file.Name) ($area - $equipo)" -ForegroundColor Green
+        if ($resumenSheet) {
+            Write-Host "[$processedCount/$($pendingFiles.Count)] PROCESANDO GUÍA V2 (RESUMEN ENCONTRADO): $($file.Name) ($area - $equipo)" -ForegroundColor Green
+        } else {
+            Write-Host "[$processedCount/$($pendingFiles.Count)] PROCESANDO GUÍA (SIN RESUMEN): $($file.Name) ($area - $equipo)" -ForegroundColor Yellow
+        }
 
         # Mapeo de porcentajes y categorías evaluadas desde RESUMEN por nivel
         $resumenEvalMap = @{
@@ -312,20 +327,22 @@ foreach ($item in $pendingFiles) {
             return 0
         }
 
-        for ($r = 4; $r -le 25; $r++) {
-            $catName = "$($resumenSheet.Cells.Item($r, 2).Value2)".Trim()
-            $vL6 = "$($resumenSheet.Cells.Item($r, 3).Value2)".Trim()
-            $vL7 = "$($resumenSheet.Cells.Item($r, 4).Value2)".Trim()
-            $vL8 = "$($resumenSheet.Cells.Item($r, 5).Value2)".Trim()
+        if ($resumenSheet) {
+            for ($r = 4; $r -le 25; $r++) {
+                $catName = "$($resumenSheet.Cells.Item($r, 2).Value2)".Trim()
+                $vL6 = "$($resumenSheet.Cells.Item($r, 3).Value2)".Trim()
+                $vL7 = "$($resumenSheet.Cells.Item($r, 4).Value2)".Trim()
+                $vL8 = "$($resumenSheet.Cells.Item($r, 5).Value2)".Trim()
 
-            if ($catName.Length -gt 2) {
-                $pL6 = Helper-ParsePct $vL6
-                $pL7 = Helper-ParsePct $vL7
-                $pL8 = Helper-ParsePct $vL8
+                if ($catName.Length -gt 2) {
+                    $pL6 = Helper-ParsePct $vL6
+                    $pL7 = Helper-ParsePct $vL7
+                    $pL8 = Helper-ParsePct $vL8
 
-                if ($pL6 -gt 0) { $resumenEvalMap["L6"][$catName.ToUpper()] = "$pL6%" }
-                if ($pL7 -gt 0) { $resumenEvalMap["L7"][$catName.ToUpper()] = "$pL7%" }
-                if ($pL8 -gt 0) { $resumenEvalMap["L8"][$catName.ToUpper()] = "$pL8%" }
+                    if ($pL6 -gt 0) { $resumenEvalMap["L6"][$catName.ToUpper()] = "$pL6%" }
+                    if ($pL7 -gt 0) { $resumenEvalMap["L7"][$catName.ToUpper()] = "$pL7%" }
+                    if ($pL8 -gt 0) { $resumenEvalMap["L8"][$catName.ToUpper()] = "$pL8%" }
+                }
             }
         }
 
@@ -335,7 +352,7 @@ foreach ($item in $pendingFiles) {
         $calcL8 = 0; if ($resumenEvalMap["L8"].Count -gt 0) { $sum = 0; foreach ($v in $resumenEvalMap["L8"].Values) { $sum += (Helper-ParsePct $v) }; $calcL8 = [math]::Round($sum / $resumenEvalMap["L8"].Count, 1) }
 
         $detectedTipoGuia = "COMPETENTE"
-        if ($calcL7 -gt 0 -or $calcL8 -gt 0) { $detectedTipoGuia = "MEJORADO" }
+        if ($calcL7 -gt 0 -or $calcL8 -gt 0 -or $equipo -eq "LOS NAHUALES") { $detectedTipoGuia = "MEJORADO" }
 
         $operatorRecord = [ordered]@{
             docId = $docId
@@ -362,10 +379,21 @@ foreach ($item in $pendingFiles) {
             }
 
             $detectedLevel = ""
-            if ($sheetName -like "*L6*" -or $sheetName -like "*N6*" -or $sheetName -like "*NIVEL 6*") { $detectedLevel = "L6" }
-            elseif ($sheetName -like "*L7*" -or $sheetName -like "*N7*" -or $sheetName -like "*NIVEL 7*") { $detectedLevel = "L7" }
-            elseif ($sheetName -like "*L8*" -or $sheetName -like "*N8*" -or $sheetName -like "*NIVEL 8*") { $detectedLevel = "L8" }
+            if ($sheetName -like "*L6*" -or $sheetName -like "*L-6*" -or $sheetName -like "*L 6*" -or $sheetName -like "*N6*" -or $sheetName -like "*NIVEL 6*") { $detectedLevel = "L6" }
+            elseif ($sheetName -like "*L7*" -or $sheetName -like "*L-7*" -or $sheetName -like "*L 7*" -or $sheetName -like "*N7*" -or $sheetName -like "*NIVEL 7*") { $detectedLevel = "L7" }
+            elseif ($sheetName -like "*L8*" -or $sheetName -like "*L-8*" -or $sheetName -like "*L 8*" -or $sheetName -like "*N8*" -or $sheetName -like "*NIVEL 8*") { $detectedLevel = "L8" }
             elseif ($sheetName -like "*GUIA*" -or $sheetName -like "*MATRIZ*") { $detectedLevel = "L6" }
+            
+            if (-not $detectedLevel) {
+                # Fallback: check cell B1 or A1 for the level
+                try {
+                    $b1Text = "$($ws.Cells.Item(1, 2).Value2)".ToUpper()
+                    if ($b1Text -like "*L6*" -or $b1Text -like "*L-6*" -or $b1Text -like "*L 6*") { $detectedLevel = "L6" }
+                    elseif ($b1Text -like "*L7*" -or $b1Text -like "*L-7*" -or $b1Text -like "*L 7*") { $detectedLevel = "L7" }
+                    elseif ($b1Text -like "*L8*" -or $b1Text -like "*L-8*" -or $b1Text -like "*L 8*") { $detectedLevel = "L8" }
+                    elseif ($b1Text -like "*GUÍA*" -or $b1Text -like "*GUIA*") { $detectedLevel = "L6" }
+                } catch {}
+            }
 
             if ($detectedLevel -and -not $operatorRecord.niveles[$detectedLevel]) {
                 $targetMap = $resumenEvalMap[$detectedLevel]
@@ -386,6 +414,16 @@ foreach ($item in $pendingFiles) {
                                 try {
                                     $linkedVal = "$($ws.Range($cb.LinkedCell).Value2)".Trim().ToUpper()
                                     if ($linkedVal -eq "TRUE" -or $linkedVal -eq "1" -or $linkedVal -eq "VERDADERO") {
+                                        $isCbChecked = $true
+                                    }
+                                } catch {}
+                            }
+                                
+                            # 2. Validar Value directo de la casilla (Form Control = 1, ActiveX = True)
+                            if (-not $isCbChecked) {
+                                try {
+                                    $cbVal = "$($cb.Value)".Trim().ToUpper()
+                                    if ($cb.Value -eq 1 -or $cbVal -eq "1" -or $cbVal -eq "TRUE" -or $cbVal -eq "VERDADERO") {
                                         $isCbChecked = $true
                                     }
                                 } catch {}
@@ -427,11 +465,11 @@ foreach ($item in $pendingFiles) {
                                 }
                             }
 
-                            if ($matchedPct -or ($targetMap.Count -eq 0 -and $textC -like "*%" -and $textC -ne "0%")) {
+                            if ($matchedPct -or ($targetMap.Count -eq 0 -and $isHeader)) {
                                 $isCurrentCatEvaluated = $true
                                 $currentCategory = [ordered]@{
                                     categoria = $skillText
-                                    porcentajeOficial = if ($matchedPct) { $matchedPct } else { $textC }
+                                    porcentajeOficial = if ($matchedPct) { $matchedPct } elseif ($textC -like "*%") { $textC } else { "N/A" }
                                     habilidades = @()
                                 }
                                 $categoriasList += $currentCategory
@@ -441,6 +479,10 @@ foreach ($item in $pendingFiles) {
                             }
                         }
                         elseif ($isCurrentCatEvaluated -and $currentCategory -and $skillText.Length -gt 6) {
+                            if ($skillText -match '^[\d\.,\s]+$' -or $skillText -match '^\d+\.?\d*\s*%$') {
+                                continue
+                            }
+                            
                             $isChecked = $false
 
                             # Evaluar única y estrictamente el valor de la Celda C y su casilla vinculada
@@ -471,6 +513,26 @@ foreach ($item in $pendingFiles) {
 
                 $totalHabs = ($categoriasList | ForEach-Object { $_.habilidades.Count } | Measure-Object -Sum).Sum
                 $aprobHabs = ($categoriasList | ForEach-Object { ($_.habilidades | Where-Object { $_.marcado -eq $true }).Count } | Measure-Object -Sum).Sum
+
+                # Calcular porcentajes individuales por categoría si vienen como N/A
+                foreach ($cat in $categoriasList) {
+                    if ($cat.porcentajeOficial -eq "N/A" -or -not $cat.porcentajeOficial) {
+                        $catTotal = $cat.habilidades.Count
+                        if ($catTotal -gt 0) {
+                            $catAprob = ($cat.habilidades | Where-Object { $_.marcado -eq $true }).Count
+                            $cat.porcentajeOficial = "$([math]::Round(($catAprob / $catTotal) * 100, 1))%"
+                        } else {
+                            $cat.porcentajeOficial = "0%"
+                        }
+                    }
+                }
+
+                if ($levelPctVal -eq 0 -and $totalHabs -gt 0) {
+                    $levelPctVal = [math]::Round(($aprobHabs / $totalHabs) * 100, 1)
+                    if ($detectedLevel -eq "L6") { $calcL6 = $levelPctVal; $operatorRecord.l6Pct = $levelPctVal }
+                    elseif ($detectedLevel -eq "L7") { $calcL7 = $levelPctVal; $operatorRecord.l7Pct = $levelPctVal }
+                    elseif ($detectedLevel -eq "L8") { $calcL8 = $levelPctVal; $operatorRecord.l8Pct = $levelPctVal }
+                }
 
                 $operatorRecord.niveles[$detectedLevel] = [ordered]@{
                     pestana = $sheetName
