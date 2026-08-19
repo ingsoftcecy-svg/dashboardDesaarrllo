@@ -12,7 +12,7 @@ interface BpreMatrixCardProps {
 export function BpreMatrixCard({ area }: BpreMatrixCardProps) {
   const user = useAuth();
   const userEmail = user?.email?.toLowerCase();
-  const canEditBpre = userEmail === "ingsoftcecy@gmail.com" || userEmail === "elaboracion@gmail.com";
+  const canEditBpre = user?.rol === 'admin' || userEmail === "ingsoftcecy@gmail.com" || userEmail === "elaboracion@gmail.com" || userEmail === "adminelaboracion@gmail.com";
 
   const getCellColor = (value: number | undefined) => {
     if (value === undefined || value === null) return "bg-slate-100 text-slate-400";
