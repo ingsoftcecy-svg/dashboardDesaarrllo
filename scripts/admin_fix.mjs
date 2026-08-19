@@ -11,11 +11,7 @@
  */
 
 import { readFileSync } from 'fs';
-import { createRequire } from 'module';
-import { fileURLToPath } from 'url';
-
-const require = createRequire(import.meta.url);
-const admin = require('firebase-admin');
+import admin from 'firebase-admin';
 
 // Verificar que existe el archivo de credenciales
 let serviceAccount;
@@ -45,23 +41,31 @@ const USERS_TO_DELETE = [
   'obed.calvillo@ab-inbev.com',
 ];
 
-const RESTORE_ADMIN = 'ingsoftcecy@gmail.com';
+const RESTORE_ADMINS = [
+  'ingsoftcecy@gmail.com',
+  'adminelaboracion@gmail.com',
+  'jorge.garciag@ab-inbev.com',
+  'alberto.pinales@ab-inbev.com',
+  'jesus.villarreal@ab-inbev.com'
+];
 
 async function run() {
   console.log('🔧 Iniciando operaciones de administración...\n');
 
-  // 1. Restaurar rol admin de ingsoftcecy@gmail.com
-  console.log(`📋 Restaurando rol admin para: ${RESTORE_ADMIN}`);
-  try {
-    const userRecord = await auth.getUserByEmail(RESTORE_ADMIN);
-    await db.collection('usuarios').doc(userRecord.uid).set({
-      email: RESTORE_ADMIN,
-      rol: 'admin',
-      requiresPasswordChange: false,
-    }, { merge: true });
-    console.log(`  ✅ Rol admin restaurado para ${RESTORE_ADMIN} (UID: ${userRecord.uid})`);
-  } catch (e) {
-    console.error(`  ❌ Error con ${RESTORE_ADMIN}:`, e.message);
+  // 1. Restaurar rol admin de los administradores oficiales
+  console.log(`📋 Restaurando roles de administración para los usuarios autorizados...`);
+  for (const email of RESTORE_ADMINS) {
+    try {
+      const userRecord = await auth.getUserByEmail(email);
+      await db.collection('usuarios').doc(userRecord.uid).set({
+        email: email,
+        rol: 'admin',
+        requiresPasswordChange: false,
+      }, { merge: true });
+      console.log(`  ✅ Rol admin asegurado/restaurado para ${email} (UID: ${userRecord.uid})`);
+    } catch (e) {
+      console.error(`  ❌ Error con ${email}:`, e.message);
+    }
   }
 
   // 2. Borrar usuarios de Auth + Firestore

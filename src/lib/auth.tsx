@@ -28,11 +28,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const userDocSnapshot = await getDoc(userDocRef);
           const usuarioConRol: ExtendedUser = { ...firebaseUser };
 
+          const isHardcodedAdmin = firebaseUser.email && [
+            'ingsoftcecy@gmail.com',
+            'adminelaboracion@gmail.com',
+            'jorge.garciag@ab-inbev.com',
+            'alberto.pinales@ab-inbev.com',
+            'jesus.villarreal@ab-inbev.com'
+          ].includes(firebaseUser.email.toLowerCase());
+
           if (userDocSnapshot.exists()) {
-            usuarioConRol.rol = userDocSnapshot.data().rol || 'operador';
+            usuarioConRol.rol = isHardcodedAdmin ? 'admin' : (userDocSnapshot.data().rol || 'operador');
             usuarioConRol.requiresPasswordChange = userDocSnapshot.data().requiresPasswordChange;
           } else {
-            usuarioConRol.rol = 'operador';
+            usuarioConRol.rol = isHardcodedAdmin ? 'admin' : 'operador';
           }
 
           usuarioRef.current = usuarioConRol;
