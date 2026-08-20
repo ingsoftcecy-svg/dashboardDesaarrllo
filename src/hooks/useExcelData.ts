@@ -26,7 +26,12 @@ export function useExcelData() {
   const [cocimientos, setCocimientos] = useState<AreaData>(defaultCocimientos);
   const [bloqueFrio, setBloqueFrio] = useState<AreaData>(defaultBloqueFrio);
   const [mantenimiento, setMantenimiento] = useState<AreaData>(defaultMantenimiento);
-  const [general, setGeneral] = useState<AreaData>({ ...defaultCocimientos, team: "Vista General", lema: "Toda la Planta" });
+  const [general, setGeneral] = useState<AreaData>({ 
+    ...defaultCocimientos, 
+    team: "Vista General", 
+    lema: "Toda la Planta",
+    linea: "Elaboración · Toda la Planta"
+  });
   const [loading, setLoading] = useState(true);
   const [guiasCatalog, setGuiasCatalog] = useState<any>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
