@@ -767,7 +767,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
         </>
       )}
 
-      {metricMode !== "autonomia" && (
+      {(metricMode === "cursos" || metricMode === "guias") && (
         <>
           {metricMode === "cursos" && (
             <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-32">
