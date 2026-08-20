@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AreaData } from '@/data/ccz';
 import { cn } from '@/lib/utils';
 import { BpreEditorDialog } from './promedio_por_factor_card/bpre_editor_dialog';
@@ -9,10 +9,32 @@ interface BpreMatrixCardProps {
   area: AreaData;
 }
 
+const ORDEN_ESTRUCTURADO = [
+  "CAZADORES_AMARGOR",
+  "CUCHILLA",
+  "MASHRAINBOW",
+  "MOSTOBOYS",
+  "PANCHITOS",
+  "ANDAMOS_CON_TODO",
+  "BRONCOS",
+  "LOS_BRAVOS",
+  "LOS_FUERTES",
+  "REYES_MEZCLA",
+  "MUNICH",
+  "NAHUALES"
+];
+
+const getStructuredIndex = (teamName: string) => {
+  const norm = normalizarNombreEquipo(teamName || '').trim();
+  const idx = ORDEN_ESTRUCTURADO.indexOf(norm);
+  return idx !== -1 ? idx : 999;
+};
+
 export function BpreMatrixCard({ area }: BpreMatrixCardProps) {
   const user = useAuth();
   const userEmail = user?.email?.toLowerCase();
   const canEditBpre = user?.rol === 'admin' || userEmail === "ingsoftcecy@gmail.com" || userEmail === "elaboracion@gmail.com" || userEmail === "adminelaboracion@gmail.com";
+  const [sortBy, setSortBy] = useState<'fase' | 'estructurado'>('fase');
 
   const getCellColor = (value: number | undefined) => {
     if (value === undefined || value === null) return "bg-slate-100 text-slate-400";
@@ -70,6 +92,32 @@ export function BpreMatrixCard({ area }: BpreMatrixCardProps) {
           <h2 className="text-sm font-black uppercase tracking-wider">Matriz de Madurez de Equipos Autónomos</h2>
           <p className="text-[10px] text-blue-200 font-bold mt-0.5">Resumen general de los pilares de autonomía por equipo</p>
         </div>
+        
+        {/* Alternador de Ordenamiento */}
+        <div className="flex bg-white/10 p-0.5 rounded-lg border border-white/20 shadow-inner shrink-0">
+          <button
+            onClick={() => setSortBy('fase')}
+            className={cn(
+              "rounded-md px-3 py-1 text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer",
+              sortBy === 'fase'
+                ? "bg-white text-[#1a4491] shadow"
+                : "text-blue-100 hover:text-white hover:bg-white/5"
+            )}
+          >
+            Ranking de Fase
+          </button>
+          <button
+            onClick={() => setSortBy('estructurado')}
+            className={cn(
+              "rounded-md px-3 py-1 text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer",
+              sortBy === 'estructurado'
+                ? "bg-white text-[#1a4491] shadow"
+                : "text-blue-100 hover:text-white hover:bg-white/5"
+            )}
+          >
+            Orden Estructural
+          </button>
+        </div>
       </div>
       
       <div className="overflow-x-auto">
@@ -95,6 +143,9 @@ export function BpreMatrixCard({ area }: BpreMatrixCardProps) {
           </thead>
           <tbody>
             {[...(area.teamRankings || [])].sort((a, b) => {
+              if (sortBy === 'estructurado') {
+                return getStructuredIndex(a.name) - getStructuredIndex(b.name);
+              }
               const calcAvg = (team: any) => {
                 const f = team.autonomyFactors;
                 if (!f) return 0;
