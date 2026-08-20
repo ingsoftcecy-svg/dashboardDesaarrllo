@@ -38,6 +38,18 @@ El dashboard cuenta con un selector global en la cabecera que conmuta toda la in
    * Permite la edición en lote de las guías evaluadas por operador.
    * Muestra los promedios de habilitación por nivel y por equipo.
 
+
+---
+
+## ✨ Características Especiales de Gestión
+
+Para agilizar la operación diaria y asegurar la consistencia de los datos, el sistema incorpora las siguientes funcionalidades avanzadas:
+
+* **Edición Inline por Popover (Matriz BPRE):** En la pestaña de `RESUMEN` (Matriz de Madurez de Equipos Autónomos), los usuarios autorizados (cuyos correos pertenezcan a `ingsoftcecy` o `adminelaboracion`) pueden hacer clic directamente en cualquiera de los números de factores (Dinámica, Liderazgo, SKAP, ATO, etc.) para abrir un selector emergente compacto (0 a 4). Al modificar un factor, la **Fase Actual** del equipo se recalcula y guarda de manera automática en Firestore.
+* **Sincronización Dinámica de ATO:** El valor del factor **ATO** mostrado en la Matriz SKAP (Tablero Físico) de cada operador se vincula en tiempo real con el factor ATO de su respectivo equipo en la matriz BPRE. Cualquier cambio en la matriz de resumen actualiza automáticamente a todos los integrantes de ese equipo en vivo.
+* **Orden Estructural Predeterminado:** La matriz en la vista de `RESUMEN` muestra a los equipos autónomos ordenados por el flujo de proceso real de la planta (Cocimientos $\rightarrow$ Bloque Frío $\rightarrow$ Mantenimiento). Un botón alternador en la cabecera permite cambiar este orden por el de **Ranking de Fase** si se requiere.
+* **Flexibilidad de Sincronización (Portal de Scripts):** El Portal de Scripts y el script automatizado en PowerShell (`sync_guias.ps1`) toleran nombres de archivos de Excel cuyos identificadores únicos (Ficha SHARP) estén rodeados por corchetes (ej: `[32209921] OSCAR EDUARDO VALDEZ.xlsx`), evitando archivos omitidos durante la sincronización colectiva de OneDrive.
+
 ---
 
 ## 🧭 Estructura de Rutas y Funcionalidades
