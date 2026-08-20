@@ -133,7 +133,7 @@ foreach ($file in $excelFiles) {
 
     $sharpId = ""
     $operatorName = $fileNameRaw
-    if ($fileNameRaw -match '^(\\d{7,10})\\s+(.+)$') {
+    if ($fileNameRaw -match '^\\\[?(\\d{7,10})\\\]?\\s+(.+)$') {
         $sharpId = $matches[1]
         $operatorName = $matches[2]
     } else {
