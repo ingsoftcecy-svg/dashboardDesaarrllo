@@ -80,7 +80,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
     return null;
   };
 
-  const podium_style = get_podium_style(original_index);
+  const podium_style = metricMode === "autonomia" ? get_podium_style(original_index) : null;
   const alternate_row_style = cn("border-l-4 border-l-transparent", visual_index % 2 === 0 ? "bg-white/40" : "bg-slate-50/30");
   
   let row_class = alternate_row_style;
