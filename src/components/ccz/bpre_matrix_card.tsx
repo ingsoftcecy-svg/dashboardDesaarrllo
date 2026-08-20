@@ -4,6 +4,9 @@ import { cn } from '@/lib/utils';
 import { BpreEditorDialog } from './promedio_por_factor_card/bpre_editor_dialog';
 import { normalizarNombreEquipo } from '@/hooks/useExcelData';
 import { useAuth } from '@/lib/auth';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 interface BpreMatrixCardProps {
   area: AreaData;
@@ -30,11 +33,130 @@ const getStructuredIndex = (teamName: string) => {
   return idx !== -1 ? idx : 999;
 };
 
+interface BpreFactorCellProps {
+  teamName: string;
+  factorKey: string;
+  value: number | undefined;
+  factors: Record<string, number>;
+  canEdit: boolean;
+  fechaCompromiso?: string;
+  esMantenimiento: boolean;
+}
+
+function BpreFactorCell({
+  teamName,
+  factorKey,
+  value,
+  factors,
+  canEdit,
+  fechaCompromiso = "No definida",
+  esMantenimiento
+}: BpreFactorCellProps) {
+  const [open, setOpen] = useState(false);
+  const [updating, setUpdating] = useState(false);
+
+  const isNA = esMantenimiento && (factorKey === "ato" || factorKey === "quas" || factorKey === "multihab");
+  const displayValue = isNA ? "N/A" : (value !== undefined && value !== null ? value : "-");
+
+  const handleSelect = async (newValue: number) => {
+    if (isNA || !canEdit) return;
+    setUpdating(true);
+    try {
+      const teamKey = normalizarNombreEquipo(teamName || '');
+      const newFactors = {
+        ...factors,
+        [factorKey]: newValue
+      };
+
+      // Recalcular la fase automáticamente como el menor factor, ignorando los N/A
+      const validVals: number[] = [];
+      Object.entries(newFactors).forEach(([k, val]) => {
+        const isK_NA = esMantenimiento && (k === "ato" || k === "quas" || k === "multihab");
+        if (!isK_NA && val !== undefined && val !== null) {
+          validVals.push(val);
+        }
+      });
+      
+      const newFase = validVals.length > 0 ? `F${Math.min(...validVals)}` : "F2";
+
+      const docRef = doc(db, "bpre_overrides", teamKey);
+      await setDoc(docRef, {
+        factors: newFactors,
+        faseActual: newFase,
+        fechaCompromiso,
+        teamKey,
+        teamName,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+
+      setOpen(false);
+    } catch (e) {
+      console.error("Error al actualizar factor inline:", e);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const getCellColor = (val: number | undefined) => {
+    if (isNA) return "bg-slate-100 text-slate-400";
+    if (val === undefined || val === null) return "bg-slate-50 text-slate-400";
+    if (val >= 4) return "bg-gradient-to-br from-[#0099ff] to-[#007acc] text-white font-black shadow-inner";
+    if (val === 3) return "bg-gradient-to-br from-[#00b050] to-[#008a3d] text-white font-black shadow-inner";
+    if (val === 2) return "bg-gradient-to-br from-[#c6efce] to-[#a0d6a8] text-[#006100] font-black shadow-inner";
+    return "bg-slate-50 text-slate-600";
+  };
+
+  if (!canEdit || isNA) {
+    return (
+      <div className={cn("w-full h-full p-2 cursor-default font-bold", getCellColor(value))}>
+        {displayValue}
+      </div>
+    );
+  }
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button 
+          className={cn(
+            "w-full h-full p-2 font-bold cursor-pointer hover:opacity-85 transition-all border-none outline-none focus:outline-none flex items-center justify-center min-h-[32px] relative", 
+            getCellColor(value)
+          )}
+          title={`Click para editar factor ${factorKey}`}
+        >
+          {updating ? (
+            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+          ) : (
+            displayValue
+          )}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-1.5 bg-white border border-slate-200 rounded-xl shadow-xl flex gap-1 z-50">
+        {[0, 1, 2, 3, 4].map((num) => (
+          <button
+            key={num}
+            onClick={() => handleSelect(num)}
+            className={cn(
+              "h-8 w-8 rounded-lg font-black text-xs transition-all hover:scale-105 flex items-center justify-center cursor-pointer",
+              num === value 
+                ? "bg-slate-800 text-white shadow-md"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+            )}
+          >
+            {num}
+          </button>
+        ))}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function BpreMatrixCard({ area }: BpreMatrixCardProps) {
   const user = useAuth();
   const userEmail = user?.email?.toLowerCase();
   const canEditBpre = user?.rol === 'admin' || userEmail === "ingsoftcecy@gmail.com" || userEmail === "elaboracion@gmail.com" || userEmail === "adminelaboracion@gmail.com";
-  const [sortBy, setSortBy] = useState<'fase' | 'estructurado'>('fase');
+  const esSuperUsuario = !!(userEmail && (userEmail.includes("ingsoftcecy") || userEmail.includes("adminelaboracion")));
+  const [sortBy, setSortBy] = useState<'fase' | 'estructurado'>('estructurado');
 
   const getCellColor = (value: number | undefined) => {
     if (value === undefined || value === null) return "bg-slate-100 text-slate-400";
@@ -214,22 +336,149 @@ export function BpreMatrixCard({ area }: BpreMatrixCardProps) {
                   
                   {hasData ? (
                     <>
-                      <td className={cn("p-0 border border-slate-200 text-[11px]")}><div className={cn("w-full h-full p-2 hover:opacity-80 transition-opacity duration-300 cursor-default", getCellColor(f.dinamica))}>{f.dinamica || '-'}</div></td>
-                      <td className={cn("p-0 border border-slate-200 text-[11px]")}><div className={cn("w-full h-full p-2 hover:opacity-80 transition-opacity duration-300 cursor-default", getCellColor(f.liderazgo))}>{f.liderazgo || '-'}</div></td>
-                      <td className={cn("p-0 border border-slate-200 text-[11px]")}><div className={cn("w-full h-full p-2 hover:opacity-80 transition-opacity duration-300 cursor-default", getCellColor(f.skap))}>{f.skap || '-'}</div></td>
-                      <td className={cn("p-0 border border-slate-200 text-[11px]")}><div className={cn("w-full h-full p-2 hover:opacity-80 transition-opacity duration-300 cursor-default", getCellColor(f.ato))}>{f.ato || '-'}</div></td>
-                      <td className={cn("p-0 border border-slate-200 text-[11px]")}><div className={cn("w-full h-full p-2 hover:opacity-80 transition-opacity duration-300 cursor-default", getCellColor(f.seguridad))}>{f.seguridad || '-'}</div></td>
-                      <td className={cn("p-0 border border-slate-200 text-[11px]")}><div className={cn("w-full h-full p-2 hover:opacity-80 transition-opacity duration-300 cursor-default", getCellColor(f.quas))}>{f.quas || '-'}</div></td>
-                      <td className={cn("p-0 border border-slate-200 text-[11px]")}><div className={cn("w-full h-full p-2 hover:opacity-80 transition-opacity duration-300 cursor-default", getCellColor(f.multihab))}>{f.multihab || '-'}</div></td>
-                      <td className={cn("p-0 border border-slate-200 text-[11px]")}><div className={cn("w-full h-full p-2 hover:opacity-80 transition-opacity duration-300 cursor-default", getCellColor(f.vpo))}>{f.vpo || '-'}</div></td>
-                      <td className={cn("p-0 border border-slate-200 text-[11px]")}><div className={cn("w-full h-full p-2 hover:opacity-80 transition-opacity duration-300 cursor-default", getCellColor(f.solucionProb))}>{f.solucionProb || '-'}</div></td>
-                      <td className={cn("p-0 border border-slate-200 text-[11px]")}><div className={cn("w-full h-full p-2 hover:opacity-80 transition-opacity duration-300 cursor-default", getCellColor(f.infraest))}>{f.infraest || '-'}</div></td>
+                      <td className={cn("p-0 border border-slate-200 text-[11px]")}>
+                        <BpreFactorCell 
+                          teamName={team.name}
+                          factorKey="dinamica"
+                          value={f.dinamica}
+                          factors={f || {}}
+                          canEdit={esSuperUsuario}
+                          fechaCompromiso={team.fechaCompromiso}
+                          esMantenimiento={rowAreaName === "Mantenimiento"}
+                        />
+                      </td>
+                      <td className={cn("p-0 border border-slate-200 text-[11px]")}>
+                        <BpreFactorCell 
+                          teamName={team.name}
+                          factorKey="liderazgo"
+                          value={f.liderazgo}
+                          factors={f || {}}
+                          canEdit={esSuperUsuario}
+                          fechaCompromiso={team.fechaCompromiso}
+                          esMantenimiento={rowAreaName === "Mantenimiento"}
+                        />
+                      </td>
+                      <td className={cn("p-0 border border-slate-200 text-[11px]")}>
+                        <BpreFactorCell 
+                          teamName={team.name}
+                          factorKey="skap"
+                          value={f.skap}
+                          factors={f || {}}
+                          canEdit={esSuperUsuario}
+                          fechaCompromiso={team.fechaCompromiso}
+                          esMantenimiento={rowAreaName === "Mantenimiento"}
+                        />
+                      </td>
+                      <td className={cn("p-0 border border-slate-200 text-[11px]")}>
+                        <BpreFactorCell 
+                          teamName={team.name}
+                          factorKey="ato"
+                          value={f.ato}
+                          factors={f || {}}
+                          canEdit={esSuperUsuario}
+                          fechaCompromiso={team.fechaCompromiso}
+                          esMantenimiento={rowAreaName === "Mantenimiento"}
+                        />
+                      </td>
+                      <td className={cn("p-0 border border-slate-200 text-[11px]")}>
+                        <BpreFactorCell 
+                          teamName={team.name}
+                          factorKey="seguridad"
+                          value={f.seguridad}
+                          factors={f || {}}
+                          canEdit={esSuperUsuario}
+                          fechaCompromiso={team.fechaCompromiso}
+                          esMantenimiento={rowAreaName === "Mantenimiento"}
+                        />
+                      </td>
+                      <td className={cn("p-0 border border-slate-200 text-[11px]")}>
+                        <BpreFactorCell 
+                          teamName={team.name}
+                          factorKey="quas"
+                          value={f.quas}
+                          factors={f || {}}
+                          canEdit={esSuperUsuario}
+                          fechaCompromiso={team.fechaCompromiso}
+                          esMantenimiento={rowAreaName === "Mantenimiento"}
+                        />
+                      </td>
+                      <td className={cn("p-0 border border-slate-200 text-[11px]")}>
+                        <BpreFactorCell 
+                          teamName={team.name}
+                          factorKey="multihab"
+                          value={f.multihab}
+                          factors={f || {}}
+                          canEdit={esSuperUsuario}
+                          fechaCompromiso={team.fechaCompromiso}
+                          esMantenimiento={rowAreaName === "Mantenimiento"}
+                        />
+                      </td>
+                      <td className={cn("p-0 border border-slate-200 text-[11px]")}>
+                        <BpreFactorCell 
+                          teamName={team.name}
+                          factorKey="vpo"
+                          value={f.vpo}
+                          factors={f || {}}
+                          canEdit={esSuperUsuario}
+                          fechaCompromiso={team.fechaCompromiso}
+                          esMantenimiento={rowAreaName === "Mantenimiento"}
+                        />
+                      </td>
+                      <td className={cn("p-0 border border-slate-200 text-[11px]")}>
+                        <BpreFactorCell 
+                          teamName={team.name}
+                          factorKey="solucionProb"
+                          value={f.solucionProb}
+                          factors={f || {}}
+                          canEdit={esSuperUsuario}
+                          fechaCompromiso={team.fechaCompromiso}
+                          esMantenimiento={rowAreaName === "Mantenimiento"}
+                        />
+                      </td>
+                      <td className={cn("p-0 border border-slate-200 text-[11px]")}>
+                        <BpreFactorCell 
+                          teamName={team.name}
+                          factorKey="infraest"
+                          value={f.infraest}
+                          factors={f || {}}
+                          canEdit={esSuperUsuario}
+                          fechaCompromiso={team.fechaCompromiso}
+                          esMantenimiento={rowAreaName === "Mantenimiento"}
+                        />
+                      </td>
                     </>
                   ) : (
                     <td colSpan={10} className="p-2 border border-slate-200 text-slate-400 italic bg-slate-50 text-[11px]">Sin datos registrados</td>
                   )}
                   
-                  <td className={cn("p-0 border border-slate-200 text-[11px]")}><div className={cn("w-full h-full p-2 hover:opacity-80 transition-opacity duration-300 cursor-default", getFaseColor(team.faseActual))}>{team.faseActual || 'NA'}</div></td>
+                  <td className={cn("p-0 border border-slate-200 text-[11px] font-black")}>
+                    {canEditBpre ? (
+                      <BpreEditorDialog 
+                        teamKey={normalizarNombreEquipo(team.name || '')} 
+                        teamName={team.name || ''} 
+                        currentFactors={f || {}} 
+                        currentFase={team.faseActual}
+                        currentFecha={team.fechaCompromiso}
+                        puedeEditar={true} 
+                        isGeneral={false} 
+                        teamOperators={area.operadores?.filter(op => op.equipoAutonomo?.toUpperCase() === team.name?.toUpperCase())} 
+                      >
+                        <button 
+                          className={cn(
+                            "w-full h-full p-2 hover:opacity-80 transition-opacity duration-300 cursor-pointer font-bold border-none outline-none focus:outline-none flex items-center justify-center min-h-[32px]", 
+                            getFaseColor(team.faseActual)
+                          )}
+                          title="Click para cambiar fase/factores de este equipo"
+                        >
+                          {team.faseActual || 'NA'}
+                        </button>
+                      </BpreEditorDialog>
+                    ) : (
+                      <div className={cn("w-full h-full p-2 hover:opacity-80 transition-opacity duration-300 cursor-default", getFaseColor(team.faseActual))}>
+                        {team.faseActual || 'NA'}
+                      </div>
+                    )}
+                  </td>
                   <td className={cn("p-0 border border-slate-200 text-[9px] font-bold text-center text-slate-600")}><div className="w-full h-full p-2 flex items-center justify-center">{team.fechaCompromiso || 'No definida'}</div></td>
                 </tr>
               );

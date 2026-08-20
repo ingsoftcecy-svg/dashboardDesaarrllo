@@ -716,7 +716,9 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
 
             let calculatedAto = 4;
 
-            if (isCocimientosArea) {
+            if (teamData && teamData.autonomyFactors && teamData.autonomyFactors.ato !== undefined && teamData.autonomyFactors.ato !== null) {
+              calculatedAto = Number(teamData.autonomyFactors.ato);
+            } else if (isCocimientosArea) {
               const isCuchillas = teamStr.includes("cuchilla") || opNameStr.includes("cuchilla");
               calculatedAto = isCuchillas ? 3 : 2;
             } else if (isBloqueFrioArea) {

@@ -15,6 +15,7 @@ interface BpreEditorDialogProps {
   onSave?: (newFactors: Record<string, number>) => void;
   puedeEditar?: boolean;
   isGeneral?: boolean;
+  children?: React.ReactNode;
 }
 
 export function BpreEditorDialog({
@@ -27,6 +28,7 @@ export function BpreEditorDialog({
   puedeEditar = true,
   isGeneral = false,
   teamOperators = [],
+  children,
 }: BpreEditorDialogProps & { teamOperators?: any[] }) {
   const [open, setOpen] = useState(false);
   const [factors, setFactors] = useState<Record<string, number>>(currentFactors);
@@ -119,16 +121,20 @@ export function BpreEditorDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button
-          disabled={!puedeEditar || isGeneral}
-          title={isGeneral ? "Selecciona un equipo específico para editar factores" : "Editar Factores del equipo"}
-          className={cn(
-            "flex h-7 w-7 items-center justify-center rounded bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white focus:outline-none border border-slate-700 shadow-sm",
-            (!puedeEditar || isGeneral) && "opacity-40 cursor-not-allowed hover:bg-slate-800 hover:text-slate-300"
-          )}
-        >
-          <Sliders className="h-3.5 w-3.5" />
-        </button>
+        {children ? (
+          children
+        ) : (
+          <button
+            disabled={!puedeEditar || isGeneral}
+            title={isGeneral ? "Selecciona un equipo específico para editar factores" : "Editar Factores del equipo"}
+            className={cn(
+              "flex h-7 w-7 items-center justify-center rounded bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white focus:outline-none border border-slate-700 shadow-sm",
+              (!puedeEditar || isGeneral) && "opacity-40 cursor-not-allowed hover:bg-slate-800 hover:text-slate-300"
+            )}
+          >
+            <Sliders className="h-3.5 w-3.5" />
+          </button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-md sm:max-w-lg bg-white p-6 rounded-2xl border-none shadow-2xl">
         <DialogHeader className="border-b pb-3">
