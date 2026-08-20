@@ -30,7 +30,7 @@ export function useExcelData() {
     ...defaultCocimientos, 
     team: "Vista General", 
     lema: "Toda la Planta",
-    linea: "Elaboración · Toda la Planta"
+    linea: "Consolidado General"
   });
   const [loading, setLoading] = useState(true);
   const [guiasCatalog, setGuiasCatalog] = useState<any>(null);
