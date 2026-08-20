@@ -191,14 +191,14 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos, puedeEdi
     <Dialog>
       <DialogTrigger asChild>
         <button className={cn(
-          "flex flex-col gap-1.5 w-full hover:bg-slate-100 p-1 rounded transition-colors text-left group",
+          "flex flex-col gap-1 w-full hover:bg-slate-100 p-0.5 rounded transition-colors text-left group",
           puedeEditar ? "cursor-pointer" : "cursor-default opacity-75"
         )}>
           {sorted_equipos.length > 0 && (() => {
             const actual = sorted_equipos.length;
             const maxEq = OPERATORS_MAX_SKILLS[operator_id] || actual || 1;
             return (
-              <div className="text-[9.5px] font-black text-slate-500 uppercase tracking-wide mb-0.5">
+              <div className="text-[9px] font-black text-slate-500 uppercase tracking-wide mb-0">
                 Nivel {actual}x{actual} / Máx: {maxEq}x{maxEq}
               </div>
             );
@@ -210,22 +210,22 @@ export function MultiSkillEditor({ operator_id, operator_name, equipos, puedeEdi
                 <div 
                   key={i} 
                   className={cn(
-                    "rounded px-2 py-1 text-[10px] font-bold text-white shadow-sm flex items-center gap-1.5 leading-none transition-all",
+                    "rounded px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm flex items-center gap-1 leading-none transition-all",
                     is_primary 
-                      ? "bg-yellow-500 scale-105 shadow-md" 
+                      ? "bg-yellow-500 scale-[1.02] shadow-sm" 
                       : "bg-blue-500 opacity-90"
                   )}
                 >
-                  {is_primary && <Star className="h-3 w-3 fill-white" />}
+                  {is_primary && <Star className="h-2.5 w-2.5 fill-white" />}
                   <span className="truncate">{eq.toUpperCase()}</span>
                 </div>
               );
             })
           ) : (
-            <div className="text-xs text-slate-400 italic">Sin equipos</div>
+            <div className="text-[10px] text-slate-400 italic">Sin equipos</div>
           )}
           {puedeEditar && (
-            <div className="hidden group-hover:block text-[8px] text-blue-500 font-bold mt-1 uppercase text-center w-full">Configurar Multihabilidad</div>
+            <div className="hidden group-hover:block text-[7.5px] text-blue-500 font-bold mt-0.5 uppercase text-center w-full">Configurar Multihabilidad</div>
           )}
         </button>
       </DialogTrigger>

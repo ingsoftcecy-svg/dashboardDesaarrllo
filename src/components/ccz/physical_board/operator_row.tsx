@@ -120,11 +120,11 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
       transition={{ delay: visual_index * 0.03 }}
       className={cn("group transition-colors", row_class)}
     >
-      <td className="border-b border-r border-slate-200/50 p-3 text-center align-middle font-black text-slate-400 w-16">
+      <td className="border-b border-r border-slate-200/50 p-2 text-center align-middle font-black text-slate-400 w-16">
         {original_index + 1}
       </td>
       
-      <td className="border-b border-r border-slate-200/50 p-3 align-middle w-64">
+      <td className="border-b border-r border-slate-200/50 p-2 align-middle w-64">
         <div className="flex items-center gap-3">
           <Dialog>
             <DialogTrigger asChild>
@@ -233,7 +233,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
               return (
                 <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
                   {operator.lider && (
-                    <div className={cn("px-1.5 py-0.5 text-[9px] font-bold uppercase rounded-md border", getLeaderColor(operator.lider))}>
+                    <div className={cn("px-1 py-0.2 text-[8px] font-bold uppercase rounded-md border", getLeaderColor(operator.lider))}>
                       {STRINGS.LEADER_LABEL} {operator.lider}
                     </div>
                   )}
@@ -271,12 +271,12 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
         </div>
       </td>
 
-      <td className="border-b border-r border-slate-200/50 p-3 align-middle text-center w-40">
+      <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-40">
         {operator.equipoAutonomo ? (
           <Dialog>
             <DialogTrigger asChild>
-              <button className="flex flex-col items-center gap-1 mx-auto hover:opacity-85 active:scale-95 transition-all cursor-pointer focus:outline-none group">
-                <div className="h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg flex items-center justify-center p-1 group-hover:scale-105 transition-transform">
+              <button className="flex flex-col items-center gap-0.5 mx-auto hover:opacity-85 active:scale-95 transition-all cursor-pointer focus:outline-none group">
+                <div className="h-12 w-12 overflow-hidden rounded-lg border border-slate-200 bg-white shadow flex items-center justify-center p-0.5 group-hover:scale-105 transition-transform">
                   <img 
                     src={logo_fallbacks[0] || `/logos/${operator.equipoAutonomo.trim().toUpperCase()}.webp`} 
                     alt={operator.equipoAutonomo}
@@ -286,7 +286,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                     onError={handle_team_logo_error}
                   />
                 </div>
-                <span className="text-[9px] font-bold text-[#1a4491] uppercase hover:underline leading-tight max-w-[100px] truncate block mt-0.5">
+                <span className="text-[8.5px] font-bold text-[#1a4491] uppercase hover:underline leading-tight max-w-[100px] truncate block mt-0.5">
                   {operator.equipoAutonomo}
                 </span>
               </button>
@@ -387,30 +387,30 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
       ) : metricMode === "cierre-brecha" ? (
         <>
           {/* HABILIDADES */}
-          <td className="border-b border-r border-slate-200/50 p-3 align-middle w-48 bg-slate-50/30">
-            <div className="flex flex-col gap-1.5 text-[11px] font-semibold text-slate-600">
+          <td className="border-b border-r border-slate-200/50 p-2 align-middle w-48 bg-slate-50/30">
+            <div className="flex flex-col gap-0.5 text-[10px] font-semibold text-slate-600">
               <div className="flex items-center justify-between">
                 <span>{STRINGS.DRIVERS_LICENSE}</span>
-                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.basico))}>
+                <span className={cn("px-1.5 py-0.2 rounded-sm font-bold tabular-nums min-w-[30px] text-center shadow-sm text-[10px]", get_capability_color(operator.basico))}>
                   {operator.basico > 0 ? Math.round(operator.basico) : "-"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span>{STRINGS.INTERMEDIATE}</span>
-                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.intermedio))}>
+                <span className={cn("px-1.5 py-0.2 rounded-sm font-bold tabular-nums min-w-[30px] text-center shadow-sm text-[10px]", get_capability_color(operator.intermedio))}>
                   {operator.intermedio > 0 ? Math.round(operator.intermedio) : "-"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span>{STRINGS.ADVANCED}</span>
-                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.avanzado))}>
+                <span className={cn("px-1.5 py-0.2 rounded-sm font-bold tabular-nums min-w-[30px] text-center shadow-sm text-[10px]", get_capability_color(operator.avanzado))}>
                   {operator.avanzado > 0 ? Math.round(operator.avanzado) : "-"}
                 </span>
               </div>
             </div>
           </td>
           {/* MULTI-HABILIDAD */}
-          <td className="border-b border-r border-slate-200/50 p-2 align-middle w-48 bg-slate-50/30">
+          <td className="border-b border-r border-slate-200/50 p-1.5 align-middle w-48 bg-slate-50/30">
             <MultiSkillEditor 
               operator_id={operator.id} 
               operator_name={operator.nombre} 
@@ -419,33 +419,33 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
             />
           </td>
           {/* TOTAL */}
-          <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-28">
-            <span className="px-2.5 py-1 rounded font-black text-sm bg-slate-100 text-slate-700 border border-slate-200 shadow-sm min-w-[36px] inline-block tabular-nums">
+          <td className="border-b border-r border-slate-200/50 p-1.5 align-middle text-center w-28">
+            <span className="px-1.5 py-0.5 rounded font-black text-xs bg-slate-100 text-slate-700 border border-slate-200 shadow-sm min-w-[30px] inline-block tabular-nums">
               {operator.brechasTotal ?? 0}
             </span>
           </td>
           {/* COMPLETADAS */}
-          <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-28">
-            <span className="px-2.5 py-1 rounded font-black text-sm bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm min-w-[36px] inline-block tabular-nums">
+          <td className="border-b border-r border-slate-200/50 p-1.5 align-middle text-center w-28">
+            <span className="px-1.5 py-0.5 rounded font-black text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm min-w-[30px] inline-block tabular-nums">
               {operator.brechasCompletadas ?? 0}
             </span>
           </td>
           {/* EN PROCESO */}
-          <td className="border-b border-r border-slate-200/50 p-2 align-middle text-center w-28">
+          <td className="border-b border-r border-slate-200/50 p-1.5 align-middle text-center w-28">
             <span className={cn(
-              "px-2.5 py-1 rounded font-black text-sm shadow-sm min-w-[36px] inline-block border tabular-nums",
+              "px-1.5 py-0.5 rounded font-black text-xs shadow-sm min-w-[30px] inline-block border tabular-nums",
               (operator.brechasEnProceso ?? 0) > 0 ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-slate-50 text-slate-400 border-slate-200"
             )}>
               {operator.brechasEnProceso ?? 0}
             </span>
           </td>
           {/* PROGRESO DE CIERRE - with stacked bar */}
-          <td className="border-b border-r border-slate-200/50 p-2 align-middle w-44">
+          <td className="border-b border-r border-slate-200/50 p-1.5 align-middle w-44">
             <Dialog>
               <DialogTrigger asChild>
-                <button className="w-full flex flex-col items-center gap-1.5 focus:outline-none hover:bg-slate-50/50 p-2 rounded transition-colors cursor-pointer group active:scale-95 duration-200">
+                <button className="w-full flex flex-col items-center gap-1 focus:outline-none hover:bg-slate-50/50 p-1 rounded transition-colors cursor-pointer group active:scale-95 duration-200">
                   <span className={cn(
-                    "text-sm font-black tabular-nums group-hover:scale-105 transition-transform",
+                    "text-xs font-black tabular-nums group-hover:scale-105 transition-transform",
                     (operator.brechasProgress ?? 0) === 100 
                       ? "text-yellow-600 drop-shadow-sm" 
                       : (operator.brechasProgress ?? 0) >= 80 
@@ -459,7 +459,7 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                     {operator.brechasProgress !== undefined ? `${operator.brechasProgress.toFixed(1)}%` : "0.0%"}
                   </span>
                   {/* Stacked progress bar */}
-                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden flex group-hover:shadow-inner transition-shadow">
+                  <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden flex group-hover:shadow-inner transition-shadow">
                     {(operator.brechasTotal ?? 0) > 0 && (
                       <>
                         <div 
@@ -473,13 +473,10 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
                       </>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 text-[8px] font-bold text-slate-400 mt-0.5">
-                    <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />OK</span>
-                    <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />PROC</span>
+                  <div className="flex items-center gap-1.5 text-[7.5px] font-bold text-slate-400 mt-0.5">
+                    <span className="flex items-center gap-0.5"><span className="w-1.2 h-1.2 rounded-full bg-emerald-500 inline-block" />OK</span>
+                    <span className="flex items-center gap-0.5"><span className="w-1.2 h-1.2 rounded-full bg-amber-400 inline-block" />PROC</span>
                   </div>
-                  <span className="text-[7px] font-black uppercase text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-1">
-                    Ver Detalles
-                  </span>
                 </button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl bg-white p-6 rounded-2xl border-none shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
@@ -525,23 +522,23 @@ export function OperatorRow({ operator, original_index, visual_index, show_ato =
         </>
       ) : (
         <>
-          <td className="border-b border-r border-slate-200/50 p-3 align-middle w-48">
-            <div className="flex flex-col gap-1.5 text-[11px] font-semibold text-slate-600">
+          <td className="border-b border-r border-slate-200/50 p-2 align-middle w-48">
+            <div className="flex flex-col gap-0.5 text-[10px] font-semibold text-slate-600">
               <div className="flex items-center justify-between">
                 <span>{STRINGS.DRIVERS_LICENSE}</span>
-                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.basico))}>
+                <span className={cn("px-1.5 py-0.2 rounded-sm font-bold tabular-nums min-w-[30px] text-center shadow-sm text-[10px]", get_capability_color(operator.basico))}>
                   {operator.basico > 0 ? Math.round(operator.basico) : "-"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span>{STRINGS.INTERMEDIATE}</span>
-                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.intermedio))}>
+                <span className={cn("px-1.5 py-0.2 rounded-sm font-bold tabular-nums min-w-[30px] text-center shadow-sm text-[10px]", get_capability_color(operator.intermedio))}>
                   {operator.intermedio > 0 ? Math.round(operator.intermedio) : "-"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span>{STRINGS.ADVANCED}</span>
-                <span className={cn("px-2 py-0.5 rounded font-bold tabular-nums min-w-[36px] text-center shadow-sm", get_capability_color(operator.avanzado))}>
+                <span className={cn("px-1.5 py-0.2 rounded-sm font-bold tabular-nums min-w-[30px] text-center shadow-sm text-[10px]", get_capability_color(operator.avanzado))}>
                   {operator.avanzado > 0 ? Math.round(operator.avanzado) : "-"}
                 </span>
               </div>
