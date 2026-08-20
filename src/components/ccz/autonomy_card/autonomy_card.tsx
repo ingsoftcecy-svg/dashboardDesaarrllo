@@ -66,12 +66,6 @@ export function AutonomyCard({
             <p className="text-[10px] font-medium text-blue-100/70">{subtitleText}</p>
           </div>
         </div>
-        
-        {trend.length > 0 && (
-          <div className="w-20 h-8 opacity-60">
-            <Sparkline data={trend} color="#facc15" height={32} />
-          </div>
-        )}
       </header>
 
       {isGuias ? (
