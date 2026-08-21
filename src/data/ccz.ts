@@ -122,7 +122,7 @@ const baseHoras = ["06h", "07h", "08h", "09h", "10h", "11h", "12h", "13h"];
 export const cocimientos: AreaData = {
   team: "Guardianes Cerveceros",
   lema: "Pilar de Mantenimiento Autónomo · Cocimientos",
-  linea: "Sala de Cocción",
+  linea: "Cocimientos · Sala de Cocción",
   autonomia: 3.2,
   nivelLabel: "Nivel 3 — Mejora Autónoma",
   kpis: [
@@ -168,7 +168,7 @@ export const cocimientos: AreaData = {
 export const bloqueFrio: AreaData = {
   team: "Sensory Avengers",
   lema: "Pilar de Calidad · Bloque Frío",
-  linea: "Bodega de Fermentación",
+  linea: "Bloque Frío · Bodega de Fermentación",
   autonomia: 3.6,
   nivelLabel: "Nivel 3 — Mejora Autónoma",
   kpis: [
@@ -214,7 +214,7 @@ export const bloqueFrio: AreaData = {
 export const mantenimiento: AreaData = {
   team: "Tech Guardians",
   lema: "Pilar de Confiabilidad · Mantenimiento",
-  linea: "Brewery Maintenance",
+  linea: "Área Mantenimiento · Brewery Maintenance",
   autonomia: 0,
   nivelLabel: "Evaluación de Autonomía",
   kpis: [
